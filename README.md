@@ -23,6 +23,7 @@ First of all, install required packages and clone OSA repository
   - git clone https://github.com/zorglub42/OSA
 
 Then run install.sh with "-m /path/to/your/local/installation' as argument 
+
 Note: 
 - Your local installation folder will be created by install.sh if it does not exists
 - Application is pre-configured to be installed in  /usr/local/nursery/ApplianceManager
