@@ -36,15 +36,15 @@ Note:
 - Edit envvars.sh file and set configuration variables according to your system. 
 
 		By default just following are required:
-			- APACHE_ADMIN_MAIL: system administor mail (for information, no email send)
-			- ROOT_MYSQL_PW: password for mysql "roor" user
-			- APPLIANCE_MYSQL_PW: whished password for mysql user created to allow application to connect mysql on application database
-			- APPLIANCE_ADMIN_PW: "admin" appliaction user whished password
-			- USE_HTTP: publish (or not) service with HTTP
-			- USE_HTTPS: publish (or not) service with HTTPS
+			APACHE_ADMIN_MAIL: system administor mail (for information, no email send)
+			ROOT_MYSQL_PW: password for mysql "roor" user
+			APPLIANCE_MYSQL_PW: whished password for mysql user created to allow application to connect mysql on application database
+			APPLIANCE_ADMIN_PW: "admin" appliaction user whished password
+			USE_HTTP: publish (or not) service with HTTP
+			USE_HTTPS: publish (or not) service with HTTPS
 		and (end of file)
-			- INSTALL_DIR: application  location
-			- LOG_DIR: application logs location
+			INSTALL_DIR: application  location
+			LOG_DIR: application logs location
 run ./configure-osa.sh
 
 If, at the end of execution the message "OSA Configuration done, exiting..." appears, OSA is correctly installed!
