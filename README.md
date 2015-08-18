@@ -34,6 +34,7 @@ Note:
 		
 - Go to $INSTALL_DIR/RunTimeAppliance/shell
 - Edit envvars.sh file and set configuration variables according to your system. 
+
 		By default just following are required:
 			- APACHE_ADMIN_MAIL: system administor mail (for information, no email send)
 			- ROOT_MYSQL_PW: password for mysql "roor" user
