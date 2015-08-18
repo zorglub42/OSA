@@ -1,3 +1,8 @@
+Version 2.4
+-----------
+	- Use PHP PDO 
+	- Possibility to add extra attribute on user to forward to backend
+	
 Version 2.1
 -----------
 	- Also allow anonymous access on protected resources 
