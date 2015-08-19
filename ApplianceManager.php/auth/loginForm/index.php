@@ -47,7 +47,7 @@
 			}
 		} 
 
-		<?
+		<?php
 		if (isset($_REQUEST["l"])) {
 			echo "var loc=\"" . base64_decode($_REQUEST["l"]) . "\";\n";
 		}else{ 

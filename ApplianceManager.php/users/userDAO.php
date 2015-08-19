@@ -198,7 +198,7 @@ function addUser($userName = NULL, $request_data = NULL){
 		$error->setFunctionalLabel($error->getFunctionalLabel() . "endDate is required\n");
 	}else{
 		if ( ereg( "([0-9]{4})-([0-9]{2})-([0-9]{2})", $request_data["endDate"], $regs ) ) {
-		  $mySQLEndDate = "'$regs[1]-$regs[2]-$regs[3] 00:00:00'";
+		  $mySQLEndDate = "$regs[1]-$regs[2]-$regs[3] 00:00:00";
 		} else {
 			$error->setHttpStatus(400);
 			$error->setFunctionalCode(2);
@@ -352,7 +352,7 @@ function updateUser($userName = NULL, $request_data = NULL){
 			$mySQLmd5Password=md5($request_data["password"]);
 
 			array_push($bindPrms, $mySQLPassword);
-			array_push($bindPrms, $mySQLPassword);
+			array_push($bindPrms, $mySQLmd5Password	);
 		}
 		$strUPD=$strUPD . "password=?, md5Password=?, ";
 	}
@@ -375,7 +375,7 @@ function updateUser($userName = NULL, $request_data = NULL){
 			$error->setFunctionalLabel($error->getFunctionalLabel() . "endDate is required\n");
 		}else{
 			if ( ereg( "([0-9]{4})-([0-9]{2})-([0-9]{2})", $request_data["endDate"], $regs ) ) {
-			  $mySQLEndDate = "'$regs[1]-$regs[2]-$regs[3] 00:00:00'";
+			  $mySQLEndDate = "$regs[1]-$regs[2]-$regs[3] 00:00:00";
 			  array_push($bindPrms, $mySQLEndDate);
 			  $strUPD=$strUPD . "endDate=?, ";
 			} else {

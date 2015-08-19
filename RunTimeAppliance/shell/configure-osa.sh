@@ -52,7 +52,7 @@ function configureCryptoKey(){
 	if [  $KEEP_DB -eq 0 -o ! -f "$INSTALL_DIR/ApplianceManager.php/include/Crypto.ini.php" ] ; then
 		cryptoKeys='Array("'`randomString`'","'`randomString`'","'`randomString`'","'`randomString`'","'`randomString`'","'`randomString`'","'`randomString`'","'`randomString`'","'`randomString`'","'`randomString`'");';
 	
-		echo '<?'>/tmp/Crypto.ini.php
+		echo '<?php'>/tmp/Crypto.ini.php
 		echo "/* Array of cryting keys for custome bi-directionel custom crypting system */" >>/tmp/Crypto.ini.php
 		echo "/* To enforce security on your system, you shoud change thos values and  generate random keys on install*/" >>/tmp/Crypto.ini.php
 		echo '$cryptKey='$cryptoKeys >>/tmp/Crypto.ini.php
