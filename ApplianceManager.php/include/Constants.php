@@ -57,5 +57,5 @@ define ("VALID_USER_GROUP", "valid-user");
 define ("ADMIN_USER", "Admin");
 define ("ADMIN_SERVICE", "ApplianceManagerAdmin");
 
-define ("version", 2.3);
+define ("version", 2.4);
 ?>
