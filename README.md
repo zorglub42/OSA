@@ -31,7 +31,7 @@ Note:
 - Application is pre-configured to be installed in  /usr/local/nursery/ApplianceManager
 
 		Ex:
-			./install.sh -m /usr/local/nursery/ApplianceManager
+			./install.sh -m /usr/local/ApplianceManager
 			
 		
 - Go to $INSTALL_DIR/RunTimeAppliance/shell
