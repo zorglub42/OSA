@@ -129,4 +129,4 @@ APPLIANCE_MYSQL_PORT=3306
 # Global configuration section
 ######################################################
 INSTALL_DIR=/usr/local/nursery/ApplianceManager
-LOG_DIR=/var/log/nursery/OSA
+LOG_DIR=/var/log/OSA
