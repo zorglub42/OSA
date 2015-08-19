@@ -54,6 +54,7 @@ if [ $COMPILE_MODULE -eq 1 ] ; then
 	./configure
 	make
 	make install
+	a2enmod osa
 fi
 
 
@@ -65,7 +66,7 @@ echo "Done!"
 if [ !  -f  /etc/apache2/mods-enabled/osa.load ] ; then
 	echo ""
 	echo " **** IMPORTANT NOTE *********"
-	echo "mod_osa apache not install, fitrst install it, then"
+	echo "mod_osa apache is not installed, first install it, then"
 fi
 
 echo "You can now go to $INSTALL_DIR/RunTimeAppliance/shell, edit envvars.sh file, check vars (Basic configuration section at minimum) and run configure-osa.sh"
