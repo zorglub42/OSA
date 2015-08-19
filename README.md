@@ -28,7 +28,7 @@ Then run install.sh with "-m /path/to/your/local/installation" as argument
 
 Note: 
 - Your local installation folder will be created by install.sh if it does not exists
-- Application is pre-configured to be installed in  /usr/local/nursery/ApplianceManager
+
 
 		Ex:
 			./install.sh -m /usr/local/ApplianceManager
