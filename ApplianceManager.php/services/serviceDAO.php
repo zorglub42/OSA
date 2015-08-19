@@ -33,8 +33,6 @@ require_once '../include/Constants.php';
 require_once '../include/PDOFunc.php';
 require_once '../include/Func.inc.php';
 require_once '../include/Settings.ini.php';
-require_once '../include/BDMySQL.inc';
-require_once '../include/BDControls.inc';
 
 
 function getService($serviceName = NULL, $request_data=NULL){
