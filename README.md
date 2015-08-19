@@ -21,6 +21,8 @@ Installation process described here assume that MySQL server will be running loc
 First of all, install required packages and clone OSA repository
   - apt-get install mysql-server apache2 php5 php5-mysql php5-curl openssl curl zip autoconf libmysqlclient-dev apache2-prefork-dev
   - git clone https://github.com/zorglub42/OSA
+  - cd OSA
+  - chmod u+x configure-osa.sh
 
 Then run install.sh with "-m /path/to/your/local/installation" as argument 
 
