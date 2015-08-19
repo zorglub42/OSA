@@ -22,7 +22,7 @@ First of all, install required packages and clone OSA repository
   - apt-get install mysql-server apache2 php5 php5-mysql php5-curl openssl curl zip autoconf libmysqlclient-dev apache2-prefork-dev
   - git clone https://github.com/zorglub42/OSA
 
-Then run install.sh with "-m /path/to/your/local/installation' as argument 
+Then run install.sh with "-m /path/to/your/local/installation" as argument 
 
 Note: 
 - Your local installation folder will be created by install.sh if it does not exists
