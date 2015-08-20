@@ -90,19 +90,19 @@ function getUser($userName = NULL, $request_data = NULL){
 			array_push($prmBind, "%" . $request_data["userNameFilter"] . "%");
 		}
 		if (isset($request_data["firstNameFilter"]) && $request_data["firstNameFilter"]!=""){
-			$strSQLComp = addSQLFilter("firstName like '%?%'", $strSQLComp);
+			$strSQLComp = addSQLFilter("firstName like ?", $strSQLComp);
 			array_push($prmBind, "%" . $request_data["firstNameFilter"] . "%");
 		}
 		if (isset($request_data["lastNameFilter"]) && $request_data["lastNameFilter"]!=""){
-			$strSQLComp = addSQLFilter("lastName like '%?%'", $strSQLComp);
+			$strSQLComp = addSQLFilter("lastName like ?", $strSQLComp);
 			array_push($prmBind, "%" . $request_data["lastNameFilter"] . "%");
 		}
 		if (isset($request_data["emailAddressFilter"]) && $request_data["emailAddressFilter"]!=""){
-			$strSQLComp = addSQLFilter("emailAddress like '%?%'", $strSQLComp);
+			$strSQLComp = addSQLFilter("emailAddress like ?", $strSQLComp);
 			array_push($prmBind, "%" . $request_data["emailAddressFilter"] . "%");
 		}
 		if (isset($request_data["entityFilter"]) && $request_data["entityFilter"]!=""){
-			$strSQLComp = addSQLFilter("entity like '%?%'", $strSQLComp);
+			$strSQLComp = addSQLFilter("entity like ?", $strSQLComp);
 			array_push($prmBind, "%" . $request_data["entityFilter"] . "%");
 		}
 		$strSQL="SELECT * FROM users u" . $strSQLComp	;
