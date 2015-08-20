@@ -73,11 +73,11 @@ function getService($serviceName = NULL, $request_data=NULL){
 			}
 			if (isset($request_data["groupNameFilter"]) && $request_data["groupNameFilter"]!=""){
 				$strSQLComp = addSQLFilter("groupName like ?", $strSQLComp);
-				array_push($bindPrms, "%" . c($request_data["groupNameFilter"]) . "%");
+				array_push($bindPrms, "%" . cut($request_data["groupNameFilter"], GROUPNAME_LENGTH) . "%");
 			}
 			if (isset($request_data["serviceNameFilter"]) && $request_data["serviceNameFilter"]){
 				$strSQLComp = addSQLFilter("serviceName like ?", $strSQLComp);
-				array_push($bindPrms, "%" . cut($request_data["serviceNameFilter"]) . "%");
+				array_push($bindPrms, "%" . cut($request_data["serviceNameFilter"], SERVICENAME_LENGTH) . "%");
 			}
 			if (isset($request_data["isIdentityForwardingEnabledFilter"]) && $request_data["isIdentityForwardingEnabledFilter"]!=""){
 				$strSQLComp = addSQLFilter("isIdentityForwardingEnabled =?" , $strSQLComp);
@@ -105,22 +105,21 @@ function getService($serviceName = NULL, $request_data=NULL){
 			}
 			if (isset($request_data["frontEndEndPointFilter"]) && $request_data["frontEndEndPointFilter"]!=""){
 				$strSQLComp = addSQLFilter("frontEndEndPoint like ?", $strSQLComp);
-				array_push($bindPrms, "%" . cut($request_data["frontEndEndPointFilter"]) . "%");
+				array_push($bindPrms, "%" . cut($request_data["frontEndEndPointFilter"], FRONTENDENDPOINT_LENGTH) . "%");
 			}
 			if (isset($request_data["backEndEndPointFilter"]) && $request_data["backEndEndPointFilter"]!=""){
 				$strSQLComp = addSQLFilter("backEndEndPoint like ?", $strSQLComp);
-				array_push($bindPrms, "%" . cut($request_data["backEndEndPointFilter"]) . "%");
+				array_push($bindPrms, "%" . cut($request_data["backEndEndPointFilter"], BACKENDENDPOINT_LENGTH) . "%");
 			}
 			if (isset($request_data["additionalConfigurationFilter"]) && $request_data["additionalConfigurationFilter"]!=""){
 				$strSQLComp = addSQLFilter("additionalConfiguration like ?", $strSQLComp);
-				array_push($bindPrms, "%" . cut($request_data["additionalConfigurationFilter"]) . "%");
+				array_push($bindPrms, "%" . $request_data["additionalConfigurationFilter"] . "%");
 			}
 			
 			$strSQL="SELECT * FROM services s" . $strSQLComp;
 			if (isset($request_data["order"]) && $request_data["order"] != ""){
 				$strSQL=$strSQL . " ORDER BY " . EscapeOrder($request_data["order"]);
 			}
-			
 			$stmt=$db->prepare($strSQL);
 			$stmt->execute($bindPrms);
 			$rc =  Array();
@@ -344,7 +343,7 @@ function createService($serviceName = NULL, $request_data=NULL){
 		$error->setFunctionalLabel($error->getFunctionalLabel() . $request_data["backEndEndPoint"] . " is not a valid URL for backend service\n");
 	}
 	if (isset($request_data["loginFormUri"]) && $request_data["loginFormUri"]!="" ){
-		$mySQLLoginFormUri=cut($request_data["loginFormUri"]) ;
+		$mySQLLoginFormUri=$request_data["loginFormUri"] ;
 	}
 
 	if (isset($request_data["groupName"])){
