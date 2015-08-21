@@ -764,45 +764,45 @@ function updateService($serviceName = NULL, $request_data=NULL){
 		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
 	}else{
 		$strSQL = "";
-		$strSQL = $strSQL . "UPDATE services SET";
-		$strSQL = $strSQL . "	 reqSec=?" ;
-		$strSQL = $strSQL . "	 reqDay=?" ;
-		$strSQL = $strSQL . "	 reqMonth=" ;
-		$strSQL = $strSQL . "	 frontEndEndPoint=?" ;
-		$strSQL = $strSQL . "	 isGlobalQuotasEnabled=?" ;
-		$strSQL = $strSQL . "	 isUserQuotasEnabled=?" ;
-		$strSQL = $strSQL . "	 isIdentityForwardingEnabled=?" ;
-		$strSQL = $strSQL . "	 isPublished=?" ;
-		$strSQL = $strSQL . "	 groupName=?" ;
-		$strSQL = $strSQL . "	 backEndEndPoint=?" ;
-		$strSQL = $strSQL . "	 backEndUsername=?" ;
-		$strSQL = $strSQL . "	 backEndPassword=?" ;
-		$strSQL = $strSQL . "	 isHitLoggingEnabled=?" ;
-		$strSQL = $strSQL . "	 isAnonymousAllowed=?" ;
-		$strSQL = $strSQL . "	 isUserAuthenticationEnabled=?" ;
-		$strSQL = $strSQL . "	 onAllNodes=?" ;
-		$strSQL = $strSQL . "	 additionalConfiguration=?" ;
+		$strSQL = $strSQL . "UPDATE services SET ";
+		$strSQL = $strSQL . "	 reqSec=?," ;
+		$strSQL = $strSQL . "	 reqDay=?," ;
+		$strSQL = $strSQL . "	 reqMonth=?," ;
+		$strSQL = $strSQL . "	 frontEndEndPoint=?," ;
+		$strSQL = $strSQL . "	 isGlobalQuotasEnabled=?," ;
+		$strSQL = $strSQL . "	 isUserQuotasEnabled=?," ;
+		$strSQL = $strSQL . "	 isIdentityForwardingEnabled=?," ;
+		$strSQL = $strSQL . "	 isPublished=?," ;
+		$strSQL = $strSQL . "	 groupName=?," ;
+		$strSQL = $strSQL . "	 backEndEndPoint=?," ;
+		$strSQL = $strSQL . "	 backEndUsername=?," ;
+		$strSQL = $strSQL . "	 backEndPassword=?," ;
+		$strSQL = $strSQL . "	 isHitLoggingEnabled=?," ;
+		$strSQL = $strSQL . "	 isAnonymousAllowed=?," ;
+		$strSQL = $strSQL . "	 isUserAuthenticationEnabled=?," ;
+		$strSQL = $strSQL . "	 onAllNodes=?," ;
+		$strSQL = $strSQL . "	 additionalConfiguration=?," ;
 		$strSQL = $strSQL . "	 loginFormUri=?" ;
 		$strSQL = $strSQL . " WHERE serviceName=?";
 
 		$bindPrms=array($service["reqSec"],
 						$service["reqDay"],
 						$service["reqMonth"],
-						cut($service["frontEndEndPoint"]),
+						$service["frontEndEndPoint"],
 						$service["isGlobalQuotasEnabled"],
 						$service["isUserQuotasEnabled"],
 						$service["isIdentityForwardingEnabled"],
 						$service["isPublished"],
 						$service["groupName"],
-						cut($service["backEndEndPoint"]),
-						cut($service["backEndUsername"]),
-						cut(encrypt($service["backEndPassword"])),
+						$service["backEndEndPoint"],
+						$service["backEndUsername"],
+						encrypt($service["backEndPassword"]),
 						$service["isHitLoggingEnabled"],
 						$service["isAnonymousAllowed"],
 						$service["isUserAuthenticationEnabled"],
 						$service["onAllNodes"],
-						cut($service["additionalConfiguration"]),
-						cut($service["loginFormUri"]),
+						$service["additionalConfiguration"],
+						$service["loginFormUri"],
 						$mySQLServiceName);
 
 
