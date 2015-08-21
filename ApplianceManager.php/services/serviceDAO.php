@@ -485,7 +485,7 @@ function deleteService($serviceName = NULL){
 		$db=openDB($BDName, $BDUser, $BDPwd);
 		
 		$stmt=$db->prepare("SELECT * FROM services WHERE serviceName=?");
-		$stmt->execute(array(cut($serviceName, SERVICENAME_LENGTH));
+		$stmt->execute(array(cut($serviceName, SERVICENAME_LENGTH)));
 		
 		if (!$row=$stmt->fetch(FETCH_ASSOC)){
 			$error->setHttpStatus(404);
@@ -503,7 +503,7 @@ function deleteService($serviceName = NULL){
 			$service = new Service($row);
 			try{
 				$stmt=$db->prepare("DELETE FROM services WHERE  serviceName=?");
-				$stmt->execute(array(cut($serviceName, SERVICENAME_LENGTH));
+				$stmt->execute(array(cut($serviceName, SERVICENAME_LENGTH)));
 			}catch (Exception $e){
 				$error->setHttpStatus(500);
 				$error->setFunctionalCode(3);
@@ -569,7 +569,7 @@ function updateService($serviceName = NULL, $request_data=NULL){
 		$error->setFunctionalLabel($error->getFunctionalLabel() . "serviceName is required\n");
 	}else{
 		$serviceName=str_replace(" ", "_", $serviceName);
-		$mySQLServiceName="'" . DoubleQuote($serviceName, SERVICENAME_LENGTH) . "'";
+		$mySQLServiceName=cut($serviceName, SERVICENAME_LENGTH);
 	}
 	$service=getService($serviceName);
 
@@ -765,25 +765,25 @@ function updateService($serviceName = NULL, $request_data=NULL){
 	}else{
 		$strSQL = "";
 		$strSQL = $strSQL . "UPDATE services SET";
-		$strSQL = $strSQL . "	 reqSec=?" . $service["reqSec"] . ",";
-		$strSQL = $strSQL . "	 reqDay=?" . $service["reqDay"] . ",";
-		$strSQL = $strSQL . "	 reqMonth=" . $service["reqMonth"] . ",";
-		$strSQL = $strSQL . "	 frontEndEndPoint=?" . DoubleQuote($service["frontEndEndPoint"]) . "',";
-		$strSQL = $strSQL . "	 isGlobalQuotasEnabled=?" . $service["isGlobalQuotasEnabled"] . ",";
-		$strSQL = $strSQL . "	 isUserQuotasEnabled=?" . $service["isUserQuotasEnabled"] . ",";
-		$strSQL = $strSQL . "	 isIdentityForwardingEnabled=?" . $service["isIdentityForwardingEnabled"] . ",";
-		$strSQL = $strSQL . "	 isPublished=?" . $service["isPublished"] . ",";
-		$strSQL = $strSQL . "	 groupName=?" . SQLString($service["groupName"]) . ",";
-		$strSQL = $strSQL . "	 backEndEndPoint=?" . DoubleQuote($service["backEndEndPoint"]) . "',";
-		$strSQL = $strSQL . "	 backEndUsername=?" . DoubleQuote($service["backEndUsername"]) . "',";
-		$strSQL = $strSQL . "	 backEndPassword=?" . DoubleQuote(encrypt($service["backEndPassword"])) . "',";
-		$strSQL = $strSQL . "	 isHitLoggingEnabled=?" . $service["isHitLoggingEnabled"] . ",";
-		$strSQL = $strSQL . "	 isAnonymousAllowed=?" . $service["isAnonymousAllowed"] . ",";
-		$strSQL = $strSQL . "	 isUserAuthenticationEnabled=?" . $service["isUserAuthenticationEnabled"] . ",";
-		$strSQL = $strSQL . "	 onAllNodes=?" . $service["onAllNodes"] . ",";
-		$strSQL = $strSQL . "	 additionalConfiguration=?" . DoubleQuote($service["additionalConfiguration"]) . "', ";
-		$strSQL = $strSQL . "	 loginFormUri=?" . DoubleQuote($service["loginFormUri"]) . "'";
-		$strSQL = $strSQL . " WHERE serviceName=?";$mySQLServiceName
+		$strSQL = $strSQL . "	 reqSec=?" ;
+		$strSQL = $strSQL . "	 reqDay=?" ;
+		$strSQL = $strSQL . "	 reqMonth=" ;
+		$strSQL = $strSQL . "	 frontEndEndPoint=?" ;
+		$strSQL = $strSQL . "	 isGlobalQuotasEnabled=?" ;
+		$strSQL = $strSQL . "	 isUserQuotasEnabled=?" ;
+		$strSQL = $strSQL . "	 isIdentityForwardingEnabled=?" ;
+		$strSQL = $strSQL . "	 isPublished=?" ;
+		$strSQL = $strSQL . "	 groupName=?" ;
+		$strSQL = $strSQL . "	 backEndEndPoint=?" ;
+		$strSQL = $strSQL . "	 backEndUsername=?" ;
+		$strSQL = $strSQL . "	 backEndPassword=?" ;
+		$strSQL = $strSQL . "	 isHitLoggingEnabled=?" ;
+		$strSQL = $strSQL . "	 isAnonymousAllowed=?" ;
+		$strSQL = $strSQL . "	 isUserAuthenticationEnabled=?" ;
+		$strSQL = $strSQL . "	 onAllNodes=?" ;
+		$strSQL = $strSQL . "	 additionalConfiguration=?" ;
+		$strSQL = $strSQL . "	 loginFormUri=?" ;
+		$strSQL = $strSQL . " WHERE serviceName=?";
 
 		$bindPrms=array($service["reqSec"],
 						$service["reqDay"],
@@ -989,29 +989,14 @@ function setNodesListForService($serviceName, $request_data=NULL){
 	}
 
 
-	$cnx = new Connexion();
-	if (!$cnx->Ouvrir($BDName, $BDUser, $BDPwd)){
-			$error->setHttpStatus(500);
-			$error->setFunctionalCode(3);
-			$error->setFunctionalLabel($cnx->GetErreur()->GetTexte());
-			throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
-		
-	}
-	$rqt = new RequeteResultat();
-	if (!$rqt->Executer("DELETE FROM servicesnodes WHERE serviceName='" . DoubleQuote($serviceName) . "'", $cnx)){
-		$error->setHttpStatus(500);
-		$error->setFunctionalCode(3);
-		$error->setFunctionalLabel($rqt->Erreur->GetTexte());
-		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());				
-	}
+	$db=openDB($BDName, $BDUser, $BDPwd);
+
+	$stmt=$db->prepare("DELETE FROM servicesnodes WHERE serviceName=?");
+	$stmt->execute(array($serviceName));
 	for ($i=0;$i<count($request_data) ;$i++){
-		$strSQL = "INSERT INTO servicesnodes (serviceName, nodeName) VALUES ('" . DoubleQuote($serviceName) . "','" . DOubleQuote($request_data[$i]) . "')";
-		if (!$rqt->Executer($strSQL, $cnx)){
-			$error->setHttpStatus(500);
-			$error->setFunctionalCode(3);
-			$error->setFunctionalLabel($rqt->Erreur->GetTexte());
-			throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());				
-		}
+		$bindPrms=array($serviceName, $request_data[$i]);
+		$strSQL = "INSERT INTO servicesnodes (serviceName, nodeName) VALUES (?, ?)";
+		$stmt->execute($bindPrms);
 	}
 	if (isset($request_data["noApply"])){
 		return nodesListForService($serviceName);
