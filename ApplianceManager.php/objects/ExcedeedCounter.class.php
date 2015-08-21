@@ -47,11 +47,11 @@ class ExcedeedCounter extends Counter{
 			parent::__construct($rqt);
 	
 			if ($this->getTimeUnit() == 'S'){
-				$this->setMaxValue($rqt->Champ("reqSec"));
+				$this->setMaxValue($rqt["reqSec"]);
 			}elseif ($this->getTimeUnit() == 'D'){
-				$this->setMaxValue($rqt->Champ("reqDay"));
+				$this->setMaxValue($rqt["reqDay"]);
 			}elseif ($this->getTimeUnit() == 'M'){
-				$this->setMaxValue($rqt->Champ("reqMonth"));
+				$this->setMaxValue($rqt["reqMonth"]);
 			}
 		}
 	}

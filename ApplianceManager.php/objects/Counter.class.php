@@ -87,15 +87,9 @@ class Counter extends ApplianceObject{
     public function __construct($rqt=NULL)
     {
 		if ($rqt != NULL){
-			if (is_array($rqt)){
-				$this->setValue($rqt["value"]);		
-				$this->setUri( "counters/" . urlencode($rqt["counterName"]));
-				$counterName=($rqt["counterName"]);
-			}else{
-				$this->setValue($rqt->Champ("value"));		
-				$this->setUri( "counters/" . urlencode($rqt->Champ("counterName")));
-				$counterName=($rqt->Champ("counterName"));
-			}
+			$this->setValue($rqt["value"]);		
+			$this->setUri( "counters/" . urlencode($rqt["counterName"]));
+			$counterName=($rqt["counterName"]);
 
 			$cnPart=explode("$$$", $counterName);
 			

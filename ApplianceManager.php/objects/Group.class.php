@@ -31,15 +31,9 @@ class Group extends ApplianceObject{
     public function __construct($rqt=NULL)
     {
 		if ($rqt != NULL ){
-			if (is_array($rqt)){
-				$this->setGroupName($rqt["groupName"]);		
-				$this->setDescription($rqt["description"]);		
-				$this->setUri("groups/" . urlencode($rqt["groupName"]));
-			}else{
-				$this->setGroupName($rqt->Champ("groupName"));		
-				$this->setDescription($rqt->Champ("description"));		
-				$this->setUri("groups/" . urlencode($rqt->Champ("groupName")));
-			}
+			$this->setGroupName($rqt["groupName"]);		
+			$this->setDescription($rqt["description"]);		
+			$this->setUri("groups/" . urlencode($rqt["groupName"]));
 		}
 	}
 

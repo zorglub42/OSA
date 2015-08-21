@@ -93,26 +93,14 @@ class Quota extends ApplianceObject{
     public function __construct($rqt=NULL)
     {
 		if ($rqt != NULL){
-			if (!is_array($rqt)){
-				$this->setUri("services/" . urlencode($rqt->Champ("serviceName")) . "/quotas/" . urlencode($rqt->Champ("userName")));
-				$this->setUserName($rqt->Champ("userName"));
-				$this->setUserUri("users/" . urlencode($rqt->Champ("userName")));
-				$this->setServiceName($rqt->Champ("serviceName"));		
-				$this->setServiceUri("services/" . urlencode($rqt->Champ("serviceName")));		
-				$this->setReqSec($rqt->Champ("reqSec"));
-				$this->setReqDay($rqt->Champ("reqDay"));
-				$this->setReqMonth($rqt->Champ("reqMonth"));
-			}else{
-				$this->setUri("services/" . urlencode($rqt["serviceName"]) . "/quotas/" . urlencode($rqt["userName"]));
-				$this->setUserName($rqt["userName"]);
-				$this->setUserUri("users/" . urlencode($rqt["userName"]));
-				$this->setServiceName($rqt["serviceName"]);		
-				$this->setServiceUri("services/" . urlencode($rqt["serviceName"]));		
-				$this->setReqSec($rqt["reqSec"]);
-				$this->setReqDay($rqt["reqDay"]);
-				$this->setReqMonth($rqt["reqMonth"]);
-			}
-
+			$this->setUri("services/" . urlencode($rqt["serviceName"]) . "/quotas/" . urlencode($rqt["userName"]));
+			$this->setUserName($rqt["userName"]);
+			$this->setUserUri("users/" . urlencode($rqt["userName"]));
+			$this->setServiceName($rqt["serviceName"]);		
+			$this->setServiceUri("services/" . urlencode($rqt["serviceName"]));		
+			$this->setReqSec($rqt["reqSec"]);
+			$this->setReqDay($rqt["reqDay"]);
+			$this->setReqMonth($rqt["reqMonth"]);
 		}
 	}
 	

@@ -188,65 +188,34 @@ class Service extends ApplianceObject{
     public function __construct($rqt=NULL)
     {
 		if ($rqt != NULL){
-			if (is_array($rqt)){
-				$this->setServiceName($rqt["serviceName"]);		
-				$this->setUri("services/" . urlencode($rqt["serviceName"]));
+			$this->setServiceName($rqt["serviceName"]);		
+			$this->setUri("services/" . urlencode($rqt["serviceName"]));
 
-				$this->setIsIdentityForwardingEnabled($rqt["isIdentityForwardingEnabled"]);
-				
+			$this->setIsIdentityForwardingEnabled($rqt["isIdentityForwardingEnabled"]);
+			
 
-				$this->setBackEndUsername($rqt["backEndUsername"]);
-				$this->setBackEndPassword(decrypt($rqt["backEndPassword"]));
-				$this->setBackEndEndPoint($rqt["backEndEndPoint"]);
-				$this->setFrontEndEndPoint($rqt["frontEndEndPoint"]);
+			$this->setBackEndUsername($rqt["backEndUsername"]);
+			$this->setBackEndPassword(decrypt($rqt["backEndPassword"]));
+			$this->setBackEndEndPoint($rqt["backEndEndPoint"]);
+			$this->setFrontEndEndPoint($rqt["frontEndEndPoint"]);
 
-				$this->setReqSec($rqt["reqSec"]);
-				$this->setReqDay($rqt["reqDay"]);
-				$this->setReqMonth($rqt["reqMonth"]);
-				
-				$this->setIsGlobalQuotasEnabled($rqt["isGlobalQuotasEnabled"]);
-				$this->setIsUserQuotasEnabled($rqt["isUserQuotasEnabled"]);
-				
-				$this->setGroupName($rqt["groupName"]);
-				$this->setIsPublished($rqt["isPublished"]);
-				
-				$this->setIsHitLoggingEnabled($rqt["isHitLoggingEnabled"]);
-				$this->setIsUserAuthenticationEnabled($rqt["isUserAuthenticationEnabled"]);
-				$this->setOnAllNodes($rqt["onAllNodes"]);
-				$this->setIsAnonymousAllowed($rqt["isAnonymousAllowed"]);
-				$this->setLoginFormUri($rqt["loginFormUri"]);
-				
-				$this->setAdditionalConfiguration($rqt["additionalConfiguration"]);
-			}else{
-				$this->setServiceName($rqt->Champ("serviceName"));		
-				$this->setUri("services/" . urlencode($rqt->Champ("serviceName")));
-
-				$this->setIsIdentityForwardingEnabled($rqt->Champ("isIdentityForwardingEnabled"));
-				
-
-				$this->setBackEndUsername($rqt->Champ("backEndUsername"));
-				$this->setBackEndPassword(decrypt($rqt->Champ("backEndPassword")));
-				$this->setBackEndEndPoint($rqt->Champ("backEndEndPoint"));
-				$this->setFrontEndEndPoint($rqt->Champ("frontEndEndPoint"));
-
-				$this->setReqSec($rqt->Champ("reqSec"));
-				$this->setReqDay($rqt->Champ("reqDay"));
-				$this->setReqMonth($rqt->Champ("reqMonth"));
-				
-				$this->setIsGlobalQuotasEnabled($rqt->Champ("isGlobalQuotasEnabled"));
-				$this->setIsUserQuotasEnabled($rqt->Champ("isUserQuotasEnabled"));
-				
-				$this->setGroupName($rqt->Champ("groupName"));
-				$this->setIsPublished($rqt->Champ("isPublished"));
-				
-				$this->setIsHitLoggingEnabled($rqt->Champ("isHitLoggingEnabled"));
-				$this->setIsUserAuthenticationEnabled($rqt->Champ("isUserAuthenticationEnabled"));
-				$this->setOnAllNodes($rqt->Champ("onAllNodes"));
-				$this->setIsAnonymousAllowed($rqt->Champ("isAnonymousAllowed"));
-				$this->setLoginFormUri($rqt->Champ("loginFormUri"));
-				
-				$this->setAdditionalConfiguration($rqt->Champ("additionalConfiguration"));
-			}
+			$this->setReqSec($rqt["reqSec"]);
+			$this->setReqDay($rqt["reqDay"]);
+			$this->setReqMonth($rqt["reqMonth"]);
+			
+			$this->setIsGlobalQuotasEnabled($rqt["isGlobalQuotasEnabled"]);
+			$this->setIsUserQuotasEnabled($rqt["isUserQuotasEnabled"]);
+			
+			$this->setGroupName($rqt["groupName"]);
+			$this->setIsPublished($rqt["isPublished"]);
+			
+			$this->setIsHitLoggingEnabled($rqt["isHitLoggingEnabled"]);
+			$this->setIsUserAuthenticationEnabled($rqt["isUserAuthenticationEnabled"]);
+			$this->setOnAllNodes($rqt["onAllNodes"]);
+			$this->setIsAnonymousAllowed($rqt["isAnonymousAllowed"]);
+			$this->setLoginFormUri($rqt["loginFormUri"]);
+			
+			$this->setAdditionalConfiguration($rqt["additionalConfiguration"]);
 			if ($this->getIsUserAuthenticationEnabled()==0){
 				$this->setGroupName("");
 				$this->setIsUserQuotasEnabled(0);

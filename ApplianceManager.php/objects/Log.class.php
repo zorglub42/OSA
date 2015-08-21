@@ -97,39 +97,21 @@ class Log extends ApplianceObject{
     public function __construct($rqt=NULL)
     {
 		if ($rqt != NULL){
-			if (is_array($rqt)){
-				$this->setMessage($rqt["message"]);
-				$this->setStatus($rqt["status"]);
-				$this->setId($rqt["id"]);
-				$this->setServiceName($rqt["serviceName"]);
-				$this->setUserName($rqt["userName"]);
-				
-				if ($rqt["timestamp"] != ""){
-					$dt=split(" ",$rqt["timestamp"]);
-					$d=split("-",$dt[0]);
-					$t=split(":",$dt[1]);
-					$date = str_replace(" ","T", $rqt["timestamp"]) . ".0" . @date('P', @mktime($t[0],$t[1],$t[2],$d[1],$d[2],$d[0])) ;
-					$this->setTimeStamp($date);
-				}
-				$this->setFrontEndUri($rqt["frontEndEndPoint"]);
-				$this->setUri("logs/" . $this->getId());
-			}else{
-				$this->setMessage($rqt->Champ("message"));
-				$this->setStatus($rqt->Champ("status"));
-				$this->setId($rqt->Champ("id"));
-				$this->setServiceName($rqt->Champ("serviceName"));
-				$this->setUserName($rqt->Champ("userName"));
-				
-				if ($rqt->Champ("timestamp") != ""){
-					$dt=split(" ",$rqt->Champ("timestamp"));
-					$d=split("-",$dt[0]);
-					$t=split(":",$dt[1]);
-					$date = str_replace(" ","T", $rqt->Champ("timestamp")) . ".0" . @date('P', @mktime($t[0],$t[1],$t[2],$d[1],$d[2],$d[0])) ;
-					$this->setTimeStamp($date);
-				}
-				$this->setFrontEndUri($rqt->Champ("frontEndEndPoint"));
-				$this->setUri("logs/" . $this->getId());
+			$this->setMessage($rqt["message"]);
+			$this->setStatus($rqt["status"]);
+			$this->setId($rqt["id"]);
+			$this->setServiceName($rqt["serviceName"]);
+			$this->setUserName($rqt["userName"]);
+			
+			if ($rqt["timestamp"] != ""){
+				$dt=split(" ",$rqt["timestamp"]);
+				$d=split("-",$dt[0]);
+				$t=split(":",$dt[1]);
+				$date = str_replace(" ","T", $rqt["timestamp"]) . ".0" . @date('P', @mktime($t[0],$t[1],$t[2],$d[1],$d[2],$d[0])) ;
+				$this->setTimeStamp($date);
 			}
+			$this->setFrontEndUri($rqt["frontEndEndPoint"]);
+			$this->setUri("logs/" . $this->getId());
 		}
 	}
 	

@@ -140,37 +140,20 @@ class Node extends ApplianceObject{
     public function __construct($rqt=NULL)
     {
 		if ($rqt != NULL){
-			if (is_array($rqt)){
-				$this->setNodeName($rqt["nodeName"]);		
-				$this->setServerFQDN($rqt["serverFQDN"]);		
-				$this->setIsHTTPS($rqt["isHTTPS"]);
-				$this->setNodeDescription($rqt["nodeDescription"]);
-				$this->setPort($rqt["port"]);
-				$this->setLocalIP($rqt["localIP"]);
-				$this->setIsCookieAuthEnabled($rqt["isCookieAuthEnabled"]);
-				$this->setIsBasicAuthEnabled($rqt["isBasicAuthEnabled"]);
-				$this->setPrivateKey($rqt["privateKey"]);
-				$this->setCert($rqt["cert"]);
-				$this->setCa($rqt["ca"]);
-				$this->setChain($rqt["caChain"]);
-				$this->setUri( "nodes/" . urlencode($rqt["nodeName"]));
-				$this->setAdditionalConfiguration($rqt["additionalConfiguration"]);
-			}else{
-				$this->setNodeName($rqt->Champ("nodeName"));		
-				$this->setServerFQDN($rqt->Champ("serverFQDN"));		
-				$this->setIsHTTPS($rqt->Champ("isHTTPS"));
-				$this->setNodeDescription($rqt->Champ("nodeDescription"));
-				$this->setPort($rqt->Champ("port"));
-				$this->setLocalIP($rqt->Champ("localIP"));
-				$this->setIsCookieAuthEnabled($rqt->Champ("isCookieAuthEnabled"));
-				$this->setIsBasicAuthEnabled($rqt->Champ("isBasicAuthEnabled"));
-				$this->setPrivateKey($rqt->Champ("privateKey"));
-				$this->setCert($rqt->Champ("cert"));
-				$this->setCa($rqt->Champ("ca"));
-				$this->setChain($rqt->Champ("caChain"));
-				$this->setUri( "nodes/" . urlencode($rqt->Champ("nodeName")));
-				$this->setAdditionalConfiguration($rqt->Champ("additionalConfiguration"));
-			}
+			$this->setNodeName($rqt["nodeName"]);		
+			$this->setServerFQDN($rqt["serverFQDN"]);		
+			$this->setIsHTTPS($rqt["isHTTPS"]);
+			$this->setNodeDescription($rqt["nodeDescription"]);
+			$this->setPort($rqt["port"]);
+			$this->setLocalIP($rqt["localIP"]);
+			$this->setIsCookieAuthEnabled($rqt["isCookieAuthEnabled"]);
+			$this->setIsBasicAuthEnabled($rqt["isBasicAuthEnabled"]);
+			$this->setPrivateKey($rqt["privateKey"]);
+			$this->setCert($rqt["cert"]);
+			$this->setCa($rqt["ca"]);
+			$this->setChain($rqt["caChain"]);
+			$this->setUri( "nodes/" . urlencode($rqt["nodeName"]));
+			$this->setAdditionalConfiguration($rqt["additionalConfiguration"]);
 		}
 	}
 	
