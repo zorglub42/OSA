@@ -957,6 +957,7 @@ function nodesListForService($serviceName, $request_data=NULL){
 		$strSQL= "SELECT n.*, exists(SELECT 'x' FROM servicesnodes sn WHERE sn.serviceName=? and sn.nodeName=n.nodeName) as onNode FROM nodes n";
 		array_push($bindPrms, $serviceName );
 	}
+
 	if (isset($request_data["order"])){
 		$strSQL =$strSQL .  " ORDER BY " . EscapeOrder($request_data["order"]);
 	}
@@ -993,9 +994,10 @@ function setNodesListForService($serviceName, $request_data=NULL){
 
 	$stmt=$db->prepare("DELETE FROM servicesnodes WHERE serviceName=?");
 	$stmt->execute(array($serviceName));
+	$strSQL = "INSERT INTO servicesnodes (serviceName, nodeName) VALUES (?, ?)";
+	$stmt=$db->prepare($strSQL);
 	for ($i=0;$i<count($request_data) ;$i++){
 		$bindPrms=array($serviceName, $request_data[$i]);
-		$strSQL = "INSERT INTO servicesnodes (serviceName, nodeName) VALUES (?, ?)";
 		$stmt->execute($bindPrms);
 	}
 	if (isset($request_data["noApply"])){
