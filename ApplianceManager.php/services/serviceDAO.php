@@ -480,67 +480,45 @@ function deleteService($serviceName = NULL){
 
 	$serviceName=normalizeName($serviceName);
 
-	$cnx = new Connexion();
-	if (!$cnx->Ouvrir($BDName, $BDUser, $BDPwd)){
-			$error->setHttpStatus(500);
-			$error->setFunctionalCode(3);
-			$error->setFunctionalLabel($cnx->GetErreur()->GetTexte());
-			throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());;
-		
-	}
 
-	$rqt = new RequeteResultat();
 	if ($serviceName != NULL && $serviceName != ""){
-		$strSQL = "SELECT * FROM services WHERE serviceName='" . DoubleQuote($serviceName, SERVICENAME_LENGTH) . "'";
-		if (!$rqt->Ouvrir($strSQL, $cnx)){
-			$error->setHttpStatus(500);
-			$error->setFunctionalCode(3);
-			$error->setFunctionalLabel($rqt->Erreur->GetTexte());
-			$cnx->Fermer();
-			throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());;			
-		}
+		$db=openDB($BDName, $BDUser, $BDPwd);
 		
-		if ($rqt->EOF()){
+		$stmt=$db->prepare("SELECT * FROM services WHERE serviceName=?");
+		$stmt->execute(array(cut($serviceName, SERVICENAME_LENGTH));
+		
+		if (!$row=$stmt->fetch(FETCH_ASSOC)){
 			$error->setHttpStatus(404);
 			$error->setHttpLabel("Unknown service");
 			$error->setFunctionalCode(4);
 			$error->setFunctionalLabel("Service ". $serviceName . " does not exists");
-			$rqt->Fermer();
-			$cnx->Fermer();
 			throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());;
 		}else{
 			if (startsWith($serviceName, ADMIN_SERVICE)){
 				$error->setHttpStatus(403);
 				$error->setFunctionalCode(3);
 				$error->setFunctionalLabel($serviceName . " service can't be suppressed");
-				$rqt->Fermer();
-				$cnx->Fermer();
 				throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());;
 			}
-			$service = new Service($rqt);
-			$strSQL="DELETE FROM services WHERE  serviceName='" . DoubleQuote($serviceName, GROUPNAME_LENGTH) . "'";
-			if (!$rqt->Executer($strSQL, $cnx)){
+			$service = new Service($row);
+			try{
+				$stmt=$db->prepare("DELETE FROM services WHERE  serviceName=?");
+				$stmt->execute(array(cut($serviceName, SERVICENAME_LENGTH));
+			}catch (Exception $e){
 				$error->setHttpStatus(500);
 				$error->setFunctionalCode(3);
-				$error->setFunctionalLabel($rqt->Erreur->GetTexte());
-				if (strpos($rqt->Erreur->GetTexte(),"a foreign key constraint fails")){
+				$error->setFunctionalLabel($e->getMessage());
+				if (strpos($e->getMessage(),"a foreign key constraint fails")){
+					$error->setHttpStatus(400);
 					$error->setFunctionalLabel("The service " . $serviceName . " is used by some users. Please remove subscribtions to it first");
 				}
-				$rqt->Fermer();
-				$cnx->Fermer();
 				throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
 				
 			}
-			$strSQL="DELETE FROM counters WHERE  counterName like 'R=" . DoubleQuote($serviceName, SERVICENAME_LENGTH) . "%'";
-			if (!$rqt->Executer($strSQL, $cnx)){
-				$error->setHttpStatus(500);
-				$error->setFunctionalCode(3);
-				$error->setFunctionalLabel($rqt->Erreur->GetTexte());
-				$rqt->Ferme();
-				$cnx->Fermer();
-				throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
-				
-			}
+			$strSQL="DELETE FROM counters WHERE  counterName like ?";
+			$stmt=$db->prepare($strSQL);
+			
+			$stmt->execute(array("R=" . cut($serviceName, SERVICENAME_LENGTH) . "%"));
 			if (applyApacheConfiguration()){
 				
 				$rc = $service->toArray();
@@ -548,22 +526,17 @@ function deleteService($serviceName = NULL){
 				$error->setHttpStatus(500);
 				$error->setFunctionalCode(1);
 				$error->setFunctionalLabel("Service successfully saved but unable to apply configuration on runtime appliance");
-				$rqt->Fermer();
-				$cnx->Fermer();
 				throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
 			}
 			
 		}
-		$rqt->Fermer();
 	}else{
 		$error->setHttpLabel("Bad request for method \"" . $_SERVER["REQUEST_METHOD"] . "\" for resource \"service\"");
 		$error->setHttpStatus(400);
 		$error->setFunctionalCode(1);
 		$error->setFunctionalLabel($error->getFunctionalLabel() . "serviceName is required\n");
-		$cnx->Fermer();
 		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
 	}
-	$cnx->Fermer();
 	return $rc;
 }
 
@@ -792,54 +765,68 @@ function updateService($serviceName = NULL, $request_data=NULL){
 	}else{
 		$strSQL = "";
 		$strSQL = $strSQL . "UPDATE services SET";
-		$strSQL = $strSQL . "	 reqSec=" . $service["reqSec"] . ",";
-		$strSQL = $strSQL . "	 reqDay=" . $service["reqDay"] . ",";
+		$strSQL = $strSQL . "	 reqSec=?" . $service["reqSec"] . ",";
+		$strSQL = $strSQL . "	 reqDay=?" . $service["reqDay"] . ",";
 		$strSQL = $strSQL . "	 reqMonth=" . $service["reqMonth"] . ",";
-		$strSQL = $strSQL . "	 frontEndEndPoint='" . DoubleQuote($service["frontEndEndPoint"]) . "',";
-		$strSQL = $strSQL . "	 isGlobalQuotasEnabled=" . $service["isGlobalQuotasEnabled"] . ",";
-		$strSQL = $strSQL . "	 isUserQuotasEnabled=" . $service["isUserQuotasEnabled"] . ",";
-		$strSQL = $strSQL . "	 isIdentityForwardingEnabled=" . $service["isIdentityForwardingEnabled"] . ",";
-		$strSQL = $strSQL . "	 isPublished=" . $service["isPublished"] . ",";
-		$strSQL = $strSQL . "	 groupName=" . SQLString($service["groupName"]) . ",";
-		$strSQL = $strSQL . "	 backEndEndPoint='" . DoubleQuote($service["backEndEndPoint"]) . "',";
-		$strSQL = $strSQL . "	 backEndUsername='" . DoubleQuote($service["backEndUsername"]) . "',";
-		$strSQL = $strSQL . "	 backEndPassword='" . DoubleQuote(encrypt($service["backEndPassword"])) . "',";
-		$strSQL = $strSQL . "	 isHitLoggingEnabled=" . $service["isHitLoggingEnabled"] . ",";
-		$strSQL = $strSQL . "	 isAnonymousAllowed=" . $service["isAnonymousAllowed"] . ",";
-		$strSQL = $strSQL . "	 isUserAuthenticationEnabled=" . $service["isUserAuthenticationEnabled"] . ",";
-		$strSQL = $strSQL . "	 onAllNodes=" . $service["onAllNodes"] . ",";
-		$strSQL = $strSQL . "	 additionalConfiguration='" . DoubleQuote($service["additionalConfiguration"]) . "', ";
-		$strSQL = $strSQL . "	 loginFormUri='" . DoubleQuote($service["loginFormUri"]) . "'";
-		$strSQL = $strSQL . " WHERE serviceName=$mySQLServiceName";
+		$strSQL = $strSQL . "	 frontEndEndPoint=?" . DoubleQuote($service["frontEndEndPoint"]) . "',";
+		$strSQL = $strSQL . "	 isGlobalQuotasEnabled=?" . $service["isGlobalQuotasEnabled"] . ",";
+		$strSQL = $strSQL . "	 isUserQuotasEnabled=?" . $service["isUserQuotasEnabled"] . ",";
+		$strSQL = $strSQL . "	 isIdentityForwardingEnabled=?" . $service["isIdentityForwardingEnabled"] . ",";
+		$strSQL = $strSQL . "	 isPublished=?" . $service["isPublished"] . ",";
+		$strSQL = $strSQL . "	 groupName=?" . SQLString($service["groupName"]) . ",";
+		$strSQL = $strSQL . "	 backEndEndPoint=?" . DoubleQuote($service["backEndEndPoint"]) . "',";
+		$strSQL = $strSQL . "	 backEndUsername=?" . DoubleQuote($service["backEndUsername"]) . "',";
+		$strSQL = $strSQL . "	 backEndPassword=?" . DoubleQuote(encrypt($service["backEndPassword"])) . "',";
+		$strSQL = $strSQL . "	 isHitLoggingEnabled=?" . $service["isHitLoggingEnabled"] . ",";
+		$strSQL = $strSQL . "	 isAnonymousAllowed=?" . $service["isAnonymousAllowed"] . ",";
+		$strSQL = $strSQL . "	 isUserAuthenticationEnabled=?" . $service["isUserAuthenticationEnabled"] . ",";
+		$strSQL = $strSQL . "	 onAllNodes=?" . $service["onAllNodes"] . ",";
+		$strSQL = $strSQL . "	 additionalConfiguration=?" . DoubleQuote($service["additionalConfiguration"]) . "', ";
+		$strSQL = $strSQL . "	 loginFormUri=?" . DoubleQuote($service["loginFormUri"]) . "'";
+		$strSQL = $strSQL . " WHERE serviceName=?";$mySQLServiceName
+
+		$bindPrms=array($service["reqSec"],
+						$service["reqDay"],
+						$service["reqMonth"],
+						cut($service["frontEndEndPoint"]),
+						$service["isGlobalQuotasEnabled"],
+						$service["isUserQuotasEnabled"],
+						$service["isIdentityForwardingEnabled"],
+						$service["isPublished"],
+						$service["groupName"],
+						cut($service["backEndEndPoint"]),
+						cut($service["backEndUsername"]),
+						cut(encrypt($service["backEndPassword"])),
+						$service["isHitLoggingEnabled"],
+						$service["isAnonymousAllowed"],
+						$service["isUserAuthenticationEnabled"],
+						$service["onAllNodes"],
+						cut($service["additionalConfiguration"]),
+						cut($service["loginFormUri"]),
+						$mySQLServiceName);
 
 
-		$cnx = new Connexion();
-		
-		if (!$cnx->Ouvrir($BDName, $BDUser, $BDPwd )){
-			$error->setHttpStatus(500);
-			$error->setFunctionalCode(3);
-			$error->setFunctionalLabel($cnx->GetErreur()->GetTexte());
-		}else{
-			$rqt = new RequeteResultat();
-			if (!$rqt->Executer($strSQL,$cnx)){
-				if (strpos($rqt->Erreur->GetTexte(),"Duplicate entry")){
-					$error->setHttpStatus(409);
-					$error->setFunctionalCode(5);
-					$error->setFunctionalLabel("Service " . $serviceName . " already exists");
-					
-				}else{
-					$error->setHttpStatus(500);
-					$error->setFunctionalCode(3);
-					$error->setFunctionalLabel($rqt->Erreur->GetTexte());
-					
-					
-				}
-				if (strpos($rqt->Erreur->GetTexte(),"a foreign key constraint fails")){
-					$error->setHttpStatus(404);
-					$error->setFunctionalLabel("The group " . $request_data["groupName"] . " does not exists");
-				}
+		try{
+			$db=openDB($BDName, $BDUser, $BDPwd);
+			$stmt=$db->prepare($strSQL);
+			$stmt->execute($bindPrms);
+		}catch (Exception $e){
+			if (strpos($e->getMessage(),"Duplicate entry")){
+				$error->setHttpStatus(409);
+				$error->setFunctionalCode(5);
+				$error->setFunctionalLabel("Service " . $serviceName . " already exists");
+				
+			}else if (strpos($e->getMessage(),"a foreign key constraint fails")){
+				$error->setHttpStatus(404);
+				$error->setFunctionalLabel("The group " . $request_data["groupName"] . " does not exists");
+			}else{
+				$error->setHttpStatus(500);
+				$error->setFunctionalCode(3);
+				$error->setFunctionalLabel($e->getMessage());
+				
+				
 			}
-			$cnx->Fermer();
+			
 		}
 		
 		if ($error->getHttpStatus() != 200){
@@ -877,65 +864,42 @@ function getUserQuotas($serviceName = NULL, $userName=NULL, $request_data=NULL){
 		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
 	}
 
-	$cnx = new Connexion();
-	if (!$cnx->Ouvrir($BDName, $BDUser, $BDPwd)){
-			$error->setHttpStatus(500);
-			$error->setFunctionalCode(3);
-			$error->setFunctionalLabel($cnx->GetErreur()->GetTexte());
-			throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
-		
-	}
+	$db=openDB($BDName, $BDUser, $BDPwd);
+	$strSQL="SELECT * FROM usersquotas WHERE serviceName=?";
 
+	$bindPrms=array(cut($serviceName, SERVICENAME_LENGTH ));
 
-
-		$rqt = new RequeteResultat();
-		$strSQL="SELECT * FROM usersquotas WHERE serviceName='" . DoubleQuote($serviceName, SERVICENAME_LENGTH ) . "'";
 		if ($userName != NULL && $userName != ""){
-			$strSQL .= " AND userName='" . DoubleQuote($userName, USERNAME_LENGTH) . "'";
-			if (!$rqt->Ouvrir($strSQL, $cnx)){
-				$error->setHttpStatus(500);
-				$error->setFunctionalCode(3);
-				$error->setFunctionalLabel($rqt->Erreur->GetTexte());
-				$cnx->Fermer();
-				throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
-				
-			}
-			
-			if ($rqt->EOF()){
+			$strSQL .= " AND userName=?";
+			array_push ($bindPrms,cut($userName, USERNAME_LENGTH));
+
+			$stmt=$db->prepare($strSQL);
+			$stmt->execute($bindPrms);
+			if(!$row=$stmt->fetch(PDO::FETCH_ASSOC)){
 				$error->setHttpStatus(404);
 				$error->setHttpLabel("Unknown quotas");
 				$error->setFunctionalCode(4);
 				$error->setFunctionalLabel("Quotas for user ". $userName . " and service " . $serviceName . " does not exists for user " . $userName);
-				$rqt->Fermer();
-				$cnx->Fermer();
 				throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
 			}else{
-				$rc = new Quota($rqt);
+				$rc = new Quota($row);
 				$rc = $rc->toArray();
 			}
-			$rqt->Fermer();
 		}else{
 			if (isset($request_data["order"]) && $request_data["order"] != ""){
-				$strSQL .= " ORDER BY " . $request_data["order"];
+				$strSQL .= " ORDER BY " . EscapeOrder($request_data["order"]);
 			}
-			if (!$rqt->Ouvrir($strSQL, $cnx)){
-				$error->setHttpStatus(500);
-				$error->setFunctionalCode(3);
-				$error->setFunctionalLabel($rqt->Erreur->GetTexte());
-				$cnx->Fermer();
-				throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());				
-			}
+			$stmt=$db->prepare($strSQL);
+			$stmt->execute($bindPrms);
+
 			$rc = Array();
-			while (!$rqt->EOF()){
-				$quota = new Quota($rqt);
+			while ($row=$stmt->fetch(PDO::FETCH_ASSOC)){
+				$quota = new Quota($row);
 				array_push($rc, $quota->toArray());
-				$rqt->Suivant();
 			}
 				
 			
-			$rqt->Fermer();
 		}
-		$cnx->Fermer();
 		return $rc;
 }
 
@@ -951,16 +915,8 @@ function getUnsetQuotas($serviceName = NULL,  $request_data=NULL){
 	$error = new Error();
 
 
-	$cnx = new Connexion();
-	if (!$cnx->Ouvrir($BDName, $BDUser, $BDPwd)){
-			$error->setHttpStatus(500);
-			$error->setFunctionalCode(3);
-			$error->setFunctionalLabel($cnx->GetErreur()->GetTexte());
-			throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());				
-		
-	}
+	$db=openDB($BDName, $BDUser, $BDPwd);
 
-	$rqt = new RequeteResultat();
 	$strSQL="";
 	$strSQL.="SELECT u.* ";
 	$strSQL.="FROM 	users u, ";
@@ -969,23 +925,17 @@ function getUnsetQuotas($serviceName = NULL,  $request_data=NULL){
 	$strSQL.="WHERE isUserQuotasEnabled=1 ";
 	$strSQL.="AND	s.groupName=ug.groupName ";
 	$strSQL.="AND	ug.userName=u.userName ";
-	$strSQL.="AND	s.serviceName='" . DoubleQuote($serviceName, SERVICENAME_LENGTH) . "' ";
-	$strSQL.="AND	u.userName not in (SELECT uq.userName FROM usersquotas uq WHERE uq.serviceName='" . DOubleQuote($serviceName, SERVICENAME_LENGTH) . "') ";  
-	if (!$rqt->Ouvrir($strSQL, $cnx)){
-		$error->setHttpStatus(500);
-		$error->setFunctionalCode(3);
-		$error->setFunctionalLabel($rqt->Erreur->GetTexte());
-		$cnx->Fermer();
-		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());				
-	}
+	$strSQL.="AND	s.serviceName=? ";
+	$strSQL.="AND	u.userName not in (SELECT uq.userName FROM usersquotas uq WHERE uq.serviceName=?";  
+	
+	$bindPrms=array(cut($serviceName, SERVICENAME_LENGTH),cut($serviceName, SERVICENAME_LENGTH));
+	$stmt=$db->prepare($strSQL);
+	$stmt->execute($bindPrms);
 	$rc = Array();
-	while (!$rqt->EOF()){
-		$user = new User($rqt);
+	while ($row=$stmt->fetch(PDO::FETCH_ASSOC)){
+		$user = new User($row);
 		array_push($rc, $user->toArray());
-		$rqt->Suivant();
 	}
-	$rqt->Fermer();
-	$cnx->Fermer();
 	return $rc;
 }
 
@@ -999,39 +949,26 @@ function nodesListForService($serviceName, $request_data=NULL){
 	$error = new Error();
 
 
-	$cnx = new Connexion();
-	if (!$cnx->Ouvrir($BDName, $BDUser, $BDPwd)){
-			$error->setHttpStatus(500);
-			$error->setFunctionalCode(3);
-			$error->setFunctionalLabel($cnx->GetErreur()->GetTexte());
-			throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
-		
-	}
+	$db=openDB($BDName, $BDUser, $BDPwd);
+	$bindPrms=array();
 	if ($serviceName==NULL){
 		$strSQL= "SELECT n.*, 0 as onNode FROM nodes n";
 	}else{
-		$strSQL= "SELECT n.*, exists(SELECT 'x' FROM servicesnodes sn WHERE sn.serviceName='" . DoubleQuote($serviceName) . "' and sn.nodeName=n.nodeName) as onNode FROM nodes n";
+		$strSQL= "SELECT n.*, exists(SELECT 'x' FROM servicesnodes sn WHERE sn.serviceName=? and sn.nodeName=n.nodeName) as onNode FROM nodes n";
+		array_push($bindPrms, cut($serviceName) );
 	}
 	if (isset($request_data["order"])){
-		$strSQL =$strSQL .  " ORDER BY " . $request_data["order"];
+		$strSQL =$strSQL .  " ORDER BY " . EscapeOrder($request_data["order"]);
 	}
-	$rqt = new RequeteResultat();
-	if (!$rqt->Ouvrir($strSQL, $cnx)){
-		$error->setHttpStatus(500);
-		$error->setFunctionalCode(3);
-		$error->setFunctionalLabel($rqt->Erreur->GetTexte());
-		$cnx->Fermer();
-		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());				
-	}
+	$stmt=$db->prepare($strSQL);
+	$stmt->execute($bindPrms);
 	$rc = Array();
-	while (!$rqt->EOF()){
-		$node = new Node($rqt);
-		$published = $rqt->Champ("onNode");
+	while ($row=$stmt->fetch(PDO::FETCH_ASSOC)){
+		$node = new Node($row);
+		$published = $rqt["onNode"];
 		array_push($rc, Array ("node" => $node->toArray(),
 							   "published" => $published));
-		$rqt->Suivant();
 	}
-	$cnx->Fermer();
 	return $rc;
 
 }
@@ -1065,7 +1002,6 @@ function setNodesListForService($serviceName, $request_data=NULL){
 		$error->setHttpStatus(500);
 		$error->setFunctionalCode(3);
 		$error->setFunctionalLabel($rqt->Erreur->GetTexte());
-		$cnx->Fermer();
 		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());				
 	}
 	for ($i=0;$i<count($request_data) ;$i++){
@@ -1074,11 +1010,9 @@ function setNodesListForService($serviceName, $request_data=NULL){
 			$error->setHttpStatus(500);
 			$error->setFunctionalCode(3);
 			$error->setFunctionalLabel($rqt->Erreur->GetTexte());
-			$cnx->Fermer();
 			throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());				
 		}
 	}
-	$cnx->Fermer();
 	if (isset($request_data["noApply"])){
 		return nodesListForService($serviceName);
 	}else if (applyApacheConfiguration()){
