@@ -144,44 +144,6 @@
 		
 </Location>
 
-<Location  /toto>
-
-	Include /usr/local/nursery/ApplianceManager/RunTimeAppliance/apache/conf/vhAppliance/nursery-appliance-settings.inc	
-	AuthBasicAuthoritative Off
-	OSAAuthoritative On
-	OSAEnable on
-	OSABasicAuthEnable On
-	OSACookieAuthEnable On
-	OSACookieAuthName OSAAuthToken
-	OSACookieAuthTTL 60
-	OSACookieAuthDomain .rd.francetelecom.fr
-	OSAServerName https://r-lnx-jmjb0521.rd.francetelecom.fr:8443
-	OSARequire group  Admin
-	RequestHeader unset X_REMOTE_USER
-	
-	
-	
-	OSAResourceName toto
-
-	OSACheckGlobalQuotas Off
-	OSACheckUserQuotas Off
-
-
-	OSALogHit Off
-	
-	ProxyPassReverseCookieDomain toto r-lnx-jmjb0521.rd.francetelecom.fr
-
-
-
-
-
-	ProxyPassReverse http://toto
-		
-</Location>
-
-RewriteCond     %{REQUEST_URI}      ^/toto.*$
-RewriteRule  <?/toto(.*) http://toto$1 [P,L]
-
 RewriteCond     %{REQUEST_URI}      ^/ApplianceManagerAdmin/users/me.*$
 RewriteRule  <?/ApplianceManagerAdmin/users/me(.*) http://127.0.0.1:82/ApplianceManager/users/me$1 [P,L]
 

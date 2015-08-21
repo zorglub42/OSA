@@ -965,7 +965,7 @@ function nodesListForService($serviceName, $request_data=NULL){
 	$rc = Array();
 	while ($row=$stmt->fetch(PDO::FETCH_ASSOC)){
 		$node = new Node($row);
-		$published = $rqt["onNode"];
+		$published = $row["onNode"];
 		array_push($rc, Array ("node" => $node->toArray(),
 							   "published" => $published));
 	}
