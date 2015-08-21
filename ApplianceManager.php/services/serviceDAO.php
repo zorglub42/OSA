@@ -955,7 +955,7 @@ function nodesListForService($serviceName, $request_data=NULL){
 		$strSQL= "SELECT n.*, 0 as onNode FROM nodes n";
 	}else{
 		$strSQL= "SELECT n.*, exists(SELECT 'x' FROM servicesnodes sn WHERE sn.serviceName=? and sn.nodeName=n.nodeName) as onNode FROM nodes n";
-		array_push($bindPrms, cut($serviceName) );
+		array_push($bindPrms, $serviceName );
 	}
 	if (isset($request_data["order"])){
 		$strSQL =$strSQL .  " ORDER BY " . EscapeOrder($request_data["order"]);
