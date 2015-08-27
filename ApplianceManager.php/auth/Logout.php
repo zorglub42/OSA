@@ -58,6 +58,7 @@ class Logout{
 					$stmt=$db->prepare("DELETE FROM authtoken WHERE userName=?");
 					$stmt->execute(array($row["userName"]));
 					setcookie(authTokenCookieName, rand(1,1000000000), time()-3600,"/");
+					return $row["userName"];
 				}
 			}catch (Exception $e){
 				if ($error->getHttpStatus() != 200){
