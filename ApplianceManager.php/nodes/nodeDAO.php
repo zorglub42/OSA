@@ -106,7 +106,7 @@ function getDAONode($nodeName = NULL, $request_data = NULL){
 			}
 			if (isset($request_data["localIPFilter"]) && $request_data["localIPFilter"]!=""){
 				$strSQLComp = addSQLFilter("localIP like ?", $strSQLComp);
-				array_push($bindPrms,"%" . DoubleQuote($request_data["localIPFilter"]) . "%");
+				array_push($bindPrms,"%" . $request_data["localIPFilter"] . "%");
 			}
 			if (isset($request_data["portFilter"]) && $request_data["portFilter"]!=""){
 				$strSQLComp = addSQLFilter("port=?"  , $strSQLComp);

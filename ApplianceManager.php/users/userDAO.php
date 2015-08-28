@@ -210,7 +210,7 @@ function addUser($userName = NULL, $request_data = NULL){
 	if ($error->getHttpStatus() != 200){
 		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
 	}else{
-		$strSQL = "INSERT INTO users (userName, password, md5Password, endDate, emailAddress, firstName, lastName, entity, extra) values (?, ?, ?, ?, ?, ?, ?, ?, 2)";
+		$strSQL = "INSERT INTO users (userName, password, md5Password, endDate, emailAddress, firstName, lastName, entity, extra) values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		try{
 			
 			$db = openDB($BDName, $BDUser, $BDPwd );
@@ -563,8 +563,8 @@ function addUserToGroup($userName, $groupName){
 	if ($error->getFunctionalCode()!=0){
 		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
 	}else{
-		$mySQLGroupName=DoubleQuote($groupName, GROUPNAME_LENGTH);
-		$mySQLuserName=DoubleQuote($userName, USERNAME_LENGTH);
+		$mySQLGroupName=cut($groupName, GROUPNAME_LENGTH);
+		$mySQLuserName=cut($userName, USERNAME_LENGTH);
 		$strSQL = "INSERT INTO usersgroups (groupName, userName) values (?, ?)";
 		try{
 			$db=openDB($BDName, $BDUser, $BDPwd );
@@ -667,7 +667,7 @@ function getUserQuota($userName, $serviceName=NULL, $request_data=NULL){
 	try{
 		$db=openDB($BDName, $BDUser, $BDPwd);
 		$bindPrms=array();
-		$strSQL="SELECT * FROM usersquotas WHERE userName=?";// . DoubleQuote($userName, USERNAME_LENGTH ) . "'";
+		$strSQL="SELECT * FROM usersquotas WHERE userName=?";// . cut($userName, USERNAME_LENGTH ) . "'";
 		array_push($bindPrms, cut($userName, USERNAME_LENGTH ));
 		if ($serviceName != NULL && $serviceName != ""){
 			$strSQL .= " AND serviceName=?" ;
@@ -763,8 +763,8 @@ function addUserQuota($userName, $serviceName, $request_data=NULL){
 	if ($error->getFunctionalCode()!=0){
 		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
 	}else{
-		$mySQLServiceName=DoubleQuote($serviceName, SERVICENAME_LENGTH);
-		$mySQLuserName=DoubleQuote($userName, USERNAME_LENGTH);
+		$mySQLServiceName=cut($serviceName, SERVICENAME_LENGTH);
+		$mySQLuserName=cut($userName, USERNAME_LENGTH);
 		$strSQL = "";
 		$strSQL .="INSERT INTO usersquotas (";
 		$strSQL .="	serviceName, ";

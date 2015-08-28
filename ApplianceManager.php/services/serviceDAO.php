@@ -166,12 +166,12 @@ function createService($serviceName = NULL, $request_data=NULL){
 	$mySQLIsHitLoggingEnabled=0;
 	$mySQLIsAnonymousAllowed=0;
 	$mySQLOnAllNodes=1;
-	$mySQLLoginFormUri="''";
+	$mySQLLoginFormUri="";
 
 	if (isset($request_data["additionalConfiguration"])){
 		$mySQLAdditionalConfiguration=$request_data["additionalConfiguration"];
 	}else{
-		$mySQLAdditionalConfiguration="''";
+		$mySQLAdditionalConfiguration="";
 	}
 	if (isset($request_data["isAnonymousAllowed"])){
 		if ($request_data["isAnonymousAllowed"]=="1" ||  $request_data["isAnonymousAllowed"]=="0"){
