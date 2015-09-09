@@ -755,7 +755,7 @@ function updateService($serviceName = NULL, $request_data=NULL){
 	if ($service["isAnonymousAllowed"]==1){
 		$service["isIdentityForwardingEnabled"]=1;
 	}
-	if (isset($request_data["loginFormUri"]) && $request_data["loginFormUri"]!="" ){
+	if (isset($request_data["loginFormUri"])  ){
 		$service["loginFormUri"]=$request_data["loginFormUri"];
 	}
 

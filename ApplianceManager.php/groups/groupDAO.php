@@ -132,9 +132,32 @@ function getGroupMembers($groupName, $request_data = NULL){
 		}else{
 			$strSQL="SELECT u.* FROM users u WHERE (endDate is NULL or endDate < now())";
 		}
-		//if (isset($request_data["filter"]) && $request_data["filter"] != ""){
-		//	$strSQL=$strSQL . " AND " . $request_data["filter"];
-		//}
+		$strSQLComp="";
+		if (isset($request_data["withLog"])){
+			$strSQLComp=" WHERE exists(SELECT 'x' FROM hits h WHERE h.userName=u.userName)";
+		}
+		
+		if (isset($request_data["userNameFilter"]) && $request_data["userNameFilter"]!=""){
+			$strSQLComp = addSQLFilter("u.userName like ?", $strSQLComp);
+			array_push($prmBind, "%" . $request_data["userNameFilter"] . "%");
+		}
+		if (isset($request_data["firstNameFilter"]) && $request_data["firstNameFilter"]!=""){
+			$strSQLComp = addSQLFilter("u.firstName like ?", $strSQLComp);
+			array_push($prmBind, "%" . $request_data["firstNameFilter"] . "%");
+		}
+		if (isset($request_data["lastNameFilter"]) && $request_data["lastNameFilter"]!=""){
+			$strSQLComp = addSQLFilter("u.lastName like ?", $strSQLComp);
+			array_push($prmBind, "%" . $request_data["lastNameFilter"] . "%");
+		}
+		if (isset($request_data["emailAddressFilter"]) && $request_data["emailAddressFilter"]!=""){
+			$strSQLComp = addSQLFilter("u.emailAddress like ?", $strSQLComp);
+			array_push($prmBind, "%" . $request_data["emailAddressFilter"] . "%");
+		}
+		if (isset($request_data["entityFilter"]) && $request_data["entityFilter"]!=""){
+			$strSQLComp = addSQLFilter("u.entity like ?", $strSQLComp);
+			array_push($prmBind, "%" . $request_data["entityFilter"] . "%");
+		}
+		$strSQL="SELECT * FROM users u" . $strSQLComp	;
 		if (isset($request_data["order"]) && $request_data["order"] != ""){
 			$strSQL=$strSQL . " ORDER BY " . EscapeOrder($request_data["order"]);
 		}
