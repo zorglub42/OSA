@@ -127,10 +127,10 @@ function getGroupMembers($groupName, $request_data = NULL){
 		$db=openDB($BDName, $BDUser, $BDPwd);
 		$bindPrms=array();
 		if ($groupName != VALID_USER_GROUP){
-			$strSQL="SELECT u.* FROM users u, usersgroups ug WHERE (ug.userName = u.userName AND ug.groupName=?)";
+			$strSQL="SELECT u.* FROM users u, usersgroups ug WHERE (ug.userName = u.userName AND ug.groupName=?) ";
 			array_push($bindPrms, cut($groupName, GROUPNAME_LENGTH));
 		}else{
-			$strSQL="SELECT u.* FROM users u WHERE (endDate is NULL or endDate < now())";
+			$strSQL="SELECT u.* FROM users u WHERE (endDate is NULL or endDate < now()) ";
 		}
 		$strSQLComp="";
 		if (isset($request_data["withLog"])){
@@ -157,7 +157,11 @@ function getGroupMembers($groupName, $request_data = NULL){
 			$strSQLComp = addSQLFilter("u.entity like ?", $strSQLComp);
 			array_push($prmBind, "%" . $request_data["entityFilter"] . "%");
 		}
-		$strSQL="SELECT * FROM users u" . $strSQLComp	;
+		if (isset($request_data["extraFilter"]) && $request_data["extraFilter"]!=""){
+			$strSQLComp = addSQLFilter("u.extra like ?", $strSQLComp);
+			array_push($prmBind, "%" . $request_data["extraFilter"] . "%");
+		}
+		$strSQL=$strSQL . $strSQLComp	;
 		if (isset($request_data["order"]) && $request_data["order"] != ""){
 			$strSQL=$strSQL . " ORDER BY " . EscapeOrder($request_data["order"]);
 		}

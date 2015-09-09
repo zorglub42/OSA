@@ -105,6 +105,10 @@ function getUser($userName = NULL, $request_data = NULL){
 			$strSQLComp = addSQLFilter("entity like ?", $strSQLComp);
 			array_push($prmBind, "%" . $request_data["entityFilter"] . "%");
 		}
+		if (isset($request_data["extraFilter"]) && $request_data["extraFilter"]!=""){
+			$strSQLComp = addSQLFilter("u.extra like ?", $strSQLComp);
+			array_push($prmBind, "%" . $request_data["extraFilter"] . "%");
+		}
 		$strSQL="SELECT * FROM users u" . $strSQLComp	;
 		if (isset($request_data["order"]) && $request_data["order"] != ""){
 			$strSQL=$strSQL . " ORDER BY " . EscapeOrder($request_data["order"]);
