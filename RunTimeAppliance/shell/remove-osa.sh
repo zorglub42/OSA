@@ -119,7 +119,7 @@ done
 
 
 #Configure ports.conf
-	if  [ -d /etc/apache2/conf-available ] ; then
+	if  [ ! -d /etc/apache2/conf.d ] ; then
 		a2disconf nursery-osa-0-ports.conf
 	fi
 	rmFile $APACHE_LISTEN_PORTS
@@ -264,8 +264,8 @@ function migrateApacheConfig(){
 			mv $f $f.conf
 		fi
 	done
-	if [ -d /etc/apache2/conf-available ] ; then
-		#we are on Apache2.4 like installation, migrate form 2.2 like
+	if [ ! -d /etc/apache2/conf.d ] ; then
+		#we are on Apache2.4 like installation, migrate from 2.2 like
 		if [ -f /etc/apache2/conf.d/nursery-osa-0-ports.conf ] ; then
 			mv /etc/apache2/conf.d/nursery-osa-0-ports.conf $APACHE_LISTEN_PORTS
 		fi
@@ -357,7 +357,7 @@ elif [ -f /etc/debian_version ] ; then
 	APACHE_INITD_FILE=/etc/init.d/apache2
 	APACHE_SITES_DEFINITION_DIR=/etc/apache2/sites-available
 	APACHE_DISABLE_SITE=a2dissite
-	if [ -d /etc/apache2/conf-available ] ; then
+	if [ ! -d /etc/apache2/conf.d ] ; then
 		APACHE_LISTEN_PORTS=/etc/apache2/conf-available/nursery-osa-0-ports.conf
 	else
 		APACHE_LISTEN_PORTS=/etc/apache2/conf.d/nursery-osa-0-ports.conf
