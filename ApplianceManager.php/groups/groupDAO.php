@@ -132,36 +132,34 @@ function getGroupMembers($groupName, $request_data = NULL){
 		}else{
 			$strSQL="SELECT u.* FROM users u WHERE (endDate is NULL or endDate < now()) ";
 		}
-		$strSQLComp="";
 		if (isset($request_data["withLog"])){
-			$strSQLComp=" WHERE exists(SELECT 'x' FROM hits h WHERE h.userName=u.userName)";
+			$strSQL=$strSQL . " AND exists(SELECT 'x' FROM hits h WHERE h.userName=u.userName)";
 		}
 		
 		if (isset($request_data["userNameFilter"]) && $request_data["userNameFilter"]!=""){
-			$strSQLComp = addSQLFilter("u.userName like ?", $strSQLComp);
-			array_push($prmBind, "%" . $request_data["userNameFilter"] . "%");
+			$strSQL = addSQLFilter("u.userName like ?", $strSQL);
+			array_push($bindPrms, "%" . $request_data["userNameFilter"] . "%");
 		}
 		if (isset($request_data["firstNameFilter"]) && $request_data["firstNameFilter"]!=""){
-			$strSQLComp = addSQLFilter("u.firstName like ?", $strSQLComp);
-			array_push($prmBind, "%" . $request_data["firstNameFilter"] . "%");
+			$strSQL = addSQLFilter("u.firstName like ?", $strSQL);
+			array_push($bindPrms, "%" . $request_data["firstNameFilter"] . "%");
 		}
 		if (isset($request_data["lastNameFilter"]) && $request_data["lastNameFilter"]!=""){
-			$strSQLComp = addSQLFilter("u.lastName like ?", $strSQLComp);
-			array_push($prmBind, "%" . $request_data["lastNameFilter"] . "%");
+			$strSQL = addSQLFilter("u.lastName like ?", $strSQL);
+			array_push($bindPrms, "%" . $request_data["lastNameFilter"] . "%");
 		}
 		if (isset($request_data["emailAddressFilter"]) && $request_data["emailAddressFilter"]!=""){
-			$strSQLComp = addSQLFilter("u.emailAddress like ?", $strSQLComp);
-			array_push($prmBind, "%" . $request_data["emailAddressFilter"] . "%");
+			$strSQL = addSQLFilter("u.emailAddress like ?", $strSQL);
+			array_push($bindPrms, "%" . $request_data["emailAddressFilter"] . "%");
 		}
 		if (isset($request_data["entityFilter"]) && $request_data["entityFilter"]!=""){
-			$strSQLComp = addSQLFilter("u.entity like ?", $strSQLComp);
-			array_push($prmBind, "%" . $request_data["entityFilter"] . "%");
+			$strSQL = addSQLFilter("u.entity like ?", $strSQL);
+			array_push($bindPrms, "%" . $request_data["entityFilter"] . "%");
 		}
 		if (isset($request_data["extraFilter"]) && $request_data["extraFilter"]!=""){
-			$strSQLComp = addSQLFilter("u.extra like ?", $strSQLComp);
-			array_push($prmBind, "%" . $request_data["extraFilter"] . "%");
+			$strSQL = addSQLFilter("u.extra like ?", $strSQL);
+			array_push($bindPrms, "%" . $request_data["extraFilter"] . "%");
 		}
-		$strSQL=$strSQL . $strSQLComp	;
 		if (isset($request_data["order"]) && $request_data["order"] != ""){
 			$strSQL=$strSQL . " ORDER BY " . EscapeOrder($request_data["order"]);
 		}
