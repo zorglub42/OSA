@@ -30,7 +30,7 @@ unset http_proxy
 # Configuration section #############################################################################
 APPLIANCE_INSTALL_DIR=/usr/local/nursery/ApplianceManager
 APPLIANCE_CONFIG_LOC=$APPLIANCE_INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance
-APPLIANCE_LOG_DIR=/var/log/nursery/OSA
+APPLIANCE_LOG_DIR=/var/log/OSA
 APPLIANCE_LOCAL_SERVER="http://127.0.0.1:82"
 APPLIANCE_LOCAL_USER=""
 APPLIANCE_LOCAL_PWD=""
@@ -199,7 +199,7 @@ elif [ -f /etc/debian_version ] ; then
 	APACHE_INITD_FILE=/etc/init.d/apache2
 	APACHE_SITES_DEFINITION_DIR=/etc/apache2/sites-available
 	APACHE_SITES_ENABLED_DIR=/etc/apache2/sites-enabled
-	if [ -d /etc/apache2/conf-available ] ; then
+	if [ ! -d /etc/apache2/conf.d ] ; then
 		APACHE_LISTEN_PORTS=/etc/apache2/conf-available/nursery-osa-0-ports.conf
 	else
 		APACHE_LISTEN_PORTS=/etc/apache2/conf.d/nursery-osa-0-ports.conf

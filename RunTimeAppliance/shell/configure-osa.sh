@@ -525,6 +525,7 @@ function createApacheConf(){
 	$APACHE_LOAD_MOD proxy_http
 	$APACHE_LOAD_MOD osa
 	$APACHE_LOAD_MOD rewrite
+	$APACHE_LOAD_MOD proxy_wstunnel
 
 #Configure ports.conf
 	:>$APACHE_LISTEN_PORTS
@@ -535,7 +536,7 @@ function createApacheConf(){
 	
 	:>$APACHE_LISTEN_PORTS 
 	cat /tmp/$$.ports.conf.2 >> $APACHE_LISTEN_PORTS 
-	if [ -d /etc/apache2/conf-available ] ; then
+	if [ ! -d /etc/apache2/conf.d ] ; then
 		a2enconf nursery-osa-0-ports.conf
 		service apache2 restart
 	fi
@@ -995,7 +996,7 @@ function migrateApacheConfig(){
 			mv $f $f.conf
 		fi
 	done
-	if [ -d /etc/apache2/conf-available ] ; then
+	if [ ! -d /etc/apache2/conf.d ] ; then
 		#we are on Apache2.4 like installation, migrate form 2.2 like
 		if [ -f /etc/apache2/conf.d/nursery-osa-0-ports.conf ] ; then
 			mv /etc/apache2/conf.d/nursery-osa-0-ports.conf $APACHE_LISTEN_PORTS
@@ -1064,7 +1065,7 @@ elif [ -f /etc/debian_version ] ; then
 	APACHE_SITES_DEFINITION_DIR=/etc/apache2/sites-available
 	APACHE_ENABLE_SITE=a2ensite
 	APACHE_DISABLE_SITE=a2dissite
-	if [ -d /etc/apache2/conf-available ] ; then
+	if [ ! -d /etc/apache2/conf.d ] ; then
 		APACHE_LISTEN_PORTS=/etc/apache2/conf-available/nursery-osa-0-ports.conf
 	else
 		APACHE_LISTEN_PORTS=/etc/apache2/conf.d/nursery-osa-0-ports.conf
