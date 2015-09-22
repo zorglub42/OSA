@@ -78,10 +78,15 @@ require_once '../include/PDOFunc.php';
 		}else{
 			$USER_QUOTA_ENABLE="Off";
 		}
-		$BASIC_ATUH_TOKEN="";
-		if ($row["backEndUsername"] != "" && decrypt($row["backEndPassword"]) != ""){
-			$BASIC_ATUH_TOKEN=base64_encode($row["backEndUsername"] . ":" . decrypt($row["backEndPassword"]));
+		$BASIC_AUTH_TOKEN="";
+		if ($row["backEndUsername"] != "" && decrypt($row["backEndPassword"]) != "" && $row["backEndUsername"] != "%auto%"){
+			$BASIC_AUTH_TOKEN=base64_encode($row["backEndUsername"] . ":" . decrypt($row["backEndPassword"]));
 		}
+		$FORWARD_AUTH_TOKEN=false;
+		if ($row["backEndUsername"] === "%auto%" ){
+			$FORWARD_AUTH_TOKEN=true;
+		}
+
 		$FORWARD_IDENT=true;
 		if ($row["isIdentityForwardingEnabled"]==0){
 			$FORWARD_IDENT=false;

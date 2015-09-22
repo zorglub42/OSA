@@ -1,4 +1,4 @@
-<?php php
+<?php
 /*--------------------------------------------------------
  * Module Name : ApplianceManager
  * Version : 1.0.0
@@ -26,12 +26,15 @@
 require_once '../include/Settings.ini.php'; 
 require_once '../include/Constants.php'; 
 ?>
-<Location  <?php echo $FRONT_END?>>
+<Location  <?echo $FRONT_END?>>
 
-	Include <?php php echo runtimeApplianceConfigLocation?>/nursery-appliance-settings.inc	
-<?php php
-	if (isset($BASIC_ATUH_TOKEN) && $BASIC_ATUH_TOKEN != "" ){
-			echo "\tRequestHeader add Authorization \"Basic $BASIC_ATUH_TOKEN\"\n";
+	Include <?php echo runtimeApplianceConfigLocation?>/nursery-appliance-settings.inc	
+<?php
+	if (isset($BASIC_AUTH_TOKEN) && $BASIC_AUTH_TOKEN != "" ){
+			echo "\tRequestHeader add Authorization \"Basic $BASIC_AUTH_TOKEN\"\n";
+	}
+	if (isset($FORWARD_AUTH_TOKEN) && $FORWARD_AUTH_TOKEN  ){
+			echo "\tRequestHeader add Authorization %{ORGAUTH}e\n";
 	}
 	if ($USER_AUTHENTICATION_ENABLE=="On"){
 		echo "\tAuthBasicAuthoritative Off\n";
@@ -79,15 +82,15 @@ require_once '../include/Constants.php';
 	
 	
 	
-	OSAResourceName <?php echo "$SERVICE_NAME\n"?>
+	OSAResourceName <?echo "$SERVICE_NAME\n"?>
 
-	OSACheckGlobalQuotas <?php echo "$GLOBAL_QUOTA_ENABLE\n"?>
-	OSACheckUserQuotas <?php echo "$USER_QUOTA_ENABLE\n"?>
+	OSACheckGlobalQuotas <?echo "$GLOBAL_QUOTA_ENABLE\n"?>
+	OSACheckUserQuotas <?echo "$USER_QUOTA_ENABLE\n"?>
 
 
-	OSALogHit <?php php echo "$HIT_LOGGING_ENABLE\n"?>
+	OSALogHit <?php echo "$HIT_LOGGING_ENABLE\n"?>
 	
-	<?php php
+	<?php
 	$urlParts=getUrlParts($BACK_END);
 	echo "ProxyPassReverseCookieDomain " . $urlParts["domain"] . " $FRONT_END_DOMAIN\n";
 	if (startsWith($SERVICE_NAME,ADMIN_SERVICE)){
@@ -100,8 +103,8 @@ require_once '../include/Constants.php';
 
 
 
-	ProxyPassReverse <?php echo "$BACK_END\n"?>
-	<?php php
+	ProxyPassReverse <?echo "$BACK_END\n"?>
+	<?php
 	/*if (ereg("^ws://[\w\d:#@%/;$()~_?\+-=\\\.&]*", $BACK_END)){
 		echo "ProxyPass $BACK_END\n";
 	}*/

@@ -1,20 +1,20 @@
-<VirtualHost <?php echo $HTTP_VHOST_ADDR . ":" . $HTTP_VHOST_PORT?>>
-       ServerName <?php echo "$HTTP_VHOST_NAME\n"?>
+<VirtualHost <?echo $HTTP_VHOST_ADDR . ":" . $HTTP_VHOST_PORT?>>
+       ServerName <?echo "$HTTP_VHOST_NAME\n"?>
 
 
 
 
        SetEnv publicServerProtocol http://
-       SetEnv publicServerName <?php echo "$HTTP_VHOST_NAME\n"?>
-       SetEnv publicServerPort <?php  echo "$HTTP_VHOST_PORT\n"?>
-       SetEnv publicServerTopDomain <?php  echo "$HTTP_VHOST_TOP_DOMAIN\n"?>
-       SetEnv publicServerPrefix http://<?php echo $HTTP_VHOST_NAME . ":" . $HTTP_VHOST_PORT . "\n"?>
+       SetEnv publicServerName <?echo "$HTTP_VHOST_NAME\n"?>
+       SetEnv publicServerPort <? echo "$HTTP_VHOST_PORT\n"?>
+       SetEnv publicServerTopDomain <? echo "$HTTP_VHOST_TOP_DOMAIN\n"?>
+       SetEnv publicServerPrefix http://<?echo $HTTP_VHOST_NAME . ":" . $HTTP_VHOST_PORT . "\n"?>
         
         
 
 
-       CustomLog <?php echo runtimeApplianceConfigScriptLogDir . "/" . $NODE_NAME?>/main.access.log combined
-       ErrorLog <?php echo runtimeApplianceConfigScriptLogDir . "/" . $NODE_NAME?>/main.error.log
+       CustomLog <?echo runtimeApplianceConfigScriptLogDir . "/" . $NODE_NAME?>/main.access.log combined
+       ErrorLog <?echo runtimeApplianceConfigScriptLogDir . "/" . $NODE_NAME?>/main.error.log
        LogLevel warn
 
        SSLProxyEngine on
@@ -22,15 +22,16 @@
 
 
        RewriteEngine on
-#       RewriteLog <?php echo runtimeApplianceConfigScriptLogDir . "/" . $NODE_NAME?>/rewrite.log
+#       RewriteLog <?echo runtimeApplianceConfigScriptLogDir . "/" . $NODE_NAME?>/rewrite.log
 #       RewriteLogLevel 0
 
 
+	SetEnvIf Authorization "(.*)" ORGAUTH=$1
        RequestHeader unset Authorization
 
 	   ProxyTimeout 120 
-       Include <?php echo runtimeApplianceConfigLocation?>/applianceManagerServices-node-<?php echo $NODE_NAME?>.endpoints
-       <?php echo $ADDITIONAL_CONFIGURATION . "\n"?>
+       Include <?echo runtimeApplianceConfigLocation?>/applianceManagerServices-node-<?echo $NODE_NAME?>.endpoints
+       <?echo $ADDITIONAL_CONFIGURATION . "\n"?>
 	   Header set Server OSA-2.0
 
 </VirtualHost>
