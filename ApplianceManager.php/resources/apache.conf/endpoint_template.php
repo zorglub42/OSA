@@ -1,4 +1,4 @@
-<?php
+<?php php
 /*--------------------------------------------------------
  * Module Name : ApplianceManager
  * Version : 1.0.0
@@ -26,10 +26,10 @@
 require_once '../include/Settings.ini.php'; 
 require_once '../include/Constants.php'; 
 ?>
-<Location  <?echo $FRONT_END?>>
+<Location  <?php echo $FRONT_END?>>
 
-	Include <?php echo runtimeApplianceConfigLocation?>/nursery-appliance-settings.inc	
-<?php
+	Include <?php php echo runtimeApplianceConfigLocation?>/nursery-appliance-settings.inc	
+<?php php
 	if (isset($BASIC_ATUH_TOKEN) && $BASIC_ATUH_TOKEN != "" ){
 			echo "\tRequestHeader add Authorization \"Basic $BASIC_ATUH_TOKEN\"\n";
 	}
@@ -79,15 +79,15 @@ require_once '../include/Constants.php';
 	
 	
 	
-	OSAResourceName <?echo "$SERVICE_NAME\n"?>
+	OSAResourceName <?php echo "$SERVICE_NAME\n"?>
 
-	OSACheckGlobalQuotas <?echo "$GLOBAL_QUOTA_ENABLE\n"?>
-	OSACheckUserQuotas <?echo "$USER_QUOTA_ENABLE\n"?>
+	OSACheckGlobalQuotas <?php echo "$GLOBAL_QUOTA_ENABLE\n"?>
+	OSACheckUserQuotas <?php echo "$USER_QUOTA_ENABLE\n"?>
 
 
-	OSALogHit <?php echo "$HIT_LOGGING_ENABLE\n"?>
+	OSALogHit <?php php echo "$HIT_LOGGING_ENABLE\n"?>
 	
-	<?php
+	<?php php
 	$urlParts=getUrlParts($BACK_END);
 	echo "ProxyPassReverseCookieDomain " . $urlParts["domain"] . " $FRONT_END_DOMAIN\n";
 	if (startsWith($SERVICE_NAME,ADMIN_SERVICE)){
@@ -100,8 +100,8 @@ require_once '../include/Constants.php';
 
 
 
-	ProxyPassReverse <?echo "$BACK_END\n"?>
-	<?php
+	ProxyPassReverse <?php echo "$BACK_END\n"?>
+	<?php php
 	/*if (ereg("^ws://[\w\d:#@%/;$()~_?\+-=\\\.&]*", $BACK_END)){
 		echo "ProxyPass $BACK_END\n";
 	}*/
