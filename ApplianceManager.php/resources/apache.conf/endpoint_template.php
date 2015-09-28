@@ -104,11 +104,6 @@ require_once '../include/Constants.php';
 
 
 	ProxyPassReverse <?echo "$BACK_END\n"?>
-	<?php
-	/*if (ereg("^ws://[\w\d:#@%/;$()~_?\+-=\\\.&]*", $BACK_END)){
-		echo "ProxyPass $BACK_END\n";
-	}*/
-	?>
 	
 </Location>
 
