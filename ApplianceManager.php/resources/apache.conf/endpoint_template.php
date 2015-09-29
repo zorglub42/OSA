@@ -25,7 +25,7 @@
 require_once '../include/Settings.ini.php'; 
 require_once '../include/Constants.php'; 
 ?>
-<Location  <?echo $FRONT_END?>>
+<Location  <?php echo $FRONT_END?>>
 
 	Include <?php echo runtimeApplianceConfigLocation?>/nursery-appliance-settings.inc	
 <?php
@@ -78,10 +78,10 @@ require_once '../include/Constants.php';
 	
 	
 	
-	OSAResourceName <?echo "$SERVICE_NAME\n"?>
+	OSAResourceName <?php echo "$SERVICE_NAME\n"?>
 
-	OSACheckGlobalQuotas <?echo "$GLOBAL_QUOTA_ENABLE\n"?>
-	OSACheckUserQuotas <?echo "$USER_QUOTA_ENABLE\n"?>
+	OSACheckGlobalQuotas <?php echo "$GLOBAL_QUOTA_ENABLE\n"?>
+	OSACheckUserQuotas <?php echo "$USER_QUOTA_ENABLE\n"?>
 
 
 	OSALogHit <?php echo "$HIT_LOGGING_ENABLE\n"?>
@@ -98,6 +98,6 @@ require_once '../include/Constants.php';
 
 
 
-	ProxyPassReverse <?echo "$BACK_END\n"?>
+	ProxyPassReverse <?php echo "$BACK_END\n"?>
 	
 </Location>
