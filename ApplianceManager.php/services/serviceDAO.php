@@ -487,7 +487,7 @@ function deleteService($serviceName = NULL){
 		$stmt=$db->prepare("SELECT * FROM services WHERE serviceName=?");
 		$stmt->execute(array(cut($serviceName, SERVICENAME_LENGTH)));
 		
-		if (!$row=$stmt->fetch(FETCH_ASSOC)){
+		if (!$row=$stmt->fetch(PDO::FETCH_ASSOC)){
 			$error->setHttpStatus(404);
 			$error->setHttpLabel("Unknown service");
 			$error->setFunctionalCode(4);

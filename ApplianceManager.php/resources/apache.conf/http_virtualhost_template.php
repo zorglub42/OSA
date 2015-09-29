@@ -26,6 +26,7 @@
 #       RewriteLogLevel 0
 
 
+	SetEnvIf Authorization "(.*)" ORGAUTH=$1
        RequestHeader unset Authorization
 
 	   ProxyTimeout 120 

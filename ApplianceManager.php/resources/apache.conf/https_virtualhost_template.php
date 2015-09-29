@@ -24,7 +24,10 @@
        #   Enable/Disable SSL for this virtual host.
        SSLEngine on
        SSLProxyEngine on
-       SSLProxyVerify none
+	SSLProxyVerify none 
+	SSLProxyCheckPeerCN off
+	SSLProxyCheckPeerName off
+	SSLProxyCheckPeerExpire off
 
        #   A self-signed (snakeoil) certificate can be created by installing
        #   the ssl-cert package. See
@@ -72,6 +75,7 @@
                downgrade-1.0 force-response-1.0
        # MSIE 7 and newer should be able to use keepalive
        BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
+	SetEnvIf Authorization "(.*)" ORGAUTH=$1
        RequestHeader unset Authorization
 
 	   ProxyTimeout 120 
