@@ -1,21 +1,21 @@
-<VirtualHost <? echo $HTTP_VHOST_ADDR . ":" . "$HTTP_VHOST_PORT"?>>
-       ServerName <? echo $HTTP_VHOST_NAME?>
+<VirtualHost <?php  echo $HTTP_VHOST_ADDR . ":" . "$HTTP_VHOST_PORT"?>>
+       ServerName <?php  echo $HTTP_VHOST_NAME?>
 
 
 
        SetEnv publicServerProtocol https://
-       SetEnv publicServerName <?echo "$HTTP_VHOST_NAME\n"?>
-       SetEnv publicServerPort <?echo "$HTTP_VHOST_PORT\n"?>
-       SetEnv publicServerTopDomain <? echo "$HTTP_VHOST_TOP_DOMAIN\n"?>
-       SetEnv publicServerPrefix https://<?echo $HTTP_VHOST_NAME . ":" . "$HTTP_VHOST_PORT\n"?>
+       SetEnv publicServerName <?php echo "$HTTP_VHOST_NAME\n"?>
+       SetEnv publicServerPort <?php echo "$HTTP_VHOST_PORT\n"?>
+       SetEnv publicServerTopDomain <?php  echo "$HTTP_VHOST_TOP_DOMAIN\n"?>
+       SetEnv publicServerPrefix https://<?php echo $HTTP_VHOST_NAME . ":" . "$HTTP_VHOST_PORT\n"?>
         
         
-       CustomLog <?echo runtimeApplianceConfigScriptLogDir . "/" . $NODE_NAME?>/main.access.log combined
-       ErrorLog <?echo runtimeApplianceConfigScriptLogDir . "/" . $NODE_NAME?>/main.error.log
+       CustomLog <?php echo runtimeApplianceConfigScriptLogDir . "/" . $NODE_NAME?>/main.access.log combined
+       ErrorLog <?php echo runtimeApplianceConfigScriptLogDir . "/" . $NODE_NAME?>/main.error.log
        LogLevel warn
 
        RewriteEngine on
-#       RewriteLog <?echo runtimeApplianceConfigScriptLogDir . "/" . $NODE_NAME?>/rewrite.log
+#       RewriteLog <?php echo runtimeApplianceConfigScriptLogDir . "/" . $NODE_NAME?>/rewrite.log
 #       RewriteLogLevel 0
 
 
@@ -32,15 +32,15 @@
        #   If both key and certificate are stored in the same file, only the
        #   SSLCertificateFile directive is needed.
     
-<?if ($HTTPS_HAVE_CA_CERT){?>
-	SSLCaCertificateFile /etc/ssl/certs/nursery-osa-node-<?echo $NODE_NAME?>-ca.pem
-<?}?>
-<?if ($HTTPS_HAVE_CHAIN_CERT){?>
-	SSLCertificateChainFile /etc/ssl/certs/nursery-osa-node-<?echo $NODE_NAME?>-chain.pem
-<?}?>
+<?php if ($HTTPS_HAVE_CA_CERT){?>
+	SSLCaCertificateFile /etc/ssl/certs/nursery-osa-node-<?php echo $NODE_NAME?>-ca.pem
+<?php }?>
+<?php if ($HTTPS_HAVE_CHAIN_CERT){?>
+	SSLCertificateChainFile /etc/ssl/certs/nursery-osa-node-<?php echo $NODE_NAME?>-chain.pem
+<?php }?>
 
-	SSLCertificateFile /etc/ssl/certs/nursery-osa-node-<?echo $NODE_NAME?>.pem
-	SSLCertificateKeyFile /etc/ssl/private/nursery-osa-node-<?echo $NODE_NAME?>.key
+	SSLCertificateFile /etc/ssl/certs/nursery-osa-node-<?php echo $NODE_NAME?>.pem
+	SSLCertificateKeyFile /etc/ssl/private/nursery-osa-node-<?php echo $NODE_NAME?>.key
 
 
        #   SSL Protocol Adjustments:
@@ -75,7 +75,7 @@
        RequestHeader unset Authorization
 
 	   ProxyTimeout 120 
-       Include <?echo runtimeApplianceConfigLocation?>/applianceManagerServices-node-<?echo $NODE_NAME?>.endpoints
-	   <?echo $ADDITIONAL_CONFIGURATION . "\n"?>
+       Include <?php echo runtimeApplianceConfigLocation?>/applianceManagerServices-node-<?php echo $NODE_NAME?>.endpoints
+	   <?php echo $ADDITIONAL_CONFIGURATION . "\n"?>
 	   Header set Server OSA-2.0
 </VirtualHost>
