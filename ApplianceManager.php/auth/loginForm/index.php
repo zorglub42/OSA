@@ -69,7 +69,7 @@
 			<div class="col-md-4 col-md-offset-4">
 				<div class="panel panel-default">
 					<div class="panel-heading">
-						<h3 class="panel-title"><b><? if (isset($_REQUEST["l"])) echo base64_decode($_REQUEST["l"]) ?></b></h3>
+						<h3 class="panel-title"><b><?php if (isset($_REQUEST["l"])) echo base64_decode($_REQUEST["l"]) ?></b></h3>
 					</div>
 					<div id="error" class="errorMessage"></div>
 					<div class="panel-body">
@@ -103,7 +103,7 @@
 					$msg=$_REQUEST["cause"];
 				}
 			?>
-				showError('<?echo $msg?>');
+				showError('<?php echo $msg?>');
 			<?}else{?>
 				$('#error').hide();
 			<?}?>

@@ -115,7 +115,7 @@ if (isset($hdrs[lastNameHeader])){
 		<div id="footer">
 		<hr>
 			<span class="withRightBorder">
-				Open Services Access V<?echo version?>
+				Open Services Access V<?php echo version?>
 			</span>
 		</div>
 	</body>
