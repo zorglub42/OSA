@@ -55,5 +55,4 @@ If you plan to use standard ports for HTTP and HTTPS node (i.e 80 and 443 instea
 - disable default virtual hosts
 
 		a2dissite 000-default default-ssl
-
--Edit /etc/apache2/ports.conf and comment all *Listen* directives relative to port 80 and 443
+- edit /etc/apache2/ports.conf and comment all *Listen* directives relative to port 80 and 443
