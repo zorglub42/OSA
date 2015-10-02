@@ -1,7 +1,7 @@
 # OSA
 Open Services Access: Apaches RP management tool
 
-OSA is a tool to manage in click-and-paly mode an Apache reverse proxy
+OSA is a tool to manage in click-and-play mode an Apache reverse proxy
 It's based on apache 2 web server.
 
 In addition, it offers some extra functionalities like dual mode authentication (HTTP basic or cookie) for a same resource set or quota management.
@@ -30,7 +30,7 @@ Note:
 
 
 		Ex:
-			./install.sh -m /usr/local/ApplianceManager
+			./install.sh -m /usr/local/OSA
 			
 		
 - Go to $INSTALL_DIR/RunTimeAppliance/shell
@@ -49,3 +49,10 @@ Note:
 run ./configure-osa.sh
 
 If, at the end of execution the message "OSA Configuration done, exiting..." appears, OSA is correctly installed!
+
+**IMPORTANT NOTE:**
+If you plan to use standard ports for HTTP and HTTPS nodes (i.e 80 and 443 instead of 81 and 8443), first disable standard apache configuration:
+- disable default virtual hosts
+
+		a2dissite 000-default default-ssl
+- edit /etc/apache2/ports.conf and comment all *Listen* directives relative to port 80 and 443
