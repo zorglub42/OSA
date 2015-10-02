@@ -50,4 +50,4 @@ run ./configure-osa.sh
 
 If, at the end of execution the message "OSA Configuration done, exiting..." appears, OSA is correctly installed!
 
-**IMPORTANT NOTE:**
+***IMPORTANT NOTE:***
