@@ -50,4 +50,7 @@ run ./configure-osa.sh
 
 If, at the end of execution the message "OSA Configuration done, exiting..." appears, OSA is correctly installed!
 
-***IMPORTANT NOTE:***
+**IMPORTANT NOTE:**
+If you plan to use standard ports for HTTP and HTTPS node (i.e 80 and 443 instead of 81 and 8443), first disable standard apache configuration:
+		a2dissite 000-default default-ssl
+	Edit /etc/apache2/ports.conf and comment all *Listen* directives relative to port 80 and 443
