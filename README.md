@@ -1,7 +1,7 @@
 # OSA
 Open Services Access: Apaches RP management tool
 
-OSA is a tool to manage in click-and-paly mode an Apache reverse proxy
+OSA is a tool to manage in click-and-play mode an Apache reverse proxy
 It's based on apache 2 web server.
 
 In addition, it offers some extra functionalities like dual mode authentication (HTTP basic or cookie) for a same resource set or quota management.
