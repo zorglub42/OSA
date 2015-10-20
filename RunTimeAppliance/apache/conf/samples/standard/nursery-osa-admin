@@ -192,8 +192,8 @@
 	RewriteCond     %{REQUEST_URI}      ^/auth/.*$
 	RewriteRule  	/auth/(.*) http://localhost:PRIVATE_VHOST_PORT/ApplianceManager/auth/$1 [P,L]
 
-	RewriteCond     %{REQUEST_URI}      ^/.*$
-	RewriteRule  	/(.*) http://127.0.0.1:PRIVATE_VHOST_PORT/ApplianceManager/$1 [P,L]
+	RewriteCond     %{REQUEST_URI}      ^.*$
+	RewriteRule  	(.*) http://127.0.0.1:PRIVATE_VHOST_PORT/ApplianceManager$1 [P,L]
       	
 	Header set Server OSA-2.0
 </VirtualHost>
