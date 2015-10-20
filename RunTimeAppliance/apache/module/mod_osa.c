@@ -129,12 +129,6 @@
 #include <sys/sem.h>
 
 
-typedef struct{
-	int semid;
-	struct sembuf op;
-	int created;
-	int inUse;
-}semaphore;
 
 typedef struct {
 	char key[MAX_SPLITED_TOKEN_SIZE];
@@ -269,45 +263,10 @@ void split(char *str, char delimiter, spliting *s){
         s->tokensCount++;
 }
 
-void initSemaphore(semaphore *s, key_t k, int initialValue){
-	s->semid = semget(k, 1, IPC_CREAT | IPC_EXCL | 0666);
-	if (s->semid == -1){
-	    s->semid = semget(k, 1, 0666);	
-	}else{
-	    semctl(s->semid, 0, SETVAL, initialValue);
-	}
-	s->created=1;
-	s->inUse=(initialValue<=0);
-}	
 
 
 
 
-
-void P(semaphore *s){
-    s->op.sem_num = 0; //Numéro de notre sémaphore: le premier et le seul
-    s->op.sem_op = -1; //Pour un P() on décrémente
-    s->op.sem_flg = 0; //On s'en occupe pas
-    s->inUse=1;
-    semop(s->semid, &s->op, 1);
-}
-void V(semaphore *s){
-    s->op.sem_num = 0; //Numéro de notre sémaphore: le premier et le seul
-    s->op.sem_op = 1; //Pour un P() on incrémente
-    s->op.sem_flg = 0; //On s'en occupe pas
-    semop(s->semid, &s->op, 1);
-}
-
-
-void removeSemaphore(semaphore *s){
-	if (s->created){
-		semctl(s->semid, 0, IPC_RMID, 0); //Destruction du sémaphore
-		s->created=0;
-	}
-	
-}
-semaphore counterSem;
-semaphore userCounterSem;
 stringKeyValList headersMappingList;
 
 
@@ -684,6 +643,292 @@ static mysql_connection connection = {NULL, "", "", ""};
 
 
 
+
+
+char *replace(char *st, char *orig, char *repl) {
+  static char buffer[4096];
+  char *ch;
+  if (!(ch = strstr(st, orig)))
+   return st;
+  strncpy(buffer, st, ch-st);  
+  buffer[ch-st] = 0;
+  sprintf(buffer+(ch-st), "%s%s", repl, ch+strlen(orig));
+  return buffer;
+  }
+
+/*--------------------------------------------------------------------------------------------------*/
+/*                 void dumpHTMLError(request_rec *r, char *errMSG)                                 */
+/*--------------------------------------------------------------------------------------------------*/
+/* Error management for Nursery's mediations                                                        */
+/* Display error text in main body for request as HTML                                              */
+/*--------------------------------------------------------------------------------------------------*/
+/* IN:                                                                                              */
+/*        request_rec *r: apache request                                                            */
+/*        char *errMSG: message to diplay                                                           */
+/*        int status: HTTP status to set for response                                               */
+/*--------------------------------------------------------------------------------------------------*/
+/* RETURN: effectiove HTTP status (i.e 500 for SOAP, else status parameter                          */
+/*         DONE                                                                                     */
+/*--------------------------------------------------------------------------------------------------*/
+static void dumpHTMLError(request_rec *r, char *errMSG){
+char strHttpBody[2000];
+
+
+
+
+strHttpBody[0]=0;
+
+
+strcat(strHttpBody,"<h1>An error has occurred</h1>\n");
+strcat(strHttpBody,"<table>\n");
+strcat(strHttpBody,"	<tr><td>Error code:</td><td>-1</td></tr>\n");
+strcat(strHttpBody,"	<tr><td>Error label:</td><td>");
+strcat(strHttpBody,errMSG);
+strcat(strHttpBody,"</td></tr>\n");
+strcat(strHttpBody,"</table>\n");
+
+
+
+
+r->content_type="text/html";
+ap_rputs(strHttpBody, r);
+
+}
+
+
+
+
+/*--------------------------------------------------------------------------------------------------*/
+/*                 void dumpTextError(request_rec *r, char *errMSG)                                 */
+/*--------------------------------------------------------------------------------------------------*/
+/* Error management for Nursery's mediations                                                        */
+/* Display error text in main body for request as HTML                                              */
+/*--------------------------------------------------------------------------------------------------*/
+/* IN:                                                                                              */
+/*        request_rec *r: apache request                                                            */
+/*        char *errMSG: message to diplay                                                           */
+/*        int status: HTTP status to set for response                                               */
+/*--------------------------------------------------------------------------------------------------*/
+/* RETURN: effectiove HTTP status (i.e 500 for SOAP, else status parameter                          */
+/*         DONE                                                                                     */
+/*--------------------------------------------------------------------------------------------------*/
+static void dumpTextError(request_rec *r, char *errMSG){
+char strHttpBody[2000];
+
+
+
+
+strHttpBody[0]=0;
+
+
+strcat(strHttpBody,"Error code: -1\n");
+strcat(strHttpBody,"Error label: ");
+strcat(strHttpBody,errMSG);
+
+
+
+
+r->content_type="text/plain";
+ap_rputs(strHttpBody, r);
+
+}
+
+
+/*--------------------------------------------------------------------------------------------------*/
+/*                 void dumpJSONFault(request_rec *r, char *errMSG)                                 */
+/*--------------------------------------------------------------------------------------------------*/
+/* Error management for Nursery's mediations                                                        */
+/* Display error text in main body for request as JSON                                              */
+/*--------------------------------------------------------------------------------------------------*/
+/* IN:                                                                                              */
+/*        request_rec *r: apache request                                                            */
+/*        char *errMSG: message to diplay                                                           */
+/*        int status: HTTP status to set for response                                               */
+/*--------------------------------------------------------------------------------------------------*/
+/* RETURN: effectiove HTTP status (i.e 500 for SOAP, else status parameter                          */
+/*         DONE                                                                                     */
+/*--------------------------------------------------------------------------------------------------*/
+static void dumpJSONError(request_rec *r, char *errMSG){
+char strHttpBody[2000];
+
+
+char errorMessage[255];
+strcpy(errorMessage,replace(errMSG,"\n","\\n"));
+strcpy(errorMessage,replace(errorMessage,"\"","\\\""));
+
+
+strHttpBody[0]=0;
+
+
+
+strcat(strHttpBody,"{\n");
+strcat(strHttpBody,"    \"code\": \"-1\",\n");
+strcat(strHttpBody,"    \"label\": \"");
+strcat(strHttpBody,errorMessage);
+strcat(strHttpBody,"\"\n");
+strcat(strHttpBody,"}\n");
+
+
+r->content_type="application/json";
+ap_rputs(strHttpBody, r);
+
+}
+
+/*--------------------------------------------------------------------------------------------------*/
+/*                 void dumpXMLFault(request_rec *r, char *errMSG){                                 */
+/*--------------------------------------------------------------------------------------------------*/
+/* Error management for Nursery's mediations                                                        */
+/* Display error text in main body for request as XML                                               */
+/*--------------------------------------------------------------------------------------------------*/
+/* IN:                                                                                              */
+/*        request_rec *r: apache request                                                            */
+/*        char *errMSG: message to diplay                                                           */
+/*        int status: HTTP status to set for response                                               */
+/*--------------------------------------------------------------------------------------------------*/
+/* RETURN: effectiove HTTP status (i.e 500 for SOAP, else status parameter                          */
+/*         DONE                                                                                     */
+/*--------------------------------------------------------------------------------------------------*/
+static void dumpXMLError(request_rec *r, char *errMSG){
+char strHttpBody[2000];
+
+
+
+strHttpBody[0]=0;
+strcat(strHttpBody,"<?xml version='1.0' encoding='UTF-8'?>\n");
+strcat(strHttpBody,"<appliance:Error xmlns:appliance='http://nursery.orange.com/appliance/V1'  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' >\n");
+strcat(strHttpBody,"	<appliance:Code>-1</appliance:Code>\n");
+strcat(strHttpBody,"	<appliance:Label>");
+strcat(strHttpBody,errMSG);
+strcat(strHttpBody,"</appliance:Label>\n");
+strcat(strHttpBody,"</appliance:Error>\n");
+
+
+r->content_type="text/xml";
+ap_rputs(strHttpBody, r);
+
+}
+
+
+
+
+
+
+/*--------------------------------------------------------------------------------------------------*/
+/*                 void dumpSOAPFault(request_rec *r, char *errMSG){                                */
+/*--------------------------------------------------------------------------------------------------*/
+/* Error management for Nursery's mediations                                                        */
+/* Display error text in main body for request as SOAP Fault                                        */
+/*--------------------------------------------------------------------------------------------------*/
+/* IN:                                                                                              */
+/*        request_rec *r: apache request                                                            */
+/*        char *errMSG: message to diplay                                                           */
+/*        int status: HTTP status to set for response                                               */
+/*--------------------------------------------------------------------------------------------------*/
+/* RETURN: effectiove HTTP status (i.e 500 for SOAP, else status parameter                          */
+/*         DONE                                                                                     */
+/*--------------------------------------------------------------------------------------------------*/
+void dumpSOAPFault(request_rec *r, char *errMSG){
+char strHttpBody[2000];
+
+strHttpBody[0]=0;
+strcat(strHttpBody,"<?xml version='1.0' ?>\n");
+strcat(strHttpBody,"<env:Envelope xmlns:env='http://schemas.xmlsoap.org/soap/envelope/'>\n");
+strcat(strHttpBody,"	<env:Body>\n");
+strcat(strHttpBody,"		<env:Fault>\n");
+strcat(strHttpBody,"			<faultcode>env:Server</faultcode>\n");
+strcat(strHttpBody,"			<faultstring>");
+strcat(strHttpBody,"                    	");
+strcat(strHttpBody, errMSG);
+strcat(strHttpBody,"                    </faultstring>\n");
+strcat(strHttpBody,"		</env:Fault>\n");
+strcat(strHttpBody,"	</env:Body>\n");
+strcat(strHttpBody,"</env:Envelope>\n");
+
+r->content_type="text/xml";
+
+
+ap_rputs(strHttpBody, r);
+
+}
+
+
+
+
+/*--------------------------------------------------------------------------------------------------*/
+/*                 int renderErrorBody(request_rec *r, char *errMSG, int status)                    */
+/*--------------------------------------------------------------------------------------------------*/
+/* Error management for Nursery's mediations                                                        */
+/* Display error text in main body for request depending on reqiested formet (SOAP, XML, JSON....)  */
+/*--------------------------------------------------------------------------------------------------*/
+/* IN:                                                                                              */
+/*        request_rec *r: apache request                                                            */
+/*        char *errMSG: message to diplay                                                           */
+/*        int status: HTTP status to set for response                                               */
+/*--------------------------------------------------------------------------------------------------*/
+/* RETURN: effectiove HTTP status (i.e 500 for SOAP, else status parameter                          */
+/*         DONE                                                                                     */
+/*--------------------------------------------------------------------------------------------------*/
+int renderErrorBody(request_rec *r, char *errMSG, int status){
+
+int rc = status;
+char *soapHeader = apr_pstrdup(r->pool, apr_table_get(r->headers_in, "SOAPAction"));
+char *acceptHeader  = apr_pstrdup(r->pool, apr_table_get(r->headers_in, "Accept"));
+
+
+if (soapHeader){
+	rc = 500;
+	dumpSOAPFault(r, errMSG);
+}else{
+	spliting acceptList;
+	split(acceptHeader,',', &acceptList);
+	int i;
+	int jobDone=0;
+	for (i=0;i<acceptList.tokensCount && !jobDone;i++){
+		if (strstr(acceptList.tokens[i],"html")){
+			dumpHTMLError(r, errMSG);
+			jobDone=1;
+		}else if (strstr(acceptList.tokens[i],"json")){
+        	        dumpJSONError(r, errMSG);
+			jobDone=1;
+	        }else if (strstr(acceptList.tokens[i],"xml")){
+        	        dumpXMLError(r, errMSG);
+			jobDone=1;
+	        }else{
+			dumpTextError(r, errMSG);
+			jobDone=1;
+		}
+	}
+}
+return rc;
+}
+
+
+
+/*--------------------------------------------------------------------------------------------------*/
+/*                 int nursery_error(request_rec *r, char *errMSG, int status)                      */
+/*--------------------------------------------------------------------------------------------------*/
+/* Error management for Nursery's mediations                                                        */
+/* Display error text in main body for request and as a HTTP HEADER                                 */
+/*--------------------------------------------------------------------------------------------------*/
+/* IN:                                                                                              */
+/*        request_rec *r: apache request                                                            */
+/*        char *errMSG: message to diplay                                                           */
+/*        int status: HTTP status to set for response                                               */
+/*--------------------------------------------------------------------------------------------------*/
+/* RETURN: apache processing status                                                                 */
+/*         DONE                                                                                     */
+/*--------------------------------------------------------------------------------------------------*/
+int nursery_error(request_rec *r, char *errMSG, int status){
+
+
+
+LOG_ERROR_1(APLOG_ERR, 0, r,"%s", errMSG);
+r->status= renderErrorBody(r, errMSG, status);
+apr_table_set(r->err_headers_out, NURSERY_ERROR_HEADER, errMSG);
+
+
+return DONE;
+}
 
 
 void P_db(osa_config_rec *sec, request_rec *r, char *sem){
@@ -1684,297 +1929,6 @@ static char ** get_mysql_groups(request_rec *r, char *user, osa_config_rec *m)
 }
 
 
-
-
-char *replace(char *st, char *orig, char *repl) {
-  static char buffer[4096];
-  char *ch;
-  if (!(ch = strstr(st, orig)))
-   return st;
-  strncpy(buffer, st, ch-st);  
-  buffer[ch-st] = 0;
-  sprintf(buffer+(ch-st), "%s%s", repl, ch+strlen(orig));
-  return buffer;
-  }
-
-/*--------------------------------------------------------------------------------------------------*/
-/*                 void dumpHTMLError(request_rec *r, char *errMSG)                                 */
-/*--------------------------------------------------------------------------------------------------*/
-/* Error management for Nursery's mediations                                                        */
-/* Display error text in main body for request as HTML                                              */
-/*--------------------------------------------------------------------------------------------------*/
-/* IN:                                                                                              */
-/*        request_rec *r: apache request                                                            */
-/*        char *errMSG: message to diplay                                                           */
-/*        int status: HTTP status to set for response                                               */
-/*--------------------------------------------------------------------------------------------------*/
-/* RETURN: effectiove HTTP status (i.e 500 for SOAP, else status parameter                          */
-/*         DONE                                                                                     */
-/*--------------------------------------------------------------------------------------------------*/
-static void dumpHTMLError(request_rec *r, char *errMSG){
-char strHttpBody[2000];
-
-
-
-
-strHttpBody[0]=0;
-
-
-strcat(strHttpBody,"<h1>An error has occurred</h1>\n");
-strcat(strHttpBody,"<table>\n");
-strcat(strHttpBody,"	<tr><td>Error code:</td><td>-1</td></tr>\n");
-strcat(strHttpBody,"	<tr><td>Error label:</td><td>");
-strcat(strHttpBody,errMSG);
-strcat(strHttpBody,"</td></tr>\n");
-strcat(strHttpBody,"</table>\n");
-
-
-
-
-r->content_type="text/html";
-ap_rputs(strHttpBody, r);
-
-}
-
-
-
-
-/*--------------------------------------------------------------------------------------------------*/
-/*                 void dumpTextError(request_rec *r, char *errMSG)                                 */
-/*--------------------------------------------------------------------------------------------------*/
-/* Error management for Nursery's mediations                                                        */
-/* Display error text in main body for request as HTML                                              */
-/*--------------------------------------------------------------------------------------------------*/
-/* IN:                                                                                              */
-/*        request_rec *r: apache request                                                            */
-/*        char *errMSG: message to diplay                                                           */
-/*        int status: HTTP status to set for response                                               */
-/*--------------------------------------------------------------------------------------------------*/
-/* RETURN: effectiove HTTP status (i.e 500 for SOAP, else status parameter                          */
-/*         DONE                                                                                     */
-/*--------------------------------------------------------------------------------------------------*/
-static void dumpTextError(request_rec *r, char *errMSG){
-char strHttpBody[2000];
-
-
-
-
-strHttpBody[0]=0;
-
-
-strcat(strHttpBody,"Error code: -1\n");
-strcat(strHttpBody,"Error label: ");
-strcat(strHttpBody,errMSG);
-
-
-
-
-r->content_type="text/plain";
-ap_rputs(strHttpBody, r);
-
-}
-
-
-/*--------------------------------------------------------------------------------------------------*/
-/*                 void dumpJSONFault(request_rec *r, char *errMSG)                                 */
-/*--------------------------------------------------------------------------------------------------*/
-/* Error management for Nursery's mediations                                                        */
-/* Display error text in main body for request as JSON                                              */
-/*--------------------------------------------------------------------------------------------------*/
-/* IN:                                                                                              */
-/*        request_rec *r: apache request                                                            */
-/*        char *errMSG: message to diplay                                                           */
-/*        int status: HTTP status to set for response                                               */
-/*--------------------------------------------------------------------------------------------------*/
-/* RETURN: effectiove HTTP status (i.e 500 for SOAP, else status parameter                          */
-/*         DONE                                                                                     */
-/*--------------------------------------------------------------------------------------------------*/
-static void dumpJSONError(request_rec *r, char *errMSG){
-char strHttpBody[2000];
-
-
-char errorMessage[255];
-strcpy(errorMessage,replace(errMSG,"\n","\\n"));
-strcpy(errorMessage,replace(errorMessage,"\"","\\\""));
-
-
-strHttpBody[0]=0;
-
-
-
-strcat(strHttpBody,"{\n");
-strcat(strHttpBody,"    \"code\": \"-1\",\n");
-strcat(strHttpBody,"    \"label\": \"");
-strcat(strHttpBody,errorMessage);
-strcat(strHttpBody,"\"\n");
-strcat(strHttpBody,"}\n");
-
-
-r->content_type="application/json";
-ap_rputs(strHttpBody, r);
-
-}
-
-/*--------------------------------------------------------------------------------------------------*/
-/*                 void dumpXMLFault(request_rec *r, char *errMSG){                                 */
-/*--------------------------------------------------------------------------------------------------*/
-/* Error management for Nursery's mediations                                                        */
-/* Display error text in main body for request as XML                                               */
-/*--------------------------------------------------------------------------------------------------*/
-/* IN:                                                                                              */
-/*        request_rec *r: apache request                                                            */
-/*        char *errMSG: message to diplay                                                           */
-/*        int status: HTTP status to set for response                                               */
-/*--------------------------------------------------------------------------------------------------*/
-/* RETURN: effectiove HTTP status (i.e 500 for SOAP, else status parameter                          */
-/*         DONE                                                                                     */
-/*--------------------------------------------------------------------------------------------------*/
-static void dumpXMLError(request_rec *r, char *errMSG){
-char strHttpBody[2000];
-
-
-
-strHttpBody[0]=0;
-strcat(strHttpBody,"<?xml version='1.0' encoding='UTF-8'?>\n");
-strcat(strHttpBody,"<appliance:Error xmlns:appliance='http://nursery.orange.com/appliance/V1'  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' >\n");
-strcat(strHttpBody,"	<appliance:Code>-1</appliance:Code>\n");
-strcat(strHttpBody,"	<appliance:Label>");
-strcat(strHttpBody,errMSG);
-strcat(strHttpBody,"</appliance:Label>\n");
-strcat(strHttpBody,"</appliance:Error>\n");
-
-
-r->content_type="text/xml";
-ap_rputs(strHttpBody, r);
-
-}
-
-
-
-
-
-
-/*--------------------------------------------------------------------------------------------------*/
-/*                 void dumpSOAPFault(request_rec *r, char *errMSG){                                */
-/*--------------------------------------------------------------------------------------------------*/
-/* Error management for Nursery's mediations                                                        */
-/* Display error text in main body for request as SOAP Fault                                        */
-/*--------------------------------------------------------------------------------------------------*/
-/* IN:                                                                                              */
-/*        request_rec *r: apache request                                                            */
-/*        char *errMSG: message to diplay                                                           */
-/*        int status: HTTP status to set for response                                               */
-/*--------------------------------------------------------------------------------------------------*/
-/* RETURN: effectiove HTTP status (i.e 500 for SOAP, else status parameter                          */
-/*         DONE                                                                                     */
-/*--------------------------------------------------------------------------------------------------*/
-void dumpSOAPFault(request_rec *r, char *errMSG){
-char strHttpBody[2000];
-
-strHttpBody[0]=0;
-strcat(strHttpBody,"<?xml version='1.0' ?>\n");
-strcat(strHttpBody,"<env:Envelope xmlns:env='http://schemas.xmlsoap.org/soap/envelope/'>\n");
-strcat(strHttpBody,"	<env:Body>\n");
-strcat(strHttpBody,"		<env:Fault>\n");
-strcat(strHttpBody,"			<faultcode>env:Server</faultcode>\n");
-strcat(strHttpBody,"			<faultstring>");
-strcat(strHttpBody,"                    	");
-strcat(strHttpBody, errMSG);
-strcat(strHttpBody,"                    </faultstring>\n");
-strcat(strHttpBody,"		</env:Fault>\n");
-strcat(strHttpBody,"	</env:Body>\n");
-strcat(strHttpBody,"</env:Envelope>\n");
-
-r->content_type="text/xml";
-
-
-ap_rputs(strHttpBody, r);
-
-}
-
-
-
-
-/*--------------------------------------------------------------------------------------------------*/
-/*                 int renderErrorBody(request_rec *r, char *errMSG, int status)                    */
-/*--------------------------------------------------------------------------------------------------*/
-/* Error management for Nursery's mediations                                                        */
-/* Display error text in main body for request depending on reqiested formet (SOAP, XML, JSON....)  */
-/*--------------------------------------------------------------------------------------------------*/
-/* IN:                                                                                              */
-/*        request_rec *r: apache request                                                            */
-/*        char *errMSG: message to diplay                                                           */
-/*        int status: HTTP status to set for response                                               */
-/*--------------------------------------------------------------------------------------------------*/
-/* RETURN: effectiove HTTP status (i.e 500 for SOAP, else status parameter                          */
-/*         DONE                                                                                     */
-/*--------------------------------------------------------------------------------------------------*/
-int renderErrorBody(request_rec *r, char *errMSG, int status){
-
-int rc = status;
-char *soapHeader = apr_pstrdup(r->pool, apr_table_get(r->headers_in, "SOAPAction"));
-char *acceptHeader  = apr_pstrdup(r->pool, apr_table_get(r->headers_in, "Accept"));
-
-
-if (soapHeader){
-	rc = 500;
-	dumpSOAPFault(r, errMSG);
-}else{
-	spliting acceptList;
-	split(acceptHeader,',', &acceptList);
-	int i;
-	int jobDone=0;
-	for (i=0;i<acceptList.tokensCount && !jobDone;i++){
-		if (strstr(acceptList.tokens[i],"html")){
-			dumpHTMLError(r, errMSG);
-			jobDone=1;
-		}else if (strstr(acceptList.tokens[i],"json")){
-        	        dumpJSONError(r, errMSG);
-			jobDone=1;
-	        }else if (strstr(acceptList.tokens[i],"xml")){
-        	        dumpXMLError(r, errMSG);
-			jobDone=1;
-	        }else{
-			dumpTextError(r, errMSG);
-			jobDone=1;
-		}
-	}
-}
-return rc;
-}
-
-
-
-/*--------------------------------------------------------------------------------------------------*/
-/*                 int nursery_error(request_rec *r, char *errMSG, int status)                      */
-/*--------------------------------------------------------------------------------------------------*/
-/* Error management for Nursery's mediations                                                        */
-/* Display error text in main body for request and as a HTTP HEADER                                 */
-/*--------------------------------------------------------------------------------------------------*/
-/* IN:                                                                                              */
-/*        request_rec *r: apache request                                                            */
-/*        char *errMSG: message to diplay                                                           */
-/*        int status: HTTP status to set for response                                               */
-/*--------------------------------------------------------------------------------------------------*/
-/* RETURN: apache processing status                                                                 */
-/*         DONE                                                                                     */
-/*--------------------------------------------------------------------------------------------------*/
-int nursery_error(request_rec *r, char *errMSG, int status){
-
-
-
-LOG_ERROR_1(APLOG_ERR, 0, r,"%s", errMSG);
-r->status= renderErrorBody(r, errMSG, status);
-apr_table_set(r->err_headers_out, NURSERY_ERROR_HEADER, errMSG);
-
-
-return DONE;
-}
-
-
-
-
-
 /*--------------------------------------------------------------------------------------------------*/
 /* checkQuotas( osa_config_rec *sec, request_rec *r,char *counterPrefix, char *quotaScope,   */
 /*              int maxReqSec, int maxReqDay, int maxReqMon)                                        */
@@ -2311,14 +2265,9 @@ sprintf(scope,"for user %s and resource %s", r->user, sec->resourceName);
 
 int rc;
 
-/*initSemaphore(&userCounterSem,USER_COUNTER_SEMAPHORE_KEY,1);
-P(&userCounterSem);
-P_db(sec, r, counterPrefix);*/
 P_db(sec, r, "USER_QUOTAS");
 rc=checkQuotas(sec, r, counterPrefix, scope, reqSec, reqDay, reqMonth, 429);
 V_db(sec, r, "USER_QUOTAS");
-/*V_db(sec, r, counterPrefix);
-V(&userCounterSem);*/
 
 return rc;
 
@@ -2752,6 +2701,18 @@ int get_basic_auth_creds(request_rec *r, char **pwd){
 	  return 0;
   }
 }
+
+
+int send_request_basic_auth(request_rec *r){
+	char realm[255];
+	osa_config_rec *sec = (osa_config_rec *)ap_get_module_config(r->per_dir_config, &osa_module);
+  
+	sprintf(realm,"Basic realm=\"%s\"", sec->authName);
+	apr_table_set(r->err_headers_out, "WWW-Authenticate", realm);
+	return 0;
+}
+
+
 /*
  * callback from Apache to do the authentication of the user to his
  * password.
@@ -2901,14 +2862,6 @@ static int mysql_authenticate_basic_user (request_rec *r)
 }
 
 
-int send_request_basic_auth(request_rec *r){
-	char realm[255];
-	osa_config_rec *sec = (osa_config_rec *)ap_get_module_config(r->per_dir_config, &osa_module);
-  
-	sprintf(realm,"Basic realm=\"%s\"", sec->authName);
-	apr_table_set(r->err_headers_out, "WWW-Authenticate", realm);
-	return 0;
-}
 
 /*
  * check if user is member of at least one of the necessary group(s)
@@ -3162,12 +3115,6 @@ static void register_hooks(POOL *p)
 {
     build_decoding_table();
 	srand ( time(NULL) );
-	/* Cleanup on pre-existing semaphore */
-	initSemaphore(&counterSem, COUNTER_SEMAPHORE_KEY,1);
-	removeSemaphore(&counterSem);
-
-	initSemaphore(&userCounterSem, USER_COUNTER_SEMAPHORE_KEY,1);
-	removeSemaphore(&userCounterSem);
 
 	//ap_hook_check_user_id(mysql_authenticate_basic_user, NULL, NULL, APR_HOOK_MIDDLE);
 	//ap_hook_auth_checker(mysql_check_auth, NULL, NULL, APR_HOOK_MIDDLE);

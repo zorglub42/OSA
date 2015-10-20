@@ -64,7 +64,7 @@
        BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
 	ProxyTimeout 120
       	
-		<Location  /ApplianceManagerAdmin>
+		<Location  />
 
 			Include /etc/ApplianceManager/nursery-appliance-settings.inc	
 			AuthBasicAuthoritative Off
@@ -96,7 +96,7 @@
 			
 		</Location>
 
-		<Location  /ApplianceManagerAdmin/auth/>
+		<Location  /auth/>
 
 			Include /etc/ApplianceManager/nursery-appliance-settings.inc
 			OSAEnable Off
@@ -120,7 +120,7 @@
 			
 		</Location>
 
-		<Location  /ApplianceManagerAdmin/auth/token>
+		<Location  /auth/token>
 
 			Include /etc/ApplianceManager/nursery-appliance-settings.inc	
 			AuthBasicAuthoritative Off
@@ -143,7 +143,7 @@
 			OSALogHit On
 			
 			ProxyPassReverseCookieDomain localhost HTTPS_ADMIN_VHOST_NAME
-			ProxyPassReverseCookiePath /  /ApplianceManagerAdmin/auth/token
+			ProxyPassReverseCookiePath /  /auth/token
 
 
 
@@ -151,7 +151,7 @@
 			ProxyPassReverse http://localhost:PRIVATE_VHOST_PORT/ApplianceManager/auth/token
 			
 		</Location>
-		<Location  /ApplianceManagerAdmin/users/me>
+		<Location  /users/me>
 
 			Include /etc/ApplianceManager/nursery-appliance-settings.inc	
 			AuthBasicAuthoritative Off
@@ -174,7 +174,7 @@
 			OSALogHit On
 			
 			ProxyPassReverseCookieDomain localhost HTTPS_ADMIN_VHOST_NAME
-			ProxyPassReverseCookiePath /  /ApplianceManagerAdmin/users/me
+			ProxyPassReverseCookiePath /  /users/me
 
 
 
@@ -183,17 +183,17 @@
 			
 		</Location>
 
-	RewriteCond     %{REQUEST_URI}      ^/ApplianceManagerAdmin/users/me.*$
-	RewriteRule  	/ApplianceManagerAdmin/users/me(.*) http://localhost:PRIVATE_VHOST_PORT/ApplianceManager/users/me$1 [P,L]
+	RewriteCond     %{REQUEST_URI}      ^/users/me.*$
+	RewriteRule  	/users/me(.*) http://localhost:PRIVATE_VHOST_PORT/ApplianceManager/users/me$1 [P,L]
 
-	RewriteCond     %{REQUEST_URI}      ^/ApplianceManagerAdmin/auth/token.*$
-	RewriteRule  	/ApplianceManagerAdmin/auth/token(.*) http://localhost:PRIVATE_VHOST_PORT/ApplianceManager/auth/token$1 [P,L]
+	RewriteCond     %{REQUEST_URI}      ^/auth/token.*$
+	RewriteRule  	/auth/token(.*) http://localhost:PRIVATE_VHOST_PORT/ApplianceManager/auth/token$1 [P,L]
 
-	RewriteCond     %{REQUEST_URI}      ^/ApplianceManagerAdmin/auth/.*$
-	RewriteRule  	/ApplianceManagerAdmin/auth/(.*) http://localhost:PRIVATE_VHOST_PORT/ApplianceManager/auth/$1 [P,L]
+	RewriteCond     %{REQUEST_URI}      ^/auth/.*$
+	RewriteRule  	/auth/(.*) http://localhost:PRIVATE_VHOST_PORT/ApplianceManager/auth/$1 [P,L]
 
-	RewriteCond     %{REQUEST_URI}      ^/ApplianceManagerAdmin.*$
-	RewriteRule  	/ApplianceManagerAdmin(.*) http://127.0.0.1:PRIVATE_VHOST_PORT/ApplianceManager$1 [P,L]
+	RewriteCond     %{REQUEST_URI}      ^/.*$
+	RewriteRule  	/(.*) http://127.0.0.1:PRIVATE_VHOST_PORT/ApplianceManager$1 [P,L]
       	
 	Header set Server OSA-2.0
 </VirtualHost>

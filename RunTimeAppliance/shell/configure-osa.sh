@@ -1217,5 +1217,5 @@ updateAdminUser
 
 deleteTempFiles
 echo "OSA Configuration done, exiting..."
-echo "You can now connect https://$HTTPS_ADMIN_VHOST_NAME:$HTTPS_ADMIN_VHOST_PORT/ApplianceManagerAdmin (with admin as user and $APPLIANCE_ADMIN_PW as password for credentials) to manage OSA."
+echo "You can now connect https://$HTTPS_ADMIN_VHOST_NAME:$HTTPS_ADMIN_VHOST_PORT/ (with admin as user and $APPLIANCE_ADMIN_PW as password for credentials) to manage OSA."
 exit 0
