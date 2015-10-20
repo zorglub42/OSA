@@ -1,0 +1,47 @@
+<center>
+	<h1>
+					{serviceList.length} services found
+	</h1>
+	<hr>
+	<form onkeypress="return handelServiceFilterFormKeypress(event)">
+		<table class="tabular_table searchFormTable" >	
+			<tr class="tabular_table_body">	
+				<th>service name</th> <td><input type="text" id="serviceNameFilter" value="{serviceNameFilterPrevVal}"></td>	
+				<th>group name</th> <td><input type="text" id="serviceGroupNameFilter" value="{serviceGroupNameFilterPrevVal}"></td>	
+				<th>&nbsp;</th> <td>&nbsp;</td>	
+			</tr>	
+			<tr class="tabular_table_body">	
+				<th>frontend endpoint</th> <td><input type="text" id="frontEndEndPointFilter"value="{frontEndEndPointFilterPrevVal}"></td>	
+				<th>backend endpoint</th> <td><input type="text" id="backEndEndPointFilter" value="{backEndEndPointFilterPrevVal}"></td>	
+				<td colspan="2"><input type="button" class="button_orange" value="filter" onclick="showServices()"><input type="button" class="button_white" value="reset" onclick="resetServiceFilter()"></th> 	
+			</tr>	
+		</table>	
+	</form>	
+	<table id="servicesList" class="tabular_table scroll" >
+		<thead>
+			<tr class="tabular_table_header">
+				<th>Service name</th>
+				<th>On</th>
+				<th>Group name</th>
+				<th>Frontend endpoint</th>
+				<th>Backend endpoint</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody id="data">
+				<tr id="rowTpl" style="visibilit:hidden">
+					<td title="{serviceList[i].serviceName}">{serviceList[i].serviceName}</td>
+						
+					<td class="isPublished"><input  title="{isPublishedToolTip}" type="checkbox" id="isPublished{i}" {serviceList[i].cbPublishedCheck} disabled><label for="isPublished{i}"></label></td>
+
+					<td title="{serviceList[i].groupName}">{serviceList[i].groupName}</td>
+					<td title="{serviceList[i].frontEndEndPoint}">{serviceList[i].frontEndEndPoint}</td>
+					<td title="{serviceList[i].backEndEndPoint}">{serviceList[i].backEndEndPoint}</td>
+					<td class="action">
+						<a id="btnEdit" title="{editServiceToolTip}"  href="javascript:startEditService('{serviceList[i].uri}')"><img  border="0" src="images/edit.gif"></a>
+						<a id="btnDelete" title="{deleteServiceToolTip}"  href="javascript:deleteService('{serviceList[i].uri}', '{serviceList[i].serviceName}')"><img border="0" src="images/delete.gif"></a>
+					</td>
+				</tr>
+		</tbody>
+	 </table>
+</center>

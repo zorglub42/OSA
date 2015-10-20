@@ -1,0 +1,178 @@
+<table class="tabular_table choices-border" width="800px">
+	<tr id="mainForm" class="tabular_table_body">
+		<td>
+			<div id="tabs">
+				<ul>
+					<li><a  href="#tabs-general">General</a></li>
+					<li><a  href="#tabs-frontEnd">Frontend authentication</a></li>
+					<li><a  href="#tabs-backEnd">Backend credentials and identity</a></li>
+					<li><a  href="#tabs-quotas">Quotas</a></li>
+					<li><a  href="#tabs-nodes">Nodes</a></li>
+					<li><a  href="#tabs-advance">Advance</a></li>
+				</ul>
+				<div id="tabs-general">
+					<table>
+						<tr class="tabular_table_body">
+							<th>Service name:</th>
+							<td>{serviceName}<input type="{serviceNameInputType}" class="inputText"  title="{serviceNameToolTip}" id="serviceName" value="{serviceName}" onchange="setServiceModified(true)" onkeypress="setServiceModified(true)"></td>
+						</tr>
+						<tr class="tabular_table_body">
+							<th>Is published:</th>
+							<td><input  title="{isPublishedToolTip}" type="checkbox" id="isPublished" onClick="setServiceModified(true)"  onchange="setServiceModified(true)" onkeypress="setServiceModified(true)" {cbIsPublished} ><label for="isPublished"></label></td>
+						</tr>
+						<tr class="tabular_table_body">
+							<th>Frontend alias:</th>
+							<td><input class="inputText" title="{frontEndToolTip}" type="text" id="frontEndEndPoint" value="{frontEndEndPoint}"  onchange="setServiceModified(true)" onkeypress="setServiceModified(true)"></td>
+						</tr>
+						<tr class="tabular_table_body">
+							<th>Backend URL:</th>
+							<td><input class="inputText"  title="{backEndURLToolTip}" type="text" id="backEndEndPoint" value="{backEndEndPoint}"  onchange="setServiceModified(true)" onkeypress="setServiceModified(true)"></td>
+						</tr>
+					</table>
+				</div>
+				<div id="tabs-frontEnd">
+					<table>
+						<tr class="tabular_table_body">
+							<th>Enable user authentication:</th>
+							<td><input title="{isUserAuthenticationToolTip}"  type="checkbox" id="isUserAuthenticationEnabled" onClick="checkUserAuth()"  onchange="checkUserAuth()" onkeypress="checkUserAuth()"{cbIsUserAuthenticationEnabled}><label for="isUserAuthenticationEnabled"></label></td>
+						</tr>
+						<tr id="group" class="tabular_table_body">
+							<th>Group:</th>
+							<td>
+								<div id='groupList'>
+									<select class="inputText"  title="{serviceGroupToolTip}" name="groupName" id="groupName"  onchange="setServiceModified(true)" onkeypress="setServiceModified(true)">
+										<option name="none" value="" >-- Choose one --</option>
+									</select>
+								</div>
+							</td>
+						</tr>
+						<tr id="loginForm" class="tabular_table_body">
+							<th>Login form URL:</th>
+							<td><input class="inputText" title="{loginFormUriToolTip}" type="text" id="loginFormUri"  value="{loginFormUri}"  onchange="setServiceModified(true)" onkeypress="setServiceModified(true)"></td>
+						</tr>
+						<tr id="allowAnonymous" class="tabular_table_body">
+							<th>Also allow anonymous access:</th>
+							<td><input title="{isAnonymousAllowedToolTip}"  type="checkbox" id="isAnonymousAllowed" {cbIsAnonymousAllowed} onClick="checkUserAuth()"  onchange="checkUserAuth()" onkeypress="checkUserAuth()"><label for="isAnonymousAllowed"></label></td>
+						</tr>
+					</table>
+				</div>
+				<div id="tabs-backEnd">
+					<table>
+						<tr id="idForwarding" class="tabular_table_body">
+							<th>Need consumer<br>identity forwarding:</th>
+							<td><input title="{identityForwardingToolTip}"  type="checkbox" id="isIdentityForwardingEnabled" onClick="setServiceModified(true)"  onchange="setServiceModified(true)" onkeypress="setServiceModified(true)" {cbIdentFwd}><label for="isIdentityForwardingEnabled"></label></td>
+						</tr>
+						<tr class="tabular_table_body">
+							<th>Username (basic auth):</th>
+							<td><input class="inputText"  title="{backendUserToolTip}"  type="text" id="backEndUsername" value="{backEndUsername}"  onchange="setServiceModified(true)" onkeypress="setServiceModified(true)"></td>
+						</tr>
+						<tr class="tabular_table_body">
+							<th>Password (basic auth):</th>
+							<td><input class="inputText"  title="{backendPasswordToolTip}" type="password" id="backEndPassword" value="{backEndPassword}"  onchange="setServiceModified(true)" onkeypress="setServiceModified(true)"></td>
+						</tr>
+					</table>
+				</div>
+				<div id="tabs-quotas">
+					<table >
+						<tr class="tabular_table_body">
+							<th>Need global quotas control:</th>
+							<td align="left"><input title="{serviceQuotaToolTip}"  type="checkbox" id="isGlobalQuotasEnabled" onClick="setQuotasVisibility();setServiceModified(true)"  onchange="setServiceModified(true)" onkeypress="setServiceModified(true)"><label for="isGlobalQuotasEnabled"></label></td>
+						</tr>
+					</table>
+					<table>
+						<tr class="tabular_table_body">
+							<td>
+								<div id="quotas">
+									<table >
+											<tr id="globalQuotasSec" style="display:none"  class="tabular_table_body">
+												<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Maximun per second:</th>
+												<td><input class="inputNumber"  title="{perSecToolTip}"  type="text" id="reqSec" value="{reqSec}"  onchange="setServiceModified(true)" onkeypress="setServiceModified(true)"></td>
+											</tr>
+											<tr id="globalQuotasDay" style="display:none"  class="tabular_table_body">
+												<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Maximun per day:</th>
+												<td><input class="inputNumber"  title="{perDayToolTip}" type="text" id="reqDay"  value="{reqDay}"  onchange="setServiceModified(true)" onkeypress="setServiceModified(true)"></td>
+											</tr>
+											<tr id="globalQuotasMonth" style="display:none" class="tabular_table_body">
+												<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Maximun per month:</th>
+												<td><input class="inputNumber"  title="{perMonthToolTip}"  type="text" id="reqMonth"  value="{reqMonth}" onchange="setServiceModified(true)" onkeypress="setServiceModified(true)"></td>
+											</tr>
+										<tr id="userQuota" style="display:none" class="tabular_table_body">
+											<th>Need user quotas control:</th>
+											<td><input title="{userQuotaToolTip}" type="checkbox" id="isUserQuotasEnabled"  onchange="setServiceModified(true)" onClick="setServiceModified(true)" {cbUserQuota}><label for="isUserQuotasEnabled"></label></td>
+										</tr>
+									</table>
+								</div>
+							</td>
+						</tr>
+					</table>
+				</div>
+				<div id="tabs-nodes">
+					<table >
+						<tr class="tabular_table_body">
+							<th>Available on all active nodes</th>
+							<td align="left"><input title="{serviceOnAllNodesToolTip}"  type="checkbox" id="onAllNodes" onClick="setNodesVisiblility();setServiceModified(true)"  onchange="setServiceModified(true)" onkeypress="setServiceModified(true)" {cbOnAllNodes}><label for="onAllNodes"></label></td>
+						</tr>
+					</table>
+					<div id="publishedOnNodes">
+						<table >
+							<tr class="tabular_table_body">
+								<th  valign="top">Services is avalable on nodes</th>
+							</tr>
+							<tr class="tabular_table_body">
+								<th>
+									<div id="nodeList">
+											<select title="{availableNodesToolTip}" name="serviceNodesList" id="serviceNodesList" size="15" multiple  class="serviceNodesList" onChange="setServiceModified(true)">
+											</select>
+									</div>
+								</th>
+							</tr>
+						</table>
+					</div>
+				</div>
+				<div id="tabs-advance">
+					<table >
+						<tr class="tabular_table_body">
+							<th>Log hits:</th>
+							<td><input title="{logHitToolTip}"  type="checkbox" id="isHitLoggingEnabled" onClick="setServiceModified(true)"  onchange="setServiceModified(true)" onkeypress="setServiceModified(true)" {cbIsHitLoggingEnabled}><label for="isHitLoggingEnabled"></label></td>
+						</tr>
+						<tr class="tabular_table_body">
+							<th colspan="2"><hr></th>
+						</tr>
+						<tr class="tabular_table_body">
+							<td colspan="2">
+								<br><p id="warnAdditionalConfig" class="errorMessage">ATTENTION: Using additional apache configuration directives may corrupt entire configuration if directives are not valid...</p>
+							</td>
+						</tr>
+						<tr class="tabular_table_body">
+							<th>Addtional apache directive:</th>
+							<td><textarea rows="10"  title="{additionalConfigurationToolTip}"   id="additionalConfiguration" onClick="setServiceModified(true)"  onchange="setServiceModified(true)" onkeypress="setServiceModified(true)">{additionalConfiguration}</textarea></td>
+							</td>
+						</tr>
+						<tr class="tabular_table_body">
+							<td colspan="2">In addition to standard apache variables, refering to the node where request is handled, you may use here:";
+								<ul>
+									<li>
+										%{publicServerProtocol}e as protocol used (i.e http:// or https://)\n"
+									</li>
+									<li>
+										%{publicServerName}e server name\n"
+									</li>
+									<li>
+										%{publicServerPort}e server port\n"
+									</li>
+									<li>
+										%{frontEndEndPoint}e frontEndPoint\n"
+									</li>
+									<li>
+										%{publicServerPrefix}e concatenation of previous variables (ex: https//public.node.com:8443/myservice)\n"
+									</li>
+									<br>Ex:<br>RequestHeader set Public-Root-URI "%{publicServerProtocol}e%{publicServerName}e:%{publicServerPort}e/%{frontEndEndPoint}e"";
+								</ul>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</td>
+	</tr>
+</table>

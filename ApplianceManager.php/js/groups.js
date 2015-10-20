@@ -20,6 +20,7 @@
  *--------------------------------------------------------
  * History     :
  * 1.0.0 - 2012-10-01 : Release of the file
+ * 1.1.0 - 2015-10-14 : HTML with templates
 */
 
 			var groupModified;
@@ -81,32 +82,16 @@
 			function editGroup(group){
 				currentGroup=group;
 
-				strHTML="";
-				strHTML+="<center>";
-				strHTML+="<h1>";
-				strHTML+="Group " + group.groupName + " properties";
-				strHTML+="</h1>";
-				strHTML+="<hr>";
-				strHTML+="<form>";
-				strHTML+="<table class=\"tabular_table\">";
-				strHTML+="<tr class=\"tabular_table_body\">";
-				strHTML+="<th>Group name:</th>";
-				strHTML+="<td>" + group.groupName + "</td>";
-				strHTML+="<tr class=\"tabular_table_body\">";
-				strHTML+="<th>Description:</th>";
-				strHTML+="<td><input class=\"inputText\"  title=\"" + groupDescToolTip + "\" type='text' id='groupDesc' value=\"" + group.description + "\" onchange=\"setGroupModified(true)\" onkeypress=\"setGroupModified(true)\"></td>";
-				strHTML+="</tr>";
-				strHTML+="</table>";
-				strHTML+="<br>";
-				strHTML+="<input type=\"button\" id=\"saveGroup\" onclick=\"updateGroup('" + group.uri + "')\" value=\"Save\" class=\"button_orange\">&nbsp;";
-				strHTML+="<input type=\"button\" id=\"cancelGroup\"  onclick=\"showGroups()\" value=\"Cancel\" class=\"button_orange\">";
-				strHTML+="<input type=\"button\" id=\"groupMembers\"  onclick=\"showMembers()\" value=\"Members\" class=\"button_orange\">";
-				strHTML+="</form>";
-				strHTML+="</center>";
-				
-				c=document.getElementById('content');
-				c.innerHTML=strHTML;
-				setGroupModified(false);
+
+
+				$.get( "resources/templates/groupEdit.html", function( data ) {
+						$( "#content" ).html( data.replaceAll("{group.groupName}", group.groupName )
+												  .replaceAll("{group.description}", group.description)
+												  .replaceAll("{group.uri}", group.uri)
+												  .replaceAll("{groupDescToolTip}", groupDescToolTip)
+										    );
+						setGroupModified(false);
+				});
 
 			}
 
@@ -127,84 +112,59 @@
 			}
 			
 			function addGroup(){
-				strHTML="";
-				strHTML+="<center>";
-				strHTML+="<h1>";
-				strHTML+="New Group properties";
-				strHTML+="</h1>";
-				strHTML+="<hr>";
-				strHTML+="<form>";
-				strHTML+="<table class=\"tabular_table\">";
-				strHTML+="<tr class=\"tabular_table_body\">";
-				strHTML+="<th>Group name:</th>";
-				strHTML+="<td><input class=\"inputText\" title=\"" + groupNameToolTip + "\" type=\"text\" id=\"groupName\" onchange=\"setGroupModified(true)\" onkeypress=\"setGroupModified(true)\"></td>";
-				strHTML+="<tr class=\"tabular_table_body\">";
-				strHTML+="<th>Description:</th>";
-				strHTML+="<td><input class=\"inputText\" title=\"" + groupDescToolTip + "\" type='text' id='groupDesc' onchange=\"setGroupModified(true)\" onkeypress=\"setGroupModified(true)\"></td>";
-				strHTML+="</tr>";
-				strHTML+="</table>";
-				strHTML+="<br>";
-				strHTML+="<input type=\"button\" id=\"saveGroup\" onclick=\"saveNewGroup()\" value=\"OK\" class=\"button_orange\">&nbsp;";
-				strHTML+="<input type=\"button\" onclick=\"showGroups()\" value=\"Cancel\" class=\"button_orange\">";
-				strHTML+="</form>";
-				strHTML+="</center>";
-				
-				c=document.getElementById('content');
-				c.innerHTML=strHTML;
-				setGroupModified(false);
+				$.get( "resources/templates/groupAdd.html", function( data ) {
+						$( "#content" ).html( data.replaceAll("{groupDescToolTip}", groupDescToolTip)
+												  .replaceAll("{groupNameToolTip}",groupNameToolTip)
+										    );
+						setGroupModified(false);
+				});
+
 			}
 
 			
 			
 			function displayGroupList(groupList){
 				
-				strHTML="";
-				strHTML+="<center>";
-				strHTML+="<h1>";
-				strHTML+=groupList.length + " groups found"
-				strHTML+="</h1>";
-				strHTML+="<hr>";
-				strHTML+= "<form onkeypress=\"return handelGroupFilterFormKeypress(event)\">";
-				strHTML+= "<table class=\"tabular_table searchFormTable\" >";	
-				strHTML+= "	<tr class=\"tabular_table_body\">";	
-				strHTML+= "		<th>group name</th> <td><input type=\"text\" id=\"groupNameFilter\" value=\"" + groupNameFilterPrevVal + "\"></td>";	
-				strHTML+= "		<th>description</th> <td><input type=\"text\" id=\"groupDescritpionFilter\" value=\"" + groupDescritpionFilterPrevVal + "\"></td>";	
-				strHTML+= "		<td><input type=\"button\" class=\"button_orange\" value=\"filter\" onclick=\"showGroups()\"><input type=\"button\" class=\"button_white\" value=\"reset\" onclick=\"resetGroupFilter()\"></th> ";	
-				strHTML+= "	</tr>";	
-				strHTML+= "</table>";	
-				strHTML+= "</form>";	
-				if (groupList.length>0){
-					strHTML+="<table id=\"groupsList\"class=\"tabular_table scroll\">";
-					strHTML+="<thead><tr class=\"tabular_table_header\">";
-					strHTML+="<th>Groupname</th>";
-					strHTML+="<th>Description</th>";
-					strHTML+="<th>Actions</th>";
-					strHTML+="</tr></thead><tbody>";
-					for (i=0;i<groupList.length;i++){
-						strHTML+="<tr class=\"tabular_table_body" +  (i%2) + "\">";
-						strHTML+="<td>" + groupList[i].groupName + "</td>";
-						strHTML+="<td>" + groupList[i].description + "</td>";
-						strHTML+="<td class=\"action\">";
-						strHTML+="<a title=\""+ editGroupToolTip + "\" href=\"javascript:startEditGroup('" + groupList[i].uri + "')\"><img border=\"0\" src=\"images/edit.gif\"></a>";
-						if (groupList[i].groupName != "Admin" && groupList[i].groupName != "valid-user"){
-							strHTML+="<a   title=\"" + deleteGroupToolTip + "\" href=\"javascript:deleteGroup('" + groupList[i].uri + "', '" + groupList[i].groupName + "')\"><img border=\"0\" src=\"images/delete.gif\"></a>";
+				$.get( "resources/templates/groupList.html", function( data ) {
+						
+						$( "#content" ).html( data.replaceAll("{groupList.length}", groupList.length )
+												  .replaceAll("{groupNameFilterPrevVal}", groupNameFilterPrevVal )	
+												  .replaceAll("{groupDescritpionFilterPrevVal}", groupDescritpionFilterPrevVal )
+												  .replaceAll("{editGroupToolTip}", editGroupToolTip )
+												  .replaceAll("{deleteGroupToolTip}", groupDescritpionFilterPrevVal )
+											);	
+						table=document.getElementById("data");
+						rowPattern=document.getElementById("rowTpl");
+						table.removeChild(rowPattern);
+						
+						for (i=0;i<groupList.length;i++){
+							
+							newRow=rowPattern.cloneNode(true);
+							newRow.removeAttribute('id');
+							newRow.removeAttribute('style');
+							newRow.className=newRow.className + " tabular_table_body" +  (i%2);
+							newRow.innerHTML=newRow.innerHTML.replaceAll("{groupList[i].groupName}", groupList[i].groupName)
+															 .replaceAll("{groupList[i].description}", groupList[i].description)
+															 .replaceAll("{groupList[i].uri}", groupList[i].uri);
+							table.appendChild(newRow);
+							edit=document.getElementById("bntEdit");
+							del=document.getElementById("btnDelete");
+							if (groupList[i].groupName == "Admin" || groupList[i].groupName == "valid-user"){
+								del.remove();
+							}else{
+								del.removeAttribute("id");
+							}
+							edit.removeAttribute("id");
 						}
-						strHTML+="</td>";
-						strHTML+="</tr>";
-					}
-					strHTML+="</tbody></table>";
-				}
-				strHTML+="</center>";
-
-				c=document.getElementById('content');
-				c.innerHTML=strHTML;
-				/* make the table scrollable with a fixed header */
-				$("table.scroll").createScrollableTable({
-					width: '800px',
-					height: '350px',
-					border: '0px'
+						setGroupModified(false);
+						/* make the table scrollable with a fixed header */
+						$("table.scroll").createScrollableTable({
+							width: '800px',
+							height: '350px',
+							border: '0px'
+						});
+						touchScroll("groupsList_body_wrap");
 				});
-				touchScroll("groupsList_body_wrap");
 
 				
 			}
@@ -247,36 +207,28 @@
 			
 function displayGroupMembers(userList) {
 
-	strHTML = "";
-	strHTML += "<center>";
-	strHTML += "<h2>";
-	strHTML += currentGroup.groupName + "'s members ";
-	strHTML += "</h2>";
-	if (userList.length > 0) {
-		strHTML += "			<table class=\"tabular_table scroll\">";
-		strHTML += "				<thead>";
-		strHTML += "				<tr class=\"tabular_table_header\">";
-		strHTML += "					<th>User name</th>";
-		strHTML += "					<th>First name</th>";
-		strHTML += "					<th>Last name</th>";
-		strHTML += "					<th>email</th>";
-		strHTML += "				</tr>";
-		strHTML += "				</thead></tbody>";
-		for (i = 0; i < userList.length; i++) {
-			strHTML += "			<tr class=\"tabular_table_body" + (i % 2) + "\">";
-			strHTML += "				<td>" + userList[i].userName + "</td>";
-			strHTML += "				<td>" + userList[i].firstName + "</td>";
-			strHTML += "				<td>" + userList[i].lastName + "</td>";
-			strHTML += "				<td>" + userList[i].emailAddress + "</td>";
-			strHTML += "			</tr>";
-		}
-		strHTML += "			</tbody>";
-		strHTML += "			</table>";
-		strHTML += "<br><input type=\"button\" class=\"button_orange\" onclick=\"editGroup(currentGroup)\" value=\"Done\">&nbsp;";
+				$.get( "resources/templates/groupMembers.html", function( data ) {
+						
+						$( "#content" ).html( data.replaceAll("{currentGroup.groupName}", currentGroup.groupName ) 
+											);	
+						table=document.getElementById("data");
+						rowPattern=document.getElementById("rowTpl");
+						table.removeChild(rowPattern);
+						
+						for (i=0;i<userList.length;i++){
+							
+							newRow=rowPattern.cloneNode(true);
+							newRow.removeAttribute('id');
+							newRow.removeAttribute('style');
+							newRow.className=newRow.className + " tabular_table_body" +  (i%2);
+							newRow.innerHTML=newRow.innerHTML.replaceAll("{userList[i].userName}", userList[i].userName)
+															 .replaceAll("{userList[i].firstName}", userList[i].firstName)
+															 .replaceAll("{userList[i].lastName}", userList[i].lastName)
+															 .replaceAll("{userList[i].emailAddress}", userList[i].emailAddress);
+							table.appendChild(newRow);
+						}
+				});
 
-		c=document.getElementById('content');
-		c.innerHTML=strHTML;
-	}	
 }
 			
 			function showMembers(){

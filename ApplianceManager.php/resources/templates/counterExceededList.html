@@ -1,0 +1,45 @@
+<center>
+<h1>
+	{counterList.length} counters found
+</h1>
+<hr>
+	<form onkeypress="return handelExcedeedCountersFilterFormKeypress(event)">
+		<table class="tabular_table searchFormTable" id="countersEceeded">	
+			<tr class="tabular_table_body">	
+				<th>service name</th> <td><input type="text" id="serviceNameFilter" value="{serviceNameFilterPrevVal}"></td>	
+				<th>user name</th> <td><input type="text" id="userNameFilter" value="{userNameFilterPrevVal}"></td>	
+				<td><input type="button" class="button_orange" value="filter" onclick="searchExcedeedCounters()"><input type="button" class="button_white" value="reset" onclick="resetExceededCountersFilter()"></th> 	
+			</tr>	
+		</table>	
+	</form>	
+<table  id="countersList" class="tabular_table scroll">
+	<thead>
+		<tr class="tabular_table_header">
+			<th>Service name</th>
+			<th>User name</th>
+			<th>Time unit</th>
+			<th>Time value</th>
+			<th>Value</th>
+			<th>Max allowed value</th>
+			<th>Actions</th>
+		</tr>
+	</thead>
+	<tbody id="data">
+		<tr id="rowTpl" class="tabular_table_body{rowParity}" style="display:none">
+			<td>{counterList[i].resourceName}</td>
+			<td>{counterList[i].userName}</td>
+			<td>{counterList[i].timeUnit}</td>
+			<td>{counterList[i].timeValue}</td>
+			<td>{counterList[i].value}</td>
+			<td>{counterList[i].maxValue}</td>
+			<td class="action">
+				<a id="btnEdit" title="{editCounterToolTip}" href="javascript:startEditCounter('{i}')"><img border="0" src="images/edit.gif"></a>
+				<a id="btnDelete" title="{deleteCounterToolTip}"  href="javascript:deleteCounter('{i}')"><img border="0" src="images/delete.gif"></a>
+			</td>
+		</tr>
+	</tbody>
+</tr>
+</table>
+<br>
+<input type="button" id="refresh" onclick="searchExcedeedCounters()" value="Refresh" class="button_orange">&nbsp;
+</center>

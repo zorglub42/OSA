@@ -1,0 +1,45 @@
+<center>
+<h2>
+	{currentUser.userName}'s groups 
+</h2>
+<table list="groupsList" class="tabular_table">
+	<tr class="tabular_table_body">
+		<th>Membership</th>
+		<th>Available for membership</th>
+	</tr>
+	<tr class="tabular_table_body">
+		<td valign="top">
+			<table id="userGroupList" class="tabular_table scroll">
+				<thead>
+					<tr class="tabular_table_header">
+						<th>Groupname</th>
+						<th>Description</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody id="data">
+				<tr id="rowTpl" style="display:none">
+					<td>{groupList[i].groupName}</td>
+					<td>{groupList[i].description}</td>
+					<td>
+						<a id="btnDelete" title="{deleteUserGroupToolTip}" href="javascript:deleteUserGroup('groups/{groupList[i].groupName}', '{groupList[i].groupName}',  '{currentUserURI}')"><img border="0" src="images/delete.gif"></a>
+					</td>
+				</tr>
+			</tbody>
+			</table>
+		</td>
+		<td valign=top>
+			<div id="availableGroups">
+				<center>
+					<select id="availableGroupsList" title="{availableGroupsToolTip}" name="availableGroupsList" id="availableGroupsList" size="15" multiple  class="availableGroupsList">
+					</select>
+				<br><br>
+				<input id="addGroups"  title="{addAllGroupsTooltip}" type="button" onclick="addGroupToUser('{currentUser.uri}')" value="<<" class="button_orange">&nbsp;</center>
+			</div>
+		</td>
+	<tr>
+</table>
+<br>
+<input type="button" onclick="startEditUser('{currentUser.uri}')" value="Done" class="button_orange">&nbsp;
+<form>
+</center>

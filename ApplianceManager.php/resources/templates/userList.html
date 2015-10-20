@@ -1,0 +1,41 @@
+<center>
+	<h1>
+		{userList.length} users found
+	</h1>
+	<hr>
+	<form onkeypress="return handelUserFilterFormKeypress(event)">
+		<table class="tabular_table searchFormTable" >	
+			<tr class="tabular_table_body">	
+				<th>username</th> <td><input type="text" id="userNameFilter" value="{userNameFilterPrevVal}"></td>	
+				<th>email</th> <td><input type="text" id="emailAddressFilter" value="{emailAddressFilterPrevVal}"></td>	
+				<th>entity</th> <td><input type="text" id="entityFilter"value="{entityFilterPrevVal}"></td>	
+			</tr>	
+			<tr class="tabular_table_body">	
+				<th>first name</th> <td><input type="text" id="firstNameFilter"value="{firstNameFilterPrevVal}"></td>	
+				<th>last name</th> <td><input type="text" id="lastNameFilter" value="{lastNameFilterPrevVal}"></td>	
+				<td colspan="2"><input type="button" class="button_orange" value="filter" onclick="showUsers()"><input type="button" class="button_white" value="reset" onclick="resetUserFilter()"></th> 	
+			</tr>	
+		</table>	
+	</form>	
+	<table id="usersList" class="tabular_table scroll  choices-border">
+		<thead>
+			<tr class="tabular_table_header">
+				<th>Username</th>
+				<th>email</th>
+				<th>End Date</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody id="data">
+					<tr id="rowTpl" class="item" style="visibilit:hidden">
+						<td>{userList[i].userName}</td>
+						<td>{userList[i].emailAddress}</td>
+						<td>{userList[i].endDate}</td>
+						<td class="action">
+							<a  id="btnEdit" title="{editUserToolTip}" href="javascript:startEditUser('{userList[i].uri}')"><img border="0" src="images/edit.gif"></a>
+							<a  id="btnDelete" title="{deleteUserToolTip}" href="javascript:deleteUser('{userList[i].uri}', '{userList[i].userName}')"><img border="0" src="images/delete.gif"></a>
+						</td>
+					</tr>
+		</tbody>
+	</table>
+</center>

@@ -53,7 +53,9 @@ function getCounter($counterName= NULL, $request_data=NULL){
 		$rPart = "R=%";
 	}
 	if (isset($request_data["userName"])){
-		if ($request_data["userName"]==""){
+		if ($request_data["userName"]=="*** Any ***"){
+			$uPart = '$$$U=%'; 
+		}else if ($request_data["userName"]==""){
 			$resourceLevel=true;
 			$uPart="";
 		}else{
@@ -106,7 +108,7 @@ function getCounter($counterName= NULL, $request_data=NULL){
 				
 			
 			$strSQL = "SELECT * FROM counters WHERE counterName like ?";
-			if ( $resourceLevel){
+			if ( $resourceLevel ){
 				$strSQL=$strSQL . " AND counterName not like 'R=%U=%'";
 	 		}
 			$stmt=$db->prepare($strSQL);

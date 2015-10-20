@@ -1,0 +1,34 @@
+<center>
+	<h1>
+	Counter properties
+	</h1>
+	<hr>
+	<table class="tabular_table">
+		<tr class="tabular_table_body">
+			<th>Service Name:</th>
+			<td>{counter.resourceName}</td>
+		</tr>
+		<tr class="tabular_table_body">
+			<th>User name:</th>
+			<td>{counter.userName}</td>
+		</tr>
+		<tr class="tabular_table_body">
+			<th>time unit:</th>
+			<td>{counter.timeUnit}</td>
+		</tr>
+		<tr class="tabular_table_body">
+			<th>time value:</th>
+			<td>{counter.timeValue}</td>
+		</tr>
+		<tr class="tabular_table_body">
+			<th>Value:</th>
+			<td><input class="inputText" title="{counterValueToolTip}" type='text' id='counterValue' value="{counter.value}"  onchange="setCounterModified(true)"  onkeypress="setCounterModified(true)"></td>
+		</tr>
+	</table>
+	<br>
+	<form>
+		<input type="button" id="save" onclick="updateCounter('{counter.uri}')" value="Save" class="button_orange">&nbsp;
+		<input type="button" id="cancel" onclick="backList()" value="Done" class="button_orange">&nbsp;
+	</form>
+	<hr>
+</center>

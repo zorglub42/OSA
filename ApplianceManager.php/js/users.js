@@ -142,25 +142,32 @@ function addGroupToUser(userURI) {
 }
 
 function addUser() {
-	strHTML = "";
-	strHTML += "<center>";
-	strHTML += "<h1>";
-	strHTML += "New User properties";
-	strHTML += "</h1>";
-	strHTML += "<hr>";
-	strHTML += "<form>";
-	strHTML += generateUserProperties(null);
-	strHTML += "";
-	strHTML += "<br>";
-	strHTML += "<input type=\"button\" id=\"saveNew\" onclick=\"saveNewUser()\" value=\"Save\" class=\"button_orange\">&nbsp;";
-	strHTML += "<input type=\"button\" id=\"cancelNew\" onclick=\"showUsers()\" value=\"Done\" class=\"button_orange\">";
-	strHTML += "</form>";
-	strHTML += "</center>";
-
-	c = document.getElementById('content');
-	c.innerHTML = strHTML;
-	$('#userEndDate').datepicker();
-	setUserModified(false);
+	$.get( "resources/templates/userAdd.php", function( data ) {
+		currentService=null;
+		currentServiceGroup=null;
+		$('#content').html(data.replaceAll("{userNameAsLabel}","")
+							   .replaceAll("{userNameInputType}", "text")
+							   .replaceAll("{userNameToolTip}", userNameToolTip)
+							   .replaceAll("{passwordToolTip}", passwordToolTip)
+							   .replaceAll("{passwordToolTip}", passwordToolTip)
+							   .replaceAll("{firstNameToolTip}", firstNameToolTip)
+							   .replaceAll("{lastNameToolTip}", lastNameToolTip)
+							   .replaceAll("{entityNameToolTip}", entityNameToolTip)
+							   .replaceAll("{mailNameToolTip}", mailNameToolTip)
+							   .replaceAll("{endDateNameToolTip}", endDateNameToolTip)
+							   .replaceAll("{userExtraToolTip}", userExtraToolTip)
+							   .replaceAll("{userName}", "")
+							   .replaceAll("{password}", "")
+							   .replaceAll("{firstName}", "")
+							   .replaceAll("{lastName}", "")
+							   .replaceAll("{entity}", "")
+							   .replaceAll("{emailAddress}", "")
+							   .replaceAll("{endDate}", "")
+							   .replaceAll("{extra}", "")
+		);
+		$('#userEndDate').datepicker();
+		setUserModified(false);
+	});
 }
 function saveNewUser() {
 	saveOrUpdateUser('POST');
@@ -243,262 +250,137 @@ function startDisplayUserQuotasForCurrentUser() {
 }
 
 function displayAvailableGroups(groupList) {
-		strHTML = "";
-		strHTML += "<center><select title=\""
-				+ availableGroupsToolTip
-				+ "\" name=\"availableGroupsList\" id=\"availableGroupsList\" size=\"15\" multiple  class=\"availableGroupsList\">";
-		for (i = 0; i < groupList.length; i++) {
-			strHTML += "<option name=\"" + groupList[i].groupName
-					+ "\" value=\"groups/" + groupList[i].groupName + "\">"
-					+ groupList[i].groupName + "</option>";
+		if (groupList.length>0){
+			$.each(groupList, function (i, item) {
+				$('#availableGroupsList').append($('<option>', { 
+					value: "groups/" + item.groupName,
+					text : item.groupName 
+				}));
+			});
+		}else{
+			$("#addGroups").hide();
 		}
-		strHTML += "</select><br><br>";
-		if (groupList.length > 0) {
-			strHTML += "<input  title=\""
-					+ addAllGroupsTooltip
-					+ "\" type=\"button\" id=\"addGroups\" onclick=\"addGroupToUser('"
-					+ currentUserURI
-					+ "')\" value=\"<<\" class=\"button_orange\">&nbsp;</center>";
-		}
-		c = document.getElementById('availableGroups');
-		c.innerHTML = strHTML;
 }
 
-function generateUserProperties(user) {
-	if (user != null) {
-		userName = user.userName;
-		password = user.password;
-		emailAddress = user.emailAddress;
-		userDate = new Date();
-		userDate.setISO8601(user.endDate);
-		firstName = user.firstName;
-		lastName = user.lastName;
-		entity = user.entity;
-		extra = user.extra==null?"":user.extra;
-		dateFormated = userDate.format("mm/dd/yyyy");
-	} else {
-		userName = "";
-		password = "";
-		emailAddress = "";
-		dateFormated = "";
-		firstName = "";
-		lastName = "";
-		entity = "";
-		extra = "";
-	}
-	strHTML = "";
-	strHTML += "<table class=\"tabular_table\">";
-	strHTML += "<tr class=\"tabular_table_body\">";
-	strHTML += "<th>User name:</th>";
-	if (user != null) {
-		strHTML += "<td><input type=\"hidden\" id=\"userName\" value=\""
-				+ userName + "\">" + userName + "</td>";
-	} else {
-		strHTML += "<td><input class=\"inputText\" title=\""
-				+ userNameToolTip
-				+ "\"  type=\"text\" id=\"userName\" value=\"\"  onchange=\"setUserModified(true)\" onkeypress=\"setUserModified(true)\"></td>";
-	}
-	strHTML += "<tr class=\"tabular_table_body\">";
-	strHTML += "<th>Password:</th>";
-	strHTML += "<td><input class=\"inputText\"  title=\""
-			+ passwordToolTip
-			+ "\" type='password' id='userPass' value=\""
-			+ password
-			+ "\" onchange=\"setUserModified(true)\"  onkeypress=\"setUserModified(true)\"></td>";
-	strHTML += "</tr>";
-	strHTML += "<tr class=\"tabular_table_body\">";
-	strHTML += "<th>Firstname:</th>";
-	strHTML += "<td><input class=\"inputText\"  title=\""
-			+ firstNameToolTip
-			+ "\" type='text' id='firstName' value=\""
-			+ firstName
-			+ "\"  onchange=\"setUserModified(true)\"  onkeypress=\"setUserModified(true)\"></td>";
-	strHTML += "</tr>";
-	strHTML += "<tr class=\"tabular_table_body\">";
-	strHTML += "<th>Last name:</th>";
-	strHTML += "<td><input class=\"inputText\" title=\""
-			+ lastNameToolTip
-			+ "\"  type='text' id='lastName' value=\""
-			+ lastName
-			+ "\"  onchange=\"setUserModified(true)\"  onkeypress=\"setUserModified(true)\"></td>";
-	strHTML += "</tr>";
-	strHTML += "<tr class=\"tabular_table_body\">";
-	strHTML += "<th>Entity:</th>";
-	strHTML += "<td><input class=\"inputText\"  title=\""
-			+ entityNameToolTip
-			+ "\" type='text' id='entity' value=\""
-			+ entity
-			+ "\"  onchange=\"setUserModified(true)\"  onkeypress=\"setUserModified(true)\"></td>";
-	strHTML += "</tr>";
-	strHTML += "<tr class=\"tabular_table_body\">";
-	strHTML += "<th>Email address:</th>";
-	strHTML += "<td><input class=\"inputText\"  title=\""
-			+ mailNameToolTip
-			+ "\"  type='text' id='userMail' value=\""
-			+ emailAddress
-			+ "\"  onchange=\"setUserModified(true)\"  onkeypress=\"setUserModified(true)\"></td>";
-	strHTML += "</tr>";
-	strHTML += "<tr class=\"tabular_table_body\">";
-	strHTML += "<th>End date:</th>";
-	strHTML += "<td>";
-	strHTML += "	<div>";
-	strHTML += "	 	<input class=\"inputDT\"  title=\""
-			+ endDateNameToolTip
-			+ "\" type=\"text\" name=\"userEndDate\" id=\"userEndDate\" value=\""
-			+ dateFormated + "\" onchange=\"setUserModified(true)\"/>";
-	strHTML += "	 </div>";
-	strHTML += "</tr>";
-	strHTML+="			<tr class=\"tabular_table_body\">\n";
-	strHTML+="				<th>Addtional data:</th>\n";
-	strHTML+="				<td><textarea rows=\"10\"  title=\"" + userExtraToolTip + "\"   id=\"extra\" onClick=\"setUserModified(true)\"  onchange=\"setUserModified(true)\" onkeypress=\"setUserModified(true)\">" + extra + "</textarea></td>\n";
-	strHTML+="				</td>\n";
-	strHTML+="			</tr>\n";
-	strHTML += "</table>";
-	setUserModified(false);
-	return strHTML;
-}
 
 function editUser(user) {
-	userDate = new Date(user.endDate);
-	strHTML = "";
-	strHTML += "<center>";
-	strHTML += "<h1>";
-	strHTML += "User " + user.userName + " properties";
-	strHTML += "</h1>";
-	strHTML += "<hr>";
-	strHTML += generateUserProperties(user);
-	strHTML += "<br>";
-	strHTML += "<input type=\"button\" id=\"saveEdit\" onclick=\"updateUser('"
-			+ user.uri + "')\" value=\"Save\" class=\"button_orange\">&nbsp;";
-	strHTML += "<input type=\"button\" id=\"cancelEdit\" onclick=\"showUsers()\" value=\"Done\" class=\"button_orange\">&nbsp;";
-	strHTML += "<input type=\"button\"  title=\"" + editUserGroupsToolTip
-			+ "\"  id=\"groupsEdit\"onclick=\"startDisplayUserGroups('"
-			+ user.uri + "')\" value=\"Groups\" class=\"button_orange\">&nbsp;";
-	strHTML += "<input type=\"button\"  title=\"" + editUserQuotasToolTip
-			+ "\" id=\"quotasEdit\"onclick=\"startDisplayUserQuotas('"
-			+ user.uri + "')\" value=\"Quotas\" class=\"button_orange\">";
-	strHTML += "<div id=\"userGroups\"\>"
-	strHTML += "</form>";
-	strHTML += "<hr>";
-
-	strHTML += "</center>";
-
-	c = document.getElementById('content');
-	c.innerHTML = strHTML;
-	currentUser = user;
-	currentUserUi = user.uri;
-	$('#userEndDate').datepicker();
-	setUserModified(false);
+	$.get( "resources/templates/userEdit.php", function( data ) {
+		userDate = new Date(user.endDate);
+		dateFormated = userDate.format("mm/dd/yyyy");
+		currentUser=user;
+		$('#content').html(data.replaceAll("{userNameAsLabel}",user.userName)
+							   .replaceAll("{userNameInputType}", "hidden")
+							   .replaceAll("{userNameToolTip}", userNameToolTip)
+							   .replaceAll("{editUserGroupsToolTip}", editUserGroupsToolTip)
+							   .replaceAll("{editUserQuotasToolTip}", editUserQuotasToolTip)
+							   .replaceAll("{passwordToolTip}", passwordToolTip)
+							   .replaceAll("{passwordToolTip}", passwordToolTip)
+							   .replaceAll("{firstNameToolTip}", firstNameToolTip)
+							   .replaceAll("{lastNameToolTip}", lastNameToolTip)
+							   .replaceAll("{entityNameToolTip}", entityNameToolTip)
+							   .replaceAll("{mailNameToolTip}", mailNameToolTip)
+							   .replaceAll("{endDateNameToolTip}", endDateNameToolTip)
+							   .replaceAll("{userExtraToolTip}", userExtraToolTip)
+							   .replaceAll("{userName}", user.userName)
+							   .replaceAll("{password}", user.password)
+							   .replaceAll("{firstName}", user.firstName)
+							   .replaceAll("{lastName}", user.lastName)
+							   .replaceAll("{entity}", user.entity)
+							   .replaceAll("{emailAddress}", user.emailAddress)
+							   .replaceAll("{endDate}", dateFormated)
+							   .replaceAll("{extra}", user.extra==null?"":user.extra)
+							   .replaceAll("{uri}", user.uri)
+		);
+		$('#userEndDate').datepicker();
+		setUserModified(false);
+	});
 
 }
 
 function displayUserGroups(groupList) {
+	$.get( "resources/templates/userGroups.html", function( data ) {
+						
+		$( "#content" ).html( data.replaceAll("{availableGroupsToolTip}",availableGroupsToolTip)
+								  .replaceAll("{addAllGroupsTooltip}", addAllGroupsTooltip)
+								  .replaceAll("{currentUser.userName}", currentUser.userName )
+								  .replaceAll("{currentUser.uri}", currentUser.uri )
+							);	
+		table=document.getElementById("data");
+		rowPattern=document.getElementById("rowTpl");
+		table.removeChild(rowPattern);
 
-	strHTML = "";
-	strHTML += "<center>";
-	strHTML += "<h2>";
-	strHTML += currentUser.userName + "'s groups ";
-	strHTML += "</h2>";
-	strHTML += "<table list=\"groupsList\" class=\"tabular_table\">";
-	strHTML += "	<tr class=\"tabular_table_body\">";
-	strHTML += "		<th>Membership</th>";
-	strHTML += "		<th>Available for membership</th>";
-	strHTML += "	</tr>";
-	strHTML += "	<tr class=\"tabular_table_body\">";
-	strHTML += "		<td valign=top>";
-	if (groupList.length > 0) {
-		strHTML += "			<table class=\"tabular_table scroll\">";
-		strHTML += "				<thead>";
-		strHTML += "				<tr class=\"tabular_table_header\">";
-		strHTML += "					<th>Groupname</th>";
-		strHTML += "					<th>Description</th>";
-		strHTML += "					<th>Actions</th>";
-		strHTML += "				</tr>";
-		strHTML += "				</thead></tbody>";
-		for (i = 0; i < groupList.length; i++) {
-			strHTML += "			<tr class=\"tabular_table_body" + (i % 2) + "\">";
-			strHTML += "				<td>" + groupList[i].groupName + "</td>";
-			strHTML += "				<td>" + groupList[i].description + "</td>";
-			strHTML += "				<td>";
-			if ( groupList[i].groupName != "Admin" || currentUser.userName != "Admin"){
-				strHTML += "					<a  title=\"" + deleteUserGroupToolTip + "\" href=\"javascript:deleteUserGroup('" + "groups/" + groupList[i].groupName + "', '" + groupList[i].groupName  + "',  '" + currentUserURI + "')\"><img border=\"0\" src=\"images/delete.gif\"></a>";
+		if (groupList.length>0){
+			for (i=0;i<groupList.length;i++){
+
+				
+				newRow=rowPattern.cloneNode(true);
+				newRow.removeAttribute('id');
+				newRow.removeAttribute('style');
+				newRow.className=newRow.className + " tabular_table_body" +  (i%2);
+				newRow.innerHTML=newRow.innerHTML.replaceAll("{groupList[i].groupName}", groupList[i].groupName)
+												 .replaceAll("{deleteUserGroupToolTip}", deleteUserGroupToolTip)
+												 .replaceAll("{currentUserURI}", currentUserURI)
+												 .replaceAll("{groupList[i].description}", groupList[i].description);
+
+				table.appendChild(newRow);
+				edit=document.getElementById("btnEdit");
+				del=document.getElementById("btnDelete");
+				if ( groupList[i].groupName == "Admin" && currentUser.userName == "Admin"){
+					del.remove();
+				}else{
+					del.removeAttribute("id");
+				}
 			}
-			strHTML += "				</td>";
-			strHTML += "			</tr>";
+		}else{
+			$('#userGroupList').hide();
 		}
-		strHTML += "			</tbody>";
-		strHTML += "			</table>";
-	} else {
-		strHTML += "			&nbsp;";
-	}
-	strHTML += "		</td>";
-	strHTML += "		<td valign=top>";
-	strHTML += "			<div id=\"availableGroups\"/>";
-	strHTML += "		</td>";
-	strHTML += "	<tr>";
-	strHTML += "</table>";
-	strHTML += "<br>";
-	strHTML += "<input type=\"button\" onclick=\"startEditUser('"
-			+ currentUser.uri
-			+ "')\" value=\"Done\" class=\"button_orange\">&nbsp;";
-	strHTML += "<form>";
-	strHTML += "</center>";
 
-	// c=document.getElementById('userGroups');
-	c = document.getElementById('content');
-	c.innerHTML = strHTML;
-	startDisplayAvailableGroups(currentUserURI);
-	$("table.scroll").createScrollableTable({
-		width: '350px',
-		height: '200px',
-		border: '0px'
+		startDisplayAvailableGroups(currentUserURI);
+		$("table.scroll").createScrollableTable({
+			width: '350px',
+			height: '200px',
+			border: '0px'
+		});
+		touchScroll("groupsList_body_wrap");
 	});
-	touchScroll("groupsList_body_wrap");
 }
 
 function displayUserQuotas(quotasList) {
+	$.get( "resources/templates/userQuotas.html", function( data ) {
+						
+		$( "#content" ).html( data.replaceAll("{currentUser.userName}", currentUser.userName )
+							);	
+		table=document.getElementById("data");
+		rowPattern=document.getElementById("rowTpl");
+		table.removeChild(rowPattern);
 
-	strHTML = "";
-	strHTML += "<center>";
-	strHTML += "<h2>";
-	strHTML += currentUser.userName + "'s quotas ";
-	strHTML += "</h2>";
-	if (quotasList.length > 0) {
-		strHTML += "<table class=\"tabular_table\">";
-		strHTML += "	<tr class=\"tabular_table_header\">";
-		strHTML += "		<th>Servicename</th>";
-		strHTML += "		<th>Max/sec</th>";
-		strHTML += "		<th>Max/day</th>";
-		strHTML += "		<th>Max/month</th>";
-		strHTML += "		<th>Actions</th>";
-		strHTML += "</tr>";
-		for (i = 0; i < quotasList.length; i++) {
-			strHTML += "<tr class=\"tabular_table_body" + (i % 2) + "\">";
-			strHTML += "	<td>" + quotasList[i].serviceName + "</td>";
-			strHTML += "	<td>" + quotasList[i].reqSec + "</td>";
-			strHTML += "	<td>" + quotasList[i].reqDay + "</td>";
-			strHTML += "	<td>" + quotasList[i].reqMonth + "</td>";
-			strHTML += "	<td>";
-			strHTML += "		<a  title=\"" + editUserQuotasToolTip
-					+ "\" href=\"javascript:startEditUserQuotas('"
-					+ quotasList[i].uri
-					+ "')\"><img border=\"0\" src=\"images/edit.gif\"></a>";
-			strHTML += "		<a   title=\"" + deleteUserToolTip
-					+ "\" href=\"javascript:deleteUserQuotas('"
-					+ quotasList[i].uri + "', '" + quotasList[i].serviceName
-					+ "')\"><img border=\"0\" src=\"images/delete.gif\"></a>";
-			strHTML += "	</td>";
-			strHTML += "</tr>";
+		if (quotasList.length>0){
+			for (i=0;i<quotasList.length;i++){
+
+				
+				newRow=rowPattern.cloneNode(true);
+				newRow.removeAttribute('id');
+				newRow.removeAttribute('style');
+				newRow.className=newRow.className + " tabular_table_body" +  (i%2);
+				newRow.innerHTML=newRow.innerHTML.replaceAll("{quotasList[i].serviceName}", quotasList[i].serviceName)
+												 .replaceAll("{quotasList[i].reqSec}", quotasList[i].reqSec)
+												 .replaceAll("{quotasList[i].reqDay}", quotasList[i].reqDay)
+												 .replaceAll("{quotasList[i].reqMonth}", quotasList[i].reqMonth)
+												 .replaceAll("{quotasList[i].uri}", quotasList[i].uri)
+												 .replaceAll("{editUserQuotasToolTip}", editUserQuotasToolTip)
+												 .replaceAll("{deleteUserToolTip}", deleteUserToolTip);
+
+				table.appendChild(newRow);
+				edit=document.getElementById("btnEdit");
+				del=document.getElementById("btnDelete");
+				del.removeAttribute("id");
+				edit.removeAttribute("id");
+			}
+		}else{
+			$('#userQuotasList').hide();
 		}
-		strHTML += "</table>";
-	}
-	strHTML += "<br>";
-	strHTML += "<form>";
-	strHTML += "<input type=\"button\" class=\"button_orange\" onclick=\"startEditCurrentUser()\" value=\"Done\">&nbsp;";
-	strHTML += "<input type=\"button\" class=\"button_orange\" onclick=\"addUserQuotas()\" value=\"Add\">";
-	strHTML += "</form>";
-	c = document.getElementById('content');
-	c.innerHTML = strHTML;
+	});
+
 }
 function handelUserFilterFormKeypress(e) {
 	if (e.keyCode == 13) {
@@ -508,65 +390,56 @@ function handelUserFilterFormKeypress(e) {
 }
 function displayUserList(userList) {
 
-	strHTML = "";
-	strHTML += "<center>";
-	strHTML += "<h1>";
-	strHTML +=  userList.length + " users found";
-	//strHTML += "Users defined in appliance:";
-	strHTML += "</h1>";
-	strHTML += "<hr>";
-	strHTML += "<form onkeypress=\"return handelUserFilterFormKeypress(event)\">";
-	strHTML += "<table class=\"tabular_table searchFormTable\" >";	
-	strHTML += "	<tr class=\"tabular_table_body\">";	
-	strHTML += "		<th>username</th> <td><input type=\"text\" id=\"userNameFilter\" value=\"" + userNameFilterPrevVal + "\"></td>";	
-	strHTML += "		<th>email</th> <td><input type=\"text\" id=\"emailAddressFilter\" value=\"" + emailAddressFilterPrevVal + "\"></td>";	
-	strHTML += "		<th>entity</th> <td><input type=\"text\" id=\"entityFilter\"value=\"" + entityFilterPrevVal + "\"></td>";	
-	strHTML += "	</tr>";	
-	strHTML += "	<tr class=\"tabular_table_body\">";	
-	strHTML += "		<th>first name</th> <td><input type=\"text\" id=\"firstNameFilter\"value=\"" + firstNameFilterPrevVal + "\"></td>";	
-	strHTML += "		<th>last name</th> <td><input type=\"text\" id=\"lastNameFilter\" value=\"" + lastNameFilterPrevVal + "\"></td>";	
-	strHTML += "		<td colspan=\"2\"><input type=\"button\" class=\"button_orange\" value=\"filter\" onclick=\"showUsers()\"><input type=\"button\" class=\"button_white\" value=\"reset\" onclick=\"resetUserFilter()\"></th> ";	
-	strHTML += "	</tr>";	
-	strHTML += "</table>";	
-	strHTML += "</form>";	
-	strHTML += "<table id=\"usersList\" class=\"tabular_table scroll\">";
-	strHTML += "<thead><tr class=\"tabular_table_header\">";
-	strHTML += "<th>Username</th>";
-	strHTML += "<th>email</th>";
-	strHTML += "<th>End Date</th>";
-	strHTML += "<th>Actions</th>";
-	strHTML += "</tr></thead><tbody>";
-	for (i = 0; i < userList.length; i++) {
-		var d = new Date();
-		d.setISO8601(userList[i].endDate);
-		strHTML += "<tr class=\"tabular_table_body" + (i % 2) + " item\">";
-		strHTML += "<td>" + userList[i].userName + "</td>";
-		strHTML += "<td>" + userList[i].emailAddress + "</td>";
-		strHTML += "<td>" + dateFormat(d, "fullDate") + "</td>";
-		strHTML += "<td class=\"action\">";
-		strHTML += "<a  title=\"" + editUserToolTip + "\" href=\"javascript:startEditUser('" + userList[i].uri+ "')\"><img border=\"0\" src=\"images/edit.gif\"></a>";
-		if (userList[i].userName !== "Admin" ){
-			strHTML += "<a  title=\"" + deleteUserToolTip + "\" href=\"javascript:deleteUser('" + userList[i].uri + "', '" + userList[i].userName + "')\"><img border=\"0\" src=\"images/delete.gif\"></a>";
+	
+	$.get( "resources/templates/userList.html", function( data ) {
+						
+		$( "#content" ).html( data.replaceAll("{userList.length}", userList.length )
+								  .replaceAll("{userNameFilterPrevVal}", userNameFilterPrevVal )	
+								  .replaceAll("{emailAddressFilterPrevVal}", emailAddressFilterPrevVal )
+								  .replaceAll("{entityFilterPrevVal}", entityFilterPrevVal )
+								  .replaceAll("{firstNameFilterPrevVal}", firstNameFilterPrevVal )
+								  .replaceAll("{lastNameFilterPrevVal}", lastNameFilterPrevVal )
+							);	
+		table=document.getElementById("data");
+		rowPattern=document.getElementById("rowTpl");
+		table.removeChild(rowPattern);
+
+		for (i=0;i<userList.length;i++){
+			var d = new Date();
+			d.setISO8601(userList[i].endDate);
+
+			
+			newRow=rowPattern.cloneNode(true);
+			newRow.removeAttribute('id');
+			newRow.removeAttribute('style');
+			newRow.className=newRow.className + " tabular_table_body" +  (i%2);
+			newRow.innerHTML=newRow.innerHTML.replaceAll("{userList[i].userName}", userList[i].userName)
+											 .replaceAll("{userList[i].emailAddress}", userList[i].emailAddress)
+											 .replaceAll("{userList[i].uri}", userList[i].uri)
+											 .replaceAll("{userList[i].endDate}", dateFormat(d, "fullDate"));
+			table.appendChild(newRow);
+			edit=document.getElementById("btnEdit");
+			del=document.getElementById("btnDelete");
+			if (userList[i].userName === "Admin"){
+				del.remove();
+			}else{
+				del.removeAttribute("id");
+			}
+			edit.removeAttribute("id");
 		}
-		strHTML += "</td>";
-		strHTML += "</tr>";
-	}
-	strHTML += "</tbody></table>";
-	strHTML += "</center>";
+		if (userList.length>0){
 
-	c = document.getElementById('content');
-	c.innerHTML = strHTML;
-	if (userList.length>0){
+			$("table.scroll").createScrollableTable({
+				width: '800px',
+				height: '350px',
+				border: '0px'
+			});
+			touchScroll("usersList_body_wrap");
+		}else{
+			$('#usersList').hide();
+		}
+	});
 
-		$("table.scroll").createScrollableTable({
-			width: '800px',
-			height: '350px',
-			border: '0px'
-		});
-		touchScroll("usersList_body_wrap");
-	}else{
-		$('#usersList').hide();
-	}
 
 }
 

@@ -10,42 +10,6 @@
 
 
 
-<Location  /ApplianceManagerAdmin>
-
-	Include /usr/local/nursery/ApplianceManager/RunTimeAppliance/apache/conf/vhAppliance/nursery-appliance-settings.inc	
-	AuthBasicAuthoritative Off
-	OSAAuthoritative On
-	OSAEnable on
-	OSABasicAuthEnable On
-	OSACookieAuthEnable On
-	OSACookieAuthName OSAAuthToken
-	OSACookieAuthTTL 60
-	OSACookieAuthDomain .rd.francetelecom.fr
-	OSAServerName http://r-lnx-jmjb0521.rd.francetelecom.fr:81
-	OSARequire group  Admin
-	OSAIdentityHeadersMapping userName,X_REMOTE_USER;firstName,NURS_FIRSTNAME;lastName,NURS_LASTNAME;entity,NURS_ENTITY;emailAddress,NURS_EMAIL;extra,NURS_EXTRA
-	
-	
-	
-	OSAResourceName ApplianceManagerAdmin
-
-	OSACheckGlobalQuotas On
-	OSACheckUserQuotas On
-
-
-	OSALogHit Off
-	
-	ProxyPassReverseCookieDomain 127.0.0.1 r-lnx-jmjb0521.rd.francetelecom.fr
-	ProxyPassReverseCookiePath /  /
-
-
-
-
-
-	ProxyPassReverse http://127.0.0.1:82/ApplianceManager
-		
-</Location>
-
 <Location  /ApplianceManagerAdmin/auth/>
 
 	Include /usr/local/nursery/ApplianceManager/RunTimeAppliance/apache/conf/vhAppliance/nursery-appliance-settings.inc	
@@ -69,9 +33,8 @@
 
 
 	ProxyPassReverse http://127.0.0.1:82/ApplianceManager/auth/
-		
+	
 </Location>
-
 <Location  /ApplianceManagerAdmin/auth/token>
 
 	Include /usr/local/nursery/ApplianceManager/RunTimeAppliance/apache/conf/vhAppliance/nursery-appliance-settings.inc	
@@ -105,9 +68,8 @@
 
 
 	ProxyPassReverse http://127.0.0.1:82/ApplianceManager/auth/token
-		
+	
 </Location>
-
 <Location  /ApplianceManagerAdmin/users/me>
 
 	Include /usr/local/nursery/ApplianceManager/RunTimeAppliance/apache/conf/vhAppliance/nursery-appliance-settings.inc	
@@ -141,8 +103,45 @@
 
 
 	ProxyPassReverse http://127.0.0.1:82/ApplianceManager/users/me
-		
+	
 </Location>
+<Location  /foobar>
+
+	Include /usr/local/nursery/ApplianceManager/RunTimeAppliance/apache/conf/vhAppliance/nursery-appliance-settings.inc	
+	RequestHeader add Authorization "Basic dG90bzo1NHZpPQ=="
+	AuthBasicAuthoritative Off
+	OSAAuthoritative On
+	OSAEnable on
+	OSABasicAuthEnable On
+	OSACookieAuthEnable On
+	OSACookieAuthName OSAAuthToken
+	OSACookieAuthTTL 60
+	OSACookieAuthDomain .rd.francetelecom.fr
+	OSAServerName http://r-lnx-jmjb0521.rd.francetelecom.fr:81
+	OSARequire group  Admin
+	OSAIdentityHeadersMapping userName,X_REMOTE_USER;firstName,NURS_FIRSTNAME;lastName,NURS_LASTNAME;entity,NURS_ENTITY;emailAddress,NURS_EMAIL;extra,NURS_EXTRA
+	
+	
+	
+	OSAResourceName foobar
+
+	OSACheckGlobalQuotas On
+	OSACheckUserQuotas On
+
+
+	OSALogHit On
+	
+	ProxyPassReverseCookieDomain foobar r-lnx-jmjb0521.rd.francetelecom.fr
+#TTO
+
+
+
+
+	ProxyPassReverse http://foobar
+	
+</Location>
+RewriteCond     %{REQUEST_URI}      ^/foobar.*$
+RewriteRule  <?/foobar(.*) http://foobar$1 [P,L]
 
 RewriteCond     %{REQUEST_URI}      ^/ApplianceManagerAdmin/users/me.*$
 RewriteRule  <?/ApplianceManagerAdmin/users/me(.*) http://127.0.0.1:82/ApplianceManager/users/me$1 [P,L]
@@ -152,7 +151,4 @@ RewriteRule  <?/ApplianceManagerAdmin/auth/token(.*) http://127.0.0.1:82/Applian
 
 RewriteCond     %{REQUEST_URI}      ^/ApplianceManagerAdmin/auth/.*$
 RewriteRule  <?/ApplianceManagerAdmin/auth/(.*) http://127.0.0.1:82/ApplianceManager/auth/$1 [P,L]
-
-RewriteCond     %{REQUEST_URI}      ^/ApplianceManagerAdmin.*$
-RewriteRule  <?/ApplianceManagerAdmin(.*) http://127.0.0.1:82/ApplianceManager$1 [P,L]
 

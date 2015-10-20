@@ -31,17 +31,17 @@
 	
 	# Runtime appliance automatic configuration
 	define("runtimeApplianceConfigScript", "/usr/local/nursery/ApplianceManager/RunTimeAppliance/shell/doAppliance.sh");
-	define("runtimeApplianceConfigScriptLogFile", "/var/log/nursery/OSA/doAppliance.log");
+	define("runtimeApplianceConfigScriptLogFile", "/var/log/OSA/doAppliance.log");
             
 	define("runtimeApplianceVirtualHostsConfigScript", "/usr/local/nursery/ApplianceManager/RunTimeAppliance/shell/doVHAppliance.sh");
-	define("runtimeApplianceVirtualHostsConfigScriptLogFile", "/var/log/nursery/OSA/doVHAppliance.log");
+	define("runtimeApplianceVirtualHostsConfigScriptLogFile", "/var/log/OSA/doVHAppliance.log");
 
 	define("runtimeApplianceAutomaticConfiguration",true);
 
 
 
 
-	define("runtimeApplianceConfigScriptLogDir", "/var/log/nursery/OSA");
+	define("runtimeApplianceConfigScriptLogDir", "/var/log/OSA");
 
 
 
@@ -76,5 +76,5 @@
 	define("authTokenTTL", 60);
 		#cookie name
 	define("authTokenCookieName", "OSAAuthToken");
-	define("osaAdminUri", "https://r-lnx-jmjb0521:6443/ApplianceManagerAdmin");
+	define("osaAdminUri", "https://r-lnx-jmjb0521.rd.francetelecom.fr:6443/ApplianceManagerAdmin");
 ?>

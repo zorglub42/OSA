@@ -1,0 +1,36 @@
+<center>
+<h1>
+Search for logs
+</h1>
+<hr>
+<table class="tabular_table">
+	<tr class="tabular_table_body">
+		<th>Service Name:</th>
+		<td colspan="3"><input class="inputText" title="{logServiceNameToolTip}" type"text" id="serviceName" value="{logSearch_serviceName}" onfocus="javascript:$(this).autocomplete('search',$(this).value);"></td>
+	<tr class="tabular_table_body">
+		<th>User name:</th>
+		<td colspan="3"><input class="inputText" title="{logUserNameToolTip}"  type"text" id="userName" value="{logSearch_userName}"onfocus="javascript:$(this).autocomplete('search',$(this).value);"></td>
+	</tr>
+	<tr class="tabular_table_body">
+		<th>Frontend endpoint:</th>
+		<td colspan="3"><input class="inputText"  title="{logFrontEndEndPointToolTip}" type"text" value="{logSearch_frontEndEndPoint}" id="frontEndEndPoint"></td>
+	</tr>
+	<tr class="tabular_table_body">
+		<th>HTTP Status:</th>
+		<td colspan="3"><input  class="inputText" title="{logHTTPStatusToolTip}" type"text" value="{logSearch_status}"id="httpStatus"></td>
+	</tr>
+	<tr class="tabular_table_body">
+		<th>Message:</th>
+		<td colspan="3"><input class="inputText"  title="{logMessageToolTip}" type"text" value="{logSearch_message}" id="message"></td>
+	</tr>
+	<tr class="tabular_table_body">
+		<th>From:</th><td><input title="{logFromToolTip}"  class="inputDT" value="{logSearch_from}" type="text" id="from"></td>
+		<th>Until:</th><td><input  title="{logUntilToolTip}" class="inputDT"  type="text" value="{logSearch_until}" id="until"></td>
+	</tr>
+</table>
+<br>
+<input type="button" id="seach" onclick="startSearchLogs()" value="Search" class="button_orange">&nbsp;
+<input type="button" id="reset" onclick="resetSearchLogs()" value="Reset" class="button_orange">&nbsp;
+</form>
+<hr>
+</center>

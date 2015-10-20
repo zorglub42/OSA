@@ -64,7 +64,7 @@
 				}else{
 					setActionButtonEnabled('saveService',false);
 				}
-				if (document.getElementById("additionalConfiguration").value != ""){
+				if ($("#additionalConfiguration").val() != ""){
 					$("#warnAdditionalConfig").show();
 				}else{
 					$("#warnAdditionalConfig").hide();
@@ -82,29 +82,13 @@
 			}
 			
 			function populateGroups(groupList){
-				if (groupList.length>0){
-					strHTML="";
-					strHTML+="<select class=\"inputText\"  title=\"" + serviceGroupToolTip + "\" name=\"groupName\" id=\"groupName\"  onchange=\"setServiceModified(true)\" onkeypress=\"setServiceModified(true)\">";
-					strHTML+="<option name=\"none\" value=\"\" >-- Choose one --</option>";
-					for (i=0;i<groupList.length;i++){
-						if (groupList[i].uri == currentServiceGroup){
-							sel="SELECTED";
-						}else{
-							sel="";
-						}
-						strHTML+="<option name=\"" + groupList[i].groupName + "\" value=\"" + groupList[i].groupName + "\" " + sel + " >";
-						if (groupList[i].description===""){
-							strHTML +=groupList[i].groupName
-						}else{
-							strHTML +=groupList[i].description;
-						}
-						strHTML += "</option>";
-					}
-					strHTML+="</select>";
-					c=document.getElementById('groupList');
-					c.innerHTML=strHTML;
-				}
-				
+				$.each(groupList, function (i, item) {
+					$('#groupName').append($('<option>', { 
+						value: item.groupName,
+						text : item.groupName 
+					}));
+				});
+				$("#groupName option[value=" +currentServiceGroupName + "]").prop("selected", "selected");
 			}
 			
 			function updateService(serviceURI){
@@ -135,27 +119,23 @@
 				setServiceModified(true);
 			}
 			
-			function generateServiceProperties(service){
-				var strHTML;
-				
-				serviceName="";
-				frontEndEndPoint="";
-				backEndEndPoint="";
-				backEndUsername="";
-				backEndPassword="";
-				cbIdentFwd="";
-				cbIsPublished="checked";
-				cbIsUserAuthenticationEnabled="checked";
-				cbIsAnonymousAllowed="";
-				cbIsHitLoggingEnabled="";
-				cbOnAllNodes="checked";
-				additionalConfiguration="";
-				loginFormUri="";
-				if (service != null){
-					frontEndEndPoint=service.frontEndEndPoint;
-					backEndEndPoint=service.backEndEndPoint;
-					backEndUsername=service.backEndUsername;
-					backEndPassword=service.backEndPassword;
+			function editService(service){
+
+				$.get( "resources/templates/serviceEdit.php", function( data ) {
+					currentService=service;
+					currentServiceGroup=service.groupUri;
+					currentServiceGroupName=service.groupName;
+					cbIsPublished="checked";
+					cbIsUserAuthenticationEnabled="checked";
+					cbIsAnonymousAllowed="";
+					cbIsHitLoggingEnabled="";
+					cbOnAllNodes="checked";
+					cbIdentFwd="";
+					cbUserQuota="";
+
+					if (service.isUserQuotasEnabled==1){
+						cbUserQuota="checked";
+					}
 					if (service.isIdentityForwardingEnabled==1){
 						cbIdentFwd="checked";
 					}
@@ -171,202 +151,66 @@
 					if (service.isAnonymousAllowed==1){
 						cbIsAnonymousAllowed="checked";
 					}
-					additionalConfiguration=service.additionalConfiguration;
 					if (service.onAllNodes==0){
 						cbOnAllNodes="";
 					}
-					loginFormUri=service.loginFormUri;
+
+					$('#content').html(data.replaceAll("{serviceNameToolTip}",serviceNameToolTip)
+										   .replaceAll("{isPublishedToolTip}",isPublishedToolTip)
+										   .replaceAll("{isUserAuthenticationToolTip}",isUserAuthenticationToolTip)
+										   .replaceAll("{loginFormUriToolTip}",loginFormUriToolTip)
+										   .replaceAll("{isAnonymousAllowedToolTip}",isAnonymousAllowedToolTip)
+										   .replaceAll("{identityForwardingToolTip}",identityForwardingToolTip)
+										   .replaceAll("{serviceQuotaToolTip}",serviceQuotaToolTip)
+										   .replaceAll("{serviceOnAllNodesToolTip}",serviceOnAllNodesToolTip)
+										   .replaceAll("{additionalConfigurationToolTip}",additionalConfigurationToolTip)
+										   .replaceAll("{frontEndToolTip}",frontEndToolTip)
+										   .replaceAll("{backEndURLToolTip}", backEndURLToolTip)
+										   .replaceAll("{backendUserToolTip}", backendUserToolTip)
+										   .replaceAll("{backendPasswordToolTip}", backendPasswordToolTip)
+										   .replaceAll("{logHitToolTip}", logHitToolTip)
+										   .replaceAll("{perSecToolTip}",additionalConfigurationToolTip)
+										   .replaceAll("{perDayToolTip}",additionalConfigurationToolTip)
+										   .replaceAll("{perMonthToolTip}",additionalConfigurationToolTip)
+										   .replaceAll("{userQuotaToolTip}", userQuotaToolTip)
+										   .replaceAll("{serviceGroupToolTip}", serviceGroupToolTip)
+										   .replaceAll("{availableNodesToolTip}", availableNodesToolTip)
+										   .replaceAll("{uri}", service.uri)
+										   .replaceAll("{reqSec}", service.reqSec==0?"":service.reqSec)
+										   .replaceAll("{reqDay}", service.reqDay==0?"":service.reqDay)
+										   .replaceAll("{reqMonth}", service.reqMonth==0?"":service.reqMonth)
+										   .replaceAll("{cbUserQuota}", cbUserQuota)
+										   .replaceAll("{serviceName}", service.serviceName)
+										   .replaceAll("{serviceNameInputType}","hidden")
+										   .replaceAll("{cbIsPublished}", cbIsPublished)
+										   .replaceAll("{backEndEndPoint}", service.backEndEndPoint)
+										   .replaceAll("{frontEndEndPoint}", service.frontEndEndPoint)
+										   .replaceAll("{cbIsUserAuthenticationEnabled}", cbIsUserAuthenticationEnabled)
+										   .replaceAll("{loginFormUri}", service.loginFormUri)
+										   .replaceAll("{cbIsAnonymousAllowed}", cbIsAnonymousAllowed)
+										   .replaceAll("{cbIdentFwd}", cbIdentFwd)
+										   .replaceAll("{backEndUsername}", service.backEndUsername)
+										   .replaceAll("{backEndPassword}", service.backEndPassword)
+										   .replaceAll("{cbOnAllNodes}", cbOnAllNodes)
+										   .replaceAll("{cbIsHitLoggingEnabled}", cbIsHitLoggingEnabled)
+										   .replaceAll("{additionalConfiguration}", service.additionalConfiguration==null?"":service.additionalConfiguration)
+					);
+						
+
+					$(function() {
+						$( "#tabs" ).tabs();
+					});
 					
-				}
-				
-				strHTML="";
-				strHTML+="<table class=\"tabular_table choices-border\" width=\"800px\">\n";
-				strHTML+="<tr id=\"mainForm\" class=\"tabular_table_body\">\n";
-				strHTML+="<td><div id=\"tabs\">\n";
-				strHTML+="	<ul>\n";
-				strHTML+="		<li><a  href=\"#tabs-general\">General</a></li>\n";
-				strHTML+="		<li><a  href=\"#tabs-frontEnd\">Frontend authentication</a></li>\n";
-				strHTML+="		<li><a  href=\"#tabs-backEnd\">Backend credentials and identity</a></li>\n";
-				strHTML+="		<li><a  href=\"#tabs-quotas\">Quotas</a></li>\n";
-				strHTML+="		<li><a  href=\"#tabs-nodes\">Nodes</a></li>\n";
-				strHTML+="		<li><a  href=\"#tabs-advance\">Advance</a></li>\n";
-				strHTML+="	</ul>\n";
-				strHTML+="	<div id=\"tabs-general\">\n";
-				strHTML+="		<table>\n";
-				strHTML+="			<tr class=\"tabular_table_body\">\n";
-				strHTML+="				<th>Service name:</th>\n";
-				if (service==null){
-					strHTML+="			<td><input class=\"inputText\"  title=\"" + serviceNameToolTip + "\" type=\"text\" id=\"serviceName\" value=\"\" onchange=\"setServiceModified(true)\" onkeypress=\"setServiceModified(true)\"></td>\n";
-				}else{
-					strHTML+="			<td><input type=\"hidden\" id=\"serviceName\" value=\"" + service.serviceName + "\" >" + service.serviceName + "</td>\n";
-				}
-				strHTML+="			</tr>\n";
-				strHTML+="			<tr class=\"tabular_table_body\">\n";
-				strHTML+="				<th>Is published:</th>\n";
-				strHTML+="				<td><input  title=\"" + isPublishedToolTip + "\" type=\"checkbox\" id=\"isPublished\" onClick=\"setServiceModified(true)\"  onchange=\"setServiceModified(true)\" onkeypress=\"setServiceModified(true)\"" + cbIsPublished + " ><label for=\"isPublished\"></label></td>\n";
-				strHTML+="			</tr>\n";
-				strHTML+="			<tr class=\"tabular_table_body\">\n";
-				strHTML+="				<th>Frontend alias:</th>\n";
-				strHTML+="				<td><input class=\"inputText\" title=\"" + frontEndToolTip + "\" type=\"text\" id=\"frontEndEndPoint\" value=\"" + frontEndEndPoint + "\"  onchange=\"setServiceModified(true)\" onkeypress=\"setServiceModified(true)\"></td>\n";
-				strHTML+="			</tr>\n";
-				strHTML+="			<tr class=\"tabular_table_body\">\n";
-				strHTML+="				<th>Backend URL:</th>\n";
-				strHTML+="				<td><input class=\"inputText\"  title=\"" + backEndURLToolTip + "\" type=\"text\" id=\"backEndEndPoint\" value=\"" + backEndEndPoint + "\"  onchange=\"setServiceModified(true)\" onkeypress=\"setServiceModified(true)\"></td>\n";
-				strHTML+="			</tr>\n";
-				strHTML+="		</table>\n";
-				strHTML+="	</div>\n";
-				strHTML+="	<div id=\"tabs-frontEnd\">\n";
-				strHTML+="		<table>\n";
-				strHTML+="			<tr class=\"tabular_table_body\">\n";
-				strHTML+="				<th>Enable user authentication:</th>\n";
-				strHTML+="				<td><input title=\"" + isUserAuthenticationToolTip + "\"  type=\"checkbox\" id=\"isUserAuthenticationEnabled\" onClick=\"checkUserAuth()\"  onchange=\"checkUserAuth()\" onkeypress=\"checkUserAuth()\"" + cbIsUserAuthenticationEnabled + "><label for=\"isUserAuthenticationEnabled\"></label></td>\n";
-				strHTML+="			</tr>\n";
-				strHTML+="			<tr id=\"group\" class=\"tabular_table_body\">\n";
-				strHTML+="				<th>Group:</th>\n";
-				strHTML+="				<td><div id='groupList'></div></td>\n";
-				strHTML+="			</tr>\n";
-				strHTML+="			<tr id=\"loginForm\" class=\"tabular_table_body\">\n";
-				strHTML+="				<th>Login form URL:</th>\n";
-				strHTML+="				<td><input class=\"inputText\" title=\"" + loginFormUriToolTip + "\" type=\"text\" id=\"loginFormUri\"  value=\"" + loginFormUri + "\"  onchange=\"setServiceModified(true)\" onkeypress=\"setServiceModified(true)\"></td>\n";
-				strHTML+="			</tr>\n";
-				strHTML+="			<tr id=\"allowAnonymous\" class=\"tabular_table_body\">\n";
-				strHTML+="				<th>Also allow anonymous access:</th>\n";
-				strHTML+="				<td><input title=\"" + isAnonymousAllowedToolTip + "\"  type=\"checkbox\" id=\"isAnonymousAllowed\" " + cbIsAnonymousAllowed + " onClick=\"checkUserAuth()\"  onchange=\"checkUserAuth()\" onkeypress=\"checkUserAuth()\"><label for=\"isAnonymousAllowed\"></label></td>\n";
-				strHTML+="			</tr>\n";
-				strHTML+="		</table>\n";
-				strHTML+="	</div>\n";
-				strHTML+="	<div id=\"tabs-backEnd\">\n";
-				strHTML+="		<table>\n";
-				strHTML+="			<tr id=\"idForwarding\" class=\"tabular_table_body\">\n";
-				strHTML+="				<th>Need consumer<br>identity forwarding:</th>\n";
-				strHTML+="				<td><input title=\"" + identityForwardingToolTip + "\"  type=\"checkbox\" id=\"isIdentityForwardingEnabled\" onClick=\"setServiceModified(true)\"  onchange=\"setServiceModified(true)\" onkeypress=\"setServiceModified(true)\"" + cbIdentFwd + "><label for=\"isIdentityForwardingEnabled\"></label></td>\n";
-				strHTML+="			</tr>\n";
-				strHTML+="			<tr class=\"tabular_table_body\">\n";
-				strHTML+="				<th>Username (basic auth):</th>\n";
-				strHTML+="				<td><input class=\"inputText\"  title=\"" + backendUserToolTip + "\"  type=\"text\" id=\"backEndUsername\" value=\"" + backEndUsername + "\"  onchange=\"setServiceModified(true)\" onkeypress=\"setServiceModified(true)\"></td>\n";
-				strHTML+="			</tr>\n";
-				strHTML+="			<tr class=\"tabular_table_body\">\n";
-				strHTML+="				<th>Password (basic auth):</th>\n";
-				strHTML+="				<td><input class=\"inputText\"  title=\"" + backendPasswordToolTip + "\" type=\"password\" id=\"backEndPassword\" value=\"" + backEndPassword + "\"  onchange=\"setServiceModified(true)\" onkeypress=\"setServiceModified(true)\"></td>\n";
-				strHTML+="			</tr>\n";
-				strHTML+="		</table>\n";
-				strHTML+="	</div>\n";
-				strHTML+="	<div id=\"tabs-quotas\">\n";
-				strHTML+="		<table >\n";
-				strHTML+="			<tr class=\"tabular_table_body\">\n";
-				strHTML+="				<th>Need global quotas control:</th>\n";
-				strHTML+="				<td align=\"left\"><input title=\"" + serviceQuotaToolTip + "\"  type=\"checkbox\" id=\"isGlobalQuotasEnabled\" onClick=\"setQuotasVisibility();setServiceModified(true)\"  onchange=\"setServiceModified(true)\" onkeypress=\"setServiceModified(true)\"><label for=\"isGlobalQuotasEnabled\"></label></td>\n";
-				strHTML+="			</tr>\n";
-				strHTML+="		</table>\n";
-				strHTML+="		<table>\n";
-				strHTML+="			<tr class=\"tabular_table_body\">\n";
-				strHTML+="				<td>\n";
-				strHTML+="					<div id=\"quotas\">\n";
-				strHTML+="					</div>\n";
-				strHTML+="				</td>\n";
-				strHTML+="			</tr>\n";
-				strHTML+="		</table>\n";
-				strHTML+="	</div>\n";
-				strHTML+="	<div id=\"tabs-nodes\">\n";
-				strHTML+="		<table >\n";
-				strHTML+="			<tr class=\"tabular_table_body\">\n";
-				strHTML+="				<th>Available on all active nodes</th>\n";
-				strHTML+="				<td align=\"left\"><input title=\"" + serviceOnAllNodesToolTip + "\"  type=\"checkbox\" id=\"onAllNodes\" onClick=\"setNodesVisiblility();setServiceModified(true)\"  onchange=\"setServiceModified(true)\" onkeypress=\"setServiceModified(true)\" " + cbOnAllNodes + "><label for=\"onAllNodes\"></label></td>\n";
-				strHTML+="			</tr>\n";
-				strHTML+="		</table>\n";
-				strHTML+="		<div id=\"publishedOnNodes\">\n";
-				strHTML+="			<table >\n";
-				strHTML+="				<tr class=\"tabular_table_body\">\n";
-				strHTML+="					<th  valign=\"top\">Services is avalable on nodes</th>\n";
-				strHTML+="					<th><div id=\"nodeList\"/></th>\n";
-				strHTML+="				</tr>\n";
-				strHTML+="			</table>\n";
-				strHTML+="		</div>\n";
-				strHTML+="	</div>\n";
-				strHTML+="	<div id=\"tabs-advance\">\n";
-				strHTML+="		<table >\n";
-				strHTML+="			<tr class=\"tabular_table_body\">\n";
-				strHTML+="				<th>Log hits:</th>\n";
-				strHTML+="				<td><input title=\"" + logHitToolTip + "\"  type=\"checkbox\" id=\"isHitLoggingEnabled\" onClick=\"setServiceModified(true)\"  onchange=\"setServiceModified(true)\" onkeypress=\"setServiceModified(true)\"" + cbIsHitLoggingEnabled + "><label for=\"isHitLoggingEnabled\"></label></td>\n";
-				strHTML+="			</tr>\n";
-				strHTML+="			<tr class=\"tabular_table_body\">\n";
-				strHTML+="				<th colspan=\"2\"><hr></th>\n";
-				strHTML+="			</tr>\n";
-				strHTML+="			<tr class=\"tabular_table_body\">\n";
-				strHTML+="				<td colspan=\"2\">\n";
-				strHTML+="					<br><p id=\"warnAdditionalConfig\" class=\"errorMessage\">ATTENTION: Using additional apache configuration directives may corrupt entire configuration if directives are not valid...</p>\n";
-				strHTML+="				</td>\n";
-				strHTML+="			</tr>\n";
-				strHTML+="			<tr class=\"tabular_table_body\">\n";
-				strHTML+="				<th>Addtional apache directive:</th>\n";
-				strHTML+="				<td><textarea rows=\"10\"  title=\"" + additionalConfigurationToolTip + "\"   id=\"additionalConfiguration\" onClick=\"setServiceModified(true)\"  onchange=\"setServiceModified(true)\" onkeypress=\"setServiceModified(true)\">" + additionalConfiguration + "</textarea></td>\n";
-				strHTML+="				</td>\n";
-				strHTML+="			</tr>\n";
-				strHTML+="			<tr class=\"tabular_table_body\">\n";
-				strHTML+="				<td colspan=\"2\">In addition to standard apache variables, refering to the node where request is handled, you may use here:";
-				strHTML+="					<ul>\n";
-				strHTML+="						<li>\n";
-				strHTML+="							%{publicServerProtocol}e as protocol used (i.e http:// or https://)\n"
-				strHTML+="						</li>\n";
-				strHTML+="						<li>\n";
-				strHTML+="							%{publicServerName}e server name\n"
-				strHTML+="						</li>\n";
-				strHTML+="						<li>\n";
-				strHTML+="							%{publicServerPort}e server port\n"
-				strHTML+="						</li>\n";
-				strHTML+="						<li>\n";
-				strHTML+="							%{frontEndEndPoint}e frontEndPoint\n"
-				strHTML+="						</li>\n";
-				strHTML+="						<li>\n";
-				strHTML+="							%{publicServerPrefix}e concatenation of previous variables (ex: https//public.node.com:8443/myservice)\n"
-				strHTML+="						</li>\n";
-				strHTML+="						<br>Ex:<br>RequestHeader set Public-Root-URI \"%{publicServerProtocol}e%{publicServerName}e:%{publicServerPort}e/%{frontEndEndPoint}e\"";
-				strHTML+="					</ul>\n";
-				strHTML+="				</td>\n";
-				strHTML+="			</tr>\n";
-				strHTML+="		</table>\n";
-				strHTML+="	</div>\n";
-				strHTML+="</div></td></tr></table>\n";
-				
-				
-				return strHTML;
-			}
-			
-			function editService(service){
-
-				currentService=service;
-				currentServiceGroup=service.groupUri;
-				currentServiceGroupName=service.groupName;
-				strHTML="";
-				strHTML+="<center>";
-				strHTML+="<h1>";
-				strHTML+="Service properties";
-				strHTML+="</h1>";
-				strHTML+="<hr>"; 
-				strHTML+="<form>";
-				strHTML+=generateServiceProperties(service);
-				strHTML+="<br>";
-				strHTML+="<input type=\"button\" id=\"saveService\" onclick=\"updateService('" + service.uri + "')\" value=\"Save\" class=\"button_orange\">&nbsp;";
-				strHTML+="<input type=\"button\" onclick=\"showServices()\" value=\"Cancel\" class=\"button_orange\">";
-				strHTML+="</form>";
-				strHTML+="</center>";
-				
-				c=document.getElementById('content');
-				c.innerHTML=strHTML;
-
-				$(function() {
-					$( "#tabs" ).tabs();
-				});
-				
-				document.getElementById("isGlobalQuotasEnabled").checked=!(service.isGlobalQuotasEnabled==0);
-				setQuotasVisibility();
-				setNodesVisiblility();
-				startPopulateGroups();
-				checkUserAuth();
-				setServiceModified(false);
-				$("#mainForm").height($("#tabs").height()+10);
-				$("#mainForm").click(function(){
-						$("#mainForm").height($("#tabs").height()+10);
+					document.getElementById("isGlobalQuotasEnabled").checked=!(service.isGlobalQuotasEnabled==0);
+					setQuotasVisibility();
+					setNodesVisiblility();
+					startPopulateGroups();
+					checkUserAuth();
+					setServiceModified(false);
+					$("#mainForm").height($("#tabs").height()+10);
+					$("#mainForm").click(function(){
+							$("#mainForm").height($("#tabs").height()+10);
+					});
 				});
 			}
 
@@ -524,30 +368,13 @@
 					}
 				}
 				gc= document.getElementById('isGlobalQuotasEnabled');
-				strHTML="";
-				strHTML+="					<table >";
 				if (gc.checked){
-					strHTML+="						<tr  class=\"tabular_table_body\">";
-					strHTML+="							<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Maximun per second:</th>";
-					strHTML+="							<td><input class=\"inputNumber\"  title=\"" + perSecToolTip + "\"  type=\"text\" id=\"reqSec\" value=\"" + reqSec + "\"  onchange=\"setServiceModified(true)\" onkeypress=\"setServiceModified(true)\"></td>";
-					strHTML+="						</tr>";
-					strHTML+="						<tr  class=\"tabular_table_body\">";
-					strHTML+="							<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Maximun per day:</th>";
-					strHTML+="							<td><input class=\"inputNumber\"  title=\"" + perDayToolTip + "\" type=\"text\" id=\"reqDay\"  value=\"" + reqDay + "\"  onchange=\"setServiceModified(true)\" onkeypress=\"setServiceModified(true)\"></td>";
-					strHTML+="						</tr>";
-					strHTML+="						<tr  class=\"tabular_table_body\">";
-					strHTML+="							<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Maximun per month:</th>";
-					strHTML+="							<td><input class=\"inputNumber\"  title=\"" + perMonthToolTip + "\"  type=\"text\" id=\"reqMonth\"  value=\"" + reqMonth + "\" onchange=\"setServiceModified(true)\" onkeypress=\"setServiceModified(true)\"></td>";
-					strHTML+="						</tr>";
+					$("#globalQuotasMonth").show();
+					$("#globalQuotasDay").show();
+					$("#globalQuotasSec").show();
 				}
-				strHTML+="						<tr id=\"userQuota\" class=\"tabular_table_body\">";
-				strHTML+="							<th>Need user quotas control:</th>";
-				strHTML+="							<td><input title=\"" + userQuotaToolTip + "\" type=\"checkbox\" id=\"isUserQuotasEnabled\"  onchange=\"setServiceModified(true)\" onClick=\"setServiceModified(true)\"><label for=\"isUserQuotasEnabled\"></label></td>";
-				strHTML+="						</tr>";
-				strHTML+="					</table>";
 
 				q=document.getElementById('quotas');
-				q.innerHTML=strHTML;
 				document.getElementById("isUserQuotasEnabled").checked=userQuotas;
 				checkUserAuth();
 				setServiceModified(serviceModified);
@@ -555,37 +382,64 @@
 			}
 			
 			function addService(){
-				currentService=null;
-				currentServiceGroup=null;
-				strHTML="";
-				strHTML+="<center>";
-				strHTML+="<h1>";
-				strHTML+="New Service properties";
-				strHTML+="</h1>";
-				strHTML+="<hr>";
-				strHTML+="<form>";
-				strHTML+=generateServiceProperties(null);
-				strHTML+="<br>";
-				strHTML+="<input type=\"button\" id=\"saveService\" onclick=\"saveNewService()\" value=\"Save\" class=\"button_orange\">&nbsp;";
-				strHTML+="<input type=\"button\" onclick=\"showServices()\" value=\"Cancel\" class=\"button_orange\">";
-				strHTML+="</form>";
-				strHTML+="</center>";
-				
-				c=document.getElementById('content');
-				c.innerHTML=strHTML;
 
-				$(function() {
-					$( "#tabs" ).tabs();
-				});
+				$.get( "resources/templates/serviceAdd.php", function( data ) {
+					currentService=null;
+					currentServiceGroup=null;
+					$('#content').html(data.replaceAll("{serviceNameToolTip}",serviceNameToolTip)
+										   .replaceAll("{isPublishedToolTip}",isPublishedToolTip)
+										   .replaceAll("{isUserAuthenticationToolTip}",isUserAuthenticationToolTip)
+										   .replaceAll("{loginFormUriToolTip}",loginFormUriToolTip)
+										   .replaceAll("{isAnonymousAllowedToolTip}",isAnonymousAllowedToolTip)
+										   .replaceAll("{identityForwardingToolTip}",identityForwardingToolTip)
+										   .replaceAll("{serviceQuotaToolTip}",serviceQuotaToolTip)
+										   .replaceAll("{serviceOnAllNodesToolTip}",serviceOnAllNodesToolTip)
+										   .replaceAll("{additionalConfigurationToolTip}",additionalConfigurationToolTip)
+										   .replaceAll("{frontEndToolTip}",frontEndToolTip)
+										   .replaceAll("{backEndURLToolTip}", backEndURLToolTip)
+										   .replaceAll("{backendUserToolTip}", backendUserToolTip)
+										   .replaceAll("{backendPasswordToolTip}", backendPasswordToolTip)
+										   .replaceAll("{logHitToolTip}", logHitToolTip)
+										   .replaceAll("{perSecToolTip}",additionalConfigurationToolTip)
+										   .replaceAll("{perDayToolTip}",additionalConfigurationToolTip)
+										   .replaceAll("{perMonthToolTip}",additionalConfigurationToolTip)
+										   .replaceAll("{userQuotaToolTip}", userQuotaToolTip)
+										   .replaceAll("{serviceGroupToolTip}", serviceGroupToolTip)
+										   .replaceAll("{availableNodesToolTip}", availableNodesToolTip)
+										   .replaceAll("{uri}", "")
+										   .replaceAll("{reqSec}", "")
+										   .replaceAll("{reqDay}", "")
+										   .replaceAll("{reqMonth}", "")
+										   .replaceAll("{cbUserQuota}", "")
+										   .replaceAll("{serviceName}", "")
+										   .replaceAll("{serviceNameInputType}","text")
+										   .replaceAll("{cbIsPublished}", "checked")
+										   .replaceAll("{backEndEndPoint}", "http://")
+										   .replaceAll("{frontEndEndPoint}", "")
+										   .replaceAll("{cbIsUserAuthenticationEnabled}", "")
+										   .replaceAll("{loginFormUri}", "")
+										   .replaceAll("{cbIsAnonymousAllowed}", "")
+										   .replaceAll("{cbIdentFwd}", "")
+										   .replaceAll("{backEndUsername}", "")
+										   .replaceAll("{backEndPassword}", "")
+										   .replaceAll("{cbOnAllNodes}", "checked")
+										   .replaceAll("{cbIsHitLoggingEnabled}", "")
+										   .replaceAll("{additionalConfiguration}", "")
+					);
 
-				startPopulateGroups();
-				setQuotasVisibility();
-				setNodesVisiblility();
-				setServiceModified(false);
+					$(function() {
+						$( "#tabs" ).tabs();
+					});
 
-				$("#mainForm").height($("#tabs").height()+10);
-				$("#mainForm").click(function(){
-						$("#mainForm").height($("#tabs").height()+10);
+					startPopulateGroups();
+					setQuotasVisibility();
+					setNodesVisiblility();
+					setServiceModified(false);
+
+					$("#mainForm").height($("#tabs").height()+10);
+					$("#mainForm").click(function(){
+							$("#mainForm").height($("#tabs").height()+10);
+					});
 				});
 
 			}
@@ -597,110 +451,91 @@ function handelServiceFilterFormKeypress(e) {
 	}
 }			
 			function displayServiceNodes(nodeList){
-					strHTML = "";
-					strHTML += "<center><select title=\""
-							+ availableNodesToolTip
-							+ "\" name=\"serviceNodesList\" id=\"serviceNodesList\" size=\"15\" multiple  class=\"serviceNodesList\" onChange=\"setServiceModified(true)\"> ";
-					for (i = 0; i < nodeList.length; i++) {
-						if (nodeList[i].published==1){
-							selected=" SELECTED ";
-						}else{
-							selected="";
-						}
+				$.each(nodeList, function (i, item) {
 						port="";
-						if(nodeList[i].node.isHTTPS==1){
+						if(item.node.isHTTPS==1){
 							nodePrefix="https://";
-							if (nodeList[i].node.port != 443){
-								port=":" + nodeList[i].node.port;
+							if (item.node.port != 443){
+								port=":" + item.node.port;
 							}
 						}else{
 							nodePrefix="http://";
-							if (nodeList[i].node.port != 80){
-								port=":" + nodeList[i].node.port;
+							if (item.node.port != 80){
+								port=":" + item.node.port;
 							}
 						}
-						strHTML += "<option name=\"" + nodeList[i].node.nodeName
-								+ "\" value=\"" + nodeList[i].node.nodeName + "\"" + selected + ">"
-								+ nodeList[i].node.nodeName +  " (" + nodePrefix + nodeList[i].node.serverFQDN + port+ ")</option>";
-					}
-					strHTML += "</select><br><br>";
-					c = document.getElementById('nodeList');
-					c.innerHTML = strHTML;
+						optionText=item.node.nodeName +  " (" + nodePrefix + item.node.serverFQDN + port+ ")";
 
+					$('#serviceNodesList').append($('<option>', { 
+						value: item.node.nodeName,
+						text : optionText 
+					}));
+					if (item.published){
+						$("#serviceNodesList option[value=" +item.node.nodeName + "]").prop("selected", "selected");
+					}
+				});
 			}
 			function displayServiceList(serviceList){
 				
 				
 				hideWait();
-				strHTML="";
-				strHTML+="<center>";
-				strHTML+="<h1>";
-				strHTML+=serviceList.length + " services found";
-				strHTML+="</h1>";
-				strHTML+="<hr>";
-				strHTML += "<form onkeypress=\"return handelServiceFilterFormKeypress(event)\">";
-				strHTML += "<table class=\"tabular_table searchFormTable\" >";	
-				strHTML += "	<tr class=\"tabular_table_body\">";	
-				strHTML += "		<th>service name</th> <td><input type=\"text\" id=\"serviceNameFilter\" value=\"" + serviceNameFilterPrevVal + "\"></td>";	
-				strHTML += "		<th>group name</th> <td><input type=\"text\" id=\"serviceGroupNameFilter\" value=\"" + serviceGroupNameFilterPrevVal + "\"></td>";	
-				strHTML += "		<th>&nbsp;</th> <td>&nbsp;</td>";	
-				strHTML += "	</tr>";	
-				strHTML += "	<tr class=\"tabular_table_body\">";	
-				strHTML += "		<th>frontend endpoint</th> <td><input type=\"text\" id=\"frontEndEndPointFilter\"value=\"" + frontEndEndPointFilterPrevVal + "\"></td>";	
-				strHTML += "		<th>backend endpoint</th> <td><input type=\"text\" id=\"backEndEndPointFilter\" value=\"" + backEndEndPointFilterPrevVal + "\"></td>";	
-				strHTML += "		<td colspan=\"2\"><input type=\"button\" class=\"button_orange\" value=\"filter\" onclick=\"showServices()\"><input type=\"button\" class=\"button_white\" value=\"reset\" onclick=\"resetServiceFilter()\"></th> ";	
-				strHTML += "	</tr>";	
-				strHTML += "</table>";	
-				strHTML += "</form>";	
-				if (serviceList.length>0){
-					strHTML+="<table id=\"servicesList\" class=\"tabular_table scroll choices-border\" >\n";
-					strHTML+="	<thead>\n";
-					strHTML+="		<tr class=\"tabular_table_header\">\n";
-					strHTML+="			<th>Service name</th>\n";
-					strHTML+="			<th>On</th>\n";
-					strHTML+="			<th>Group name</th>\n";
-					strHTML+="			<th>Frontend endpoint</th>\n";
-					strHTML+="			<th>Backend endpoint</th>\n";
-					strHTML+="			<th>Actions</th>\n";
-					strHTML+="		</tr>\n";
-					strHTML+="	</thead>\n";
-					strHTML+="	<tbody>\n";
-					for (i=0;i<serviceList.length;i++){
-						strHTML+="		<tr class=\"tabular_table_body" +  (i%2) + "\">\n";
-						strHTML+="			<td title=\"" + serviceList[i].serviceName + "\">" + serviceList[i].serviceName + "</td>\n";
-						if (serviceList[i].isPublished==1){
-							cbPublishedCheck="checked";
-						}else{
-							cbPublishedCheck=""
-						}
+				$.get( "resources/templates/serviceList.html", function( data ) {
 						
-						strHTML+="			<td class=\"isPublished\"><input  title=\"" + isPublishedToolTip + "\" type=\"checkbox\" id=\"isPublished" + i + "\" " + cbPublishedCheck + " disabled><label for=\"isPublished" + i + "\"></label></td>\n";
+						$( "#content" ).html( data.replaceAll("{serviceList.length}", serviceList.length )
+												  .replaceAll("{serviceNameFilterPrevVal}", serviceNameFilterPrevVal )	
+												  .replaceAll("{serviceGroupNameFilterPrevVal}", serviceGroupNameFilterPrevVal )
+												  .replaceAll("{frontEndEndPointFilterPrevVal}", frontEndEndPointFilterPrevVal )
+												  .replaceAll("{backEndEndPointFilterPrevVal}", backEndEndPointFilterPrevVal )
+											);	
+						table=document.getElementById("data");
+						rowPattern=document.getElementById("rowTpl");
+						table.removeChild(rowPattern);
+						
+						for (i=0;i<serviceList.length;i++){
+							if (serviceList[i].isPublished==1){
+								cbPublishedCheck="checked";
+							}else{
+								cbPublishedCheck=""
+							}
 
-						strHTML+="			<td title=\"" + serviceList[i].groupName + "\">" + serviceList[i].groupName  + "</td>\n";
-						strHTML+="			<td title=\"" + serviceList[i].frontEndEndPoint + "\">" + serviceList[i].frontEndEndPoint + "</td>\n";
-						strHTML+="			<td title=\"" + serviceList[i].backEndEndPoint + "\">" + serviceList[i].backEndEndPoint + "</td>\n";
-						strHTML+="			<td class=\"action\">\n";
-						strHTML+="				<a title=\"" + editServiceToolTip + "\"  href=\"javascript:startEditService('" + serviceList[i].uri + "')\"><img  border=\"0\" src=\"images/edit.gif\"></a>";
-						if (!serviceList[i].serviceName.startsWith("ApplianceManagerAdmin")){
-							strHTML+="				<a title=\"" + deleteServiceToolTip + "\"  href=\"javascript:deleteService('" + serviceList[i].uri + "', '" + serviceList[i].serviceName + "')\"><img border=\"0\" src=\"images/delete.gif\"></a>\n";
+							
+							newRow=rowPattern.cloneNode(true);
+							newRow.removeAttribute('id');
+							newRow.removeAttribute('style');
+							newRow.className=newRow.className + " tabular_table_body" +  (i%2);
+							newRow.innerHTML=newRow.innerHTML.replaceAll("{serviceList[i].serviceName}", serviceList[i].serviceName)
+															 .replaceAll("{isPublishedToolTip}", isPublishedToolTip)
+															 .replaceAll("{i}", i)
+															 .replaceAll("{servicelist[i].cbpublishedcheck}", cbPublishedCheck)
+															 .replaceAll("{serviceList[i].groupName}", serviceList[i].groupName)
+															 .replaceAll("{serviceList[i].frontEndEndPoint}", serviceList[i].frontEndEndPoint)
+															 .replaceAll("{serviceList[i].backEndEndPoint}", serviceList[i].backEndEndPoint)
+															 .replaceAll("{editServiceToolTip}", editServiceToolTip)
+															 .replaceAll("{serviceList[i].uri}", serviceList[i].uri)
+															 .replaceAll("{deleteServiceToolTip}", deleteServiceToolTip);
+							table.appendChild(newRow);
+							edit=document.getElementById("btnEdit");
+							del=document.getElementById("btnDelete");
+							if (serviceList[i].serviceName.startsWith("ApplianceManagerAdmin")){
+								del.remove();
+							}else{
+								del.removeAttribute("id");
+							}
+							edit.removeAttribute("id");
 						}
-						strHTML+="			</td>\n";
-						strHTML+="		</tr>\n";
-					}
-					strHTML+="	</tbody>\n";
-					strHTML+=" </table>\n";
-				}
-				strHTML+="</center>";
-
-				c=document.getElementById('content');
-				c.innerHTML=strHTML;
-				/* make the table scrollable with a fixed header */
-				$("table.scroll").createScrollableTable({
-					width: '800px',
-					height: '350px',
-					border: '0px'
+						setServiceModified(false);
+						/* make the table scrollable with a fixed header */
+						$("table.scroll").createScrollableTable({
+							width: '800px',
+							height: '350px',
+							border: '0px'
+						});
+						touchScroll("servicesList_body_wrap");
 				});
-				touchScroll("servicesList_body_wrap");
+
+
+
+
 			
 			}
 

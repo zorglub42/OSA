@@ -1,0 +1,20 @@
+<center>
+<h1>
+New Group properties
+</h1>
+<hr>
+<form>
+<table class="tabular_table">
+<tr class="tabular_table_body">
+<th>Group name:</th>
+<td><input class="inputText" title="{groupNameToolTip}" type="text" id="groupName" onchange="setGroupModified(true)" onkeypress="setGroupModified(true)"></td>
+<tr class="tabular_table_body">
+<th>Description:</th>
+<td><input class="inputText" title="{groupDescToolTip}" type='text' id='groupDesc' onchange="setGroupModified(true)" onkeypress="setGroupModified(true)"></td>
+</tr>
+</table>
+<br>
+<input type="button" id="saveGroup" onclick="saveNewGroup()" value="OK" class="button_orange">&nbsp;
+<input type="button" onclick="showGroups()" value="Cancel" class="button_orange">
+</form>
+</center>

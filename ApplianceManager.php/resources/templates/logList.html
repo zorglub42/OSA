@@ -1,0 +1,33 @@
+<center>
+	<h1>
+		<div id="logsCount">{logsList.length} hits found</div>
+	</h1>
+	<hr>
+	<table id="logsList" class="tabular_table scroll">
+		<thead>
+			<tr class="tabular_table_header">
+				<th>Service name</th>
+				<th>User name</th>
+				<th>Frontend endpoint</th>
+				<th>Status</th>
+				<th>Message</th>
+				<th>Timestamp</th>
+			</tr>
+		</thead>
+		<tbody id="data">
+			<tr id="rowTpl" class="item" >
+				<td title="{logsList[i].serviceName}" class="serviceName">{logsList[i].serviceName}</td>
+				<td title="{logsList[i].userName}">{logsList[i].userName}&nbsp;</td>
+				<td title="{logsList[i].frontEndUri}">{logsList[i].frontEndUri}</td>
+				<td class="status">{logsList[i].status}</td>
+				<td>{logsList[i].message}</td>
+				<td>{timeStamp}</td>
+			</tr>
+		</tbody>
+	</table>
+	<br>
+	<form>
+		<input type="button" id="back" onclick="searchLogs()" value="Back" class="button_orange">&nbsp;
+		<input type="button" id="refresh" onclick="executeSearchLog()" value="Refresh" class="button_orange">&nbsp;
+	</form>
+</center>

@@ -1,0 +1,31 @@
+<center>
+	<h1>
+		Search for counters
+	</h1>
+	<hr>
+	<table class="tabular_table">
+		<tr class="tabular_table_body">
+			<th>Resource Name:</th>
+			<td><input class="inputText" title="{resourceNameToolTip}" type"text" id="resourceName" onfocus="javascript:$(this).autocomplete('search',$(this).value);"></td>
+		</tr>
+		<tr class="tabular_table_body">
+			<th>User name:</th>
+			<td><input class="inputText" title="{userNameToolTip}" type"text" id="userName" onfocus="javascript:$(this).autocomplete('search',$(this).value);"></td>
+		</tr>
+		<tr class="tabular_table_body">
+			<th>time unit:</th>
+			<td>
+				<select  class="inputText"  title="{timeUnitToolTip}"  id="timeUnit" name="timeUnit">
+					<option value="All">All</option>
+					<option value="M">Month</option>
+					<option value="D">Day</option>
+					<option value="S">Second</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+	<br>
+	<input type="button" id="seach" onclick="startSearchCounters()" value="Search" class="button_orange">&nbsp;
+	</form>
+	<hr>
+</center>

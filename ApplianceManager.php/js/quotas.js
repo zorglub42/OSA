@@ -39,7 +39,7 @@ function updateQuota(){
 }
 
 function saveOrUpdateQuota(method){
-	currentQuotaUri=encodeURIComponent(document.getElementById("quotaUri").value);
+	currentQuotaUri=document.getElementById("quotaUri").value;
 	reqSec = "reqSec=" + encodeURIComponent(document.getElementById("reqSec").value);
 	reqDay = "reqDay=" + encodeURIComponent(document.getElementById("reqDay").value);
 	reqMonth = "reqMonth=" + encodeURIComponent(document.getElementById("reqMonth").value);
@@ -84,93 +84,48 @@ function startPopulateUnsetQuotas(userURI){
 
 function populateUnsetQuotas(quotaList){
 	if (quotaList.length>0){
-		strHTML="";
-		strHTML+="<select title=\"" +  userServiceQuotaToolTip + "\" name=\"quotaUri\" id=\"quotaUri\" >";
-		for (i=0;i<quotaList.length;i++){
-			strHTML+="<option name=\"" + quotaList[i].serviceName + "\" value=\"" + quotaList[i].uri + "\"  >" + quotaList[i].serviceName + "</option>";
-		}
-		strHTML+="</select>";
-		c=document.getElementById('unsetQuotas');
-		c.innerHTML=strHTML;
+		$.each(quotaList, function (i, item) {
+			$('#quotaUri').append($('<option>', { 
+				value: item.uri,
+				text : item.serviceName 
+			}));
+		});
+	}else{
+		$('#quotaUri').hide();
+		$("#saveEditQuotas").hide();
 	}
 	
 }
 
 function addUserQuotas(){
-	strHTML="";
-	strHTML+="<center>";
-	strHTML+="<h1>";
-	strHTML+="Add quotas on service for user " +  currentUser.userName + " settings";
-	strHTML+="</h1>";
-	strHTML+="<hr>";
-	strHTML+="<form>";
-	strHTML+="<table class=\"tabular_table\">";
-	strHTML+="	<tr class=\"tabular_table_body\">";
-	strHTML+="		<th>Service:</th>";
-	strHTML+="		<td><div id=\"unsetQuotas\"></div></td>";
-	strHTML+="	<tr>";
-	strHTML+="	<tr class=\"tabular_table_body\">";
-	strHTML+="		<th>Maximun request per second:</th>";
-	strHTML+="		<td><input class=\"inputNumber\"  title=\"" + perSecToolTip + "\" type=\"text\" id=\"reqSec\" value=\"\" onchange=\"setQuotaModified(true)\" onkeypress=\"setQuotaModified(true)\"></td>";
-	strHTML+="	<tr>";
-	strHTML+="	<tr class=\"tabular_table_body\">";
-	strHTML+="		<th>Maximun request per day:</th>";
-	strHTML+="		<td><input class=\"inputNumber\"   title=\"" + perDayToolTip + "\" type=\"text\" id=\"reqDay\" value=\"\" onchange=\"setQuotaModified(true)\" onkeypress=\"setQuotaModified(true)\"></td>";
-	strHTML+="	<tr>";
-	strHTML+="	<tr class=\"tabular_table_body\">";
-	strHTML+="		<th>Maximun request per month:</th>";
-	strHTML+="		<td><input class=\"inputNumber\"   title=\"" + perMonthToolTip + "\"  type=\"text\" id=\"reqMonth\" value=\"\" onchange=\"setQuotaModified(true)\" onkeypress=\"setQuotaModified(true)\"></td>";
-	strHTML+="	<tr>";
-	strHTML+="</table>";
-	strHTML+="<br>";
-	strHTML+="<input type=\"button\" id=\"saveEditQuotas\" onclick=\"saveNewQuota()\" value=\"Save\" class=\"button_orange\">&nbsp;";
-	strHTML+="<input type=\"button\" id=\"cancelEditQuotas\" onclick=\"startDisplayUserQuotasForCurrentUser()\" value=\"Cancel\" class=\"button_orange\">&nbsp;";
-	strHTML+="</form>";
-	strHTML+="<hr>";
-	
-	strHTML+="</center>";
-	
-	c=document.getElementById('content');
-	c.innerHTML=strHTML;
-	setQuotaModified(true);
-	startPopulateUnsetQuotas(currentUserUri);
+	$.get( "resources/templates/userQuotaAdd.html", function( data ) {
+		$("#content").html(data.replaceAll("{currentUser.userName}", currentUser.userName)
+							   .replaceAll("{perSecToolTip}", perSecToolTip)
+							   .replaceAll("{perDayToolTip}", perDayToolTip)
+							   .replaceAll("{perMonthToolTip}", perMonthToolTip)
+							   .replaceAll("{userServiceQuotaToolTip}", userServiceQuotaToolTip)
+		);
+		setQuotaModified(true);
+		startPopulateUnsetQuotas(currentUserUri);
+	});
 }
 
 
 function editUserQuotas(quota){
-		strHTML="";
-		strHTML+="<center>";
-		strHTML+="<h1>";
-		strHTML+="Quotas on service " + quota.serviceName + " for user " +  quota.userName + " settings";
-		strHTML+="</h1>";
-		strHTML+="<hr>";
-		strHTML+="<form>";
-		strHTML+="<input type=\"hidden\" id=\"quotaUri\" value=\"" + quota.uri + "\">";
-		strHTML+="<table class=\"tabular_table\">";
-		strHTML+="	<tr class=\"tabular_table_body\">";
-		strHTML+="		<th>Maximun request per second:</th>";
-		strHTML+="		<td><input  class=\"inputNumber\"   title=\"" + perSecToolTip + "\"  type=\"text\" id=\"reqSec\" value=\"" + quota.reqSec + "\" onchange=\"setQuotaModified(true)\" onkeypress=\"setQuotaModified(true)\"></td>";
-		strHTML+="	<tr>";
-		strHTML+="	<tr class=\"tabular_table_body\">";
-		strHTML+="		<th>Maximun request per day:</th>";
-		strHTML+="		<td><input   class=\"inputNumber\"  title=\"" + perDayToolTip + "\"  type=\"text\" id=\"reqDay\" value=\"" + quota.reqDay + "\" onchange=\"setQuotaModified(true)\" onkeypress=\"setQuotaModified(true)\"></td>";
-		strHTML+="	<tr>";
-		strHTML+="	<tr class=\"tabular_table_body\">";
-		strHTML+="		<th>Maximun request per month:</th>";
-		strHTML+="		<td><input  class=\"inputNumber\"   title=\"" + perMonthToolTip + "\"  type=\"text\" id=\"reqMonth\" value=\"" + quota.reqMonth + "\" onchange=\"setQuotaModified(true)\" onkeypress=\"setQuotaModified(true)\"></td>";
-		strHTML+="	<tr>";
-		strHTML+="</table>";
-		strHTML+="<br>";
-		strHTML+="<input type=\"button\" id=\"saveEditQuotas\" onclick=\"updateQuota('" + quota.uri + "')\" value=\"Save\" class=\"button_orange\">&nbsp;";
-		strHTML+="<input type=\"button\" id=\"cancelEditQuotas\" onclick=\"startDisplayUserQuotasForCurrentUser()\" value=\"Cancel\" class=\"button_orange\">&nbsp;";
-		strHTML+="</form>";
-		strHTML+="<hr>";
-		
-		strHTML+="</center>";
-		
-		c=document.getElementById('content');
-		c.innerHTML=strHTML;
-		currentQuotaUri=quota.uri;
-		setQuotaModified(false);
+
+		$.get("resources/templates/userQuotaEdit.html", function (data){
+			$("#content").html(data.replaceAll("{quota.serviceName}",quota.serviceName)
+								   .replaceAll("{quota.userName}", quota.userName)
+								   .replaceAll("{quota.uri}", quota.uri)
+								   .replaceAll("{perSecToolTip}", perSecToolTip)
+								   .replaceAll("{quota.reqSec}", quota.reqSec)
+								   .replaceAll("{perDayToolTip}", perDayToolTip)
+								   .replaceAll("{quota.reqDay}", quota.reqDay)
+								   .replaceAll("{perMonthToolTip}", perMonthToolTip)
+								   .replaceAll("{quota.reqMonth}", quota.reqMonth)
+			);
+			currentQuotaUri=quota.uri;
+			setQuotaModified(false);
+		});
 }
 	

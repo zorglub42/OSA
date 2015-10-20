@@ -1,0 +1,34 @@
+<center>
+<h1>
+				{counterList.length} counters found
+</h1>
+<hr>
+	<table id="countersList" class="tabular_table scroll">
+		<thead>
+			<tr class="tabular_table_header">
+				<th>Service name</th>
+				<th>User name</th>
+				<th>Time unit</th>
+				<th>Time value</th>
+				<th>Value</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody id="data">
+			<tr id="rowTpl" class="tabular_table_body{rowParity} item" style="display: none">
+				<td class="serviceName">{counterList[i].resourceName}</td>
+				<td class="userName">{counterList[i].userName}</td>
+				<td class="timeUnit">{counterList[i].timeUnit}</td>
+				<td class="timeValue">{counterList[i].timeValue}</td>
+				<td class="counterValue" >{counterList[i].value}</td>
+				<td class="action">
+					<a  id="btnEdit" title="{editCounterToolTip}" href="javascript:startEditCounter('{i}')"><img border="0" src="images/edit.gif"></a>
+					<a id="btnDelete" title="{deleteCounterToolTip}"  href="javascript:deleteCounter('{i}')"><img border="0" src="images/delete.gif"></a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+<br>
+<input type="button" id="refresh" onclick="executeSearch()" value="Refresh" class="button_orange">&nbsp;
+</center>
+
