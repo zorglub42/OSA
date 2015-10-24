@@ -9,8 +9,8 @@ require_once "../../include/Localization.php";
 			</div>
 			<div class="panel-body">
 				<div class="row list-group-item header" >
-						<div class="col-xs-4 col-md-2 ellipsis" title="<?php echo Localization::getString("log.list.servieName")?>"><?php echo Localization::getString("node.list.serviceName")?></div>
-						<div class="col-xs-1 col-md-1 ellipsis mobile-optional" title="<?php echo Localization::getString("log.list.userName")?>"><?php echo Localization::getString("log.list.userName")?></div>
+						<div class="col-xs-4 col-md-2 ellipsis" title="<?php echo Localization::getString("log.list.servieName")?>"><?php echo Localization::getString("log.list.serviceName")?></div>
+						<div class="col-xs-1 col-md-1 ellipsis mobile-optional" title="<?php echo Localization::getString("log.list.userName")?>"><?php echo Localization::	getString("log.list.userName")?></div>
 						<div class="col-xs-2 col-md-3 ellipsis mobile-optional" title="<?php echo Localization::getString("log.list.frontEndEndPoint")?>"><?php echo Localization::getString("log.list.frontEndEndPoint")?></div>
 						<div class="col-xs-3 col-md-1 ellipsis" title="<?php echo Localization::getString("log.list.status")?>"><?php echo Localization::getString("log.list.status")?></div>
 						<div class="col-xs-2 col-md-3 ellipsis mobile-optional" title="<?php echo Localization::getString("log.list.message")?>"><?php echo Localization::getString("log.list.message")?></div>

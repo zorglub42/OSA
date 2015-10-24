@@ -9,34 +9,25 @@
 				</ul>
 
 				<div id="tabs-node-services">
-					<center>
 					<h1 id="serviceListTitle">
 									{serviceList.length} <?php echo Localization::getString("service.list.found")?>
 					</h1>
-					<hr>
-						<table id="servicesList" class="tabular_table scroll choices-border" >
-							<thead>
-								<tr class="tabular_table_header">
-									<th>Service name</th>
-									<th>On</th>
-									<th>Group name</th>
-									<th>Frontend endpoint</th>
-									<th>Backend endpoint</th>
-								</tr>
-							</thead>
-							<tbody id="data">
-									<tr id="rowTpl" style="display:none">
-										<td title="{serviceList[i].serviceName}">{serviceList[i].serviceName}</td>
-											
-										<td class="isPublished"><input  title="{isPublishedToolTip}" type="checkbox" id="isPublished{i}" {cbPublishedCheck} disabled><label for="isPublished{i}"></label></td>
-
-										<td title="{serviceList[i].groupName}">{serviceList[i].groupName}</td>
-										<td title="{serviceList[i].frontEndEndPoint}">{serviceList[i].frontEndEndPoint}</td>
-										<td title="{serviceList[i].backEndEndPoint}">{serviceList[i].backEndEndPoint}</td>
-									</tr>
-							</tbody>
-						 </table>
-					</center>
+					<div class="row list-group-item header" >
+							<div class="col-xs-4 col-md-2 ellipsis" title="<?php echo Localization::getString("service.list.name")?>"><?php echo Localization::getString("service.list.name")?></div>
+							<div class="col-xs-1 col-md-1 ellipsis mobile-optional" title="<?php echo Localization::getString("service.list.published")?>"><?php echo Localization::getString("service.list.published")?></div>
+							<div class="col-xs-2 col-md-2 ellipsis mobile-optional" title="<?php echo Localization::getString("service.list.groupName")?>"><?php echo Localization::getString("service.list.groupName")?></div>
+							<div class="col-xs-4 col-md-3 ellipsis" title="<?php echo Localization::getString("service.list.frontendEndpoint")?>"><?php echo Localization::getString("service.list.frontendEndpoint")?></div>
+							<div class="col-xs-2 col-md-3 ellipsis mobile-optional" title="<?php echo Localization::getString("service.list.backendEndpoint")?>"><?php echo Localization::getString("service.list.backendEndpoint")?></div>
+					</div>
+					<div class="list-group" id="data" >
+						<a class="list-group-item row" id="rowTpl" style="display:none" >
+							<div class="col-xs-4 col-md-2 ellipsis" title="{serviceList[i].serviceName}">{serviceList[i].serviceName}</div>
+							<div class="col-xs-1 col-md-1 ellipsis mobile-optional"><input type="checkbox" title="<?php echo Localization::getString("service.isPublished.tooltip")?>" id="isPublished{i}" {serviceList[i].cbPublishedCheck} disabled><label for="isPublished{i}"></label></div>
+							<div class="col-xs-2 col-md-2 ellipsis mobile-optional" title="{serviceList[i].groupName}">{serviceList[i].groupName}</div>
+							<div class="col-xs-4 col-md-3 ellipsis" title="{serviceList[i].frontEndEndPoint}">{serviceList[i].frontEndEndPoint}</div>
+							<div class="col-xs-2 col-md-3 ellipsis mobile-optional" title="{serviceList[i].backEndEndPoint}">{serviceList[i].backEndEndPoint}</div>
+						</a>
+					</div>
 				</div>
 				<div id="tabs-node-advance">
 					<div class="row">

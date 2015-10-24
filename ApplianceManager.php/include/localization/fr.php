@@ -343,7 +343,8 @@ $strings["log.label.until"]="Jusqu'au";
 $strings["log.list.found"]="hits trouvés";
 $strings["log.list.serviceName"]="Service";
 $strings["log.list.userName"]="Utilisateur";
-$strings["log.list.fontEndEndPoint"]="Alias";
+$strings["log.list.frontEndEndPoint"]="Alias";
+$strings["log.list.time"]="Date";
 $strings["log.list.status"]="Statut";
 $strings["log.list.message"]="Message";
 ?>
