@@ -1,9 +1,0 @@
-#!/bin/bash
-
-for i in `seq 1 10`;do
-( while [ 1 ]; do
-    curl -s http://admin:toto@127.0.0.1:81/ApplianceManagerAdmin;
-done ) > /dev/null &
-
-done
-
