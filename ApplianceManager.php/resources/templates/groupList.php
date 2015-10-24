@@ -19,10 +19,10 @@ require_once "../../include/Localization.php";
 									<input class="form-control" placeholder="<?php echo Localization::getString("group.description.placeholder")?>" id="groupDescritpionFilter" value="{groupDescritpionFilterPrevVal}">
 								</div>
 								<div class="col-xs-3 col-md-2 search-control">
-									<button class="btn btn-default" title="<?php echo Localization::getString("button.filter.tooltip")?>" onclick=showGroups()>
+									<button type="button" class="btn btn-default" title="<?php echo Localization::getString("button.filter.tooltip")?>" onclick=showGroups()>
 										<span><?php echo Localization::getString("button.filter")?></span>
 									</button>
-									<button class="btn btn-info"   title="<?php echo Localization::getString("button.reset.tooltip")?>" onclick=resetGroupFilter()>
+									<button type="button" class="btn btn-info"   title="<?php echo Localization::getString("button.reset.tooltip")?>" onclick=resetGroupFilter()>
 										<span><?php echo Localization::getString("button.reset")?></span>
 									</button>
 								</div>
@@ -34,14 +34,14 @@ require_once "../../include/Localization.php";
 				<hr>
 				<div class="row list-group-item header" >
 						<div class="col-xs-4 col-md-4 ellipsis"><?php echo Localization::getString("group.list.name")?></div>
-						<div class="col-xs-5 col-md-7 ellipsis"><?php echo Localization::getString("group.list.description")?></div>
-						<div class="col-xs-3 col-md-1	 ellipsis"><?php echo Localization::getString("list.actions")?></div>
+						<div class="col-xs-5 col-md-6 ellipsis"><?php echo Localization::getString("group.list.description")?></div>
+						<div class="col-xs-3 col-md-2	 ellipsis"><?php echo Localization::getString("list.actions")?></div>
 				</div>
 				<div class="list-group" id="data">
 					<a class="list-group-item row" id="rowTpl" style="display:none" >
 						<div class="col-xs-4 col-md-4 ellipsis" title="{groupList[i].groupName}">{groupList[i].groupName}</div>
-						<div class="col-xs-5 col-md-7 ellipsis" title="{groupList[i].description}">{groupList[i].description}</div>
-						<div class="col-xs-3 col-md-1 ">
+						<div class="col-xs-5 col-md-6 ellipsis" title="{groupList[i].description}">{groupList[i].description}</div>
+						<div class="col-xs-3 col-md-2 ">
 							<button type="button" class="btn btn-default" id="btnEdit" title="<?php echo Localization::getString("group.edit.tooltip")?>" onclick="startEditGroup('{groupList[i].uri}')">
 							  <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
 							</button>

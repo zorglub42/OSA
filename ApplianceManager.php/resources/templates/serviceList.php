@@ -43,19 +43,19 @@ require_once "../../include/Localization.php";
 				<div class="row list-group-item header" >
 						<div class="col-xs-4 col-md-2 ellipsis" title="<?php echo Localization::getString("service.list.name")?>"><?php echo Localization::getString("service.list.name")?></div>
 						<div class="col-xs-1 col-md-1 ellipsis mobile-optional" title="<?php echo Localization::getString("service.list.published")?>"><?php echo Localization::getString("service.list.published")?></div>
-						<div class="col-xs-2 col-md-2 ellipsis mobile-optional" title="<?php echo Localization::getString("service.list.groupName")?>"><?php echo Localization::getString("service.list.groupName")?></div>
+						<div class="col-xs-2 col-md-1 ellipsis mobile-optional" title="<?php echo Localization::getString("service.list.groupName")?>"><?php echo Localization::getString("service.list.groupName")?></div>
 						<div class="col-xs-4 col-md-3 ellipsis" title="<?php echo Localization::getString("service.list.frontendEndpoint")?>"><?php echo Localization::getString("service.list.frontendEndpoint")?></div>
 						<div class="col-xs-2 col-md-3 ellipsis mobile-optional" title="<?php echo Localization::getString("service.list.backendEndpoint")?>"><?php echo Localization::getString("service.list.backendEndpoint")?></div>
-						<div class="col-xs-4 col-md-1 ellipsis" title="<?php echo Localization::getString("list.actions")?>"><?php echo Localization::getString("list.actions")?></div>
+						<div class="col-xs-4 col-md-2 ellipsis" title="<?php echo Localization::getString("list.actions")?>"><?php echo Localization::getString("list.actions")?></div>
 				</div>
 				<div class="list-group" id="data" >
 					<a class="list-group-item row" id="rowTpl" style="display:none" >
 						<div class="col-xs-4 col-md-2 ellipsis" title="{serviceList[i].serviceName}">{serviceList[i].serviceName}</div>
 						<div class="col-xs-1 col-md-1 ellipsis mobile-optional"><input type="checkbox" title="<?php echo Localization::getString("service.isPublished.tooltip")?>" id="isPublished{i}" {serviceList[i].cbPublishedCheck} disabled><label for="isPublished{i}"></label></div>
-						<div class="col-xs-2 col-md-2 ellipsis mobile-optional" title="{serviceList[i].groupName}">{serviceList[i].groupName}</div>
+						<div class="col-xs-2 col-md-1 ellipsis mobile-optional" title="{serviceList[i].groupName}">{serviceList[i].groupName}</div>
 						<div class="col-xs-4 col-md-3 ellipsis" title="{serviceList[i].frontEndEndPoint}">{serviceList[i].frontEndEndPoint}</div>
 						<div class="col-xs-2 col-md-3 ellipsis mobile-optional" title="{serviceList[i].backEndEndPoint}">{serviceList[i].backEndEndPoint}</div>
-						<div class="col-xs-4 col-md-1">
+						<div class="col-xs-4 col-md-2">
 								<button type="button" class="btn btn-default" id="btnEdit" title="<?php echo Localization::getString("service.edit.tooltip")?>" onclick="startEditService('{serviceList[i].uri}')">
 								  <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
 								</button>
