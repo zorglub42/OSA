@@ -256,6 +256,7 @@ function searchLogs(){
 		startPopulateAutoCompleteServices();
 		startPopulateAutoCompleteUsers();
 		$('#from').datetimepicker();
+
 		$('#until').datetimepicker();
 	});
 
