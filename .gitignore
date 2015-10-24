@@ -1,0 +1,10 @@
+.gitignore
+.project
+.svn
+.svn/*
+debian
+debian/*
+RunTimeAppliance/shell/dbversion
+ApplianceManager.php/include/Crypto.ini.php
+ApplianceManager.php/include/Settings.ini.php
+RunTimeAppliance/apache/conf/vhAppliance/applianceManagerServices-node-*

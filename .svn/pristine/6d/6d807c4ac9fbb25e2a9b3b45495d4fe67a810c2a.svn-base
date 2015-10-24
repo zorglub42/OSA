@@ -1,0 +1,26 @@
+libapache2-mod-osa (2.0.0.1603-nursery1) precise; urgency=low
+
+  * OSA V2:
+  * NOTE: This version is non compliant with v1. So existing apache
+    configuration using libapache2-mod-osa v1 nee to be updated accoding to v2
+    syntext (job done by OSA configuration script when this module is used by
+    OSA app)
+
+ -- Emerginov Team <admin@emerginov.org>  Fri, 10 Jan 2014 13:58:33 +0100
+
+libapache2-mod-osa (1.0.0.1180-nursery1) precise; urgency=low
+
+  * New more compliant version number, same upstream source
+
+ -- Emerginov Team <admin@emerginov.org>  Wed, 03 Oct 2012 14:21:41 +0200
+
+libapache2-mod-osa (1.0.0-1180-nursery1) precise; urgency=low
+
+  * Add suuport to hits logging in DB, include SVN version in relase#
+
+ -- Emerginov Team <admin@emerginov.org>  Mon, 17 Sep 2012 11:07:34 +0200
+libapache2-mod-osa (1.0.0-nursery1) precise; urgency=low
+
+  * Initial release
+
+ -- Emerginov Team <admin@emerginov.org>  Mon, 17 Sep 2012 11:07:34 +0200

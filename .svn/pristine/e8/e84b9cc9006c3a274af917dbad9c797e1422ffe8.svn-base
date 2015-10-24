@@ -1,0 +1,348 @@
+<?php
+/*--------------------------------------------------------
+ * Module Name : ApplianceManager
+ * Version : 1.0.0
+ *
+ * Software Name : OpenServicesAccess
+ * Version : 2.0
+ *
+ * Copyright © 2011 – 2014 Orange
+ * This software is distributed under the Apache 2 license
+ * <http://www.apache.org/licenses/LICENSE-2.0.html>
+ *
+ *--------------------------------------------------------
+ * File Name   : ApplianceManager/ApplianceManager.php/counters/counterDAO.php
+ *
+ * Created     : 2013-11
+ * Authors     : Benoit HERARD <benoit.herard(at)orange.com>
+ *
+ * Description :
+ *      Manage database access for group object
+ *--------------------------------------------------------
+ * History     :
+ * 1.0.0 - 2013-11-12 : Release of the file
+*/
+require_once '../objects/Error.class.php';
+require_once '../objects/Counter.class.php';
+require_once '../objects/ExcedeedCounter.class.php';
+require_once '../include/Constants.php';
+require_once '../include/Func.inc.php';
+require_once '../include/Settings.ini.php';
+require_once '../include/BDMySQL.inc';
+require_once '../include/BDControls.inc';
+
+
+function getCounter($counterName= NULL, $request_data=NULL){
+	GLOBAL $BDName;
+	GLOBAL $BDUser;
+	GLOBAL $BDPwd;
+	$error = new Error();
+
+
+	$cnx = new Connexion();
+	$rqt = new RequeteResultat();
+	$rPart="R=";
+	$uPart="%";
+	$tPart="";
+	$resourceLevel=false;
+	$error->setHttpStatus(200);
+
+	if (isset($request_data["resourceName"])){
+		$rPart = "R=" . $request_data["resourceName"];
+	}else{
+		$rPart = "R=%";
+	}
+	if (isset($request_data["userName"])){
+		if ($request_data["userName"]==""){
+			$resourceLevel=true;
+			$uPart="";
+		}else{
+			$uPart = '$$$U=' . $request_data["userName"];
+		}
+	}
+	if (isset($request_data["timeUnit"])){
+		if ($request_data["timeUnit"]=="M" ||
+			$request_data["timeUnit"]=="D" ||
+			$request_data["timeUnit"]=="S"){
+				$tPart = '$$$' . $request_data["timeUnit"] . "=%";
+		}else{
+				$error->setHttpStatus(400);
+				$error->setFunctionalCode(1);
+				$error->setFunctionalLabel($error->getFunctionalLabel() . " unsupported value " . $request_data["timeUnit"] . " for timeUnit");
+		}
+	}
+
+	if ($error->getHttpStatus() != 200){
+		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());;
+	}
+
+
+	if (!$cnx->Ouvrir($BDName, $BDUser, $BDPwd)){
+			$error->setHttpStatus(500);
+			$error->setFunctionalCode(3);
+			$error->setFunctionalLabel($cnx->GetErreur()->GetTexte());
+			throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
+	}else{	
+		if ($counterName != NULL ){
+			if ($counterName != ""){
+			$strSQL = "SELECT * FROM counters WHERE counterName ='" . $counterName . "'";
+			if (!$rqt->Ouvrir($strSQL, $cnx)){
+				$error->setHttpStatus(500);
+				$error->setFunctionalCode(3);
+				$error->setFunctionalLabel($rqt->Erreur->GetTexte());
+				$cnx->Fermer();
+				throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
+			}
+			$counter=new Counter($rqt);
+			$rc = $counter->toArray();
+			$rqt->Fermer();
+				
+		}else{
+			$error->setHttpStatus(400);
+			$error->setFunctionalCode(1);
+			$error->setFunctionalLabel($error->getFunctionalLabel() . "counterName is required\n");
+			$cnx->Fermer();
+			throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());;
+		}
+	}else{
+			
+		
+			$strSQL = "SELECT * FROM counters WHERE counterName like '" . $rPart . $uPart . $tPart . "%'";
+			if ( $resourceLevel){
+				$strSQL=$strSQL . " AND counterName not like 'R=%�U=%'";
+			}
+			if (!$rqt->Ouvrir($strSQL, $cnx)){
+				$error->setHttpStatus(500);
+				$error->setFunctionalCode(3);
+				$error->setFunctionalLabel($rqt->Erreur->GetTexte());
+				$cnx->Fermer();
+				throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());;
+			}
+			$rc=Array();
+			while (!$rqt->EOF()){
+				$counter=new Counter($rqt);
+				array_push($rc,$counter->toArray());
+				$rqt->Suivant();
+				
+			}
+			$rqt->Fermer();
+		}
+	}
+	$cnx->Fermer();
+	return $rc;
+}
+
+
+
+function deleteCounter($counterName){
+	GLOBAL $BDName;
+	GLOBAL $BDUser;
+	GLOBAL $BDPwd;
+
+
+	$error = new Error();
+
+
+	$cnx = new Connexion();
+	if (!$cnx->Ouvrir($BDName, $BDUser, $BDPwd)){
+			$error->setHttpStatus(500);
+			$error->setFunctionalCode(3);
+			$error->setFunctionalLabel($cnx->GetErreur()->GetTexte());
+			throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());;
+		
+	}
+
+	$rqt = new RequeteResultat();
+	if ($counterName != NULL && $counterName != ""){
+		$strSQL = "SELECT * FROM counters WHERE counterName='" . $counterName . "'";
+		if (!$rqt->Ouvrir($strSQL, $cnx)){
+			$error->setHttpStatus(500);
+			$error->setFunctionalCode(3);
+			$error->setFunctionalLabel($rqt->Erreur->GetTexte());
+			$cnx->Fermer();
+			throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());;
+		}
+		
+		if ($rqt->EOF()){
+			$error->setHttpStatus(404);
+			$error->setHttpLabel("Unknown counter");
+			$error->setFunctionalCode(4);
+			$error->setFunctionalLabel("Counter ". $counterName. " does not exists");
+			$rqt->Fermer();
+			$cnx->Fermer();
+			throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());;
+		}else{
+			$counter = new Counter($rqt);
+			$strSQL="DELETE FROM counters WHERE  counterName='" . $counterName. "'";
+			if (!$rqt->Executer($strSQL, $cnx)){
+				$error->setHttpStatus(500);
+				$error->setFunctionalCode(3);
+				$error->setFunctionalLabel($rqt->Erreur->GetTexte());
+				if (strpos($rqt->Erreur->GetTexte(),"a foreign key constraint fails")){
+					$error->setFunctionalLabel("The counter " . $counterName. " is used by some services. Please remove subscribtions and services referencing it first");
+				}
+				$cnx->Fermer();
+				throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());;
+				
+			}
+			
+			
+		}
+		$rqt->Fermer();
+	}else{
+		$error->setHttpLabel("Bad request for method \"" . $_SERVER["REQUEST_METHOD"] . "\" for resource \"counter\"");
+		$error->setHttpStatus(400);
+		$error->setFunctionalCode(1);
+		$error->setFunctionalLabel($error->getFunctionalLabel() . "counterName is required\n");
+		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());;
+	}
+	$cnx->Fermer();
+	return $counter->toArray();
+}
+
+
+
+
+
+
+function updateCounter($counterName, $request_data){
+	GLOBAL $BDName;
+	GLOBAL $BDUser;
+	GLOBAL $BDPwd;
+	$error = new Error();
+
+	$cnx = new Connexion();
+	if (!$cnx->Ouvrir($BDName, $BDUser, $BDPwd)){
+			$error->setHttpStatus(500);
+			$error->setFunctionalCode(3);
+			$error->setFunctionalLabel($cnx->GetErreur()->GetTexte());
+			throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
+	}
+
+	if (!isset($request_data["value"]) || $request_data["value"]==""){
+		$error->setHttpLabel("parameter \"value\" is required");
+		$error->setHttpStatus(400);
+		$error->setFunctionalCode(1);
+		$error->setFunctionalLabel($error->getFunctionalLabel() . "\"value\" is required\n");
+		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
+	}
+
+	if ($counterName == NULL || $counterName==""){
+		$error->setHttpLabel("parameter \"counterName\" is required");
+		$error->setHttpStatus(400);
+		$error->setFunctionalCode(1);
+		$error->setFunctionalLabel($error->getFunctionalLabel() . "counterName is required\n");
+		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
+	}
+
+	$rqt = new RequeteResultat();
+
+	if ($rqt->EOF()){
+		$error->setHttpStatus(404);
+		$error->setHttpLabel("Unknown counter");
+		$error->setFunctionalCode(4);
+		$error->setFunctionalLabel("Counter ". $counterName . " does not exists");
+		$rqt->Fermer();
+		$cnx->Fermer();
+		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
+	}else{
+		$strSQL="UPDATE counters SET value=" . $request_data["value"] . " WHERE  counterName='" . $counterName . "'";
+		if (!$rqt->Executer($strSQL, $cnx)){
+			$error->setHttpStatus(500);
+			$error->setFunctionalCode(3);
+			$error->setFunctionalLabel($rqt->Erreur->GetTexte());
+			$cnx->Fermer();
+			throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
+		}
+		$strSQL = "SELECT * FROM counters WHERE counterName='" . $counterName . "'";
+		if (!$rqt->Ouvrir($strSQL, $cnx)){
+			$error->setHttpStatus(500);
+			$error->setFunctionalCode(3);
+			$error->setFunctionalLabel($rqt->Erreur->GetTexte());
+			$cnx->Fermer();
+			throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
+		}
+		$counter = new Counter($rqt);
+		
+		
+	}
+	$rqt->Fermer();
+	$cnx->Fermer();
+
+	return $counter->toArray();
+}
+
+
+
+
+function getExceededCounter($request_data){
+	GLOBAL $BDName;
+	GLOBAL $BDUser;
+	GLOBAL $BDPwd;
+	$error = new Error();
+
+	$cnx = new Connexion();
+	$rqt = new RequeteResultat();
+	$error->setHttpStatus(200);
+
+
+	if ($error->getHttpStatus() != 200){
+		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
+	}
+
+
+	if (!$cnx->Ouvrir($BDName, $BDUser, $BDPwd)){
+			$error->setHttpStatus(500);
+			$error->setFunctionalCode(3);
+			$error->setFunctionalLabel($cnx->GetErreur()->GetTexte());
+			throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
+	}else{	
+			$strSQL = "";
+			$strSQL = $strSQL . 'Select * from (';
+			$strSQL = $strSQL . '	SELECT c.* , s.serviceName, NULL userName, s.reqSec, s.reqDay, s.reqMonth';
+			$strSQL = $strSQL . '	FROM counters c,';
+			$strSQL = $strSQL . '		 services s';
+			$strSQL = $strSQL . '	WHERE   (counterName like concat(\'R=\',s.serviceName,\'$$$S=%\') and c.value>=s.reqSec)';
+			$strSQL = $strSQL . '	OR      (counterName like concat(\'R=\',s.serviceName,\'$$$D=%\') and c.value>=s.reqDay)';
+			$strSQL = $strSQL . '	OR      (counterName like concat(\'R=\',s.serviceName,\'$$$M=%\') and c.value>=s.reqMonth)';
+			$strSQL = $strSQL . '	UNION';
+			$strSQL = $strSQL . '	SELECT c2.* , uq.serviceName, uq.userName, uq.reqSec, uq.reqDay, uq.reqMonth';
+			$strSQL = $strSQL . '	FROM counters c2,';
+			$strSQL = $strSQL . '		 usersquotas uq';
+			$strSQL = $strSQL . '	WHERE   (counterName like concat(\'R=\',uq.serviceName,\'$$$U=\', uq.userName, \'$$$S=%\') and c2.value>=uq.reqSec) ';
+			$strSQL = $strSQL . '	OR      (counterName like concat(\'R=\',uq.serviceName, \'$$$U=\', uq.userName, \'$$$D=%\') and c2.value>=uq.reqDay)';
+			$strSQL = $strSQL . '	OR      (counterName like concat(\'R=\',uq.serviceName,\'$$$U=\', uq.userName, \'$$$M=%\') and c2.value>=uq.reqMonth)';
+			$strSQL = $strSQL . ') excedeed ';
+			$strSQL = $strSQL . 'order by serviceName, userName';
+			
+			if (!$rqt->Ouvrir($strSQL, $cnx)){
+				$error->setHttpStatus(500);
+				$error->setFunctionalCode(3);
+				$error->setFunctionalLabel($rqt->Erreur->GetTexte());
+				$cnx->Fermer();
+				throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
+			}
+			$rc = Array();
+			while (!$rqt->EOF()){
+				$counter = new ExcedeedCounter($rqt);
+				$pushIt=true;
+				if (isset($request_data["resourceNameFilter"]) && 
+					$request_data["resourceNameFilter"] != ""  && 
+					strpos(strtoupper($counter->getResourceName()), strtoupper($request_data["resourceNameFilter"]))===false){
+					$pushIt=false;
+				}
+				if (isset($request_data["userNameFilter"]) && 
+					$request_data["userNameFilter"] != ""  && 
+					strpos(strtoupper($counter->getUserName()), strtoupper($request_data["userNameFilter"]))===false){
+					$pushIt=false;
+				}
+				if ($pushIt){
+					array_push($rc, $counter->toArray());
+				}
+				$rqt->Suivant();
+			}
+			$rqt->Fermer();
+	}
+	$cnx->Fermer();
+	return $rc;
+}

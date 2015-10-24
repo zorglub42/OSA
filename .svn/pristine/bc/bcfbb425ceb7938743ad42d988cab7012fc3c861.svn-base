@@ -1,0 +1,4 @@
+2011-08: creation from mod_auth_mysql
+	- add quotas (pers alias and per alias and user management
+	- add identity forwarding
+	- add REST content management for error return

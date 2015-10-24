@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ *****************************************************************
+ * Module Name : ApplianceManager
+ * Version : 1.0.0
+ *
+ * Software Name : OpenServicesAccess
+ * Version : 1.0
+ *
+ * Copyright © 2011 – 2012 France Télécom
+ * This software is distributed under the Apache 2 license
+ * <http://www.apache.org/licenses/LICENSE-2.0.html>
+ *
+ *****************************************************************
+ * File Name   : ApplianceManager/ApplianceManager.php/xsd/appliance.xsd
+ *
+ * Created     : 2012-02
+ * Authors     : Benoit HERARD <benoit.herard(at)orange.com>
+ *
+ * Description :
+ *      .../...
+ *****************************************************************
+ * History     :
+ * 1.0.0 - 2012-10-01 : Release of the file
+ * 
+-->
+<xs:schema 	xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+			xmlns:ns1="http://nursery.orange.com/appliance/V1" 
+			targetNamespace="http://nursery.orange.com/appliance/V1" 
+			elementFormDefault="qualified" 
+			attributeFormDefault="unqualified">
+
+
+
+	<xs:simpleType name="booleanWithInt">
+		<xs:restriction base="xs:integer">
+			<xs:enumeration value="0"/>
+			<xs:enumeration value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+
+	<xs:complexType name="ServicesType">
+		<xs:sequence maxOccurs="unbounded">
+			<xs:element name="Service" type="ns1:ServiceType" nillable="false" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ServiceType">
+		<xs:sequence>
+			<xs:element name="Uri" type="xs:anyURI" nillable="false"/>
+			<xs:element name="GroupUri" type="xs:string" nillable="true"/>
+			<xs:element name="ServiceName" type="xs:string" nillable="false"/>
+			<xs:element name="GroupName" type="xs:string" nillable="true"/>
+			<xs:element name="IsIdentityForwardingEnabled" type="ns1:booleanWithInt" nillable="true"/>
+			<xs:element name="IsGlobalQuotasEnabled" type="ns1:booleanWithInt" nillable="true"/>
+			<xs:element name="IsUserQuotasEnabled" type="ns1:booleanWithInt" nillable="true"/>
+			<xs:element name="IsPublished" type="ns1:booleanWithInt" nillable="false"/>
+			<xs:element name="ReqSec" type="xs:unsignedLong" nillable="true"/>
+			<xs:element name="ReqDay" type="xs:unsignedLong" nillable="true"/>
+			<xs:element name="ReqMonth" type="xs:unsignedLong" nillable="true"/>
+			<xs:element name="FrontEndEndPoint" type="xs:anyURI" nillable="false"/>
+			<xs:element name="BackEndEndPoint" type="xs:anyURI" nillable="false"/>
+			<xs:element name="BackEndUsername" type="xs:string" nillable="true"/>
+			<xs:element name="BackEndPassword" type="xs:string" nillable="true"/>
+			<xs:element name="IsHitLoggingEnabled" type="ns1:booleanWithInt" nillable="true"/>
+			<xs:element name="IsUserAuthenticationEnabled" type="ns1:booleanWithInt" nillable="true"/>
+			<xs:element name="AdditionalConfiguration" type="xs:string" nillable="true"/>
+		</xs:sequence>
+	</xs:complexType>
+
+
+
+	<xs:complexType name="GroupsType">
+		<xs:sequence maxOccurs="unbounded">
+			<xs:element name="Group" type="ns1:GroupType" nillable="false" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="GroupType">
+		<xs:sequence>
+			<xs:element name="Uri" type="xs:anyURI" nillable="false"/>
+			<xs:element name="GroupName" type="xs:string" nillable="false"/>
+			<xs:element name="Description" type="xs:string" nillable="true"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="UsersType">
+		<xs:sequence maxOccurs="unbounded">
+			<xs:element name="User" type="ns1:UserType" nillable="false" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="UserType">
+		<xs:sequence>
+			<xs:element name="Uri" type="xs:anyURI" nillable="false"/>
+			<xs:element name="UserName" type="xs:string" nillable="false"/>
+			<xs:element name="Password" type="xs:string" nillable="false"/>
+			<xs:element name="Firstname" type="xs:string" nillable="false"/>
+			<xs:element name="Lastname" type="xs:string" nillable="false"/>
+			<xs:element name="Entity" type="xs:string" nillable="false"/>
+			<xs:element name="EmailAddress" type="xs:string" nillable="true"/>
+			<xs:element name="EndDate" type="xs:dateTime" nillable="true"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="UserQuotasType">
+		<xs:sequence maxOccurs="unbounded">
+			<xs:element name="UserQuota" type="ns1:UserQuotaType" nillable="false" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="UserQuotaType">
+		<xs:sequence>
+			<xs:element name="Uri" type="xs:anyURI" nillable="false"/>
+			<xs:element name="ServiceName" type="xs:string" nillable="false"/>
+			<xs:element name="ServiceUri" type="xs:anyURI" nillable="true"/>
+			<xs:element name="UserName" type="xs:string" nillable="true"/>
+			<xs:element name="UserUri" type="xs:string" nillable="true"/>
+			<xs:element name="ReqSec" type="xs:unsignedLong" nillable="true"/>
+			<xs:element name="ReqDay" type="xs:unsignedLong" nillable="true"/>
+			<xs:element name="ReqMonth" type="xs:unsignedLong" nillable="true"/>
+		</xs:sequence>
+	</xs:complexType>
+
+
+	<xs:complexType name="CountersType">
+		<xs:sequence maxOccurs="unbounded">
+			<xs:element name="Counter" type="ns1:CounterType" nillable="false" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CounterType">
+		<xs:sequence>
+			<xs:element name="Uri" type="xs:anyURI" nillable="false"/>
+			<xs:element name="UserName" type="xs:string" nillable="true"/>
+			<xs:element name="ResourceName" type="xs:string" nillable="false"/>
+			<xs:element name="TimeUnit" type="xs:string" nillable="false"/>
+			<xs:element name="TimeValue" type="xs:dateTime"  nillable="false"/>
+			<xs:element name="Value" type="xs:unsignedLong" nillable="false"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="LogsType">
+		<xs:sequence maxOccurs="unbounded">
+			<xs:element name="Log" type="ns1:LogType" nillable="false" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="LogType">
+		<xs:sequence>
+			<xs:element name="Uri" type="xs:anyURI" nillable="false"/>
+			<xs:element name="UserName" type="xs:string" nillable="true"/>
+			<xs:element name="ServiceName" type="xs:string" nillable="false"/>
+			<xs:element name="FrontEndUri" type="xs:string" nillable="false"/>
+			<xs:element name="TimeStamp" type="xs:dateTime"  nillable="false"/>
+			<xs:element name="Status" type="xs:unsignedLong" nillable="false"/>
+			<xs:element name="Message" type="xs:string" nillable="true"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="CounterExcedeedType">
+		<xs:complexContent>
+			<xs:extension base="ns1:CounterType">
+				<xs:sequence>
+					<xs:element name="maxValue" type="xs:integer"  nillable="false"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="PaginatedLogsListType">
+             <xs:sequence>
+                 <xs:element name="Length" type="xs:integer"/>
+                 <xs:element name="Previous" type="xs:anyURI" nillable="true"/>
+				<xs:element name="Logs" type="ns1:LogType" nillable="false" minOccurs="0" maxOccurs="unbounded"/>
+                 <xs:element name="Next" type="xs:anyURI"  nillable="true"/> 
+            </xs:sequence>
+     </xs:complexType>
+
+	<xs:complexType name="ErrorType">
+		<xs:sequence>
+			<xs:element name="Code" type="xs:integer" nillable="false"/>
+			<xs:element name="Label" type="xs:string" nillable="false"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:element name="Service" type="ns1:ServiceType"/>
+	<xs:element name="Services" type="ns1:ServicesType"/>
+
+	<xs:element name="Group" type="ns1:GroupType"/>
+	<xs:element name="Groups" type="ns1:GroupsType"/>
+
+	<xs:element name="User" type="ns1:UserType"/>
+	<xs:element name="Users" type="ns1:UsersType"/>
+
+	<xs:element name="UserQuota" type="ns1:UserQuotaType"/>
+	<xs:element name="UserQuotas" type="ns1:UserQuotasType"/>
+
+	<xs:element name="Counter" type="ns1:CounterType"/>
+	<xs:element name="Counters" type="ns1:CountersType"/>
+
+	<xs:element name="Log" type="ns1:LogType"/>
+	<xs:element name="Logs" type="ns1:LogsType"/>
+
+	<xs:element name="Error" type="ns1:ErrorType"/>
+
+	<xs:element name="PaginantedLogsList" type="ns1:PaginatedLogsListType"/>
+
+</xs:schema>

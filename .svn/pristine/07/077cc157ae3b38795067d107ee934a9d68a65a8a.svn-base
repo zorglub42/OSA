@@ -1,0 +1,561 @@
+/*--------------------------------------------------------
+ * Module Name : ApplianceManager
+ * Version : 1.0.0
+ *
+ * Software Name : OpenServicesAccess
+ * Version : 1.0
+ *
+ * Copyright © 2011 – 2014 Orange
+ * This software is distributed under the Apache 2 license
+ * <http://www.apache.org/licenses/LICENSE-2.0.html>
+ *
+ *--------------------------------------------------------
+ * File Name   : ApplianceManager/ApplianceManager.php/css/orangeNursery.css
+ *
+ * Created     : 2012-02
+ * Authors     : Benoit HERARD <benoit.herard(at)orange.com>
+ *
+ * Description :
+ *      Main CSS definitions for GUI
+ *--------------------------------------------------------
+ * History     :
+ * 1.0.0 - 2012-10-01 : Release of the file
+*/
+
+html {
+	font-size: 62.5%;
+	
+	
+}
+
+.rounded-corners {
+     -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -khtml-border-radius: 10px;
+    border-radius: 10px;
+}
+
+
+.ui-menu-item{ 
+	text-align: left;
+	font-size : 10;
+}
+.ui-tooltip{
+	padding:4px;
+	font-family : Arial, Helvetica, sans-serif;
+	font-size : 12;
+	font-style : normal;
+	font-weight : normal;
+	text-decoration : none;
+	background: #f5f6b2;
+}
+
+table.scroll
+{
+	width: 100%;
+	table-layout: fixed;
+}
+
+table.scroll thead
+{
+	width: 100%;
+}
+
+table.scroll tbody
+{
+	width: 100%;
+}
+
+.availableGroupsList{
+	width:350px
+}
+
+table.scroll td{
+	overflow: hidden;
+	word-wrap: normal;
+	-o-text-overflow: ellipsis; /* pour Opera 9 */
+	text-overflow: ellipsis; /* pour le reste du monde */	
+}
+table.scroll td.status
+{
+	width: 50px;
+}
+table.scroll td.action
+{
+	width: 100px;
+}
+table.scroll td.serviceName
+{
+	width: 150px;
+}
+table.scroll td.userName
+{
+	width: 150px;
+}
+table.scroll td.timeUnit
+{
+	width: 50px;
+	text-align: center;
+}
+table.scroll td.timeValue
+{
+	width: 120px;
+}
+table.scroll td.counterValue
+{
+	width: 50px;
+}
+table.scroll td.isPublished 
+{
+	text-align: center;
+	width: 30px;
+}
+
+h1{
+	font-size: 16px;
+}
+
+td
+{
+	text-align: left;
+}
+th
+{
+	text-align: left;
+	vertical: top;
+}
+
+.tabular_table
+{
+background-color: #ffffff;
+border: 2px solid #000000;
+bordercolor: #cccccc;
+spacing: 0;
+padding: 0;
+}
+
+.tabular_table_body1 img{
+	padding-top:5px;
+	padding-bottom: 5px;
+	padding-left:7px;
+	padding-right:7px;
+}
+.tabular_table_body0 img{
+	padding-top:5px;
+	padding-bottom: 5px;
+	padding-left:7px;
+	padding-right:7px;
+}
+.tabular_table_header
+{
+height: 15px;
+background-color: #FF8C37; /*#FF6600;*/
+	font-family : Arial, Helvetica, sans-serif;
+	font-size : 12;
+	font-style : normal;
+	font-weight : bold;
+	text-decoration : none;
+	color : #000000;
+}
+
+.tabular_table_body
+{
+height: 15px;
+background-color: #ffffff;
+	font-family : Arial, Helvetica, sans-serif;
+	font-size : 12;
+	font-style : normal;
+	font-weight : normal;
+	text-decoration : none;
+	color : #666;
+	text-align: center;
+}
+.tabular_table_body1
+{
+background-color: #E0E0E0;
+	font-family : Arial, Helvetica, sans-serif;
+	font-size : 12;
+	font-style : normal;
+	font-weight : normal;
+	text-decoration : none;
+	color : #666;
+}
+.tabular_table_body0
+{
+background-color: #ffffff;
+	font-family : Arial, Helvetica, sans-serif;
+	font-size : 12;
+	font-style : normal;
+	font-weight : normal;
+	text-decoration : none;
+	color : #666;
+	
+}
+
+body
+{
+	font-family : Arial, Helvetica, sans-serif;
+	font-size : 12px;
+	font-style : normal;
+	font-weight : normal;
+	text-decoration : none;
+	text-align:left;
+	color : #000000;
+	margin: auto;
+	width: 1024px;
+}
+
+/** TITLE - TITRE EN-TETE **/
+#logo {	padding:0; margin:0; margin-top:2px; height:80px; min-height:80px; border:0px; text-align:left; width:100%; }
+#title { margin-top:20px; height:20px; min-height:20px;	padding: 1px; color:#333333; border:1px solid #999999; background:#cecece url('../images/degrade.gif') 0 1px repeat-x; clear:both; font-size: 13px; text-align:left; }
+
+/** CONTENT - CONTENU **/
+#content {
+	width: 80%;
+	min-height: 500px;
+	height: auto;
+	float: left;
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+#content1024 {
+	width: 1024px;
+	text-align: center;
+}
+
+.contentBody
+{
+	width: 90%;
+	border: 1px solid orange;
+	padding: 0px;
+	padding-bottom: 20px;	
+}
+
+
+
+#contentTitle {
+	text-align: center;
+	margin: 20px;
+}
+
+.logoApi
+{
+	width: 40px;
+	border: 1px solid Silver; 
+}
+
+/* LIENS */
+a
+{
+	color: #333333;	
+	text-decoration : none;
+}
+a:hover
+{
+	text-decoration : none;
+	color : #7e7e7e;
+}
+
+.link_orange
+{
+	color : #FF6600;
+}
+
+/** EROOR MESSAGE **/
+.errorMessage
+{
+	color: white;
+	background-color: orangered;
+	display: inline;
+	text-align: center;
+	padding-left: 10px;
+	padding-right: 10px;
+	margin: 10px;
+}
+.infoMessage
+{
+	color: white;
+	background-color: green;
+	display: inline;
+	padding-left: 10px;
+	padding-right: 10px;
+	margin: 10px;
+}
+
+
+
+
+/** TEXTE **/
+.text {
+	font-size: 12px;
+	font-color: #333333;		
+}	
+.bold_text {
+	font-size: 12px;
+	font-weight: bold;
+	text-align: left;
+}
+.text_boldgrey {
+	font-size : 12px;
+	font-weight : bold;
+	color : #666666;
+}
+.text_underlined {
+	font-size: 12px;
+	text-decoration: underline;
+}
+.bodyText
+{
+	font: 11px arial, verdana, sans-serif;
+	color: #666;
+}
+
+/** MENU **/
+#menu { margin-top:50px; width:150px; float:left; color:#333333; text-align:left; }
+#menu h2 {
+/*	background:url('../images/fleche_orange.gif') no-repeat 0 50%;*/
+	background:url('../images/tickOrange.png') no-repeat 0 50%;
+	line-height:20px;
+	height:15px;
+	min-height:20px;
+	font-weight:bold;
+	font-size: 13px;
+	border-bottom: 1 solid #DDDDDD;
+	padding-left:20px;
+	margin: 0;
+	margin-bottom: 5px;
+}
+#menu ul { list-style:none; padding:0px;  margin:0px; }
+#menu li { border-bottom:1px solid #DDDDDD; padding-left:10px; line-height:20px; }
+#menu a { font-size:12px; }
+#menu a:hover { text-decoration:underline; color:#333333; }
+.submenu { margin: 0; margin-bottom: 20px; }
+
+
+/** FOOTER - PIED DE PAGE **/
+#footer {width:1024px; height:15px; clear:both; margin-top:20px; margin-bottom:20px;}
+#footer ul.footer {margin:0;padding-left: 400px;border-top:2px solid #FF6600;list-style: none;}
+#footer ul.footer li {vertical-align:top;float:left;}
+#footer ul.footer li.logo {width:6.7em;padding-left:0;padding-top:0;}
+#footer a {color:#333333;font-size:10px;padding-right:5px;padding-left:5px;}
+#footer a.withRightBorder {border-right:1px solid #FF6600;}
+
+
+/** LIEN BACK **/
+#contentTitle .liens {float:right;padding:0;margin:0;}
+#contentTitle .liens ul {list-style-image:url('../images/fleche2.gif')}
+#contentTitle .liens ul li {color:#333333;font-size:11px;}
+#contentTitle .liens ul li a {padding-left:5px;}
+
+
+/** HEADING **/
+.heading_1
+{
+	font-family : Arial, Helvetica, sans-serif;
+	font-size : 20px;
+	font-style : normal;
+	font-weight : bold;
+	text-decoration : none;
+	color : #666666;
+}
+
+.heading_2
+{
+	font-family : Arial, Helvetica, sans-serif;
+	font-size : 15px;
+	font-style : normal;
+	font-weight : bold;
+	text-decoration : none;
+	color : #666666;
+	padding-top: 20px;
+}
+
+.heading_3
+{
+	font-family : Arial, Helvetica, sans-serif;
+	font-size : 11;
+	font-style : normal;
+	font-weight : bold;
+	text-decoration : none;
+	color : #666666;
+}
+
+
+/* FORMULAIRE */
+.inputText
+{
+	border : 1px solid #aaaaaa;
+	font-family : Arial, Helvetica, sans-serif;
+	background-color : #ffffff;
+	font-size : 9;
+	width: 300px;
+}
+.inputNumber
+{
+	border : 1px solid #aaaaaa;
+	font-family : Arial, Helvetica, sans-serif;
+	background-color : #ffffff;
+	font-size : 9;
+	width: 150px;
+}
+.inputDT
+{
+	border : 1px solid #aaaaaa;
+	font-family : Arial, Helvetica, sans-serif;
+	background-color : #ffffff;
+	font-size : 9;
+	width: 130px;
+}
+.inputComplement
+{
+	border: 1px solid red;
+	font-family : Arial, Helvetica, sans-serif;
+	background-color : #ffffff;
+	font-size : 9;
+	width: 200px;
+}
+	
+}
+
+select
+{
+	border : 1px solid #aaaaaa;
+	font-family : Arial, Helvetica, sans-serif;
+	background-color : #ffffff;
+	font-size : 9;
+}
+
+textarea
+{
+	border : 1px solid #aaaaaa;
+	font-family : Arial, Helvetica, sans-serif;
+	background-color : #ffffff;
+	font-size : 11;
+	width: 800px;
+}
+.reqInput
+{
+	border: 1px solid red;
+}
+.reqInputVersion
+{
+	border: 1px solid red;
+	width: 150px;
+}
+
+
+/** TABLEAU LISTE **/
+.listes
+{
+	width: 90%;
+	border-collapse: collapse;
+	padding: 5px;
+	margin: auto;
+}
+
+.listes thead
+{
+	font-size: 12px;
+	font-weight: normal;
+	color: gray;
+}
+
+.listes tr
+{
+	border-bottom: 1px solid silver;
+	font-size:12px;
+}
+
+/* OVERLAY */
+#overlay
+{
+	display: none;
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	background-color:#000;
+	filter:alpha(opacity=75);
+	-moz-opacity: 0.75;
+	opacity: 0.75;
+	height:100%;
+	width:100%;
+	text-align: center;
+}
+
+#overlay_box
+{
+	background-color: white;
+	border: 2px solid #FF6600;
+	margin-top: 300px;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 10px;
+	width: 350px;
+	height: 75px;
+	text-align: center;
+}
+
+/** BUTTONS **/
+.button_orange{
+  cursor: pointer;
+  width: auto;
+  height: auto;
+  text-decoration: none;
+  color: #FFFFFF;
+  font-size: 11px;
+  text-align: center;
+  font-weight: bold;
+  background-color: #FF6600;
+  border: 1 solid #FF6600;
+}
+.button_orange_disabled{
+  cursor: pointer;
+  width: auto;
+  height: auto;
+  text-decoration: none;
+  color: #FFFFFF;
+  font-size: 11px;
+  text-align: center;
+  font-weight: bold;
+  font-style: italic;
+  background-color: #C0C0C0;
+  border: 1 solid #FF6600;
+}
+
+.button_white{
+  cursor: pointer;
+  width: auto;
+  height: auto;
+  text-decoration: none;
+  color: #333333;
+  font-size: 11px;
+  text-align: center;
+  font-weight: normal;
+  background-color: #FFFFFF;
+  border: 1 solid #FF6600;
+}
+
+.cancel{
+  cursor: pointer;
+  width: auto;
+  height: auto;
+  text-decoration: none;
+  color: #FFFFFF;
+  font-size: 11px;
+  text-align: center;
+  font-weight: bold;
+  background-color: #FF6600;
+  border: 1 solid #CCCCCC;
+  border-width: thin;
+}
+
+
+.hLine1
+{
+	height : 1;
+	width : 100%;
+	color : #67887c;
+}
+
+

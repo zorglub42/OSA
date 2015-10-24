@@ -1,0 +1,199 @@
+-- MySQL dump 10.11
+--
+-- Host: localhost    Database: appliance
+-- ------------------------------------------------------
+-- Server version	5.0.77
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `counters`
+--
+
+DROP TABLE IF EXISTS `counters`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `counters` (
+  `counterName` varchar(45) NOT NULL,
+  `value` int(10) unsigned NOT NULL,
+  PRIMARY KEY  USING BTREE (`counterName`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `counters`
+--
+
+LOCK TABLES `counters` WRITE;
+/*!40000 ALTER TABLE `counters` DISABLE KEYS */;
+/*!40000 ALTER TABLE `counters` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `groups`
+--
+
+DROP TABLE IF EXISTS `groups`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `groups` (
+  `groupName` varchar(45) NOT NULL,
+  `description` varchar(2000) NOT NULL,
+  PRIMARY KEY  USING BTREE (`groupName`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `groups`
+--
+
+LOCK TABLES `groups` WRITE;
+/*!40000 ALTER TABLE `groups` DISABLE KEYS */;
+INSERT INTO `groups` VALUES ('Admin','Appliance Manager Admin group'),('gettingStarted','Getting Started demo group');
+/*!40000 ALTER TABLE `groups` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `services`
+--
+
+DROP TABLE IF EXISTS `services`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `services` (
+  `serviceName` varchar(45) NOT NULL default 'none',
+  `reqSec` int(10) unsigned NOT NULL default '0',
+  `reqDay` int(10) unsigned NOT NULL default '0',
+  `reqMonth` int(10) unsigned NOT NULL default '0',
+  `frontEndEndPoint` varchar(200) NOT NULL,
+  `isGlobalQuotasEnabled` tinyint(1) NOT NULL default '1',
+  `isUserQuotasEnabled` tinyint(1) NOT NULL default '1',
+  `groupName` varchar(45) NOT NULL,
+  `backEndEndPoint` varchar(200) NOT NULL,
+  `backEndUsername` varchar(45) default NULL,
+  `backEndPassword` varchar(45) default NULL,
+  `isIdentityForwardingEnabled` tinyint(1) unsigned NOT NULL default '0',
+  `isPublished` tinyint(1) unsigned NOT NULL default '1',
+  PRIMARY KEY  USING BTREE (`serviceName`),
+  UNIQUE KEY `Ind_unq_fontend` (`frontEndEndPoint`),
+  KEY `FK_services_groups` (`groupName`),
+  CONSTRAINT `FK_services_groups` FOREIGN KEY (`groupName`) REFERENCES `groups` (`groupName`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `services`
+--
+
+LOCK TABLES `services` WRITE;
+/*!40000 ALTER TABLE `services` DISABLE KEYS */;
+INSERT INTO `services` VALUES ('ApplianceManagerAdmin',0,0,0,'/ApplianceManagerAdmin',0,0,'Admin','http://127.0.0.1/ApplianceManager','','002',1,1),('AuthOnly',0,0,0,'/auth',0,0,'gettingStarted','http://backendserver.uri','','001',0,1),('ConsumerQuotas',0,0,0,'/quotas2',0,1,'gettingStarted','http://backendserver/URI','','001',0,1),('IdentityForwarding',0,0,0,'/identity',0,0,'gettingStarted','http://backendserver/URI','','000',1,1),('ProviderQuotas',10,1000,10000,'/quotas1',1,0,'gettingStarted','http://backendserver/URI','','002',0,1);
+/*!40000 ALTER TABLE `services` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `users` (
+  `userName` varchar(45) NOT NULL,
+  `password` varchar(45) NOT NULL,
+  `endDate` datetime NOT NULL,
+  `emailAddress` varchar(200) NOT NULL,
+  `md5Password` varchar(200) NOT NULL,
+  `firstName` varchar(45) default NULL,
+  `lastName` varchar(45) default NULL,
+  `entity` varchar(45) default NULL,
+  PRIMARY KEY  USING BTREE (`userName`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `users`
+--
+
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+INSERT INTO `users` VALUES ('Admin','004034','2019-12-23 00:00:00','admin@server','0cc175b9c0f1b6a831c399e269772661','','',''),('jdoe','002025012044087028149016009087007','2013-12-30 00:00:00','jdoe@acme.com','d8da488596e78719f8f3b30e0700149f','John','DOE','Acme');
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `usersgroups`
+--
+
+DROP TABLE IF EXISTS `usersgroups`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `usersgroups` (
+  `userName` varchar(45) NOT NULL,
+  `groupName` varchar(45) NOT NULL,
+  PRIMARY KEY  USING BTREE (`userName`,`groupName`),
+  KEY `FK_user_groups_group` USING BTREE (`groupName`),
+  CONSTRAINT `FK_user_groups_group` FOREIGN KEY (`groupName`) REFERENCES `groups` (`groupName`),
+  CONSTRAINT `FK_user_groups_user` FOREIGN KEY (`userName`) REFERENCES `users` (`userName`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `usersgroups`
+--
+
+LOCK TABLES `usersgroups` WRITE;
+/*!40000 ALTER TABLE `usersgroups` DISABLE KEYS */;
+INSERT INTO `usersgroups` VALUES ('Admin','Admin'),('jdoe','gettingStarted');
+/*!40000 ALTER TABLE `usersgroups` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `usersquotas`
+--
+
+DROP TABLE IF EXISTS `usersquotas`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `usersquotas` (
+  `serviceName` varchar(45) NOT NULL,
+  `userName` varchar(45) NOT NULL,
+  `reqSec` int(10) unsigned NOT NULL,
+  `reqDay` int(10) unsigned NOT NULL,
+  `reqMonth` int(10) unsigned NOT NULL,
+  PRIMARY KEY  USING BTREE (`serviceName`,`userName`),
+  KEY `FK_user_quotas_user` USING BTREE (`userName`),
+  CONSTRAINT `FK_user_quotas_resource` FOREIGN KEY (`serviceName`) REFERENCES `services` (`serviceName`),
+  CONSTRAINT `FK_user_quotas_user` FOREIGN KEY (`userName`) REFERENCES `users` (`userName`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `usersquotas`
+--
+
+LOCK TABLES `usersquotas` WRITE;
+/*!40000 ALTER TABLE `usersquotas` DISABLE KEYS */;
+INSERT INTO `usersquotas` VALUES ('ConsumerQuotas','jdoe',5,100,1000);
+/*!40000 ALTER TABLE `usersquotas` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2012-02-09 14:12:25

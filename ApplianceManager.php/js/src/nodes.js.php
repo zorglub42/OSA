@@ -114,7 +114,7 @@ function displayNodeServices(serviceList){
 		newRow.removeAttribute('style');
 		newRow.className=newRow.className + " tabular_table_body" +  (i%2);
 		newRow.innerHTML=newRow.innerHTML.replaceAll("{serviceList[i].serviceName}", serviceList[i].serviceName)
-										 .replaceAll("{cbpublishedcheck}", cbPublishedCheck)
+										 .replaceAll("{servicelist[i].cbpublishedcheck}", cbPublishedCheck)
 										 .replaceAll("{i}", i)
 										 .replaceAll("{serviceList[i].groupName}", serviceList[i].groupName)
 										 .replaceAll("{serviceList[i].frontEndEndPoint}", serviceList[i].frontEndEndPoint)

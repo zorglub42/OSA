@@ -1,0 +1,75 @@
+<?
+/*--------------------------------------------------------
+ * Module Name : ApplianceManager
+ * Version : 1.0.0
+ *
+ * Software Name : OpenServicesAccess
+ * Version : 2.0
+ *
+ * Copyright (c) 2011 – 2014 Orange
+ * This software is distributed under the Apache 2 license
+ * <http://www.apache.org/licenses/LICENSE-2.0.html>
+ *
+ *--------------------------------------------------------
+ * File Name   : ApplianceManager/ApplianceManager.php/users/Logout.php
+ *
+ * Created     : 2013-11
+ * Authors     : Benoit HERARD <benoit.herard(at)orange.com>
+ *
+ * Description :
+ *      restler Luract set up
+ * 
+ *--------------------------------------------------------
+ * History     :
+ * 1.0.0 - 2013-11-12 : Release of the file
+*/
+require_once '../include/HTTPClient.php';
+require_once '../include/Settings.ini.php';
+
+class Logout{
+	/**
+	 * @url DELETE  
+	 * @url GET 
+	 */
+	function deleteTokensOfUserFromToken(){
+		GLOBAL $BDName;
+		GLOBAL $BDUser;
+		GLOBAL $BDPwd;
+		
+		if (isset($_COOKIE[authTokenCookieName])){
+			$strSQL="";
+			$strSQL=$strSQL . "SELECT * FROM authtoken WHERE token='" . $_COOKIE[authTokenCookieName] . "'";
+			$cnx = new Connexion();
+		
+			if (!$cnx->Ouvrir($BDName, $BDUser, $BDPwd )){
+				throw new RestException(500,$cnx->Erreur->GetTexte());
+			}else{
+				$rqt = new RequeteResultat();
+				if (!$rqt->Ouvrir($strSQL,$cnx)){
+					$cnx->Fermer();
+					throw new RestException(500,$rqt->Erreur->GetTexte());
+				}
+				if ($rqt->EOF()){
+					$rqt->Fermer();
+					$cnx->Fermer();
+					throw new RestException(404,"Session not found");
+				}else{
+					$user=$rqt->Champ("userName");
+					$rqt->Fermer();
+					if (!$rqt->Executer("DELETE FROM authtoken WHERE userName='" . DoubleQuote($user) . "'",$cnx)){
+						$cnx->Fermer();
+						throw new RestException(500,$rqt->Erreur->GetTexte());
+					}
+					setcookie(authTokenCookieName, rand(1,1000000000), time()-3600,"/");
+				}
+
+				$rqt->Fermer();
+				$cnx->Fermer();
+				return $user;
+			}
+		}else{
+			throw new RestException(400,"Session cookie not found");
+		}
+	}
+}
+?>

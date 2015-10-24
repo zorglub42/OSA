@@ -1,0 +1,19 @@
+Source: libapache2-mod-osa2
+Section: net
+Priority: extra
+Maintainer: Emerginov Team <admin@emerginov.org>
+Build-Depends: debhelper (>= 8.0.0), mysql-client, apache2-threaded-dev, autoconf, automake, dh-autoreconf
+Build-Conflicts: autoconf2.13, autoconf2.59, autoconf2.64, automake1.4, automake1.9, automake1.10
+Standards-Version: 3.9.3
+Homepage: http://www.emerginov.org
+
+Package: libapache2-mod-osa2
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, apache2
+Replaces: libapache2-mod-osa
+Description: Apache2 module for OSA
+ This module is an Apache2 module based on mod_auth_mysql
+ Support for following features has been added:
+  - quotas (pers alias and per alias and user management
+  - identity forwarding
+  - REST content management for error return

@@ -1,0 +1,46 @@
+Version 2.1
+-----------
+	- Also allow anonymous access on protected resources 
+		(When identity forwarding is activated, identity is empty for anonymous access, contains valid user identity if authenticated access)
+	- bug fix
+
+Version 2.0
+-----------
+	-	cookie based authentication with both support of Basic and Cookie (form) for same resource
+		- apache module
+			- Basic Auth and Cookie Auth at same time on same resource
+				NOTE: Standard apache Auth (Basic, Disgest, Form) can't be used at the same time
+			- new apache configuration directives:
+				OSACookieAuthEnable On|Off => enable disable support for Cookie authentication mode
+				OSACookieAuthName cookie-name => cookie name containg authentication token default=OSAAuthToken
+				OSACookieAuthDomain domain => domain to attache authentication cookie (optional)
+				OSACookieAuthLoginForm login-form-url => Login form URL (optional)
+				OSACookieAuthBurn n => Number of second after buring where cookie is still valid (allow download page resources with main page token) default=10
+				OSACookieAuthTTL n => Number of minutes of token validatity after generation before usage default=60
+				OSACookieAuthTable name => table name containing authentication tokens default=authtoken
+				OSACookieAuthUsernameField name => field name in OSACookieAuthTable containing authenticated used default=userName
+				OSACookieAuthTokenField name => field name in OSACookieAuthTable containing generated token default=token
+				OSACookieAuthValidityField name => field name in OSACookieAuthTable containing validity date for generated token default=validUntil
+				
+				
+				OSABasicAuthEnable  On|Off => enable disable support for Basic authentication mode
+				OSARequire see Require standard apache directive but for OSA Basic Auth
+				OSAAuthName see AuthName apache Standard directive default=Open Service Access gateway: please enter your credentials
+		- web app and services
+			- login (from user and pass) and logout REST service in /auth/login and /auth/logout
+			- token generation REST service from authenticated request in /auth/token
+			- default login form for cookie auth in /auth/loginForm 
+			- default logout form for cookie auth in /auth/loginForm/logout.php
+	- Admin web enhancements
+		- search forms for lists
+		- autocompletion on counter search form
+		- remaining tooltip bug fixed
+	- New services
+		- publication node management in /nodes with SSL certificate and private key upload/download facilties
+			allow to manage "on the fly" nodes (virtual host) on with services are published.
+			NOTE:	- when using SSL, if SSL key and cert are not uploaded, autosigned creation mecanism is used on save
+					- By default each service is published on each node (configuration on service) but a particular service can be publish on particular(s) node(s)
+		- authentication 
+			login (from user and pass) and logout REST service in /auth/login and /auth/logout
+
+			

@@ -1,0 +1,13 @@
+libapache2-mod-osa2 (2.1.0.1695-nursery2) precise; urgency=medium
+
+  * Add replace libapache2-mod-osa in package definition
+
+ -- Emerginov Team <admin@emerginov.org>  Tue, 30 Sep 2014 13:44:59 +0200
+
+libapache2-mod-osa2 (2.1.0.1695-nursery1) precise; urgency=low
+
+  * Initial release, derived form libapache2-mod-osa (no backward compatibility)
+  * See libapache2-mod-osa for full history
+
+ -- Emerginov Team <admin@emerginov.org>  Fri, 26 Sep 2014 11:07:34 +0200
+

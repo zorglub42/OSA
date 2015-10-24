@@ -1,0 +1,171 @@
+<?php
+/*--------------------------------------------------------
+ * Module Name : ApplianceManager
+ * Version : 1.0.0
+ *
+ * Software Name : OpenServicesAccess
+ * Version : 1.0
+ *
+ * Copyright (c) 2011 – 2014 Orange
+ * This software is distributed under the Apache 2 license
+ * <http://www.apache.org/licenses/LICENSE-2.0.html>
+ *
+ *--------------------------------------------------------
+ * File Name   : ApplianceManager/ApplianceManager.php/objects/User.class.php
+ *
+ * Created     : 2012-02
+ * Authors     : Benoit HERARD <benoit.herard(at)orange.com>
+ *
+ * Description :
+ *      .../...
+ *--------------------------------------------------------
+ * History     :
+ * 1.0.0 - 2012-10-01 : Release of the file
+*/
+
+require_once '../objects/ApplianceObject.class.php';
+
+class Node extends ApplianceObject{
+
+	//Private mebers
+	private $nodeName;
+	private $nodeDescription;
+	private $isHTTPS;
+	private $isBasicAuthEnabled;
+	private $iscookieAuthEnabled;
+	private $serverFQDN;
+	private $localIP;
+	private $port;
+	private $privateKey;
+	private $cert;
+	private $additionalConfiguration;
+
+	
+	function setAdditionalConfiguration($additionalConfiguration){
+		$this->additionalConfiguration=$additionalConfiguration;
+	}
+	function getAdditionalConfiguration(){
+		return $this->additionalConfiguration;
+	}
+	function setNodeDescription($nodeDescription){
+		$this->nodeDescription=$nodeDescription;
+	}
+	function getNodeDescription(){
+		return $this->nodeDescription;
+	}
+	
+	function setPort($port){
+		$this->port=$port;
+	}
+	function getPort(){
+		return $this->port;
+	}
+	
+	function setIsCookieAuthEnabled($isCookieAuthEnabled){
+		$this->isCookieAuthEnabled=$isCookieAuthEnabled;
+	}
+	function getIsCookieAuthEnabled(){
+		return $this->isCookieAuthEnabled;
+	}
+	
+	
+	
+	
+	function setNodeName($nodeName){
+		$this->nodeName=$nodeName;
+	}
+	function getNodeName(){
+		return $this->nodeName;
+	}
+	
+	
+	
+	
+	
+	function setServerFQDN($serverFQDN){
+		$this->serverFQDN=$serverFQDN;
+	}
+	function getServerFQDN(){
+		return $this->serverFQDN;
+	}
+
+
+	function setIsHTTPS($isHTTPS){
+		$this->isHTTPS=$isHTTPS;
+	}
+	function getIsHTTPS(){
+		return $this->isHTTPS;
+	}
+	
+	function setIsBasicAuthEnabled($isBasicAuthEnabled){
+		$this->isBasicAuthEnabled=$isBasicAuthEnabled;
+	}
+	function getIsBasicAuthEnabled(){
+		return $this->isBasicAuthEnabled;
+	}
+	function getLocalIP(){
+		return $this->localIP;
+	}
+	function setLocalIP($localIP){
+		$this->localIP=$localIP;
+	}
+	function getPrivateKey(){
+		return $this->privateKey;
+	}
+	function setPrivateKey($privateKey){
+		$this->privateKey=$privateKey;
+	}
+	function getCert(){
+		return $this->cert;
+	}
+	function setCert($cert){
+		$this->cert=$cert;
+	}
+
+
+    public function __construct($rqt=NULL)
+    {
+		if ($rqt != NULL){
+			$this->setNodeName($rqt->Champ("nodeName"));		
+			$this->setServerFQDN($rqt->Champ("serverFQDN"));		
+			$this->setIsHTTPS($rqt->Champ("isHTTPS"));
+			$this->setNodeDescription($rqt->Champ("nodeDescription"));
+			$this->setPort($rqt->Champ("port"));
+			$this->setLocalIP($rqt->Champ("localIP"));
+			$this->setIsCookieAuthEnabled($rqt->Champ("isCookieAuthEnabled"));
+			$this->setIsBasicAuthEnabled($rqt->Champ("isBasicAuthEnabled"));
+			$this->setPrivateKey($rqt->Champ("privateKey"));
+			$this->setCert($rqt->Champ("cert"));
+			$this->setUri( "nodes/" . urlencode($rqt->Champ("nodeName")));
+			$this->setAdditionalConfiguration($rqt->Champ("additionalConfiguration"));
+		}
+	}
+	
+	function toArray(){
+		if ($this->getIsHTTPS()){
+			$certUri=$this->getUri() . "/cert";
+		}else{
+			$certUri="";
+		}
+		if ($this->getIsHTTPS()){
+			$privateKeyUri=$this->getUri() . "/privateKey";
+		}else{
+			$privateKeyUri="";
+		}
+		return Array(
+				"uri"  => $this->getUri(),
+				"nodeName"  => $this->getNodeName(),
+				"serverFQDN"  => $this->getServerFQDN(),
+				"nodeDescription"  => $this->getNodeDescription(),
+				"localIP"  => $this->getLocalIP(),
+				"port"  => $this->getPort(),
+				"isCookieAuthEnabled"  => $this->getIsCookieAuthEnabled(),
+				"isHTTPS"  => $this->getIsHTTPS(),
+				"isBasicAuthEnabled"  => $this->getIsBasicAuthEnabled(),
+				"certificateUri"  => $certUri,
+				"privateKeyUri"  => $privateKeyUri,
+				"additionalConfiguration" => $this->getAdditionalConfiguration()
+			);
+	}
+				
+}

@@ -1,0 +1,25 @@
+body{
+//	background: url(https://www.zorglub42.fr/Zorglub.jpg);    
+//	background-position:right top;
+//	background-repeat:no-repeat;
+}
+
+.vertical-offset-100{
+	padding-top:100px;
+}
+.errorMessage
+{
+	color: orangered;
+	display: inline;
+	text-align: center;
+	padding-left: 10px;
+	padding-right: 10px;
+	margin: 10px;
+}
+
+.rounded-corners {
+     -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -khtml-border-radius: 10px;
+    border-radius: 10px;
+}

@@ -1,0 +1,224 @@
+<?php
+/*--------------------------------------------------------
+ * Module Name : ApplianceManager
+ * Version : 1.0.0
+ *
+ * Software Name : OpenServicesAccess
+ * Version : 2.0
+ *
+ * Copyright © 2011 – 2012 France Télécom
+ * This software is distributed under the Apache 2 license
+ * <http://www.apache.org/licenses/LICENSE-2.0.html>
+ *
+ *--------------------------------------------------------
+ * File Name   : ApplianceManager/ApplianceManager.php/logs/logDAO.php
+ *
+ * Created     : 2013-11
+ * Authors     : Benoit HERARD <benoit.herard(at)orange.com>
+ *
+ * Description :
+ *      Manage database access for logs
+ *--------------------------------------------------------
+ * History     :
+ * 1.0.0 - 2013-11-12 : Release of the file
+*/
+require_once '../objects/Error.class.php';
+require_once '../objects/Log.class.php';
+require_once '../include/Constants.php';
+require_once '../include/Func.inc.php';
+require_once '../include/Settings.ini.php';
+require_once '../include/BDMySQL.inc';
+require_once '../include/BDControls.inc';
+require_once '../include/PaginationFunc.inc.php';
+
+
+
+
+function getLogs($id = NULL, $request_data = NULL){
+	GLOBAL $BDName;
+	GLOBAL $BDUser;
+	GLOBAL $BDPwd;
+
+	$error = new Error();
+	$cnx = new Connexion();
+	$rqt = new RequeteResultat();
+
+
+	$servicePart="";
+	$userPart="";
+	$statusPart="";
+	$messagePart="";
+	$frontEndEndPointPart="";
+	$fromPart="";
+	$untilPart="";
+	$offset=0;
+	$paginated=0;
+	$orderPart="";
+
+	$error->setHttpStatus(200);
+
+	if (isset($request_data["serviceName"])){
+		$servicePart = preg_replace("/\*/","%",$request_data["serviceName"]);
+	}
+	if (isset($request_data["userName"])){
+		$userPart=preg_replace("/\*/","%",$request_data["userName"]);
+	}
+	if (isset($request_data["status"])){
+		$statusPart=$request_data["status"];
+	}
+	if (isset($request_data["message"])){
+		$messagePart=preg_replace("/\*/", "%",$request_data["message"]);
+	}
+	if (isset($request_data["frontEndEndPoint"])){
+		$frontEndEndPointPart=preg_replace("/\*/", "%",$request_data["frontEndEndPoint"]);
+	}
+	if (isset($request_data["from"])){
+		try {
+			$fromPart=getDateFromIso($request_data["from"]);
+		}catch (Exception $e){
+			$error->setHttpStatus(400);
+			$error->setFunctionalCode(2);
+			$error->setFunctionalLabel($error->getFunctionalLabel() . $e->getMessage() . "for parameter from" );
+		}
+	}
+	if (isset($request_data["until"])){
+		try {
+			$untilPart=getDateFromIso($request_data["until"]);
+		}catch (Exception $e){
+			$error->setHttpStatus(400);
+			$error->setFunctionalCode(2);
+			$error->setFunctionalLabel($error->getFunctionalLabel() . $e->getMessage() . "for parameter until" );
+		}
+	}
+	if (isset($request_data["offset"])){
+		$offset=$request_data["offset"] ;
+	}
+	if (isset($request_data["order"])){
+		$orderPart=$request_data["order"];
+	}
+
+	if ($error->getHttpStatus() != 200){
+		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
+	}
+
+
+	if (!$cnx->Ouvrir($BDName, $BDUser, $BDPwd)){
+		$error->setHttpStatus(500);
+		$error->setFunctionalCode(3);
+		$error->setFunctionalLabel($cnx->GetErreur()->GetTexte());
+		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
+	}else{	
+			$where="";
+			if ($servicePart != ""){
+				$where="serviceName like '" . $servicePart . "'";
+			}
+			if ($userPart != ""){
+					if ($where != ""){
+						$where = $where . " AND ";
+					}
+					$where= $where . "userName like '" . $userPart . "'";
+			}else{
+				if (isset($request_data["userName"])){
+					if ($where != ""){
+						$where = $where . " AND ";
+					}
+					$where = $where . " userName = ''";
+				}
+			}
+			if ($statusPart != ""){
+					if ($where != ""){
+						$where = $where . " AND ";
+					}
+					$where= $where . "status=" . $statusPart ;
+			}
+			if ($messagePart != ""){
+					if ($where != ""){
+						$where = $where . " AND ";
+					}
+					$where= $where . "message like '" . $messagePart . "'" ;
+			}
+			if ($fromPart != ""){
+					if ($where != ""){
+						$where = $where . " AND ";
+					}
+					$where= $where . "timestamp>='" . $fromPart . "'" ;
+			}
+			if ($untilPart != ""){
+					if ($where != ""){
+						$where = $where . " AND ";
+					}
+					$where= $where . "timestamp<='" . $untilPart . "'" ;
+			}
+			if ($frontEndEndPointPart != ""){
+					if ($where != ""){
+						$where = $where . " AND ";
+					}
+					$where= $where . "frontEndEndPoint like '" . $frontEndEndPointPart . "'" ;
+			}
+			if ($id != NULL){
+				$strSQL = "SELECT * FROM hits WHERE id=" .$id;
+				if (!$rqt->Ouvrir($strSQL, $cnx)){
+					$error->setHttpStatus(500);
+					$error->setFunctionalCode(3);
+					$error->setFunctionalLabel($rqt->Erreur->GetTexte());
+					$cnx->Fermer();
+					throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
+				}
+				$log=new Log($rqt);
+				$rqt->Fermer();
+				$rc = $log->toArray();
+			}else{
+				$strSQL = "SELECT * FROM hits ";
+				if ($where != ""){
+						$strSQL = $strSQL . " WHERE " .$where;
+				}
+				if ($orderPart ){
+					$strSQL = $strSQL . " ORDER BY " . $orderPart;
+				}
+				$strSQL = $strSQL . " LIMIT " . $offset * recordCountPerPage . ", " . recordCountPerPage;
+				$strSQLCount="SELECT count(id)  as count FROM hits";
+				if ($where != ""){
+						$strSQLCount = $strSQLCount . " WHERE " .$where;
+				}
+
+				if (!$rqt->Ouvrir($strSQLCount, $cnx)){
+					$error->setHttpStatus(500);
+					$error->setFunctionalCode(3);
+					$error->setFunctionalLabel($rqt->Erreur->GetTexte());
+					$cnx->Fermer();
+					throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
+					
+				}
+				$count=$rqt->Champ("count");
+				$rqt->Fermer();
+
+
+				if (!$rqt->Ouvrir($strSQL, $cnx)){
+					$error->setHttpStatus(500);
+					$error->setFunctionalCode(3);
+					$error->setFunctionalLabel($rqt->Erreur->GetTexte());
+					$cnx->Fermer();
+					throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
+					
+				}
+				$logs=Array();
+				$logsCount=0;
+				while (!$rqt->EOF()){
+					$logsCount++;
+					$log = new Log($rqt);
+					array_push($logs, $log->toArray());
+					$rqt->Suivant();
+				}
+				$rqt->Fermer();
+				$rc=Array(
+						"length" => $count,
+						"previous"=> generatePreviousLink("logs", $offset),
+						"logs" => $logs,
+						"next" => generateNextLink("logs", $offset, $logsCount, $count)
+					);
+			}
+				
+	}
+	$cnx->Fermer();
+	return $rc;
+}

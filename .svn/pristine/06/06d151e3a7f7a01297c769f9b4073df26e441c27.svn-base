@@ -1,0 +1,5 @@
+<?
+/* Array of cryting keys for custome bi-directionel custom crypting system */
+/* To enforce security on your system, you shoud change thos values and  generate random keys on install*/
+$cryptKey=Array("VoT6jQZ3PucjW0WWCulnKXSYrE5g94AUp3yIxc3Oy88a8kDEJ1J9aW5mYxk62Mw2","y7KUs8srH41nUVBEkI5K9LakR1KAqZgF13B8VLOM3DUxvrC9ZSF5oyHnijHPkXBk","RlBi0d4IB2VLoyIz8IeW6zJ8nS0la1H7nyCNBGZiphOHU09dX6xtAO72VAGqtJIM","HzAX2OuX2hdcUc4k0VqKYnc0UPnfLEGYtGWcQZcf3l3OVVprsBDZcUZEVKNiDNsl","vAMoewQix9vExvoRm5ip6mB8fka6sfKkIizYtiHWT8piFy1pr7UvNGioK6L1Zny8","dYcq4OqJy0hV0oneQeTQ7944VBVlJcjbxeHv1FPt0johd0OpzhF1dmykxKSyWrS0","xrj7u21DUDWWCAG7ZptjZu3K1M6lFwbv6405yHssgbDkQQtkyl0CfcvhNfyzV3Td","PS6GNvwISx0tyXV56Xtbskx9yo2SizTgNFEyQYUEmPm5ROWywdSMEMZfwG3iwYIQ","b5fdBB4ge3gc0Gaczw9nm4tBTfKQSh14IZsGFwTWEDo5NlbgLRCMPmh4GYX8UO0G","zTNEfTXI4kRtmNXT3EcVNvWyuUJgmHB6m41E5kHftxVSP7lFHyIA3BIPohpG6iDU");
+?>

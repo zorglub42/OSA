@@ -1,0 +1,99 @@
+#Load auth+quotas module
+LoadModule mysql_auth_module modules/mod_auth_mysql.so
+
+
+RequestHeader unset Authorization
+RequestHeader unset X-Forwarded-For
+RequestHeader unset X-Forwarded-Host
+RequestHeader unset X-Forwarded-Server
+
+
+
+
+
+<Location  /quotas2>
+
+	Include conf.d/appliance-settings.inc	
+	RequestHeader unset X-IOSW-WSSE
+	
+	
+	require group gettingStarted
+	AuthMySQLResourceName ConsumerQuotas
+
+	AuthMySQLCheckGlobalQuotas Off
+	AuthMySQLCheckUserQuotas On
+
+	
+	ProxyPassReverseCookieDomain backendserver p-nursery-dev
+	ProxyPassReverseCookiePath /  /quotas2
+
+	ProxyPass http://backendserver/URI
+	ProxyPassReverse http://backendserver/URI
+	
+</Location>
+
+
+<Location  /quotas1>
+
+	Include conf.d/appliance-settings.inc	
+	RequestHeader unset X-IOSW-WSSE
+	
+	
+	require group gettingStarted
+	AuthMySQLResourceName ProviderQuotas
+
+	AuthMySQLCheckGlobalQuotas On
+	AuthMySQLCheckUserQuotas Off
+
+	
+	ProxyPassReverseCookieDomain backendserver p-nursery-dev
+	ProxyPassReverseCookiePath /  /quotas1
+
+	ProxyPass http://backendserver/URI
+	ProxyPassReverse http://backendserver/URI
+	
+</Location>
+
+
+<Location  /identity>
+
+	Include conf.d/appliance-settings.inc	
+	AuthMySQLIdentityHeadersMapping userName,X_REMOTE_USER;firstName,X_FN;lastName,X_LN;entity,X_ENT;emailAddress,X_EML 	
+	
+	require group gettingStarted
+	AuthMySQLResourceName IdentityForwarding
+
+	AuthMySQLCheckGlobalQuotas Off
+	AuthMySQLCheckUserQuotas Off
+
+	
+	ProxyPassReverseCookieDomain backendserver p-nursery-dev
+	ProxyPassReverseCookiePath /  /identity
+
+	ProxyPass http://backendserver/URI
+	ProxyPassReverse http://backendserver/URI
+	
+</Location>
+
+
+<Location  /auth>
+
+	Include conf.d/appliance-settings.inc	
+	RequestHeader unset X-IOSW-WSSE
+	
+	
+	require group gettingStarted
+	AuthMySQLResourceName AuthOnly
+
+	AuthMySQLCheckGlobalQuotas Off
+	AuthMySQLCheckUserQuotas Off
+
+	
+	ProxyPassReverseCookieDomain .uri p-nursery-dev
+	ProxyPassReverseCookiePath /  /auth
+
+	ProxyPass http://backendserver.uri
+	ProxyPassReverse http://backendserver.uri
+	
+</Location>
+
