@@ -16,7 +16,7 @@ require_once "../../include/Localization.php";
 						<div class="col-xs-2 col-md-3 ellipsis mobile-optional" title="<?php echo Localization::getString("log.list.message")?>"><?php echo Localization::getString("log.list.message")?></div>
 						<div class="col-xs-5 col-md-2 ellipsis" title="<?php echo Localization::getString("log.list.time")?>"><?php echo Localization::getString("log.list.time")?></div>
 				</div>
-				<div class="list-group scollable" id="data">
+				<div class="list-group scrollable" id="data">
 					<a class="list-group-item row item" id="rowTpl" style="display:none" >
 						<div class="col-xs-4 col-md-2 ellipsis" title="{logsList[i].serviceName}">{logsList[i].serviceName}</div>
 						<div class="col-xs-1 col-md-1 ellipsis mobile-optional" title="{logsList[i].userName}">{logsList[i].userName}</div>
