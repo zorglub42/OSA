@@ -68,7 +68,7 @@
 	
 	
 	#list pagination
-	define("recordCountPerPage", 50);
+	define("recordCountPerPage", 10);
 	
 	
 	#auth token 

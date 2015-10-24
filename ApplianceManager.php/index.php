@@ -26,6 +26,7 @@
 require_once 'include/Constants.php';
 require_once 'include/Settings.ini.php';
 require_once 'include/Mobile_Detect.php';
+require_once 'include/Localization.php';
 $firstName="";
 $lastName="";
 $hdrs=getallheaders();
@@ -39,37 +40,11 @@ if (isset($hdrs[lastNameHeader])){
 <html>
 	<head>
 	
-		<title>Open Services Access Appliance manager</title>
+		<title><?php echo Localization::getString("app.title")?></title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="css/osa.css.php">
 
-<!--		<link rel="stylesheet" media="all" type="text/css" href="css/jquery-ui.css" />
-		<link rel="stylesheet" type="text/css" href="./css/dateTimePicker.css">
-		<link rel="stylesheet" type="text/css" href="./css/orangeNursery.css">-->
-		<?php
-		/*$detect = new Mobile_Detect();
-		if (!$detect->isMobile()) {
-			echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"./css/checkbox-radio.css\">\n";
-		}*/
-		?>
-		<link rel="stylesheet" type="text/css" href="./css/osa.css.php">
-		
-
-		<!--<script type="text/javascript" src="js/jquery-1.8.2.js"></script>
-		<script type="text/javascript" src="js/jquery-ui-1.9.0.custom.min.js"></script>
-				
-		<script type="text/javascript" src="js/jquery-ui-timepicker-addon.js"></script>
-		<script type="text/javascript" src="js/error.js"></script>
-		<script type="text/javascript" src="js/users.js"></script>
-		<script type="text/javascript" src="js/date.js"></script>
-		<script type="text/javascript" src="js/groups.js"></script>
-		<script type="text/javascript" src="js/services.js"></script>
-		<script type="text/javascript" src="js/util.js"></script>
-		<script type="text/javascript" src="js/quotas.js"></script>
-		<script type="text/javascript" src="js/wait.js"></script>
-		<script type="text/javascript" src="js/counters.js"></script>
-		<script type="text/javascript" src="js/logs.js"></script>
-		<script type="text/javascript" src="js/scrolltable.js"></script>
-		<script type="text/javascript" src="js/touchScreenDevice.js"></script>-->
 		<script type="text/javascript" src="js/osa.js.php"></script>
 	
 		<script>
@@ -98,25 +73,21 @@ if (isset($hdrs[lastNameHeader])){
 		</script>
 	</head>
 	<body >
-		<div id="waitScreen" class="rounded-corners"  style="position: absolute; z-index:3; visibility: hidden; background-color:#000000;  ">
-		</div>
-		<div id="logo" style="padding-left:10px;">
-			<img src="./images/LogoTitle.jpg" />
-		</div>
-		<div id="title">
-			<div style="padding-left:20px;">
-				Welcome <b><?php echo $firstName?></b>
+		<div class="container-fluid">
+			<div  style="padding-left:10px;">
+				<img class="img-responsive"  src="./images/LogoTitle.jpg" />
+			</div>	
+			<?php include "include/menuBootstrap.php"?>
+			<div id="waitScreen" class="rounded-corners"  style="position: absolute; z-index:3; visibility: hidden; background-color:#000000;  ">
 			</div>
-		</div>
-		
-		<div id="menu"><?php include "include/menu.php"?></div>
-		<div id="content">
-		</div>
-		<div id="footer">
-		<hr>
-			<span class="withRightBorder">
-				Open Services Access V<?php echo version?>
-			</span>
+			<div id="content">
+			</div>
+			<div id="footer">
+				<hr>
+				<span class="withRightBorder">
+					<?php echo Localization::getString("app.version") . version?>
+				</span>
+			</div>
 		</div>
 	</body>
 </html>

@@ -1,16 +1,34 @@
-<center>
-<h1>
-User {userName} properties
-</h1>
-<hr>
-	<?php include "userProperties.html"?>
-<br>
-<input type="button" id="saveEdit" onclick="updateUser('{uri}')" value="Save" class="button_orange">&nbsp;
-<input type="button" id="cancelEdit" onclick="showUsers()" value="Done" class="button_orange">&nbsp;
-<input type="button"  title="{editUserGroupsToolTip}"  id="groupsEdit"onclick="startDisplayUserGroups('{uri}')" value="Groups" class="button_orange">&nbsp;
-<input type="button"  title="{editUserQuotasToolTip}" id="quotasEdit"onclick="startDisplayUserQuotas('{uri}')" value="Quotas" class="button_orange">
-<div id="userGroups"\>
-</form>
-<hr>
+<?php
+require_once "../../include/Localization.php";
+?>
+<div class="row">
+	<div class="col-md-10 col-md-offset-1">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title"><b><?php echo Localization::getString("user.properties")?></b></h3>
+			</div>
 
-</center>
+			<form>
+				<?php include "userProperties.php"?>
+			</form>
+			<div class="panel-footer">
+					<div class="row">
+						<div class="col-md-offset-4 col-md-8 col-xs-8 col-xs-offset-3">
+							<button type="button" class="btn btn-default" id="saveEdit" onclick="updateUser('{uri}')">
+								<span><?php echo Localization::getString("button.ok")?></span>
+							</button>
+							<button type="button" class="btn btn-info" onclick="showUsers()">
+								<span><?php echo Localization::getString("button.cancel")?></span>
+							</button>
+							<button type="button" class="btn btn-info" id="groupsEdit" onclick="startDisplayUserGroups('{uri}')">
+								<span><?php echo Localization::getString("button.groups")?></span>
+							</button>
+							<button type="button" class="btn btn-info" id="quotasEdit" onclick="startDisplayUserQuotas('{uri}')">
+								<span><?php echo Localization::getString("button.quotas")?></span>
+							</button>
+						</div>
+					</div>
+			</div>
+		</div>
+	<div>
+</div>

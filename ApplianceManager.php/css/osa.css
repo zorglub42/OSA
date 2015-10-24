@@ -21,6 +21,28 @@
  * History     :
  * 1.0.0 - 2012-10-01 : Release of the file
 */
+@media all and (max-width: 1024px) {
+				.mobile-optional	 {
+					display: none;
+				}
+				.search-control{
+					padding-right: 0px;
+					padding-left: 2px;
+				}
+}
+
+.scrollable{
+	overflow:scroll;
+	height: 350px;
+	overflow-x: hidden;
+}
+
+.header{
+  background: -webkit-linear-gradient(#fefefe, #d3d8c2); /* For Safari 5.1 to 6.0 */
+  background: -o-linear-gradient(#fefefe, #d3d8c2); /* For Opera 11.1 to 12.0 */
+  background: -moz-linear-gradient(#fefefe, #d3d8c2); /* For Firefox 3.6 to 15 */
+  background: linear-gradient(#fefefe, #d3d8c2); /* Standard syntax */
+}
 
 html {
 	font-size: 62.5%;
@@ -72,7 +94,7 @@ table.scroll tbody
 }
 
 .availableGroupsList{
-	width:350px
+	width:100%;
 }
 
 table.scroll td{
@@ -211,16 +233,16 @@ body
 	text-align:left;
 	color : #000000;
 	margin: auto;
-	width: 1024px;
 }
 
 /** TITLE - TITRE EN-TETE **/
-#logo {	padding:0; margin:0; margin-top:2px; height:80px; min-height:80px; border:0px; text-align:left; width:100%; }
+
+
+#ZZlogo {	padding:0; margin:0; margin-top:2px; height:80px; min-height:80px; border:0px; text-align:left; width:100%; }
 #title { margin-top:20px; height:20px; min-height:20px;	padding: 1px; color:#333333; border:1px solid #999999; background:#cecece url('../images/degrade.gif') 0 1px repeat-x; clear:both; font-size: 13px; text-align:left; }
 
 /** CONTENT - CONTENU **/
-#content {
-	width: 80%;
+#ZZcontent {
 	min-height: 500px;
 	height: auto;
 	float: left;
@@ -343,7 +365,7 @@ a:hover
 
 
 /** FOOTER - PIED DE PAGE **/
-#footer {width:1024px; height:15px; clear:both; margin-top:20px; margin-bottom:20px;}
+#footer { height:15px; clear:both; margin-top:20px; margin-bottom:20px;}
 #footer ul.footer {margin:0;padding-left: 400px;border-top:2px solid #FF6600;list-style: none;}
 #footer ul.footer li {vertical-align:top;float:left;}
 #footer ul.footer li.logo {width:6.7em;padding-left:0;padding-top:0;}
@@ -584,3 +606,8 @@ textarea
 
 
 
+.ellipsis{
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}

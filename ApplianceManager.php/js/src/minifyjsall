@@ -1,0 +1,11 @@
+for f in *.js; do
+	./minifyjs $f
+done
+for f in *.js.php; do
+	jsName=`echo $f | sed 's/\.js\.php//'`
+	echo $jsName
+	cat $f|sed 's/<?php/ZZOPEN/g'|sed 's/?>/ZZCLOSE/g'|sed 's/JSString("/JSString(QUOTE/g'|sed 's/")ZZCLOSE/QUOTE)ZZCLOSE/g'> $jsName.js
+	./minifyjs $jsName.js
+	cat min/$jsName.min.js| sed 's/QUOTE)ZZCLOSE/")?>/g'|sed 's/JSString(QUOTE/JSString("/g'|sed 's/ZZOPEN/<?php/g'>min/$jsName.min.js.php
+	rm $jsName.js
+done

@@ -1,0 +1,33 @@
+#!/bin/bash
+
+if [ "$1" != "src" && "$1" != "min" ] ; then
+	echo "usage:"
+	echo "       use src|min"
+	exit 10
+fi
+
+
+
+if [ "$1" == "min" ] ; then
+	for f in *.js; do
+		jsName=`echo $f | sed 's/\.js//'`
+		rm ../$f
+		cp min/$jsName.min.js ..
+	done
+	for f in *.js.php; do
+		jsName=`echo $f | sed 's/\.js\.php//'`
+		rm ../$f
+		cp min/$jsName.min.js.php ..
+	done
+else
+	for f in *.js; do
+		jsName=`echo $f | sed 's/\.js//'`
+		rm ../$jsName.min.js
+		cp $f ..
+	done
+	for f in *.js.php; do
+		jsName=`echo $f | sed 's/\.js\.php//'`
+		rm ../$jsName.min.js.php
+		cp $f ..
+	done
+fi
