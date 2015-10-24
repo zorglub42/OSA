@@ -28,7 +28,7 @@
 unset http_proxy
 
 # Configuration section #############################################################################
-APPLIANCE_INSTALL_DIR=/usr/local/OSA
+APPLIANCE_INSTALL_DIR=/usr/local/nursery/ApplianceManager
 APPLIANCE_CONFIG_LOC=$APPLIANCE_INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance
 APPLIANCE_LOG_DIR=/var/log/OSA
 APPLIANCE_LOCAL_SERVER="http://127.0.0.1:82"

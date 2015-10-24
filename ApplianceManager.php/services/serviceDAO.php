@@ -981,6 +981,7 @@ function setNodesListForService($serviceName, $request_data=NULL){
 	GLOBAL $BDName;
 	GLOBAL $BDUser;
 	GLOBAL $BDPwd;
+	
 
 	$serviceName=normalizeName($serviceName);
 	$error = new Error();

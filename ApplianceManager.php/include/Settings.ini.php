@@ -76,5 +76,5 @@
 	define("authTokenTTL", 60);
 		#cookie name
 	define("authTokenCookieName", "OSAAuthToken");
-	define("osaAdminUri", "https://r-lnx-jmjb0521.rd.francetelecom.fr:6443/ApplianceManagerAdmin");
+	define("osaAdminUri", "https://r-lnx-jmjb0521.rd.francetelecom.fr:6443/");
 ?>

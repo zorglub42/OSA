@@ -413,7 +413,7 @@ function handelServiceFilterFormKeypress(e) {
 						value: item.node.nodeName,
 						text : optionText 
 					}));
-					if (item.published){
+					if (item.published != "0"){
 						$("#serviceNodesList option[value=" +item.node.nodeName + "]").prop("selected", "selected");
 					}
 				});

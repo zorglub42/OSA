@@ -30,13 +30,13 @@ unset http_proxy
 
 
 # Configuration section #############################################################################
-APPLIANCE_INSTALL_DIR=/usr/local/OSA
+APPLIANCE_INSTALL_DIR=/usr/local/nursery/ApplianceManager
 APPLIANCE_CONFIG_LOC=$APPLIANCE_INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance
 APPLIANCE_LOCAL_SERVER="http://127.0.0.1:82"
 APPLIANCE_LOCAL_USER=""
 APPLIANCE_LOCAL_PWD=""
-HTTP_FQDN="raspberrypi"
-HTTPS_FQDN="raspberrypi"
+HTTP_FQDN="r-lnx-jmjb0521.rd.francetelecom.fr"
+HTTPS_FQDN="r-lnx-jmjb0521.rd.francetelecom.fr"
 USE_HTTP=1
 USE_HTTPS=1
 # End of Configuration section #############################################################################
