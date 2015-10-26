@@ -1,5 +1,5 @@
 <?php
-$strings["date.format"]="dd/mm/yyyy";
+$strings["date.format"]="dd/MM/yyyy";
 $strings["locale"]="fr";
 /* Global app labels */
 $strings["app.title"]="Open Services Access";

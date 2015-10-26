@@ -23,9 +23,9 @@
  * 1.0.0 - 2012-10-01 : Release of the file
 */
 	#Database connection parameter
-	$BDName="appliance@localhost:3306";
-	$BDUser="appliance";
-	$BDPwd="osapwd";
+	$BDName="osa_jp@192.168.1.11:3306";
+	$BDUser="root";
+	$BDPwd="mysqlonmarcel";
 	
 	define("runtimeApplianceConfigLocation",  "/usr/local/nursery/ApplianceManager/RunTimeAppliance/apache/conf/vhAppliance");
 	
