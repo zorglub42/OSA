@@ -37,6 +37,6 @@
 <div class="row">
 	<div  class="col-md-12 "  title="<?php echo Localization::getString("user.additionalData.tooltip")?>">
 		<label for="extra"><?php echo Localization::getString("user.label.additionalData")?></label><br>
-		<textarea class="form-control" rows=10 placeholder="<?php echo Localization::getString("user.additionalData.placeholder")?>" id="extra" value="{extra}" onchange="setUserModified(true)" onkeypress="setUserModified(true)"></textarea>
+		<textarea class="form-control" rows=10 placeholder="<?php echo Localization::getString("user.additionalData.placeholder")?>" id="extra" onchange="setUserModified(true)" onkeypress="setUserModified(true)">{extra}</textarea>
 	</div>
 </div>
