@@ -26,7 +26,7 @@ var currentNode;
 var nodeModified;
 var removeSSLSetting=false;
 var removeCASSLSetting=false;
-
+var servicesLoaded=false;
 
 
 var nodeNameFilterPrevVal="";
@@ -87,8 +87,10 @@ function startResetSSL(){
 	
 }
 function loadNodeServices(nodeURI){
-	showWait();
-	$.getJSON(nodeURI + "/services/", displayNodeServices).error(displayErrorV2);
+	if (!servicesLoaded){
+		showWait();
+		$.getJSON(nodeURI + "/services/", displayNodeServices).error(displayErrorV2);
+	}
 }
 
 function displayNodeServices(serviceList){
@@ -124,6 +126,7 @@ function displayNodeServices(serviceList){
 	if (serviceList.length == 0 ){
 		$("#servicesList").hide();
 	}
+	servicesLoaded=true;
 
 }
 function clearFileInput(id)

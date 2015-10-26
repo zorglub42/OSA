@@ -25,6 +25,7 @@
 			var currentService;
 			var currentServiceGroup;
 			var serviceModified;
+			var nodesLoaded=false;
 
 			var serviceNameFilterPrevVal="";
 			var serviceGroupNameFilterPrevVal="";
@@ -295,7 +296,9 @@
 					$('#publishedOnNodes').hide();
 				}else{
 					$('#publishedOnNodes').show();
-					$.getJSON("services/" + encodeURIComponent($('#serviceName').val()) + "/nodes/?order=nodeName", displayServiceNodes).error(displayErrorV2);
+					if (!nodesLoaded){
+						$.getJSON("services/" + encodeURIComponent($('#serviceName').val()) + "/nodes/?order=nodeName", displayServiceNodes).error(displayErrorV2);
+					}
 				}
 			}
 			function setQuotasVisibility(){
@@ -416,6 +419,7 @@ function handelServiceFilterFormKeypress(e) {
 					if (item.published != "0"){
 						$("#serviceNodesList option[value=" +item.node.nodeName + "]").prop("selected", "selected");
 					}
+					nodesLoaded=true;
 				});
 			}
 			function displayServiceList(serviceList){
