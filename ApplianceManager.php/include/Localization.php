@@ -4,6 +4,7 @@
 class Localization{
 	private static $languages = Array();
 	private static $strings =null;
+	public static $debug=false;
 	
 	private static function getLanguages(){
 		if (count(self::$languages) == 0){
@@ -33,23 +34,20 @@ class Localization{
 	public static function getString($string){
 
 		$rc="*** $string ***";
-		//if (self::$strings==null){
+		if (self::$strings==null|| self::$debug){
 			$langList=self::getLanguages();
 			foreach ($langList as $language){
-				if (file_exists($_SERVER["DOCUMENT_ROOT"] . "/ApplianceManager/include/localization/$language.php")){
-					unset($strings);
-					include "localization/$language.php";
-
-					if (isset($strings[$string])){
-						self::$strings=$strings;
-						return $strings[$string];
-					}
+				unset($strings);
+				@include "localization/$language.php";
+				if (isset($strings) && isset($strings[$string])){
+					self::$strings=$strings;
+					return $strings[$string];
 				}
 			}
 			unset($strings);
 			include "localization/default.php";
 			self::$strings=$strings;
-		//}
+		}
 		if (isset(self::$strings[$string])){
 			return self::$strings[$string];
 		}
