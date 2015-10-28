@@ -97,6 +97,7 @@
 			function editService(service){
 
 				$.get( "resources/templates/serviceEdit.php", function( data ) {
+					nodesLoaded=false;
 					currentService=service;
 					currentServiceGroup=service.groupUri;
 					currentServiceGroupName=service.groupName;
@@ -345,6 +346,7 @@
 			function addService(){
 
 				$.get( "resources/templates/serviceAdd.php", function( data ) {
+					nodesLoaded=false;
 					currentService=null;
 					currentServiceGroup=null;
 					currentServiceGroupName=null;

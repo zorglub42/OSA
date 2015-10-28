@@ -155,7 +155,7 @@ function saveOrUpdateUser(method) {
 	entity = "entity=" + encodeURIComponent(document.getElementById("entity").value);
 	extra = "extra=" + encodeURIComponent(document.getElementById("extra").value);
 	try{
-		d=Date.parseExact(document.getElementById("userEndDate").value,"<?php echo Localization::getJSString("date.format")?>".loLowerCase());
+		d=Date.parseExact(document.getElementById("userEndDate").value,"<?php echo Localization::getJSString("date.format")?>".toLowerCase());
 		d.setHours(12);
 		endDate = "endDate="
 				+ encodeURIComponent(d.format("isoUtcDateTime"));
