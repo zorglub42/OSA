@@ -155,7 +155,7 @@ function saveOrUpdateUser(method) {
 	entity = "entity=" + encodeURIComponent(document.getElementById("entity").value);
 	extra = "extra=" + encodeURIComponent(document.getElementById("extra").value);
 	try{
-		d=Date.parseExact(document.getElementById("userEndDate").value,"<?php echo Localization::getJSString("date.format")?>".toLowerCase());
+		d=Date.parseExact(document.getElementById("userEndDate").value,"<?php echo Localization::getJSString("date.format.parseexact")?>");
 		d.setHours(12);
 		endDate = "endDate="
 				+ encodeURIComponent(d.format("isoUtcDateTime"));
@@ -230,7 +230,7 @@ function displayAvailableGroups(groupList) {
 function editUser(user) {
 	$.get( "resources/templates/userEdit.php", function( data ) {
 		userDate = new Date(user.endDate);
-		dateFormated = userDate.format("<?php echo Localization::getJSString("date.format")?>".toLowerCase());
+		dateFormated = userDate.format("<?php echo Localization::getJSString("date.format.parseexact")?>");
 		currentUser=user;
 		$('#content').html(data.replaceAll("{userNameAsLabel}",user.userName)
 							   .replaceAll("{userNameInputType}", "hidden")
@@ -358,7 +358,7 @@ function displayUserList(userList) {
 			newRow.innerHTML=newRow.innerHTML.replaceAll("{userList[i].userName}", userList[i].userName)
 											 .replaceAll("{userList[i].emailAddress}", userList[i].emailAddress)
 											 .replaceAll("{userList[i].uri}", userList[i].uri)
-											 .replaceAll("{userList[i].endDate}", d.format("<?php echo Localization::getJSString("date.format")?>".toLowerCase()));
+											 .replaceAll("{userList[i].endDate}", d.format("<?php echo Localization::getJSString("date.format.parseexact")?>"));
 			table.appendChild(newRow);
 			edit=document.getElementById("btnEdit");
 			del=document.getElementById("btnDelete");

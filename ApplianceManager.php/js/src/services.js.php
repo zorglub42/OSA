@@ -63,7 +63,9 @@
 						text : item.description!=""?item.description:item.groupName 
 					}));
 				});
-				$("#groupName option[value=" + currentServiceGroupName + "]").prop("selected", "selected");
+				if (currentServiceGroupName != ""){
+					$("#groupName option[value=" + currentServiceGroupName + "]").prop("selected", "selected");
+				}
 			}
 			
 			function updateService(serviceURI){
