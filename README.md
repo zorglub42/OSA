@@ -71,4 +71,5 @@ If at first connection on admin console the following appears
 			Error label:	Unable to connect database
 			
 It's probably because my sql server didn't restart properly after install. In such a case, issue the following:
+
 		service mysql restart
