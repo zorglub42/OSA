@@ -12,6 +12,8 @@ OSA is distributed under Apache2 licence
 Install and configuration scripts are developped for debian, but, with few changes, should be compliant with RedHat too...
 
 To install some prerequisite are needed
+
+**IMPORTANT NOTE:** Apply following MySQL instrustruction on if you plan to connect database on a remote server.
   - root mysql user on target server should be able to create/delete users and databases, with a connection from the server where OSA is installed If it's not the case, run on target MySQL server:
       - to add this privileges: GRANT all on *.* to 'root'@'%' identified by 'password' WITH GRANT OPTION;
       - to remove priovileges: DELETE from mysql.user WHERE user='root' AND host='%'; flush privileges;
@@ -19,9 +21,17 @@ To install some prerequisite are needed
 
 Installation process described here assume that MySQL server will be running locally
 First of all, install required packages and clone OSA repository
-  - apt-get install mysql-server apache2 php5 php5-mysql php5-curl openssl curl zip autoconf libmysqlclient-dev apache2-prefork-dev
-  - git clone https://github.com/zorglub42/OSA
-  - cd OSA
+  - connect as root
+  - install required packages
+
+		apt-get install mysql-server apache2 php5 php5-mysql php5-curl openssl curl zip autoconf libmysqlclient-dev apache2-prefork-dev git
+		
+  - clone git repo
+
+		git clone https://github.com/zorglub42/OSA
+  - Go to OSA clone folder
+  
+		cd OSA
 
 Then run install.sh with "-m /path/to/your/local/installation" as argument 
 
@@ -34,6 +44,10 @@ Note:
 			
 		
 - Go to $INSTALL_DIR/RunTimeAppliance/shell
+
+		Ex.:
+			cd /usr/local/OSA/RunTimeAppliance/shell
+		
 - Edit envvars.sh file and set configuration variables according to your system. 
 
 		By default just following are required:
@@ -46,7 +60,9 @@ Note:
 		and (end of file)
 			INSTALL_DIR: application  location
 			LOG_DIR: application logs location
-run ./configure-osa.sh
+- and then start configuration by issuing the following command
+
+		./configure-osa.sh
 
 If, at the end of execution the message "OSA Configuration done, exiting..." appears, OSA is correctly installed!
 
@@ -56,3 +72,31 @@ If you plan to use standard ports for HTTP and HTTPS nodes (i.e 80 and 443 inste
 
 		a2dissite 000-default default-ssl
 - edit /etc/apache2/ports.conf and comment all *Listen* directives relative to port 80 and 443
+
+
+
+**IMPORTANT NOTE #2:**
+If at first connection on admin console the following appears
+
+		An error has occurred
+
+			Error code:	-1
+			Error label:	Unable to connect database
+			
+It's probably because my sql server didn't restart properly after install. In such a case, issue the following:
+
+		service mysql restart
+
+
+##Trouble shooting
+If after using addictional apache directive (on service or node) OSA doesn't answer it's probably because apache configuration is corrupted due to invalid directives. To fix it:
+- go to apache avaialble sites configuration folder and remove all  nursery-osa-node files (DO NOT REMOVE nursery-osa* but only nursery-osa-node*)
+
+		cd /etc/apache2/sites-available
+		rm nursery-osa-node*
+- restart apache
+
+		service apache2 restart
+		
+- reconnect OSA admin console and fix invalid configuration (servce or node)
+
