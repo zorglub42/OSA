@@ -45,8 +45,8 @@ Note:
 		
 - Go to $INSTALL_DIR/RunTimeAppliance/shell
 
-	Ex.:
-		cd /usr/local/OSA/RunTimeAppliance/shell
+		Ex.:
+			cd /usr/local/OSA/RunTimeAppliance/shell
 		
 - Edit envvars.sh file and set configuration variables according to your system. 
 
