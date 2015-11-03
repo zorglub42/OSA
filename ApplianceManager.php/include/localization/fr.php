@@ -1,5 +1,6 @@
 <?php
 $strings["date.format"]="dd/MM/yyyy";
+$strings["date.format.parseexact"]="dd/mm/yyyy";
 $strings["locale"]="fr";
 /* Global app labels */
 $strings["app.title"]="Open Services Access";
@@ -75,7 +76,7 @@ $strings["service.list.quotas.reqSec"]="Max/sec";
 $strings["service.list.quotas.reqDay"]="Max/jour";
 $strings["service.list.quotas.reqMonth"]="Max/mois";
 /* Details */
-$strings["service.delete.confirm"]="Estes vous sûr de vouloir supprimer le service";
+$strings["service.delete.confirm"]="Etes vous sûr de vouloir supprimer le service";
 /*Placeholders*/
 $strings["service.name.placeholder"]="Nom du service";
 $strings["service.groupName.placeholder"]="Nom du groupe autorisant l'accès";
@@ -96,10 +97,10 @@ $strings["service.edit.tooltip"]="Editer ce service";
 $strings["service.delete.tooltip"]="Supprimer ce service";
 $strings["service.add.tooltip"]="Ajouter un service au système";
 $strings["service.isPublished.tooltip"]="Si cette case est cochée, le service est publié sur les noeuds d'exposition\nsinon, il n'est pas accéssible"; 
-$strings["service.group.tooltip"]="Pour utuliser ce service, les utilisateurs devront faire partie du groupe séléctionné";
+$strings["service.group.tooltip"]="Pour utiliser ce service, les utilisateurs devront faire partie du groupe séléctionné";
 $strings["service.loginForm.tooltip"]="Si le noeud de publication supporte l'autorisation par cookie, les accés non authentifiés seront redirigés vers cette URL";
 $strings["service.isAnonymousAllowed.tooltip"]="Les utilisateurs non authentifiés peuvent tout de même accéder à ce service.\nCharge au backend determiner si un utilisateur est connecté ou non via la propagation d'identité";
-$strings["service.forwardIdentity.tooltip"]="Si cette case est cochée, l'identité de l'utilisateurs connecté sera transmise sous forme d'ente HTTP au serveur backend";
+$strings["service.forwardIdentity.tooltip"]="Si cette case est cochée, l'identité de l'utilisateur connecté sera transmise sous forme d'ente HTTP au serveur backend";
 $strings["service.baUsername.tooltip"]="Nom d'utilisateur à utiliser pour s'authenfier sur le serveur backend";
 $strings["service.baPassword.tooltip"]="Mot de passe à utiliser pour s'authenfier sur le serveur backend";
 $strings["service.isGlobalQuotasEnabled.tooltip"]="Si cette case est cochée, l'accès au serveur backend sera limité par des quotas tout utilisateurs confondus";
@@ -136,12 +137,12 @@ $strings["service.label.isUserQuotasEnabled"]="Activer le contrôle de quotas pa
 $strings["service.label.onAllNodes"]="Disponible sur tous les noeuds";
 $strings["service.label.publishedOnNodes"]="Service disponible sur les noeuds suivants";
 $strings["service.label.logHits"]="Enregistrer les traces";
-$strings["service.label.warning.additionalConfiguration"]="ATTENTION: Utiliser des directive de configuration appache aditionnelles peut corompre la configuration globale du système. A utiliser à vos risque et périls";
+$strings["service.label.warning.additionalConfiguration"]="ATTENTION: Utiliser des directives de configuration appache aditionnelles peut corompre la configuration globale du système. A utiliser à vos risque et périls";
 $strings["service.label.additionalConfiguration"]="Directives de configuration apache aditionnelles";
 $strings["service.label.additionalConfiguration.helpText"]="En plus des variables standard d'apache, en rapport avec la façon dont le noeud expose le service, vous pouvez utiliser ici:\n" .
 						"<ul>\n" .
 						"	<li>\n" .
-						"		%{publicServerProtocol}e pour le protocole utilisé (i.e http:// or https://)\n" .
+						"		%{publicServerProtocol}e pour le protocole utilisé (i.e http:// ou https://)\n" .
 						"	</li>\n" .
 						"	<li>\n" .
 						"		%{publicServerName}e nom public du serveur\n" .
@@ -153,7 +154,7 @@ $strings["service.label.additionalConfiguration.helpText"]="En plus des variable
 						"		%{frontEndEndPoint}e alias public (préfix)\n" .
 						"	</li>\n" .
 						"	<li>\n" .
-						"		%{publicServerPrefix}e concatenation des variables précédents (ex: https//public.node.com:8443/myservice)\n" .
+						"		%{publicServerPrefix}e concatenation des variables précédents (ex: https//noeud.publique.com:8443/monservice)\n" .
 						"	</li>\n" .
 						"	<br>Ex:<br><code>RequestHeader set Public-Root-URI \"%{publicServerProtocol}e%{publicServerName}e:%{publicServerPort}e/%{frontEndEndPoint}e\"</code>\n" .
 						"</ul>\n";
@@ -179,12 +180,10 @@ $strings["user.list.endDate"]="Date de fin";
 /*Placeholders*/
 $strings["user.userName.placeholder"]="Nom d'utilisateur";
 $strings["user.email.placeholder"]="Addresse mail";
-$strings["user.entity.placeholder"]="Oraganisation";
-$strings["user.firstName.placeholder"]="Prénom";
-$strings["user.lastName.placeholder"]="Prénom";
-$strings["user.password.placeholder"]="Mot de passe";
+$strings["user.entity.placeholder"]="Organisation";
 $strings["user.firstName.placeholder"]="Prénom de l'utilisateur";
 $strings["user.lastName.placeholder"]="Nom de famille de l'utilisateur";
+$strings["user.password.placeholder"]="Mot de passe";
 $strings["user.entity.placeholder"]="Organisation de l'utilisateur (optionnelle)";
 $strings["user.emailAddress.placeholder"]="Adresse mail de l'utilisateur";
 $strings["user.endDate.placeholder"]="Date de fin après laquelle il sera impossible de se connecter";
@@ -293,10 +292,10 @@ $strings["node.add.tooltip"]="Ajouter un noeud de publication au système";
 $strings["node.edit.tooltip"]="Editer ce noeud";
 $strings["node.delete.tooltip"]="Supprimer ce noeud";
 $strings["node.nodeName.tooltip"]="Saisissez ici le nom du noeud de publication\nATTENTION : ne pas utiliser de caractères spéciaux\nLe nom du noeud est un identifiant qui ne peut pas être changé ultérieurement";
-$strings["node.isHTTPS.tooltip"]="Si cette case est cochée, le noeud sera dispinnible en https, sinon en http";
+$strings["node.isHTTPS.tooltip"]="Si cette case est cochée, le noeud sera disponnible en https, sinon en http";
 $strings["node.localIP.tooltip"]="Saisissez ici l'adresse IP (ou le nom correspondant) sur laquelle le noeud doit écouter (ou * pour toutes)";
 $strings["node.port.tooltip"]="Saissisez ici le port TCP sur lequel le noeud doit écouter";
-$strings["node.serverFQDN.tooltip"]="Saisissez ici le FQDN auquel le serveur doit répondre";
+$strings["node.serverFQDN.tooltip"]="Saisissez ici le FQDN auquel le serveur doit répondre (VirtualHost ServerName)";
 $strings["node.nodeDescription.tooltip"]="(optionnelle) Description informative du noeud";
 $strings["node.isBasicAuthEnabled.tooltip"]="Si cette case est cochée, les services publiés sur ce noeud pourront être protégés par le mode d'authentification \"basic authentication\"";
 $strings["node.isCookieAuthEnabled.tooltip"]="Si cette case est cochée, les services publiés sur ce noeud pourront être protégés par le mode d'authentification par cookie";
