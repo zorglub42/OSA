@@ -59,3 +59,16 @@ If you plan to use standard ports for HTTP and HTTPS nodes (i.e 80 and 443 inste
 
 		a2dissite 000-default default-ssl
 - edit /etc/apache2/ports.conf and comment all *Listen* directives relative to port 80 and 443
+
+
+
+**IMPORTANT NOTE #2:**
+If at first connection on admin console the following appears
+
+		An error has occurred
+
+			Error code:	-1
+			Error label:	Unable to connect database
+			
+It's probably because my sql server didn't restart properly after install. In such a case, issue the following:
+		service mysql restart
