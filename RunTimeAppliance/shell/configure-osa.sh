@@ -99,8 +99,9 @@ function configureFileSystemPrivileges(){
 	chmod o-r $INSTALL_DIR
 	chmod g-r $INSTALL_DIR
 	
-	chown -R $APACHE_USER:$APACHE_GROUP /var/www/local/main
+	chown -R $APACHE_USER:$APACHE_GROUP /var/www/local
 	chmod 700 /var/www/local/main
+	chmod 000 /var/www/local/empty
 
 
 }
@@ -544,6 +545,7 @@ function createApacheConf(){
 #Create vitual host for local usage (core app not protected=
 	
 	mkdir -p /var/www/local/main
+	mkdir -p /var/www/local/empty
 	mkdir -p $LOG_DIR/local/
 	[ -h  /var/www/local/main/ApplianceManager ] && rm  /var/www/local/main/ApplianceManager
 	ln -s $INSTALL_DIR/ApplianceManager.php /var/www/local/main/ApplianceManager
