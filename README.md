@@ -73,3 +73,17 @@ If at first connection on admin console the following appears
 It's probably because my sql server didn't restart properly after install. In such a case, issue the following:
 
 		service mysql restart
+
+
+##Trouble shooting
+If after using addictional apache directive (on service or node) OSA doesn't answer it's probably because apache configuration is corrupted due to invalid directives. To fix it:
+- go to apache avaialble sites configuration folder and remove all  nursery-osa-node files (DO NOT REMOVE nursery-osa* but only nursery-osa-node*)
+
+		cd /etc/apache2/sites-available
+		rm nursery-osa-node*
+- restart apache
+
+		service apache2 restart
+		
+- reconnect OSA admin console and fix invalid configuration (servce or node)
+
