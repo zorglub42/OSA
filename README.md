@@ -12,6 +12,7 @@ OSA is distributed under Apache2 licence
 Install and configuration scripts are developped for debian, but, with few changes, should be compliant with RedHat too...
 
 To install some prerequisite are needed
+
 **IMPORTANT NOTE:** Apply following MySQL instrustruction on if you plan to connect databe on a remote server.
   - root mysql user on target server should be able to create/delete users and databases, with a connection from the server where OSA is installed If it's not the case, run on target MySQL server:
       - to add this privileges: GRANT all on *.* to 'root'@'%' identified by 'password' WITH GRANT OPTION;
