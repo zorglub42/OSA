@@ -44,6 +44,10 @@ Note:
 			
 		
 - Go to $INSTALL_DIR/RunTimeAppliance/shell
+
+	Ex.:
+		cd /usr/local/OSA/RunTimeAppliance/shell
+		
 - Edit envvars.sh file and set configuration variables according to your system. 
 
 		By default just following are required:
@@ -56,7 +60,9 @@ Note:
 		and (end of file)
 			INSTALL_DIR: application  location
 			LOG_DIR: application logs location
-run ./configure-osa.sh
+- and then start configuration by issuing the following command
+
+		./configure-osa.sh
 
 If, at the end of execution the message "OSA Configuration done, exiting..." appears, OSA is correctly installed!
 
