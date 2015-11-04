@@ -44,13 +44,13 @@
 #   - USE_HTTP if set to 1 API publishing via regular HTTP will be enabled
 #   - USE_HTTPS if set to 1 API publishing via  HTTPS will be enabled
 
-BOX_DOMAIN=".rd.francetelecom.fr"
-APACHE_ADMIN_MAIL="benoit.herard@orange.com"
-ROOT_MYSQL_PW="wsmarket;"
-APPLIANCE_MYSQL_PW="osapwd"
-APPLIANCE_ADMIN_PW="toto"
-USE_HTTP=1
-USE_HTTPS=1
+BOX_DOMAIN="acme.com" #This variable is a configuration commodity. It's just used in the folloing config (see APACHE_ADMIN_MAIL, HTTP_VHOST_NAME, HTTPS_VHOST_NAME and HTTPS_ADMIN_VHOST_NAME)
+APACHE_ADMIN_MAIL="webmaster@$BOX_DOMAIN"
+ROOT_MYSQL_PW="your-root-mysql-password"
+APPLIANCE_MYSQL_PW="choose-a-mysql-password"
+APPLIANCE_ADMIN_PW="choose-your-admin-password"
+USE_HTTP=1 #Set it to 1 if you want to create a default HTTP node 
+USE_HTTPS=1 #Set it to 1 if you want to create a default HTTPS node 
 
 
 
@@ -128,5 +128,5 @@ APPLIANCE_MYSQL_PORT=3306
 ######################################################
 # Global configuration section
 ######################################################
-INSTALL_DIR=/usr/local/nursery/ApplianceManager
+INSTALL_DIR=/usr/local/OSA
 LOG_DIR=/var/log/OSA
