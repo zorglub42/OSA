@@ -158,6 +158,7 @@ function editNode(node){
 	$.get("resources/templates/nodeEdit.php", function (data){
 		cbIsBasicAuthEnabled="checked";
 		cbIsCookieAuthEnabled="checked";
+		cbIsHTTPS="checked";
 		cbManageCAEnabled="";
 		if (node.isCookieAuthEnabled==0){
 			cbIsCookieAuthEnabled="";
