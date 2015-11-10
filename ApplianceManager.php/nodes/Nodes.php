@@ -291,6 +291,7 @@ class Nodes{
 	 */
 	function create($nodeName=NULL, $request_data = NULL){
 		try{
+			$nodeName=normalizeName($nodeName);
 			$rc= addNode($nodeName, $request_data);
 			if (!isset($request_data["apply"]) || $request_data["apply"]=="1"){ 
 				applyApacheNodesConfiguration($nodeName, "C");

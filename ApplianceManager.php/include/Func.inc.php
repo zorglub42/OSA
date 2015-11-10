@@ -30,12 +30,21 @@ function startsWith($haystack, $needle)
     return $needle === "" || strpos($haystack, $needle) === 0;
 }
 
-function normalizeName($name){
+
+function allowedChar($char, $str){
+	$allowed=false;
+	for ($i=0;$i<strlen($name) && !$allowed;$i++){
+		$allowed=(substr($str,$i,1)==$char);
+	}
+	return $allowed;
+}
+
+function normalizeName($name, $allowedExtra=""){
 
         $rc="";
         for ($i=0;$i<strlen($name);$i++){
                 $c=substr($name,$i,1);
-                if (($c >= 'a' && $c <= 'z') || ($c >= 'A' && $c <= 'Z') || ($c >= '0' && $c <= '9') || $c=='-' || $c == '_'){
+                if (($c >= 'a' && $c <= 'z') || ($c >= 'A' && $c <= 'Z') || ($c >= '0' && $c <= '9') || $c=='-' || $c == '_' ||allowedChar($c, $allowedExtra)){
                         $rc = $rc . $c;
                 }
         }
