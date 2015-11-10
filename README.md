@@ -90,9 +90,11 @@ It's probably because my sql server didn't restart properly after install. In su
 
 ##Trouble shooting
 If after using additional apache directives (on service or node) OSA doesn't answer it's probably because apache configuration is corrupted due to invalid directives. To fix it:
-- go to apache available sites configuration folder and remove all  nursery-osa-node files (DO NOT REMOVE nursery-osa* but only nursery-osa-node*)
+- go to apache available and enabled sites configuration folder and remove all  nursery-osa-node files (DO NOT REMOVE nursery-osa* but only nursery-osa-node*)
 
 		cd /etc/apache2/sites-available
+		rm nursery-osa-node*
+		cd /etc/apache2/sites-enabled
 		rm nursery-osa-node*
 - restart apache
 
