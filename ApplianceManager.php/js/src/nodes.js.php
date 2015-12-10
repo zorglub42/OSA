@@ -219,10 +219,20 @@ function editNode(node){
 			
 function saveOrUpdateNode(method){
 	if (!$('#isCookieAuthEnabled').is(':checked') && !$('#isBasicAuthEnabled').is(':checked') ){
-		alert("At least one authentication methode (basic authentication or cookie authentication) should be enabled");
+		alert("<?php echo Localization::getJSSring("node.no-authent-waring")?>");
 		return false;
 	}
 	
+	if ($("#port").val() == "80" && document.getElementById("isHTTPS").checked){
+		if (!confirm('<?php echo Localization::getJSString("node.https-on-80-warning")?>')){
+			return false;
+		}
+	}
+	if ($("#port").val() == "443" && !document.getElementById("isHTTPS").checked){
+		if (!confirm('<?php echo Localization::getJSString("node.http-on-443-warning")?>')){
+			return false;
+		}
+	}
 	showWait();
 	 var uploadPrivKeyFLD=document.getElementById("PKfileuploadFLD");
 	 var uploadCertFLD=document.getElementById("CERTfileuploadFLD");
