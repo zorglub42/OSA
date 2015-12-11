@@ -307,7 +307,7 @@ $strings["node.chain.tootip"]="Selectionnez le fichier contenant les certificats
 $strings["node.additionalConfiguration.tooltip"]="Vous pouvez ici rajouter des directives apache applicables au tag apache </VirtualHost>";
 $strings["node.https-on-80-warning"]="ATTENTION : Utiliser HTTPS (et non HTTP) sur le port 80 peut poser des problemes...\nEtes vous sur de vouloir faire ça ?";
 $strings["node.http-on-443-warning"]="ATTENTION : Utiliser HTTP (et non HTTPS) sur le port 443 peut poser des problemes...\nEtes vous sur de vouloir faire ça ?";
-$strings["node.no-authent-warning"]="Au moins un mode d'authentification doit être activé (basic authentication ou authentification par cookie)"
+$strings["node.no-authent-warning"]="Au moins un mode d'authentification doit être activé (basic authentication ou authentification par cookie)";
 
 
 /*Labels */

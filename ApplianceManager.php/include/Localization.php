@@ -5,6 +5,7 @@ class Localization{
 	private static $languages = Array();
 	private static $strings =null;
 	public static $debug=false;
+	public static $lastModify;
 	
 	private static function getLanguages(){
 		if (count(self::$languages) == 0){
@@ -32,8 +33,10 @@ class Localization{
 	}
 	
 	public static function getString($string){
-
 		$rc="*** $string ***";
+		if (self::$lastModify==null){
+			self::$lastModify=time();
+		}
 		if (self::$strings==null|| self::$debug){
 			$langList=self::getLanguages();
 			foreach ($langList as $language){
@@ -41,11 +44,13 @@ class Localization{
 				@include "localization/$language.php";
 				if (isset($strings) && isset($strings[$string])){
 					self::$strings=$strings;
+					self::$lastModify=filemtime(dirname(__FILE__) ."/localization/$language.php");
 					return $strings[$string];
 				}
 			}
 			unset($strings);
 			include "localization/default.php";
+			self::$lastModify=filemtime("localization/default.php");
 			self::$strings=$strings;
 		}
 		if (isset(self::$strings[$string])){

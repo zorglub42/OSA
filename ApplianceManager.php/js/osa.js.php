@@ -24,10 +24,35 @@
  * 1.0.0 - 2012-10-01 : Release of the file
 */
 require_once "../include/Localization.php";
-header("Content-type: text/javascript");
+//header("Content-type: text/javascript");
 
 $dir    = '.';
 $files = scandir($dir);
+
+Localization::getString("app.title");  //force Load localization settings
+$lastModify=0;
+foreach ($files as 	&$file){
+	if (preg_match("/.*\.js/", $file) ||preg_match("/.*\.php/", $file)){
+		if (filemtime($file)>$lastModify){
+			$lastModify=filemtime($file);
+		}
+	}
+}
+if (Localization::$lastModify>$lastModify){
+	$lastModify=Localization::$lastModify;
+}
+$headers=getallheaders();
+if (isset($headers['If-Modified-Since']) && (strtotime($headers['If-Modified-Since']) >=	 $lastModify)) {
+	// Client's cache IS current, so we just respond '304 Not Modified'.
+	header('Last-Modified: '.gmdate('D, d M Y H:i:s', $lastModify).' GMT', true, 304);
+	die();
+} else {
+	// Image not cached or cache outdated, we respond '200 OK' and output the image.
+	header('Last-Modified: '.gmdate('D, d M Y H:i:s', $lastModify).' GMT', true, 200);
+	
+}	
+
+
 
 include "jquery-1.11.3.min.js";
 echo "\n";

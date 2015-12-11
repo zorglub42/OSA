@@ -307,7 +307,7 @@ $strings["node.chain.tootip"]="Selectlect a file containing certification chain 
 $strings["node.additionalConfiguration.tooltip"]="You can add here any appache directive applicable to </VirtualHost> tag";
 $strings["node.https-on-80-warning"]="ATTENTION: Using HTTPS on port 80 (and not HTTP) may cause problems...\nDo you really want to do that?";
 $strings["node.http-on-443-warning"]="ATTENTION: Using HTTP on port 443 (and not HTTPS) may cause problems...\nDo you really want to do that?";
-$strings["node.no-authent-warning"]="At least one authentication methode (basic authentication or cookie authentication) should be enabled"
+$strings["node.no-authent-warning"]="At least one authentication methode (basic authentication or cookie authentication) should be enabled";
 
 /*Labels */
 $strings["node.label.nodeName"]="Node name";
