@@ -219,7 +219,7 @@ function editNode(node){
 			
 function saveOrUpdateNode(method){
 	if (!$('#isCookieAuthEnabled').is(':checked') && !$('#isBasicAuthEnabled').is(':checked') ){
-		alert("<?php echo Localization::getJSSring("node.no-authent-waring")?>");
+		alert("<?php echo Localization::getJSString("node.no-authent-waring")?>");
 		return false;
 	}
 	
