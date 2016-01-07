@@ -303,7 +303,7 @@ function updateUserPassword($userName, $newPassword){
 
 	$strSQL = $strSQL  . "UPDATE users SET ";
 	$strSQL = $strSQL  . "      password=?, ";
-	$strSQL = $strSQL  . "      md5Password=$? ";
+	$strSQL = $strSQL  . "      md5Password=? ";
 	$strSQL = $strSQL  . "WHERE userName=?";
 	$bindPrms=array($mySQLPassword, $mySQLmd5Password, $userName);
 
