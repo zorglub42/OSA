@@ -562,7 +562,6 @@ function updateService($serviceName = NULL, $request_data=NULL){
 	$error->setFunctionalCode(0);
 
 
-
 	if ($serviceName == NULL || $serviceName=="" ){
 		$error->setHttpStatus(400);
 		$error->setFunctionalCode(1);
@@ -647,7 +646,7 @@ function updateService($serviceName = NULL, $request_data=NULL){
 		}
 	}
 
-	if (!isset($request_data["isGlobalQuotasEnabled"]) || $request_data["isGlobalQuotasEnabled"]=="1" ){
+	if (isset($request_data["isGlobalQuotasEnabled"]) && $request_data["isGlobalQuotasEnabled"]=="1" ){
 		if (!isset($request_data["reqSec"]) || $request_data["reqSec"]=="" ){
 			$error->setHttpStatus(400);
 			$error->setFunctionalCode(1);
