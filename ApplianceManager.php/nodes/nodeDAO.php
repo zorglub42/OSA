@@ -178,7 +178,7 @@ function addNode($nodeName = NULL, $request_data = NULL){
 		$error->setFunctionalCode(1);
 		$error->setFunctionalLabel($error->getFunctionalLabel() . "serverFQDN is required\n");
 	}else{
-		$mySQLserverFQDN=cut($request_data["serverFQDN"], LOCALIP_LENGTH);
+		$mySQLserverFQDN=cut($request_data["serverFQDN"], SERVERFQDN_LENGTH);
 	}
 	if ($request_data["localIP"] == NULL || $request_data["localIP"]=="" ){
 		$error->setHttpStatus(400);
@@ -341,7 +341,7 @@ function updateNode($nodeName = NULL, $request_data = NULL){
 		$error->setFunctionalCode(1);
 		$error->setFunctionalLabel($error->getFunctionalLabel() . "serverFQDN is required\n");
 	}else{
-		$mySQLserverFQDN=cut($request_data["serverFQDN"], LOCALIP_LENGTH);
+		$mySQLserverFQDN=cut($request_data["serverFQDN"], SERVERFQDN_LENGTH);
 	}
 	if ($request_data["localIP"] == NULL || $request_data["localIP"]=="" ){
 		$error->setHttpStatus(400);
