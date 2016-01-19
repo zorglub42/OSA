@@ -88,6 +88,20 @@ It's probably because my sql server didn't restart properly after install. In su
 		service mysql restart
 
 
+##Update
+To deploy a new version of OSA from github do the folowing
+- Ensure that KEEP_DB environnement variable is set to 1 in INSTALL_DIR/RunTimeAppliance/shell if you whant to keep your DB contents
+- update local git repository from github (git pull)
+- restart install process from git local repository (checking envvars.sh file is no more required)
+	
+		Ex:
+			cd OSA
+			git pull
+			./install.sh -m /usr/local/OSA
+			cd /usr/local/OSA/RunTimeAppliance/shell
+			./configure-osa.sh
+
+
 ##Trouble shooting
 If after using additional apache directives (on service or node) OSA doesn't answer it's probably because apache configuration is corrupted due to invalid directives. To fix it:
 - go to apache available and enabled sites configuration folder and remove all  nursery-osa-node files (DO NOT REMOVE nursery-osa* but only nursery-osa-node*)
