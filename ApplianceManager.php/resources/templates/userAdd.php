@@ -15,7 +15,7 @@ require_once "../../include/Localization.php";
 							<button type="button" class="btn btn-default" id="saveNew" onclick="saveNewUser()">
 								<span><?php echo Localization::getString("button.ok")?></span>
 							</button>
-							<button type="button" class="btn btn-info" onclick="showUsers()">
+							<button type="button" class="btn btn-info" onclick="showUsers()" id="cancel">
 								<span><?php echo Localization::getString("button.cancel")?></span>
 							</button>
 						</div>

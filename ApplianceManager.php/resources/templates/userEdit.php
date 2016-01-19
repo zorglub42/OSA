@@ -17,8 +17,8 @@ require_once "../../include/Localization.php";
 							<button type="button" class="btn btn-default" id="saveEdit" onclick="updateUser('{uri}')">
 								<span><?php echo Localization::getString("button.ok")?></span>
 							</button>
-							<button type="button" class="btn btn-info" onclick="showUsers()">
-								<span><?php echo Localization::getString("button.cancel")?></span>
+							<button type="button" class="btn btn-info" onclick="showUsers()" >
+								<span id="cancel"><?php echo Localization::getString("button.cancel")?></span>
 							</button>
 							<button type="button" class="btn btn-info" id="groupsEdit" onclick="startDisplayUserGroups('{uri}')">
 								<span><?php echo Localization::getString("button.groups")?></span>

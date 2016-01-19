@@ -56,11 +56,13 @@ function deleteUserQuotas(quotaURI, serviceName) {
 function setUserModified(isModified) {
 	userModified = isModified;
 	if (isModified) {
+		$("#cancel").html("<?php echo Localization::getJSString("button.cancel")?>")
 		setActionButtonEnabled('saveNew', true);
 		setActionButtonEnabled('saveEdit', true);
 		setActionButtonEnabled('groupsEdit', false);
 		setActionButtonEnabled('quotasEdit', false);
 	} else {
+		$("#cancel").html("<?php echo Localization::getJSString("button.back")?>")
 		setActionButtonEnabled('saveNew', false);
 		setActionButtonEnabled('saveEdit', false);
 		setActionButtonEnabled('groupsEdit', true);
