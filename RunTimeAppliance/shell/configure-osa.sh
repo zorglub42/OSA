@@ -80,6 +80,8 @@ function configureFileSystemPrivileges(){
 	#Protect ws usage creds 
 	chown root:root $INSTALL_DIR/RunTimeAppliance/shell/doAppliance.sh
 	chmod 700 $INSTALL_DIR/RunTimeAppliance/shell/doAppliance.sh
+	chown root:root $INSTALL_DIR/RunTimeAppliance/shell/backupConf.sh
+	chmod 700 $INSTALL_DIR/RunTimeAppliance/shell/backupConf.sh
 	
 	#Prevents form too talkative logs
 	chown -R $APACHE_USER:$APACHE_GROUP $LOG_DIR
@@ -328,6 +330,7 @@ function shellExit(){
 ######################################################################
 function configureShellScripts(){
 	#End point generator
+	changeProperty $INSTALL_DIR/RunTimeAppliance/shell/backupConf.sh APPLIANCE_INSTALL_DIR $INSTALL_DIR
 	changeProperty $INSTALL_DIR/RunTimeAppliance/shell/doAppliance.sh APPLIANCE_INSTALL_DIR $INSTALL_DIR
 	changeProperty $INSTALL_DIR/RunTimeAppliance/shell/doAppliance.sh APPLIANCE_LOCAL_USER '""'
 	changeProperty $INSTALL_DIR/RunTimeAppliance/shell/doAppliance.sh APPLIANCE_LOCAL_PWD '""'
