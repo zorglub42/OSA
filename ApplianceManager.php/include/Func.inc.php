@@ -142,7 +142,11 @@ function applyApacheConfiguration(){
 			$remoteCmd = $remoteCmd . " 2>&1 >> " . runtimeApplianceConfigScriptLogFile;
 		}
 		system("$remoteCmd",$rc);
-		return true;
+		if ($rc != 0){
+			return false;
+		}else{
+			return true;
+		}
 	}else{
 		return true;
 	
@@ -160,7 +164,11 @@ function applyApacheNodesConfiguration($nodeName="", $action=""){
 		}
 		
 		system("$remoteCmd",$rc);
-		return true;
+		if ($rc != 0){
+			return false;
+		}else{
+			return true;
+		}
 	}else{
 		return true;
 	

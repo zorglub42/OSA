@@ -100,10 +100,10 @@ function generateConf(){
 function deleteTempFiles(){
 	ls /tmp/$$.* > /dev/null
 	if [ $? -eq 0 ] ; then
-		echo "Deleting temp files"
+		#echo "Deleting temp files"
 		rm /tmp/$$.*
-	else
-		echo "No file delete (/tmp/$$.*)"
+	#else
+		#echo "No file delete (/tmp/$$.*)"
 	fi
 }
 
@@ -116,6 +116,17 @@ function shellExit(){
 
 
 echo "Starting $0 with $*"
+DO_BACKUP=1
+for p in $* ; do
+	if [ $p == "-nobackup" ] ; then
+		DO_BACKUP=0
+	fi
+done
+
+if [ $DO_BACKUP -eq 1 ] ; then
+	`dirname $0`/backupConf.sh -backup
+fi
+
 
 if [ "$1" == "D" -o "$1" == "U"  -o "$1" == "C" ] ; then
 	if [ "$1" == "U"  -o "$1" == "C" ] ; then
@@ -186,8 +197,11 @@ do
 	fi
 				
 		generateConf $serverFQDN $nodeName $isBasicAuthEnabled $isCookieAuthEnabled $serverPrefix
-		if [ $? -eq 1 ] ; then
+		rc=$?
+		if [ $rc -eq 1 ] ; then
 			apacheReload=1;
+		else
+			echo "RC=$?"
 		fi
 	fi
 done < /tmp/$$.nodes
@@ -196,7 +210,24 @@ done < /tmp/$$.nodes
 
 
 
+apachectl configtest 2>&1
+if [ $? -ne 0 ] ; then
+	`dirname $0`/backupConf.sh -restaure >/dev/null 2>&1
+	shellExit 2
+fi
 
+echo reload=$apacheReload
 if [ $apacheReload -eq 1 ] ; then
+	echo restart apache
+	echo $APACHE_INIT_SCRIPT graceful 
 	$APACHE_INIT_SCRIPT graceful 2>&1
+	sleep 1
+	$APACHE_INIT_SCRIPT status 2>&1
+	rc=$?
+	if [ $rc -ne 0 ] ; then
+		`dirname $0`/backupConf.sh -restaure >/dev/null 2>&1
+		$APACHE_INIT_SCRIPT start >/dev/null 2>&1
+		shellExit 2
+	fi
+
 fi

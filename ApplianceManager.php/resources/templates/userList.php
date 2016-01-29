@@ -50,7 +50,8 @@ require_once "../../include/Localization.php";
 						<div class="col-xs-3 col-md-2 ellipsis" title="<?php echo Localization::getString("list.actions")?>"><?php echo Localization::getString("list.actions")?></div>
 				</div>
 				<div class="list-group" id="data" >
-					<a class="list-group-item row" id="rowTpl" style="display:none" >
+					<div id="rowTpl" style="display:none">
+					<a class="list-group-item row"  ondblclick="startEditUser('{userList[i].uri}')">
 						<div class="col-xs-3 col-md-3 ellipsis" title="{userList[i].userName}">{userList[i].userName}</div>
 						<div class="col-xs-3 col-md-3 ellipsis" title="{userList[i].emailAddress}">{userList[i].emailAddress}</div>
 						<div class="col-xs-3 col-md-4 ellipsis" title="{userList[i].endDate}">{userList[i].endDate}</div>
@@ -63,6 +64,7 @@ require_once "../../include/Localization.php";
 							</button>
 						</div>
 					</a>
+					</div>
 				</div>
 			</div>
 			<div class="panel-footer">

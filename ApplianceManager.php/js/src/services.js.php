@@ -260,6 +260,7 @@
 					  data: postData,
 					  success: manageNodesList,
 					  error: displayErrorV2
+
 					});
 			}
 			
@@ -283,6 +284,7 @@
 						  type:"POST",
 						  success: showServices,
 						  error: displayErrorV2
+
 						});
 				}else{
 					showServices();

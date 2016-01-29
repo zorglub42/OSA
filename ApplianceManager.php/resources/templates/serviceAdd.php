@@ -16,7 +16,7 @@ require_once "../../include/Localization.php";
 								<button type="button" class="btn btn-default" id="saveService" onclick="saveNewService()">
 									<span><?php echo Localization::getString("button.ok")?></span>
 								</button>
-								<button type="button" class="btn btn-info" onclick="showServices()">
+								<button type="button" class="btn btn-info" onclick="showServices()"  id="cancelBtn">
 									<span><?php echo Localization::getString("button.cancel")?></span>
 								</button>
 							</div>

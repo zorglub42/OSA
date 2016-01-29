@@ -109,10 +109,10 @@ cat /tmp/$$.logrotate.conf >> $EXEC_DIR/logrotate.conf
 function deleteTempFiles(){
 	ls /tmp/$$.* > /dev/null
 	if [ $? -eq 0 ] ; then
-		echo "Deleting temp files"
+		#echo "Deleting temp files"
 		rm /tmp/$$.*
-	else
-		echo "No file delete (/tmp/$$.*)"
+	#else
+		#echo "No file delete (/tmp/$$.*)"
 	fi
 }
 
@@ -246,6 +246,8 @@ echo $APACHE_DEFAULT_LISTENING>/tmp/$$.APACHE_LISTENING
 
 
 echo "Starting $0 with $*"
+
+$EXEC_DIR/backupConf.sh -backup
 if [ "$1" == "D" -o "$1" == "U"  -o "$1" == "C" ] ; then
 	delFiles "/etc/ssl/certs/nursery-osa-node-$2-ca.pem"
 	delFiles "/etc/ssl/certs/nursery-osa-node-$2-chain.pem"
@@ -350,5 +352,5 @@ done < /tmp/$$.nodes
 
 
 
-$EXEC_DIR/doAppliance.sh $*
-shellExit 0
+$EXEC_DIR/doAppliance.sh $* -nobackup
+shellExit $?

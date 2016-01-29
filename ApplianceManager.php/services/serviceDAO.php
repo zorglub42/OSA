@@ -444,9 +444,10 @@ function createService($serviceName = NULL, $request_data=NULL){
 			if (applyApacheConfiguration()){
 				return getService($serviceName);
 			}else{
-				$error->setHttpStatus(500);
+				deleteService($serviceName);
+				$error->setHttpStatus(400);
 				$error->setFunctionalCode(1);
-				$error->setFunctionalLabel("Service successfully saved but unable to apply configuration on runtime appliance");
+				$error->setFunctionalLabel("Invalid apache configuration");
 				throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());;
 			}
 		}catch (Exception $e){
@@ -571,7 +572,7 @@ function updateService($serviceName = NULL, $request_data=NULL){
 		$mySQLServiceName=cut($serviceName, SERVICENAME_LENGTH);
 	}
 	$service=getService($serviceName);
-
+	$serviceBkg= $service;
 
 	if (isset($request_data["additionalConfiguration"])){
 		$service["additionalConfiguration"]=$request_data["additionalConfiguration"];
@@ -836,9 +837,11 @@ function updateService($serviceName = NULL, $request_data=NULL){
 		}else if (applyApacheConfiguration()){
 			return getService($serviceName);
 		}else{
-			$error->setHttpStatus(500);
+			$serviceBkg["noApply"]=1;
+			updateService($serviceName, $serviceBkg);
+			$error->setHttpStatus(400);
 			$error->setFunctionalCode(1);
-			$error->setFunctionalLabel("Service successfully saved but unable to apply configuration on runtime appliance");
+			$error->setFunctionalLabel("Invalid apache configurration");
 			throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
 		}
 	}
