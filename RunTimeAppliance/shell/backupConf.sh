@@ -30,7 +30,7 @@ unset http_proxy
 
 
 # Configuration section #############################################################################
-APPLIANCE_INSTALL_DIR=/usr/local/nursery/ApplianceManager
+APPLIANCE_INSTALL_DIR=/usr/local/OSA
 APPLIANCE_CONFIG_LOC=$APPLIANCE_INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance
 # End of Configuration section #############################################################################
 

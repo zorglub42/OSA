@@ -27,13 +27,13 @@
 	$BDUser="appliance";
 	$BDPwd="osapwd";
 	
-	define("runtimeApplianceConfigLocation",  "/usr/local/nursery/ApplianceManager/RunTimeAppliance/apache/conf/vhAppliance");
+	define("runtimeApplianceConfigLocation",  "/usr/local/OSA/RunTimeAppliance/apache/conf/vhAppliance");
 	
 	# Runtime appliance automatic configuration
-	define("runtimeApplianceConfigScript", "/usr/local/nursery/ApplianceManager/RunTimeAppliance/shell/doAppliance.sh");
+	define("runtimeApplianceConfigScript", "/usr/local/OSA/RunTimeAppliance/shell/doAppliance.sh");
 	define("runtimeApplianceConfigScriptLogFile", "/var/log/OSA/doAppliance.log");
             
-	define("runtimeApplianceVirtualHostsConfigScript", "/usr/local/nursery/ApplianceManager/RunTimeAppliance/shell/doVHAppliance.sh");
+	define("runtimeApplianceVirtualHostsConfigScript", "/usr/local/OSA/RunTimeAppliance/shell/doVHAppliance.sh");
 	define("runtimeApplianceVirtualHostsConfigScriptLogFile", "/var/log/OSA/doVHAppliance.log");
 
 	define("runtimeApplianceAutomaticConfiguration",true);
@@ -76,5 +76,5 @@
 	define("authTokenTTL", 60);
 		#cookie name
 	define("authTokenCookieName", "OSAAuthToken");
-	define("osaAdminUri", "https://r-lnx-jmjb0521.rd.francetelecom.fr:6443/");
+	define("osaAdminUri", "https://r-lnx-jmjb0521rd.francetelecom.fr:6443/");
 ?>
