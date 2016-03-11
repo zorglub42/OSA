@@ -96,7 +96,7 @@
 	<script>
 			$('#loginBtn').click(doLogin);
 			$('#username').focus();
-			<?if (isset($_REQUEST["cause"])){
+			<?php if (isset($_REQUEST["cause"])){
 				if ($_REQUEST["cause"] == "authorization"){
 					$msg="D&eacute;sol&eacute; mais tapadroit d'aller sur " . base64_decode($_REQUEST["l"]);
 				}else{
@@ -104,9 +104,9 @@
 				}
 			?>
 				showError('<?php echo $msg?>');
-			<?}else{?>
+			<?php }else{?>
 				$('#error').hide();
-			<?}?>
+			<?php }?>
 			
 		</script>
 
