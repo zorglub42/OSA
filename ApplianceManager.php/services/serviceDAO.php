@@ -335,7 +335,7 @@ function createService($serviceName = NULL, $request_data=NULL){
 		$error->setHttpStatus(400);
 		$error->setFunctionalCode(1);
 		$error->setFunctionalLabel($error->getFunctionalLabel() . "backEndEndPoint is required\n");
-	}elseif (ereg("^(http|https|ws)://[\w\d:#@%/;$()~_?\+-=\\\.&]*", $request_data["backEndEndPoint"])){
+	}elseif (ereg("^(http|https|ws|wss)://[\w\d:#@%/;$()~_?\+-=\\\.&]*", $request_data["backEndEndPoint"])){
 		$mySQLBackEndEndPoint=cut($request_data["backEndEndPoint"], BACKENDENDPOINT_LENGTH);
 	}else{
 		$error->setHttpStatus(400);
@@ -726,7 +726,7 @@ function updateService($serviceName = NULL, $request_data=NULL){
 		$service["frontEndEndPoint"]=$request_data["frontEndEndPoint"];
 	}
 	if (isset($request_data["backEndEndPoint"]) && $request_data["backEndEndPoint"]!="" ){
-		if (ereg("^(http|https|ws)://[\w\d:#@%/;$()~_?\+-=\\\.&]*", $request_data["backEndEndPoint"])){
+		if (ereg("^(http|https|ws|wss)://[\w\d:#@%/;$()~_?\+-=\\\.&]*", $request_data["backEndEndPoint"])){
 			$service["backEndEndPoint"]=$request_data["backEndEndPoint"];
 		}else{
 			$error->setHttpStatus(400);
@@ -735,7 +735,7 @@ function updateService($serviceName = NULL, $request_data=NULL){
 		}
 	}
 	if (isset($request_data["backEndEndPoint"]) && $request_data["backEndEndPoint"]!="" ){
-		if (ereg("^(http|https|ws)://[\w\d:#@%/;$()~_?\+-=\\\.&]*", $request_data["backEndEndPoint"])){
+		if (ereg("^(http|https|ws|wss)://[\w\d:#@%/;$()~_?\+-=\\\.&]*", $request_data["backEndEndPoint"])){
 			$service["backEndEndPoint"]=$request_data["backEndEndPoint"];
 		}else{
 			$error->setHttpStatus(400);
