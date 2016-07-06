@@ -331,7 +331,7 @@ function createService($serviceName = NULL, $request_data=NULL){
 	}else{
 		$mySQLFrontEndEndPoint=$request_data["frontEndEndPoint"];
 		if (substr($mySQLFrontEndEndPoint, 0, 1) != "/"){
-			$mySQLFrontEndEndPoint="/" . $mySQLFrontEndEndPoint
+			$mySQLFrontEndEndPoint="/" . $mySQLFrontEndEndPoint;
 		}
 		$mySQLFrontEndEndPoint=cut($mySQLFrontEndEndPoint, FRONTENDENDPOINT_LENGTH);
 	}
@@ -729,7 +729,7 @@ function updateService($serviceName = NULL, $request_data=NULL){
 	if (isset($request_data["frontEndEndPoint"]) && $request_data["frontEndEndPoint"]!="" ){
 		$frontEndEndPoint=$request_data["frontEndEndPoint"];
 		if (substr($frontEndEndPoint, 0, 1) != "/"){
-			$frontEndEndPoint="/" . $frontEndEndPoint
+			$frontEndEndPoint="/" . $frontEndEndPoint;
 		}
 		$frontEndEndPoint=cut($frontEndEndPoint, FRONTENDENDPOINT_LENGTH);
 
