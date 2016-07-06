@@ -182,7 +182,9 @@ function getUrlParts($url){
 	
 	if (!preg_match("/^https:\/\/([^\/]+)(.*)/i",$url, $matches)){
 		if (!preg_match("/^http:\/\/([^\/]+)(.*)/i",$url, $matches)){
-			preg_match("/^ws:\/\/([^\/]+)(.*)/i",$url, $matches);
+			if (!preg_match("/^ws:\/\/([^\/]+)(.*)/i",$url, $matches)){
+				preg_match("/^wss:\/\/([^\/]+)(.*)/i",$url, $matches);
+			}
 		}
 	}
 	$host = $matches[1];
