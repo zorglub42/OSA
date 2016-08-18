@@ -35,8 +35,8 @@ APPLIANCE_CONFIG_LOC=$APPLIANCE_INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppli
 APPLIANCE_LOCAL_SERVER="http://127.0.0.1:82"
 APPLIANCE_LOCAL_USER=""
 APPLIANCE_LOCAL_PWD=""
-HTTP_FQDN="r-lnx-jmjb0521rd.francetelecom.fr"
-HTTPS_FQDN="r-lnx-jmjb0521rd.francetelecom.fr"
+HTTP_FQDN="r-lnx-jmjb0521"
+HTTPS_FQDN="r-lnx-jmjb0521"
 USE_HTTP=1
 USE_HTTPS=1
 # End of Configuration section #############################################################################
@@ -88,6 +88,7 @@ function generateConf(){
         wget --user="$APPLIANCE_LOCAL_USER" --password="$APPLIANCE_LOCAL_PWD" "$APPLIANCE_LOCAL_SERVER/ApplianceManager/scripts/generateApacheConfig.php?domain=$1&BasicAuthEnabled=$3&CookieAuthEnabled=$4&node=$2&serverPrefix=$5" -O /tmp/applianceManagerServices.endpoints 2>&1
         [ ! -f $APPLIANCE_CONFIG_LOC/applianceManagerServices-node-$2.endpoints ] && touch $APPLIANCE_CONFIG_LOC/applianceManagerServices-node-$2.endpoints
         diffCount=`diff $APPLIANCE_CONFIG_LOC/applianceManagerServices-node-$2.endpoints /tmp/applianceManagerServices.endpoints | wc -l`
+        
         echo "dc=$diffCount"
         if [ $diffCount -ne 0 ] ; then
                 mv /tmp/applianceManagerServices.endpoints $APPLIANCE_CONFIG_LOC/applianceManagerServices-node-$2.endpoints
@@ -120,7 +121,6 @@ DO_BACKUP=1
 for p in $* ; do
 	if [ $p == "-nobackup" ] ; then
 		DO_BACKUP=0
-		shift
 	fi
 done
 
@@ -143,17 +143,17 @@ echo "" >>/tmp/$$.nodes
 
 
 
+
 grep '"error"' /tmp/$$.nodes>/dev/null
 if [ $? -eq 0 ] ; then
 	echo "An error occursed while downloding node list"; 
 	shellExit 1
 fi
-apacheReload=0;
+apacheReload=1;
 
 
 while read line  
 do   
-	echo $line
 	echo $line | grep "nodeName">/dev/null
 	if [ $? -eq 0 ] ; then
 		nodeName=`echo $line | awk -F\" '{print $4}'`
@@ -205,6 +205,7 @@ do
 		if [ $rc -eq 1 ] ; then
 			apacheReload=1;
 		else
+			apacheReload=0
 			echo "RC=$?"
 		fi
 	fi
@@ -213,7 +214,6 @@ done < /tmp/$$.nodes
 
 
 
-cat  /etc/apache2/conf-enabled/nursery-osa-0-ports.conf
 apachectl configtest 2>&1
 if [ $? -ne 0 ] ; then
 	`dirname $0`/backupConf.sh -restaure >/dev/null 2>&1
@@ -235,3 +235,4 @@ if [ $apacheReload -eq 1 ] ; then
 	fi
 
 fi
+shellExit 0

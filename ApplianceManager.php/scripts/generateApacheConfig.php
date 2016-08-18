@@ -101,7 +101,7 @@ require_once '../include/PDOFunc.php';
 				$FRONT_END_TOP_DOMAIN = $FRONT_END_TOP_DOMAIN . "." . $domParts[$i];
 			}
 		}else{
-			$FRONT_END_TOP_DOMAIN=$FRONT_END_DOMAIN;
+			$FRONT_END_TOP_DOMAIN="";
 		}
 		if ($row["isHitLoggingEnabled"]==1){
 			$HIT_LOGGING_ENABLE="On";

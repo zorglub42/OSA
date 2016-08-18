@@ -48,7 +48,9 @@ require_once '../include/Constants.php';
 			echo "\tOSACookieAuthEnable On\n";
 			echo "\tOSACookieAuthName OSAAuthToken\n";
 			echo "\tOSACookieAuthTTL 60\n";
-			echo "\tOSACookieAuthDomain " . $FRONT_END_TOP_DOMAIN . "\n";
+			if (!empty($FRONT_END_TOP_DOMAIN)){
+				echo "\tOSACookieAuthDomain " . $FRONT_END_TOP_DOMAIN . "\n";
+			}
 			echo "\tOSAServerName " . $PUBLIC_SERVER_PREFIX . "\n";
 			
 			if ($LOGIN_FORM_URI != ""){

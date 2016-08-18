@@ -50,8 +50,8 @@ removeLogRotateForAllNodes(){
 }
 
 removeLogRotateForNode(){
-	startLine=`grep -n "##Node $1 START" $EXEC_DIR/logrotate.conf| awk -F: '{print $1}'`
 	if [ "$startLine" != "" ] ; then
+		echo SL=$startLine
 		startLine=`expr $startLine - 1`
 		endLine=`grep -n "##Node $1 END" $EXEC_DIR/logrotate.conf| awk -F: '{print $1}'`
 		if [ "$endLine" != "" ] ; then
@@ -158,13 +158,15 @@ function configureApachePorts(){
 		grep -v "$LADDR:$PORT" $APACHE_LISTEN_PORTS>/tmp/$$.port
 		cat /tmp/$$.port >$APACHE_LISTEN_PORTS
 		
-		realIp=`getRealIp "$LOCAL_IP"`
-		grep "$realIp:$PORT" /tmp/$$.APACHE_LISTENING>/dev/null
-		if [ $? -ne 0 ] ; then
+		if [ ! "$1" == "D" ] ; then
+			realIp=`getRealIp "$LOCAL_IP"`
+			grep "$realIp:$PORT" /tmp/$$.APACHE_LISTENING>/dev/null
+			if [ $? -ne 0 ] ; then
 
-			echo "Listen $LOCAL_IP:$PORT" >>$APACHE_LISTEN_PORTS
+				echo "Listen $LOCAL_IP:$PORT" >>$APACHE_LISTEN_PORTS
+			fi
+			echo "NameVirtualHost $LOCAL_IP:$PORT" >>$APACHE_LISTEN_PORTS
 		fi
-		echo "NameVirtualHost $LOCAL_IP:$PORT" >>$APACHE_LISTEN_PORTS
 }
 
 
@@ -261,11 +263,12 @@ if [ "$1" == "D" -o "$1" == "U"  -o "$1" == "C" ] ; then
 	delFiles "$APACHE_SITES_ENABLED_DIR/nursery-osa-node-$2.conf"
 	removeLogRotateForNode $2
 
-	if [ "$1" == "U"  -o "$1" == "C" ] ; then
-		curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$2>/tmp/$$.nodes
-	else
+	#if [ "$1" == "U"  -o "$1" == "C" ] ; then
+	echo getting node definition
+		curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$2 >/tmp/$$.nodes
+	#else
+	if [ "$1" == "D" ] ; then
 		[ -d $APPLIANCE_LOG_DIR/$2 ] && rm -rf $APPLIANCE_LOG_DIR/$2
-		:>/tmp/$$.nodes
 		$APACHE_INITD_FILE graceful 2>&1
 	fi
 elif [ "$1" ==  "" ] ; then
@@ -277,6 +280,7 @@ elif [ "$1" ==  "" ] ; then
 	delFiles "$APACHE_SITES_ENABLED_DIR/nursery-osa-node-*"
 	removeLogRotateForAllNodes
 	
+	echo getting all nodes definitions
 	curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/>/tmp/$$.nodes
 fi
 
@@ -287,6 +291,7 @@ echo "" >>/tmp/$$.nodes
 grep '"error"' /tmp/$$.nodes>/dev/null
 if [ $? -eq 0 ] ; then
 	echo "An error occursed while downloding node list"; 
+	cat /tmp/$$.nodes
 	shellExit 1
 fi
 
@@ -319,33 +324,38 @@ do
 		echo "localIP=$LOCAL_IP";
 	fi
 	if [ "$line" == "}" -o "$line" == "}," ] ; then
-		if [ "$isHTTPS" == "1" ] ; then
-			curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$nodeName/cert>/etc/ssl/certs/nursery-osa-node-$nodeName.pem
-			curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$nodeName/privateKey>/etc/ssl/private/nursery-osa-node-$nodeName.key
-			curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$nodeName/ca>/etc/ssl/certs/nursery-osa-node-$nodeName-ca.pem
-			curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$nodeName/chain>/etc/ssl/certs/nursery-osa-node-$nodeName-chain.pem
-			if [ -s  /etc/ssl/certs/nursery-osa-node-$nodeName.pem -a -s /etc/ssl/private/nursery-osa-node-$nodeName.key  ] ; then
-				chmod 600 /etc/ssl/certs/nursery-osa-node-$nodeName.pem
-				chmod 600 /etc/ssl/private/nursery-osa-node-$nodeName.key
-			else
-				generateCerts $serverFQDN $nodeName
+		configureApachePorts $1
+		if [ "$1" == "D" ] ; then
+			[ -d $APPLIANCE_LOG_DIR/$nodeName ] && rm -rf $APPLIANCE_LOG_DIR/$nodeName
+			[ -L /etc/ApplianceManager/applianceManagerServices-node-$nodeName.endpoints ] && rm /etc/ApplianceManager/applianceManagerServices-node-$nodeName.endpoints
+		else
+			if [ "$isHTTPS" == "1" ] ; then
+				curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$nodeName/cert>/etc/ssl/certs/nursery-osa-node-$nodeName.pem
+				curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$nodeName/privateKey>/etc/ssl/private/nursery-osa-node-$nodeName.key
+				curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$nodeName/ca>/etc/ssl/certs/nursery-osa-node-$nodeName-ca.pem
+				curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$nodeName/chain>/etc/ssl/certs/nursery-osa-node-$nodeName-chain.pem
+				if [ -s  /etc/ssl/certs/nursery-osa-node-$nodeName.pem -a -s /etc/ssl/private/nursery-osa-node-$nodeName.key  ] ; then
+					chmod 600 /etc/ssl/certs/nursery-osa-node-$nodeName.pem
+					chmod 600 /etc/ssl/private/nursery-osa-node-$nodeName.key
+				else
+					generateCerts $serverFQDN $nodeName
+				fi
+				if [ -s  /etc/ssl/certs/nursery-osa-node-$nodeName-ca.pem ] ; then
+					chmod 600 /etc/ssl/certs/nursery-osa-node-$nodeName-ca.pem
+				fi
+				if [ -s  /etc/ssl/certs/nursery-osa-node-$nodeName-chain.pem ] ; then
+					chmod 600 /etc/ssl/certs/nursery-osa-node-$nodeName-chain.pem
+				fi
 			fi
-			if [ -s  /etc/ssl/certs/nursery-osa-node-$nodeName-ca.pem ] ; then
-				chmod 600 /etc/ssl/certs/nursery-osa-node-$nodeName-ca.pem
-			fi
-			if [ -s  /etc/ssl/certs/nursery-osa-node-$nodeName-chain.pem ] ; then
-				chmod 600 /etc/ssl/certs/nursery-osa-node-$nodeName-chain.pem
-			fi
-		fi
-		[ ! -d $APPLIANCE_LOG_DIR/$nodeName ] && mkdir -p $APPLIANCE_LOG_DIR/$nodeName
-		
-		configureApachePorts
-		curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$nodeName/virtualHost>$APACHE_SITES_DEFINITION_DIR/nursery-osa-node-$nodeName.conf
-		$APACHE_ENABLE_SITE nursery-osa-node-$nodeName.conf
-		echo touch $APPLIANCE_CONFIG_LOC/applianceManagerServices-node-$nodeName.endpoints
-		touch $APPLIANCE_CONFIG_LOC/applianceManagerServices-node-$nodeName.endpoints
-		ln -s $APPLIANCE_CONFIG_LOC/applianceManagerServices-node-$nodeName.endpoints /etc/ApplianceManager/applianceManagerServices-node-$nodeName.endpoints
-		addLogRotateForNode $nodeName
+			[ ! -d $APPLIANCE_LOG_DIR/$nodeName ] && mkdir -p $APPLIANCE_LOG_DIR/$nodeName
+			
+			curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$nodeName/virtualHost>$APACHE_SITES_DEFINITION_DIR/nursery-osa-node-$nodeName.conf
+			$APACHE_ENABLE_SITE nursery-osa-node-$nodeName.conf
+			echo touch $APPLIANCE_CONFIG_LOC/applianceManagerServices-node-$nodeName.endpoints
+			touch $APPLIANCE_CONFIG_LOC/applianceManagerServices-node-$nodeName.endpoints
+			ln -s $APPLIANCE_CONFIG_LOC/applianceManagerServices-node-$nodeName.endpoints /etc/ApplianceManager/applianceManagerServices-node-$nodeName.endpoints
+			addLogRotateForNode $nodeName
+		fi 
 	fi
 	
 done < /tmp/$$.nodes
@@ -353,4 +363,6 @@ done < /tmp/$$.nodes
 
 
 $EXEC_DIR/doAppliance.sh $* -nobackup
-shellExit $?
+RC=$?
+echo exiting doVHAppliance  with RC=$RC
+shellExit $RC

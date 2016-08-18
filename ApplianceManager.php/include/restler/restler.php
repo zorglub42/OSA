@@ -1121,6 +1121,9 @@ class JsonFormat implements iFormat
 
     public function decode($data)
     {
+	if (empty($data)){
+		$data="{}";
+	}
         $decoded = json_decode ($data);
         if (function_exists ('json_last_error')) {
             $message = '';

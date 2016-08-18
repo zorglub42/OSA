@@ -314,11 +314,11 @@ class Nodes{
 			$rc= updateNode($nodeName, $request_data);
 			if (!isset($request_data["apply"]) || $request_data["apply"]=="1"){ 
 				applyApacheNodesConfiguration($nodeName, "U");
-				if (!applyApacheNodesConfiguration($nodeName, "C")){
+				/*if (!applyApacheNodesConfiguration($nodeName, "C")){
 					$node["apply"]=0;
 					$this->update($nodeName, $node);
 					throw new RestException(400, "Invalid apache configuration");
-				}
+				}*/
 			}
 			return $rc->toArray();
 
@@ -332,10 +332,10 @@ class Nodes{
 	 */
 	function delete($nodeName=NULL, $request_data = NULL){
 		try{
-			$rc= deleteNode($nodeName);
 			if (!isset($request_data["apply"]) || $request_data["apply"]=="1"){ 
 				applyApacheNodesConfiguration($nodeName, "D");
 			}
+			$rc= deleteNode($nodeName);
 			return $rc;
 
 		}catch (Exception $e){

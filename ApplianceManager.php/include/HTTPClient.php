@@ -93,10 +93,10 @@ class HttpResponse{
                         $this->statusLabel=substr($streamFirstLine,strpos($streamFirstLine," ")+1);
         
                         $strHeaders=substr($streamContent,strpos($streamContent,"\r\n")+2, strpos($streamContent,"\r\n\r\n") - strpos($streamContent,"\r\n")-2);
-                        $arrHeaders=preg_explode("/\r\n/", $strHeaders);
+                        $arrHeaders=explode("\r\n", $strHeaders);
                         
                         for ($i=0;$i<sizeof($arrHeaders);$i++){
-                                $temp=preg_explode("/:/",$arrHeaders[0]);
+                                $temp=explode(":",$arrHeaders[0]);
                                 $this->headers[$temp[0]]=array("name" => $temp[0], "value" => trim($temp[1]));
                         }
         
