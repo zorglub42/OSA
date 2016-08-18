@@ -38,7 +38,7 @@ class Logout{
 		GLOBAL $BDPwd;
 		
 		
-		$error = new Error();
+		$error = new OSAError();
 		$error->setHttpStatus(200);
 		if (isset($_COOKIE[authTokenCookieName])){
 			try {

@@ -42,7 +42,7 @@ function getUser($userName = NULL, $request_data = NULL){
 	GLOBAL $BDName;
 	GLOBAL $BDUser;
 	GLOBAL $BDPwd;
-	$error = new Error();
+	$error = new OSAError();
 			
 
 	$userName=normalizeName($userName);
@@ -140,7 +140,7 @@ function addUser($userName = NULL, $request_data = NULL){
 
 	$userName=normalizeName($userName);
 	
-	$error = new Error();
+	$error = new OSAError();
 			
 		
 
@@ -201,7 +201,7 @@ function addUser($userName = NULL, $request_data = NULL){
 		$error->setFunctionalCode(1);
 		$error->setFunctionalLabel($error->getFunctionalLabel() . "endDate is required\n");
 	}else{
-		if ( ereg( "([0-9]{4})-([0-9]{2})-([0-9]{2})", $request_data["endDate"], $regs ) ) {
+		if ( preg_match( "/([0-9]{4})-([0-9]{2})-([0-9]{2})/", $request_data["endDate"], $regs ) ) {
 		  $mySQLEndDate = "$regs[1]-$regs[2]-$regs[3] 00:00:00";
 		} else {
 			$error->setHttpStatus(400);
@@ -251,7 +251,7 @@ function deleteUser($userName = NULL){
 	GLOBAL $BDPwd;
 
 	$userName=normalizeName($userName);
-	$error= new Error() ;
+	$error= new OSAError() ;
 	if (isset($userName) && isset($userName) != ""){
 		if ($userName == ADMIN_USER){
 			$error->setHttpStatus(403);
@@ -292,7 +292,7 @@ function updateUserPassword($userName, $newPassword){
 	GLOBAL $BDName;
 	GLOBAL $BDUser;
 	GLOBAL $BDPwd;
-	$error = new Error();
+	$error = new OSAError();
 
 
 	$userName=normalizeName($userName);
@@ -329,7 +329,7 @@ function updateUser($userName = NULL, $request_data = NULL){
 	GLOBAL $BDName;
 	GLOBAL $BDUser;
 	GLOBAL $BDPwd;
-	$error = new Error();
+	$error = new OSAError();
 
 
 	$userName=normalizeName($userName);
@@ -378,7 +378,7 @@ function updateUser($userName = NULL, $request_data = NULL){
 			$error->setFunctionalCode(1);
 			$error->setFunctionalLabel($error->getFunctionalLabel() . "endDate is required\n");
 		}else{
-			if ( ereg( "([0-9]{4})-([0-9]{2})-([0-9]{2})", $request_data["endDate"], $regs ) ) {
+			if ( preg_match( "/([0-9]{4})-([0-9]{2})-([0-9]{2})/", $request_data["endDate"], $regs ) ) {
 			  $mySQLEndDate = "$regs[1]-$regs[2]-$regs[3] 00:00:00";
 			  array_push($bindPrms, $mySQLEndDate);
 			  $strUPD=$strUPD . "endDate=?, ";
@@ -454,7 +454,7 @@ function getUserGroup($userName, $groupName= NULL, $request_data){
 	$groupName=normalizeName($groupName);
 
 
-	$error = new Error();
+	$error = new OSAError();
 	
 	try{
 		$db = openDB($BDName, $BDUser, $BDPwd);
@@ -509,7 +509,7 @@ function getAvailableGroup($userName, $request_data){
 
 	$userName=normalizeName($userName);
 
-	$error = new Error();
+	$error = new OSAError();
 	
 	
 	try {
@@ -546,7 +546,7 @@ function addUserToGroup($userName, $groupName){
 	$userName=normalizeName($userName);
 	$groupName=normalizeName($groupName);
 
-	$error = new Error();
+	$error = new OSAError();
 	$error->setHttpStatus(200);
 	$error->setHttpLabel("Bad request for method \"" . $_SERVER["REQUEST_METHOD"] . "\" for resource \"group\"");
 
@@ -604,7 +604,7 @@ function removeUserFromGroup($userName, $groupName){
 	$userName=normalizeName($userName);
 	$groupName=normalizeName($groupName);
 
-	$error = new Error();
+	$error = new OSAError();
 
 	if ($groupName != NULL && $groupName != ""){
 		if ($groupName == ADMIN_GROUP && $userName == ADMIN_USER){
@@ -666,7 +666,7 @@ function getUserQuota($userName, $serviceName=NULL, $request_data=NULL){
 		$error->setFunctionalLabel($error->getFunctionalLabel() . "userName is required\n");
 		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
 	}
-	$error=new Error();
+	$error=new OSAError();
 	$error->setHttpStatus(404);
 	try{
 		$db=openDB($BDName, $BDUser, $BDPwd);
@@ -731,7 +731,7 @@ function addUserQuota($userName, $serviceName, $request_data=NULL){
 	
 
 
-	$error = new Error();
+	$error = new OSAError();
 	$error->setHttpStatus(200);
 	$error->setHttpLabel("Bad request for method \"" . $_SERVER["REQUEST_METHOD"] . "\" for resource \"quota\"");
 
@@ -824,7 +824,7 @@ function getUnsetQuota($userName){
 	$userName=normalizeName($userName);
 
 
-	$error = new Error();
+	$error = new OSAError();
 	$error->setHttpStatus(200);
 
 	try{
@@ -859,7 +859,7 @@ function updateUserQuotas($userName, $serviceName, $request_data){
 	$userName=normalizeName($userName);
 	$serviceName=normalizeName($serviceName);
 
-	$error = new Error();
+	$error = new OSAError();
 	$error->setHttpStatus(200);
 	$error->setHttpLabel("Bad request for method \"" . $_SERVER["REQUEST_METHOD"] . "\" for resource \"quota\"");
 
@@ -943,7 +943,7 @@ function deleteUserQuotas($userName, $serviceName, $request_data){
 	$userName=normalizeName($userName);
 	$serviceName=normalizeName($serviceName);
 
-	$error = new Error();
+	$error = new OSAError();
 	$error->setHttpStatus(200);
 	$error->setHttpLabel("Bad request for method \"" . $_SERVER["REQUEST_METHOD"] . "\" for resource \"quota\"");
 

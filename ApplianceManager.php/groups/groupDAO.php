@@ -44,7 +44,7 @@ function getGroup($groupName = NULL, $request_data = NULL){
 	$groupName=normalizeName($groupName);
 
 
-	$error = new Error();
+	$error = new OSAError();
 	$error->setHttpStatus(200);
 	
 	try {
@@ -120,7 +120,7 @@ function getGroupMembers($groupName, $request_data = NULL){
 	
 	
 	
-	$error = new Error();
+	$error = new OSAError();
 	$error->setHttpStatus(200);
 	
 	try{
@@ -194,7 +194,7 @@ function addGroup($groupName = NULL, $description = NULL){
 
 
 
-	$error = new Error();
+	$error = new OSAError();
 	$error->setHttpStatus(200);
 	$error->setHttpLabel("Bad request for method \"" . $_SERVER["REQUEST_METHOD"] . "\" for resource \"group\"");
 
@@ -249,7 +249,7 @@ GLOBAL $BDPwd;
 $groupName=normalizeName($groupName);
 
 
-$error = new Error();
+$error = new OSAError();
 $error->setHttpStatus(200);
 
 
@@ -309,7 +309,7 @@ GLOBAL $BDPwd;
 	$groupName=normalizeName($groupName);
 
 
-	$error = new Error();
+	$error = new OSAError();
 	$error->setHttpStatus(200);
 
 	if ($groupName == NULL || $groupName=="" ){

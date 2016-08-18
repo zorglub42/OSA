@@ -37,7 +37,7 @@ function getCounter($counterName= NULL, $request_data=NULL){
 	GLOBAL $BDName;
 	GLOBAL $BDUser;
 	GLOBAL $BDPwd;
-	$error = new Error();
+	$error = new OSAError();
 
 
 	$rPart="R=";
@@ -141,7 +141,7 @@ function deleteCounter($counterName){
 	GLOBAL $BDPwd;
 
 
-	$error = new Error();
+	$error = new OSAError();
 	$error->setHttpStatus(200);
 
 	if ($counterName != NULL && $counterName != ""){
@@ -201,7 +201,7 @@ function updateCounter($counterName, $request_data){
 	GLOBAL $BDName;
 	GLOBAL $BDUser;
 	GLOBAL $BDPwd;
-	$error = new Error();
+	$error = new OSAError();
 	$error->setHttpStatus(200);
 	
 	if (!isset($request_data["value"]) || $request_data["value"]==""){
@@ -246,7 +246,7 @@ function getExceededCounter($request_data){
 	GLOBAL $BDName;
 	GLOBAL $BDUser;
 	GLOBAL $BDPwd;
-	$error = new Error();
+	$error = new OSAError();
 
 
 	$error->setHttpStatus(200);

@@ -1,9 +1,9 @@
 <?php
 
 function openDB($BDName, $BDUser, $BDPwd){
-	$T=split("@", $BDName);
+	$T=explode("@", $BDName);
 	$DB=$T[0];
-	$T=split(":",$T[1]);
+	$T=explode(":",$T[1]);
 	$HOST=$T[0];
 	$PORT=$T[1];
 	
@@ -15,7 +15,7 @@ function openDB($BDName, $BDUser, $BDPwd){
 
 function EscapeOrder($str){
 
-		$strOUT=ereg_replace(";","", ereg_replace("'","''",$str));
+		$strOUT=preg_replace("/;/","", preg_replace("/'/","''",$str));
 		return $strOUT;
 }
 

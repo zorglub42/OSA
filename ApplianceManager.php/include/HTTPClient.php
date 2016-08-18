@@ -93,14 +93,13 @@ class HttpResponse{
                         $this->statusLabel=substr($streamFirstLine,strpos($streamFirstLine," ")+1);
         
                         $strHeaders=substr($streamContent,strpos($streamContent,"\r\n")+2, strpos($streamContent,"\r\n\r\n") - strpos($streamContent,"\r\n")-2);
-                        $arrHeaders=preg_split("/\r\n/", $strHeaders);
+                        $arrHeaders=preg_explode("/\r\n/", $strHeaders);
                         
                         for ($i=0;$i<sizeof($arrHeaders);$i++){
-                                $temp=preg_split("/:/",$arrHeaders[0]);
+                                $temp=preg_explode("/:/",$arrHeaders[0]);
                                 $this->headers[$temp[0]]=array("name" => $temp[0], "value" => trim($temp[1]));
                         }
         
-                        /*$this->body=ereg_replace("encoding=[^>]*>","encoding=\"ISO-8859-1\"?>",substr($streamContent,strpos($streamContent,"\r\n\r\n") +4));*/
                         $this->body=substr($streamContent,strpos($streamContent,"\r\n\r\n") +4);
                 }                       
         }

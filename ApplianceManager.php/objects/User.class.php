@@ -112,9 +112,9 @@ class User extends ApplianceObject{
 			$this->setLastname($rqt["lastName"]);
 			$this->setEntity($rqt["entity"]);
 			$this->setExtra($rqt["extra"]);
-			$dt=split(" ",$rqt["endDate"]);
-			$d=split("-",$dt[0]);
-			$t=split(":",$dt[1]);
+			$dt=explode(" ",$rqt["endDate"]);
+			$d=explode("-",$dt[0]);
+			$t=explode(":",$dt[1]);
 			$date = str_replace(" ","T", $rqt["endDate"]) . ".0" . @date('P', @mktime($t[0],$t[1],$t[2],$d[1],$d[2],$d[0])) ;
 			$this->setEndDate($date);
 			$this->setUri( "users/" . urlencode($rqt["userName"]));

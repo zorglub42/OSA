@@ -120,6 +120,7 @@ DO_BACKUP=1
 for p in $* ; do
 	if [ $p == "-nobackup" ] ; then
 		DO_BACKUP=0
+		shift
 	fi
 done
 
@@ -136,6 +137,7 @@ if [ "$1" == "D" -o "$1" == "U"  -o "$1" == "C" ] ; then
 	fi
 elif [ "$1" ==  "" ] ; then
 	curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/>/tmp/$$.nodes
+	
 fi
 echo "" >>/tmp/$$.nodes
 
@@ -146,10 +148,12 @@ if [ $? -eq 0 ] ; then
 	echo "An error occursed while downloding node list"; 
 	shellExit 1
 fi
-
 apacheReload=0;
+
+
 while read line  
 do   
+	echo $line
 	echo $line | grep "nodeName">/dev/null
 	if [ $? -eq 0 ] ; then
 		nodeName=`echo $line | awk -F\" '{print $4}'`
@@ -162,22 +166,22 @@ do
 	fi
 	echo $line | grep "isCookieAuthEnabled">/dev/null
 	if [ $? -eq 0 ] ; then
-		isCookieAuthEnabled=`echo $line | awk -F\" '{print $4}'`
+		isCookieAuthEnabled=`echo $line | sed 's/[^0-9]*\([0-9]*\).*/\1/'` 
 		echo "isCookieAuthEnabled=$isCookieAuthEnabled";
 	fi
 	echo $line | grep "isBasicAuthEnabled">/dev/null
 	if [ $? -eq 0 ] ; then
-		isBasicAuthEnabled=`echo $line | awk -F\" '{print $4}'`
+		isBasicAuthEnabled=`echo $line | sed 's/[^0-9]*\([0-9]*\).*/\1/'` 
 		echo "isBasicAuthEnabled=$isBasicAuthEnabled";
 	fi
 	echo $line | grep "isHTTPS">/dev/null
 	if [ $? -eq 0 ] ; then
-		isHTTPS=`echo $line | awk -F\" '{print $4}'`
+		isHTTPS=`echo $line | sed 's/[^0-9]*\([0-9]*\).*/\1/'` 
 		echo "isHTTPS=$isHTTPS";
 	fi
 	echo $line | grep "port">/dev/null
 	if [ $? -eq 0 ] ; then
-		port=`echo $line | awk -F\" '{print $4}'`
+		port=`echo $line | sed 's/[^0-9]*\([0-9]*\).*/\1/'` 
 		echo "port=$port";
 	fi
 
@@ -209,7 +213,7 @@ done < /tmp/$$.nodes
 
 
 
-
+cat  /etc/apache2/conf-enabled/nursery-osa-0-ports.conf
 apachectl configtest 2>&1
 if [ $? -ne 0 ] ; then
 	`dirname $0`/backupConf.sh -restaure >/dev/null 2>&1

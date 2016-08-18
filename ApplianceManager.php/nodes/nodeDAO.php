@@ -37,7 +37,7 @@ function getServices($nodeName){
 	GLOBAL $BDName;
 	GLOBAL $BDUser;
 	GLOBAL $BDPwd;
-	$error = new Error();
+	$error = new OSAError();
 	$error->setHttpStatus(200);
 	
 	$nodeName=normalizeName($nodeName);
@@ -69,7 +69,7 @@ function getDAONode($nodeName = NULL, $request_data = NULL){
 	GLOBAL $BDName;
 	GLOBAL $BDUser;
 	GLOBAL $BDPwd;
-	$error = new Error();
+	$error = new OSAError();
 	$error->setHttpStatus(200);
 	
 	$nodeName=normalizeName($nodeName);
@@ -148,7 +148,7 @@ function addNode($nodeName = NULL, $request_data = NULL){
 	GLOBAL $BDName;
 	GLOBAL $BDUser;
 	GLOBAL $BDPwd;
-	$error = new Error();
+	$error = new OSAError();
 			
 	$nodeName=normalizeName($nodeName);		
 
@@ -278,7 +278,7 @@ function deleteNode($nodeName = NULL){
 	GLOBAL $BDName;
 	GLOBAL $BDUser;
 	GLOBAL $BDPwd;
-	$error = new Error();
+	$error = new OSAError();
 	
 	if (isset($nodeName) && isset($nodeName) != ""){
 		$nodeName=normalizeName($nodeName);
@@ -320,7 +320,7 @@ function updateNode($nodeName = NULL, $request_data = NULL){
 	$nodeName=normalizeName($nodeName);
 
 
-	$error = new Error();
+	$error = new OSAError();
 	$error->setHttpStatus(200);
 
 	if ($nodeName == NULL || $nodeName=="" ){
@@ -442,7 +442,7 @@ function updateCert($nodeName, $cert){
 
 	$nodeName=normalizeName($nodeName);
 
-	$error = new Error();
+	$error = new OSAError();
 	$error->setHttpStatus(200);
 
 	if ($nodeName == NULL || $nodeName=="" ){
@@ -487,7 +487,7 @@ function updateCaCert($nodeName, $ca){
 
 	$nodeName=normalizeName($nodeName);
 
-	$error = new Error();
+	$error = new OSAError();
 	$error->setHttpStatus(200);
 
 	if ($nodeName == NULL || $nodeName=="" ){
@@ -536,7 +536,7 @@ function updateCaChain($nodeName, $caChain){
 
 	$nodeName=normalizeName($nodeName);
 
-	$error = new Error();
+	$error = new OSAError();
 	$error->setHttpStatus(200);
 
 	if ($nodeName == NULL || $nodeName=="" ){
@@ -587,7 +587,7 @@ function updatePrivateKey($nodeName, $key){
 
 	$nodeName=normalizeName($nodeName);
 
-	$error = new Error();
+	$error = new OSAError();
 	$error->setHttpStatus(200);
 
 	if ($nodeName == NULL || $nodeName=="" ){

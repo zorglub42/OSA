@@ -104,9 +104,9 @@ class Log extends ApplianceObject{
 			$this->setUserName($rqt["userName"]);
 			
 			if ($rqt["timestamp"] != ""){
-				$dt=split(" ",$rqt["timestamp"]);
-				$d=split("-",$dt[0]);
-				$t=split(":",$dt[1]);
+				$dt=explode(" ",$rqt["timestamp"]);
+				$d=explode("-",$dt[0]);
+				$t=explode(":",$dt[1]);
 				$date = str_replace(" ","T", $rqt["timestamp"]) . ".0" . @date('P', @mktime($t[0],$t[1],$t[2],$d[1],$d[2],$d[0])) ;
 				$this->setTimeStamp($date);
 			}

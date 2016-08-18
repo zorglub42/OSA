@@ -373,6 +373,7 @@ function configureMySQLSettings(){
 			cat $MYSQL_CONF_FILE|grep -v innodb_lock_wait_timeout   > /tmp/$$.my.cnf
 			
 			
+			
 			SECTION_START=`cat   /tmp/$$.my.cnf| grep -n '\[mysqld\]'| awk -F: '{print $1}'`
 			FILE_LEN=`cat /tmp/$$.my.cnf| wc -l`
 			END_SIZE=`expr $FILE_LEN - $SECTION_START`
@@ -1062,6 +1063,9 @@ if [ -f /etc/redhat-release ] ; then
 elif [ -f /etc/debian_version ] ; then
 	echo "Debian system"
 	MYSQL_CONF_FILE=/etc/mysql/my.cnf
+	if [ -f /etc/mysql/mysql.conf.d/mysqld.cnf ] ; then
+		MYSQL_CONF_FILE=/etc/mysql/mysql.conf.d/mysqld.cnf
+	fi
 	MYSQL_INITD_FILE=/etc/init.d/mysql
 
 	APACHE_INITD_FILE=/etc/init.d/apache2
@@ -1196,7 +1200,6 @@ else
 fi
 
 configureCryptoKey
-
 
 mkdir -p /var/www/local/main
 mkdir -p $LOG_DIR

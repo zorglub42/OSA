@@ -23,7 +23,7 @@
  * 1.0.0 - 2012-10-01 : Release of the file
 */
 
-class Error{
+class OSAError{
 	private $httpStatus;
 	private $httpLabel;
 	private $functionalCode;

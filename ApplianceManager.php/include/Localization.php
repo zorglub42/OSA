@@ -12,17 +12,17 @@ class Localization{
 			//Initialize the requested languages array
 			$hdrs=getallheaders();
 			if (isset($hdrs["ACCEPT_LANGUAGE"])){
-				$lng=split(",",$hdrs["ACCEPT_LANGUAGE"]);
+				$lng=explode(",",$hdrs["ACCEPT_LANGUAGE"]);
 				foreach ($lng as $l){
-					$tmp=split(";", $l);
-					$tmp=split("-",$tmp[0]);
+					$tmp=explode(";", $l);
+					$tmp=explode("-",$tmp[0]);
 					self::$languages[$tmp[0]]= $tmp[0];
 				}
 			}elseif (isset($hdrs["Accept-Language"])){
-				$lng=split(",",$hdrs["Accept-Language"]);
+				$lng=explode(",",$hdrs["Accept-Language"]);
 				foreach ($lng as $l){
-					$tmp=split(";", $l);
-					$tmp=split("-",$tmp[0]);
+					$tmp=explode(";", $l);
+					$tmp=explode("-",$tmp[0]);
 					self::$languages[$tmp[0]]= $tmp[0];
 				}
 			}else{

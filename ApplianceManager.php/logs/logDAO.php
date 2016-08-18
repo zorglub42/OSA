@@ -40,7 +40,7 @@ function getLogs($id = NULL, $request_data = NULL){
 	GLOBAL $BDUser;
 	GLOBAL $BDPwd;
 
-	$error = new Error();
+	$error = new OSAError();
 
 
 	$servicePart="";

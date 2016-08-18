@@ -108,7 +108,7 @@ function decrypt($str){
 
 /* Return simple formt (html, xmsl, json or plain) depending on value of "Accept" HTTP header*/ 
 function RenderingFormat(){
-	$accept=split(",", $_SERVER["HTTP_ACCEPT"]);
+	$accept=explode(",", $_SERVER["HTTP_ACCEPT"]);
 	
 	$rc="plain";
 	for ($i=0;$i<count($accept);$i++){

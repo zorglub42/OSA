@@ -305,12 +305,12 @@ do
 	fi
 	echo $line | grep "isHTTPS">/dev/null
 	if [ $? -eq 0 ] ; then
-		isHTTPS=`echo $line | awk -F\" '{print $4}'`
+		isHTTPS=`echo $line | sed 's/[^0-9]*\([0-9]*\).*/\1/'`
 		echo "isHTTPS=$isHTTPS";
 	fi
 	echo $line  | grep "port">/dev/null
 	if [ $? -eq 0 ] ; then
-		PORT=`echo $line | awk -F\" '{print $4}'`
+		PORT=`echo $line | sed 's/[^0-9]*\([0-9]*\).*/\1/'`
 		echo "port=$PORT";
 	fi
 	echo $line  | grep "localIP">/dev/null

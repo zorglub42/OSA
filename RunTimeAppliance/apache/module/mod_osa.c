@@ -484,7 +484,6 @@ stringKeyValList headersMappingList;
 #define SALT_REQUIRED	      2
 
 /* forward function declarations */
-static short pw_scrambled(POOL * pool, const char * real_pw, const char * sent_pw, const char * salt);
 static short pw_md5(POOL * pool, const char * real_pw, const char * sent_pw, const char * salt);
 static short pw_crypted(POOL * pool, const char * real_pw, const char * sent_pw, const char * salt);
 #if _AES
@@ -516,7 +515,6 @@ typedef struct {	      /* Encryption methods */
 /* Encryption methods used.  The first entry is the default entry */
 static encryption encryptions[] = {{"crypt", SALT_OPTIONAL, pw_crypted},
 					   {"none", NO_SALT, pw_plain},
-					   {"scrambled", NO_SALT, pw_scrambled},
 					   {"md5", NO_SALT, pw_md5},
 #if _AES
 					   {"aes", SALT_REQUIRED, pw_aes},
@@ -1576,17 +1574,6 @@ static char hex2chr(char * in) {
 }
 
 
-/* Checks scrambled passwords */
-static short pw_scrambled(POOL * pool, const char * real_pw, const char * sent_pw, const char * salt) {
-  char * encrypted_sent_pw = PCALLOC(pool, SCRAMBLED_PASSWORD_CHAR_LENGTH+1);
-#ifdef SCRAMBLED_PASSWORD_CHAR_LENGTH_323   /* If we may need to use old password */
-  if (real_pw[0] != '*')
-    make_scrambled_password_323(encrypted_sent_pw, sent_pw);
-  else
-#endif
-    make_scrambled_password(encrypted_sent_pw, sent_pw);
-  return strcmp(real_pw, encrypted_sent_pw) == 0;
-}
 
 /* checks md5 hashed passwords */
 static short pw_md5(POOL * pool, const char * real_pw, const char * sent_pw, const char * salt) {

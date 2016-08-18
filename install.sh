@@ -56,7 +56,7 @@ if [ $COMPILE_MODULE -eq 1 ] ; then
 	cd $INSTALL_DIR/RunTimeAppliance/apache/module
 	aclocal
 	autoconf
-	automake
+	automake --add-missing
 	./configure
 	make
 	make install
