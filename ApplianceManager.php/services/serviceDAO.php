@@ -42,7 +42,7 @@ function getService($serviceName = NULL, $request_data=NULL){
 
 	$serviceName=normalizeName($serviceName);
 
-	$error = new Error();
+	$error = new OSAError();
 	$error->setHttpStatus(200);
 
 	try{
@@ -153,7 +153,7 @@ function createService($serviceName = NULL, $request_data=NULL){
 
 	$serviceName=normalizeName($serviceName);
 
-	$error = new Error();
+	$error = new OSAError();
 	$error->setHttpStatus(200);
 	$error->setHttpLabel("Bad request for method \"" . $_SERVER["REQUEST_METHOD"] . "\" for resource \"service\"");
 
@@ -335,7 +335,7 @@ function createService($serviceName = NULL, $request_data=NULL){
 		$error->setHttpStatus(400);
 		$error->setFunctionalCode(1);
 		$error->setFunctionalLabel($error->getFunctionalLabel() . "backEndEndPoint is required\n");
-	}elseif (ereg("^(http|https|ws)://[\w\d:#@%/;$()~_?\+-=\\\.&]*", $request_data["backEndEndPoint"])){
+	}elseif (preg_match("}^(http|https|ws|wss)://[\w\d:#@%/;$()~_?\+-=\\\.&]*}", $request_data["backEndEndPoint"])){
 		$mySQLBackEndEndPoint=cut($request_data["backEndEndPoint"], BACKENDENDPOINT_LENGTH);
 	}else{
 		$error->setHttpStatus(400);
@@ -477,7 +477,7 @@ function deleteService($serviceName = NULL){
 	GLOBAL $BDName;
 	GLOBAL $BDUser;
 	GLOBAL $BDPwd;
-	$error = new Error();
+	$error = new OSAError();
 
 	$serviceName=normalizeName($serviceName);
 
@@ -554,7 +554,7 @@ function updateService($serviceName = NULL, $request_data=NULL){
 
 	$serviceName=normalizeName($serviceName);
 
-	$error = new Error();
+	$error = new OSAError();
 	$error->setHttpStatus(200);
 	$error->setHttpLabel("Bad request for method \"" . $_SERVER["REQUEST_METHOD"] . "\" for resource \"service\"");
 
@@ -726,7 +726,7 @@ function updateService($serviceName = NULL, $request_data=NULL){
 		$service["frontEndEndPoint"]=$request_data["frontEndEndPoint"];
 	}
 	if (isset($request_data["backEndEndPoint"]) && $request_data["backEndEndPoint"]!="" ){
-		if (ereg("^(http|https|ws)://[\w\d:#@%/;$()~_?\+-=\\\.&]*", $request_data["backEndEndPoint"])){
+		if (preg_match("}^(http|https|ws)://[\w\d:#@%/;$()~_?\+-=\\\.&]*}", $request_data["backEndEndPoint"])){
 			$service["backEndEndPoint"]=$request_data["backEndEndPoint"];
 		}else{
 			$error->setHttpStatus(400);
@@ -735,7 +735,7 @@ function updateService($serviceName = NULL, $request_data=NULL){
 		}
 	}
 	if (isset($request_data["backEndEndPoint"]) && $request_data["backEndEndPoint"]!="" ){
-		if (ereg("^(http|https|ws)://[\w\d:#@%/;$()~_?\+-=\\\.&]*", $request_data["backEndEndPoint"])){
+		if (preg_match("}^(http|https|ws)://[\w\d:#@%/;$()~_?\+-=\\\.&]*}", $request_data["backEndEndPoint"])){
 			$service["backEndEndPoint"]=$request_data["backEndEndPoint"];
 		}else{
 			$error->setHttpStatus(400);
@@ -857,7 +857,7 @@ function getUserQuotas($serviceName = NULL, $userName=NULL, $request_data=NULL){
 	$serviceName=normalizeName($serviceName);
 	$userName=normalizeName($userName);
 
-	$error = new Error();
+	$error = new OSAError();
 
 	if ($serviceName == NULL || $serviceName==""){
 		$error->setHttpStatus(400);
@@ -914,7 +914,7 @@ function getUnsetQuotas($serviceName = NULL,  $request_data=NULL){
 
 	$serviceName=normalizeName($serviceName);
 
-	$error = new Error();
+	$error = new OSAError();
 
 
 	$db=openDB($BDName, $BDUser, $BDPwd);
@@ -948,7 +948,7 @@ function nodesListForService($serviceName, $request_data=NULL){
 	GLOBAL $BDPwd;
 
 	$serviceName=normalizeName($serviceName);
-	$error = new Error();
+	$error = new OSAError();
 
 
 	$db=openDB($BDName, $BDUser, $BDPwd);
@@ -986,7 +986,7 @@ function setNodesListForService($serviceName, $request_data=NULL){
 	
 
 	$serviceName=normalizeName($serviceName);
-	$error = new Error();
+	$error = new OSAError();
 
 	if (count($request_data) <=0){
 		throw new RestException(400,"At least one node to publish on is required");
