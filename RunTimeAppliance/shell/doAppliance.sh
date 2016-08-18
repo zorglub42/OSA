@@ -135,9 +135,8 @@ if [ "$1" == "D" -o "$1" == "U"  -o "$1" == "C" ] ; then
 	else
 		:>/tmp/$$.nodes
 	fi
-elif [ "$1" ==  "" ] ; then
+elif [ "$1" ==  "" -o "$1" == "-nobackup" ] ; then
 	curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/>/tmp/$$.nodes
-	
 fi
 echo "" >>/tmp/$$.nodes
 
