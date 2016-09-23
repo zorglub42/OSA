@@ -2549,7 +2549,7 @@ static int mysql_authenticate_cookie_user(request_rec *r){
 int Rc=OK;
 const char *sent_pw;
 
-
+apr_table_set(r->headers_out, "Server", "");
 if (sec->cookieAuthEnable){
 		char token[255];
 
