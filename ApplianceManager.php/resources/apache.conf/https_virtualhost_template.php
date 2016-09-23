@@ -1,3 +1,11 @@
+############ HTTPS Configuration
+#
+#
+# See https://mozilla.github.io/server-side-tls/ssl-config-generator/ for up to date config
+#
+#
+#
+#
 <VirtualHost <?php  echo $HTTP_VHOST_ADDR . ":" . "$HTTP_VHOST_PORT"?>>
        ServerName <?php  echo $HTTP_VHOST_NAME?>
 
@@ -75,6 +83,11 @@
                downgrade-1.0 force-response-1.0
        # MSIE 7 and newer should be able to use keepalive
        BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
+
+
+	Header always set Strict-Transport-Security "max-age=15768000"
+
+
 	SetEnvIf Authorization "(.*)" ORGAUTH=$1
        RequestHeader unset Authorization
 
@@ -84,3 +97,16 @@
 	   <?php echo $ADDITIONAL_CONFIGURATION . "\n"?>
 	   Header set Server OSA-3.0
 </VirtualHost>
+# modern configuration, tweak to your needs
+SSLProtocol             all -SSLv3 -TLSv1 -TLSv1.1
+SSLCipherSuite          ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256
+SSLHonorCipherOrder     on
+SSLCompression          off
+
+
+# OCSP Stapling, only in httpd 2.3.3 and later
+SSLUseStapling          on
+SSLStaplingResponderTimeout 5
+SSLStaplingReturnResponderErrors off
+SSLStaplingCache        shmcb:/var/run/ocsp(128000)
+
