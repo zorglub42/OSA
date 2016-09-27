@@ -19,6 +19,7 @@
 
        SSLProxyEngine on
        SSLProxyVerify none
+       Options -Indexes
 
 
        RewriteEngine on

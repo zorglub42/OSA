@@ -25,6 +25,8 @@
        RewriteEngine on
 #       RewriteLog <?php echo runtimeApplianceConfigScriptLogDir . "/" . $NODE_NAME?>/rewrite.log
 #       RewriteLogLevel 0
+       Options -Indexes
+
 
 
 
