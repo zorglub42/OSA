@@ -8,7 +8,7 @@
                AllowOverride All
        </Directory>
        <Directory /var/www/local/main>
-               Options Indexes FollowSymLinks MultiViews
+               Options -Indexes +FollowSymLinks +MultiViews
                AllowOverride All
                Order allow,deny
                allow from all
@@ -30,7 +30,7 @@
        RewriteEngine on
 #       RewriteLog LOG_DIR/local/rewrite.log
 #       RewriteLogLevel 0
-       Options -Indexes
+       
 
 	   Include INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/applianceManagerRewriting.conf
  </VirtualHost>

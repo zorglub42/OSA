@@ -1,3 +1,7 @@
+ServerTokens Prod
+ServerSignature Off
+
+
 <VirtualHost <?php echo $HTTP_VHOST_ADDR . ":" . $HTTP_VHOST_PORT?>>
        ServerName <?php echo "$HTTP_VHOST_NAME\n"?>
 
@@ -5,7 +9,8 @@
 
 
        SetEnv publicServerProtocol http://
-       SetEnv publicServerName <?php echo "$HTTP_VHOST_NAME\n"?>
+       #SetEnv publicServerName <?php echo "$HTTP_VHOST_NAME\n"?>
+       SetEnvIf Host "(.*)" publicServerName=$1
        SetEnv publicServerPort <?php  echo "$HTTP_VHOST_PORT\n"?>
        SetEnv publicServerTopDomain <?php  echo "$HTTP_VHOST_TOP_DOMAIN\n"?>
        SetEnv publicServerPrefix http://<?php echo $HTTP_VHOST_NAME . ":" . $HTTP_VHOST_PORT . "\n"?>

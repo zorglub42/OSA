@@ -156,6 +156,7 @@ function toggleAuthority(){
 			
 function editNode(node){
 	$.get("resources/templates/nodeEdit.php", function (data){
+		servicesLoaded=false
 		cbIsBasicAuthEnabled="checked";
 		cbIsCookieAuthEnabled="checked";
 		cbIsHTTPS="checked";

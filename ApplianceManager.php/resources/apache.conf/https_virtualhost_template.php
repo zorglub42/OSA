@@ -6,13 +6,15 @@
 #
 #
 #
+
 <VirtualHost <?php  echo $HTTP_VHOST_ADDR . ":" . "$HTTP_VHOST_PORT"?>>
        ServerName <?php  echo $HTTP_VHOST_NAME?>
 
 
 
        SetEnv publicServerProtocol https://
-       SetEnv publicServerName <?php echo "$HTTP_VHOST_NAME\n"?>
+       #SetEnv publicServerName <?php echo "$HTTP_VHOST_NAME\n"?>
+       SetEnvIf Host "(.*)" publicServerName=$1
        SetEnv publicServerPort <?php echo "$HTTP_VHOST_PORT\n"?>
        SetEnv publicServerTopDomain <?php  echo "$HTTP_VHOST_TOP_DOMAIN\n"?>
        SetEnv publicServerPrefix https://<?php echo $HTTP_VHOST_NAME . ":" . "$HTTP_VHOST_PORT\n"?>
@@ -99,6 +101,12 @@
 	   <?php echo $ADDITIONAL_CONFIGURATION . "\n"?>
 	   Header set Server OSA-3.0
 </VirtualHost>
+ServerTokens Prod
+ServerSignature Off
+
+
+
+
 # modern configuration, tweak to your needs
 SSLProtocol             all -SSLv3 -TLSv1 -TLSv1.1
 SSLCipherSuite          ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256
