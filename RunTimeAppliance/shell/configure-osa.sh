@@ -430,7 +430,7 @@ function configurePathAndSettings(){
 		| sed 's|.*"runtimeApplianceVirtualHostsConfigScript".*|	define("runtimeApplianceVirtualHostsConfigScript", "'$INSTALL_DIR'/RunTimeAppliance/shell/doVHAppliance.sh");|' \
 		| sed 's|.*"runtimeApplianceVirtualHostsConfigScriptLogFile".*|	define("runtimeApplianceVirtualHostsConfigScriptLogFile", "'$LOG_DIR'/doVHAppliance.log");|' \
 		| sed 's|.*"runtimeApplianceConfigScriptLogDir".*|	define("runtimeApplianceConfigScriptLogDir", "'$LOG_DIR'");|' \
-		| sed 's|.*"osaAdminUri".*|	define("osaAdminUri", "https://'$HTTPS_ADMIN_VHOST_NAME':'$HTTPS_ADMIN_VHOST_PORT'/");|' \
+		| sed 's|.*"osaAdminUri".*|	define("osaAdminUri", "https://localhost:'$HTTPS_ADMIN_VHOST_PORT'/");|' \
 		 > /tmp/$$.Settings.ini.php
 	
 	:>$INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php
