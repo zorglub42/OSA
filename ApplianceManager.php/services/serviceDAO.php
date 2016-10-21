@@ -1015,7 +1015,7 @@ function setNodesListForService($serviceName, $request_data=NULL){
 	}
 	if (isset($request_data["noApply"])){
 		return nodesListForService($serviceName);
-	}else if (applyApacheConfiguration()){
+	}else if (applyApacheNodesConfiguration()){
 		return nodesListForService($serviceName);
 	}else{
 		$error->setHttpStatus(500);
