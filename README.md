@@ -93,8 +93,22 @@ It's probably because my sql server didn't restart properly after install. In su
 
 		service mysql restart
 
+## Docker
+Instead off installaling on a box, you can also run OSA as a docker container.
+### Build an OSA Image
 
-##Update
+	wget https://github.com/zorglub42/OSA/blob/master/osa.dockerfile.sh; bash ./osa.dockerfile.sh admin-passwd domain
+Where parameters are:
+- admin-password: OSA admin passwed to set
+- domain (optional): your FQDN (Ex: zorglub42.fr)
+
+### Run OSA container
+Due to the fact that OSA can create Listening port (nodes), it's better to bnd OSA container to host network.
+Specifying will limit the accessibility of created node in the container.
+
+	docker run --net=host -d zorglub42:osa
+
+## Update
 To deploy a new version of OSA from github do the folowing
 - Ensure that KEEP_DB environnement variable is set to 1 in INSTALL_DIR/RunTimeAppliance/shell if you whant to keep your DB contents
 - update local git repository from github (git pull)
