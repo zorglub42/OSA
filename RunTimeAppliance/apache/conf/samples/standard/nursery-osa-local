@@ -34,3 +34,6 @@
 
 	   Include INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/applianceManagerRewriting.conf
  </VirtualHost>
+<VirtualHost *:*>
+         DocumentRoot /var/www/local/empty
+</VirtualHost>

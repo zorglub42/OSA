@@ -31,7 +31,7 @@ unset http_proxy
 APPLIANCE_INSTALL_DIR=/usr/local/OSA
 APPLIANCE_CONFIG_LOC=$APPLIANCE_INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance
 APPLIANCE_LOG_DIR=/var/log/OSA
-APPLIANCE_LOCAL_SERVER="http://127.0.0.1:82"
+APPLIANCE_LOCAL_SERVER="http://127.0.0.1:81"
 APPLIANCE_LOCAL_USER=""
 APPLIANCE_LOCAL_PWD=""
 # End of Configuration section #############################################################################
@@ -152,7 +152,7 @@ function delFiles(){
 
 
 function configureApachePorts(){
-	
+		echo Configuring listing port for $1
 
 		LADDR=`echo "$LOCAL_IP"| sed 's/\*/\\\\*/g'` 
 		grep -v "$LADDR:$PORT" $APACHE_LISTEN_PORTS>/tmp/$$.port
@@ -281,12 +281,14 @@ elif [ "$1" ==  "" ] ; then
 	removeLogRotateForAllNodes
 	
 	echo getting all nodes definitions
+	echo curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/
 	curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/>/tmp/$$.nodes
 fi
 
 
 
 echo "" >>/tmp/$$.nodes
+
 
 grep '"error"' /tmp/$$.nodes>/dev/null
 if [ $? -eq 0 ] ; then
@@ -323,7 +325,13 @@ do
 		LOCAL_IP=`echo $line| awk -F\" '{print $4}'`
 		echo "localIP=$LOCAL_IP";
 	fi
+	echo $line  | grep "isPublished">/dev/null
+	if [ $? -eq 0 ] ; then
+		IS_PUBLISHED=`echo $line | sed 's/[^0-9]*\([0-9]*\).*/\1/'`
+		echo "IS_PUBLISHED=$IS_PUBLISHED";
+	fi
 	if [ "$line" == "}" -o "$line" == "}," ] ; then
+
 		configureApachePorts $1
 		if [ "$1" == "D" ] ; then
 			[ -d $APPLIANCE_LOG_DIR/$nodeName ] && rm -rf $APPLIANCE_LOG_DIR/$nodeName
@@ -350,7 +358,9 @@ do
 			[ ! -d $APPLIANCE_LOG_DIR/$nodeName ] && mkdir -p $APPLIANCE_LOG_DIR/$nodeName
 			
 			curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$nodeName/virtualHost>$APACHE_SITES_DEFINITION_DIR/nursery-osa-node-$nodeName.conf
-			$APACHE_ENABLE_SITE nursery-osa-node-$nodeName.conf
+			if  [ $IS_PUBLISHED -eq 1 ] ; then
+				$APACHE_ENABLE_SITE nursery-osa-node-$nodeName.conf
+			fi
 			echo touch $APPLIANCE_CONFIG_LOC/applianceManagerServices-node-$nodeName.endpoints
 			touch $APPLIANCE_CONFIG_LOC/applianceManagerServices-node-$nodeName.endpoints
 			ln -s $APPLIANCE_CONFIG_LOC/applianceManagerServices-node-$nodeName.endpoints /etc/ApplianceManager/applianceManagerServices-node-$nodeName.endpoints

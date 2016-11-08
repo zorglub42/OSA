@@ -26,7 +26,7 @@
 * 1.0.0 - 2012-10-01 : Release of the file
 **/
 
--- Version: 2.4
+-- Version: 2.5
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -127,6 +127,7 @@ CREATE TABLE `nodes` (
 `ca` TEXT NULL DEFAULT NULL,
 `caChain` TEXT NULL DEFAULT NULL,
 `additionalConfiguration` text,
+`isPublished` tinyint(1) NOT NULL default 1,
 PRIMARY KEY (`nodeName`),
 UNIQUE KEY `UNQ_BIND` (`localIP`,`port`,`serverFQDN`)
 ) CHARSET=LATIN1  ENGINE=InnoDB;

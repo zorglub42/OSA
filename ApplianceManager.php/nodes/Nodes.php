@@ -342,4 +342,17 @@ class Nodes{
 			throw new RestException($e->getCode(), $e->getMessage());
 		}
 	}
+
+	/**
+	 * @url POST :nodeName/status
+	 * 
+	 */
+	 function setPublished($nodeName, $published){
+		 setPublicationStatus($nodeName, $published);
+		 enableDisableNode($nodeName, $published);
+		 
+		 
+		 
+		 return getDAONode($nodeName);
+	 }
 }

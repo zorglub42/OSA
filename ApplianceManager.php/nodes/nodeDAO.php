@@ -247,7 +247,7 @@ function addNode($nodeName = NULL, $request_data = NULL){
 	}else{
 		try{
 			$db=openDB($BDName, $BDUser, $BDPwd );
-			$strSQL = "INSERT INTO nodes (nodeName, nodeDescription, serverFQDN, localIP, port, isBasicAuthEnabled, isCookieAuthEnabled, isHTTPS, additionalConfiguration) values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			$strSQL = "INSERT INTO nodes (nodeName, nodeDescription, serverFQDN, localIP, port, isBasicAuthEnabled, isCookieAuthEnabled, isHTTPS, additionalConfiguration, isPublished) values (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)";
 			$bindPrms=array($mySQLnodeName,$mySQLnodeDescription,$mySQLserverFQDN,$mySQLlocalIP,$mySQLport,$mySQLisBasicAuthEnabled,$mySQLisCookieAuthEnabled,$mySQLisHTTPS,$mySQLadditionalConfiguration);
 			
 			$stmt=$db->prepare($strSQL);
@@ -309,7 +309,32 @@ function deleteNode($nodeName = NULL){
 	return $rc;
 }
 
+function setPublicationStatus($nodeName, $published){
+	GLOBAL $BDName;
+	GLOBAL $BDUser;
+	GLOBAL $BDPwd;
 
+	$nodeName=normalizeName($nodeName);
+
+	getDAONode($nodeName);
+	try{
+		$db=openDB($BDName, $BDUser, $BDPwd );
+
+		$strSQL = "";
+		$strSQL = $strSQL  . "UPDATE nodes SET ";
+		$strSQL = $strSQL  . "      isPublished=? ";
+		$strSQL = $strSQL  . "WHERE nodeName=?";
+
+		$stmt=$db->prepare($strSQL);
+		$stmt->execute(array($published,$nodeName));
+	}catch (Exception $e){
+	
+		$error->setHttpStatus(500);
+		$error->setFunctionalCode(3);
+		$error->setFunctionalLabel($e->getMessage());
+		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
+	}
+}
 
 
 function updateNode($nodeName = NULL, $request_data = NULL){

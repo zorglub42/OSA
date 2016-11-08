@@ -220,7 +220,7 @@ function editNode(node){
 			
 function saveOrUpdateNode(method){
 	if (!$('#isCookieAuthEnabled').is(':checked') && !$('#isBasicAuthEnabled').is(':checked') ){
-		alert("<?php echo Localization::getJSString("node.no-authent-waring")?>");
+		alert("<?php echo Localization::getJSString("node.no-authent-warning")?>");
 		return false;
 	}
 	
@@ -501,6 +501,17 @@ function displayNodeList(nodeList){
 			del=document.getElementById("btnDelete");
 			del.removeAttribute("id");
 			edit.removeAttribute("id");
+		
+			publish=document.getElementById("btnPublish");
+			unpublish=document.getElementById("btnUnpublish");
+			if (nodeList[i].isPublished == 1){
+				publish.remove();
+				unpublish.removeAttribute("id");
+			}else{
+				unpublish.remove();
+				publish.removeAttribute("id");
+			}
+
 		}
 		if (nodeList.length == 0 ){
 			$("#nodesList").hide();
@@ -526,6 +537,22 @@ function deleteNode(nodeURI, nodeName){
 	}
 	
 }
+
+function publishNode(nodeURI, state){
+	
+	
+		showWait();
+		$.ajax({
+			  url: nodeURI + "/status",
+			  dataType: 'json',
+			  type:'POST',
+			  data: "published=" + state,
+			  success: showNodes,
+			  error: displayErrorV2
+			});
+	
+}
+
 
 function  resetNodeFilter(){
 	$('#nodeNameFilter').val("");

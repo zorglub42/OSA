@@ -41,6 +41,7 @@ class Node extends ApplianceObject{
 	private $ca;
 	private $caChain;
 	private $additionalConfiguration;
+	private $isPublished;
 
 	
 	function setAdditionalConfiguration($additionalConfiguration){
@@ -136,6 +137,12 @@ class Node extends ApplianceObject{
 	function setChain($chain){
 		$this->chain=$chain;
 	}
+	function getIsPublished(){
+		return $this->isPublished;
+	}
+	function setIsPublished($isPublished){
+		$this->isPublished=$isPublished;
+	}
 
     public function __construct($rqt=NULL)
     {
@@ -154,6 +161,7 @@ class Node extends ApplianceObject{
 			$this->setChain($rqt["caChain"]);
 			$this->setUri( "nodes/" . urlencode($rqt["nodeName"]));
 			$this->setAdditionalConfiguration($rqt["additionalConfiguration"]);
+			$this->setIsPublished($rqt["isPublished"]);
 		}
 	}
 	
@@ -187,6 +195,7 @@ class Node extends ApplianceObject{
 				"privateKeyUri"  => $privateKeyUri,
 				"caUri"  => $caUri,
 				"chainUri"  => $caChainUri,
+				"isPublished"  => $this->isPublished,
 				"additionalConfiguration" => $this->getAdditionalConfiguration()
 			);
 	}

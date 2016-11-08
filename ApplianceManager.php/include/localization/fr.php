@@ -305,10 +305,11 @@ $strings["node.manageCA.tooltip"]="Cocher cette case pour renseigner les certifi
 $strings["node.ca.tooltip"]="Selectionnez le fichier contenant le certificat de l'authorité de certification.";
 $strings["node.chain.tootip"]="Selectionnez le fichier contenant les certificats de la chaîne de certification.";
 $strings["node.additionalConfiguration.tooltip"]="Vous pouvez ici rajouter des directives apache applicables au tag apache </VirtualHost>";
+$strings["node.publish.tooltip"]="Demarrer le noeud";
+$strings["node.unpublish.tooltip"]="Arrêter le noeud";
 $strings["node.https-on-80-warning"]="ATTENTION : Utiliser HTTPS (et non HTTP) sur le port 80 peut poser des problemes...\nEtes vous sur de vouloir faire ça ?";
 $strings["node.http-on-443-warning"]="ATTENTION : Utiliser HTTP (et non HTTPS) sur le port 443 peut poser des problemes...\nEtes vous sur de vouloir faire ça ?";
 $strings["node.no-authent-warning"]="Au moins un mode d'authentification doit être activé (basic authentication ou authentification par cookie)";
-
 
 /*Labels */
 $strings["node.label.nodeName"]="Nom du noeud";

@@ -133,6 +133,22 @@ function RenderingFormat(){
 
 
 /* Launch shell batch to generate reverse proxification (endpoints definitions) on nodes */
+function enableDisableNode($nodeName, $published){
+
+		
+	$remoteCmd="sudo " . runtimeApplianceEnableDisableVirtulaHostScript . ' "' . $nodeName . '" ' . $published ;
+	$remoteCmd = $remoteCmd . " 2>&1 >> " . runtimeApplianceEnableDisableVirtulaHostLogFile;
+	
+	system("$remoteCmd",$rc);
+	if ($rc != 0){
+		return false;
+	}else{
+		return true;
+	}
+	
+}
+
+
 function applyApacheConfiguration(){
 
 	if (runtimeApplianceAutomaticConfiguration){
