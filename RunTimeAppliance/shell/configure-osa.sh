@@ -192,7 +192,7 @@ $LOG_DIR/doAppliance.log  {
     rotate 5
     daily
     postrotate
-        touch /var/log/OSA/doAppliance.log.
+        touch /var/log/OSA/doAppliance.log
         chown $APACHE_USER:$APACHE_GROUP doAppliance.log
     endscript
 }
@@ -200,8 +200,16 @@ $LOG_DIR/doVHAppliance.log  {
     rotate 5
     daily
     postrotate
-        touch /var/log/OSA/doAppliance.log.
-        chown $APACHE_USER:$APACHE_GROUP doAppliance.log
+        touch /var/log/OSA/doVHAppliance.log
+        chown $APACHE_USER:$APACHE_GROUP doVHAppliance.log
+    endscript
+}
+$LOG_DIR/enabDisabVH.log  {
+    rotate 5
+    daily
+    postrotate
+        touch /var/log/OSA/enabDisabVH.log
+        chown $APACHE_USER:$APACHE_GROUP enabDisabVH.log
     endscript
 }
 EOF
@@ -292,10 +300,11 @@ function configureSudoers(){
 	
 	cat <<EOF >> /etc/sudoers.d/ApplianceManager
 #Nursery open source Appliance
-Defaults:$APACHE_USER    !requiretty
-Cmnd_Alias      NURSERY_APPLIANCE_CMDS=$INSTALL_DIR/RunTimeAppliance/shell/doAppliance.sh
-Cmnd_Alias      NURSERY_VH_APPLIANCE_CMDS=$INSTALL_DIR/RunTimeAppliance/shell/doVHAppliance.sh
-User_Alias      NURSERY_APPLIANCE_USERS=$APACHE_USER  NURSERY_APPLIANCE_USERS       ALL = NOPASSWD: NURSERY_APPLIANCE_CMDS, NURSERY_VH_APPLIANCE_CMDS
+Defaults:www-data    !requiretty
+Cmnd_Alias      NURSERY_APPLIANCE_CMDS=/usr/local/OSA/RunTimeAppliance/shell/doAppliance.sh
+Cmnd_Alias      NURSERY_VH_APPLIANCE_CMDS=/usr/local/OSA/RunTimeAppliance/shell/doVHAppliance.sh
+Cmnd_Alias      NURSERY_VH_APPLIANCE_ENAB_DISAB_CMDS=/usr/local/OSA/RunTimeAppliance/shell/enableDisableNode.sh
+User_Alias      NURSERY_APPLIANCE_USERS=www-data  NURSERY_APPLIANCE_USERS       ALL = NOPASSWD: NURSERY_APPLIANCE_CMDS, NURSERY_VH_APPLIANCE_CMDS, NURSERY_VH_APPLIANCE_ENAB_DISAB_CMDS
 #End of Nursery open source Appliance
 EOF
 	chmod 0440 /etc/sudoers.d/ApplianceManager
