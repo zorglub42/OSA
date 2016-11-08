@@ -36,6 +36,10 @@
 	define("runtimeApplianceVirtualHostsConfigScript", "/usr/local/OSA/RunTimeAppliance/shell/doVHAppliance.sh");
 	define("runtimeApplianceVirtualHostsConfigScriptLogFile", "/var/log/OSA/doVHAppliance.log");
 
+	define("runtimeApplianceEnableDisableVirtulaHostScript", "/usr/local/OSA/RunTimeAppliance/shell/enableDisableNode.sh");
+	define("runtimeApplianceEnableDisableVirtulaHostLogFile", "/var/log/OSA/enabDisabVH.log");
+
+
 	define("runtimeApplianceAutomaticConfiguration",true);
 
 
@@ -76,5 +80,5 @@
 	define("authTokenTTL", 60);
 		#cookie name
 	define("authTokenCookieName", "OSAAuthToken");
-	define("osaAdminUri", "https://r-lnx-jmjb0521rd.francetelecom.fr:6443/");
+	define("osaAdminUri", "https://localhost:6443/");
 ?>
