@@ -94,7 +94,7 @@ It's probably because my sql server didn't restart properly after install. In su
 		service mysql restart
 
 ## Docker
-Instead off installaling on a box, you can also run OSA as a docker container.
+Instead of installaling on a box, you can also run OSA as a docker container.
 ### Build an OSA Image
 
 	wget https://github.com/zorglub42/OSA/blob/master/osa.dockerfile.sh; bash ./osa.dockerfile.sh admin-passwd domain
