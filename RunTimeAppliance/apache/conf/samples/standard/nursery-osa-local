@@ -1,4 +1,4 @@
-<VirtualHost 127.0.0.1:PRIVATE_VHOST_PORT>
+<VirtualHost localhost:PRIVATE_VHOST_PORT>
        ServerAdmin APACHE_ADMIN_MAIL
        ServerName localhost
 
