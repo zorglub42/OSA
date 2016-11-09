@@ -97,7 +97,7 @@ It's probably because my sql server didn't restart properly after install. In su
 Instead of installaling on a box, you can also run OSA as a docker container.
 ### Build an OSA Image
 
-	wget https://raw.githubusercontent.com/zorglub42/OSA/master/osa.dockerfile.sh; bash ./osa.dockerfile.sh admin-passwd domain
+	wget https://raw.githubusercontent.com/zorglub42/OSA/master/osa.dockerfile.sh -O osa.dockerfile.sh; bash ./osa.dockerfile.sh admin-passwd domain
 Where parameters are:
 - admin-password: OSA admin passwed to set
 - domain (optional): your FQDN (Ex: zorglub42.fr)
