@@ -436,6 +436,8 @@ function configurePathAndSettings(){
 		| sed 's|.*"runtimeApplianceConfigLocation".*|	define("runtimeApplianceConfigLocation",  "'$INSTALL_DIR'/RunTimeAppliance/apache/conf/vhAppliance");|' \
 		| sed 's|.*"runtimeApplianceConfigScript".*|	define("runtimeApplianceConfigScript", "'$INSTALL_DIR'/RunTimeAppliance/shell/doAppliance.sh");|' \
 		| sed 's|.*"runtimeApplianceConfigScriptLogFile".*|	define("runtimeApplianceConfigScriptLogFile", "'$LOG_DIR'/doAppliance.log");|' \
+		| sed 's|.*"runtimeApplianceEnableDisableVirtulaHostScript".*|	define("runtimeApplianceEnableDisableVirtulaHostScript", "'$INSTALL_DIR'/RunTimeAppliance/shell/enableDisableNode.sh");|' \
+		| sed 's|.*"runtimeApplianceEnableDisableVirtulaHostLogFile".*|	define("runtimeApplianceEnableDisableVirtulaHostLogFile", "'$LOG_DIR'/enabDisabVH.log");|' \
 		| sed 's|.*"runtimeApplianceVirtualHostsConfigScript".*|	define("runtimeApplianceVirtualHostsConfigScript", "'$INSTALL_DIR'/RunTimeAppliance/shell/doVHAppliance.sh");|' \
 		| sed 's|.*"runtimeApplianceVirtualHostsConfigScriptLogFile".*|	define("runtimeApplianceVirtualHostsConfigScriptLogFile", "'$LOG_DIR'/doVHAppliance.log");|' \
 		| sed 's|.*"runtimeApplianceConfigScriptLogDir".*|	define("runtimeApplianceConfigScriptLogDir", "'$LOG_DIR'");|' \
