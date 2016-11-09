@@ -301,9 +301,9 @@ function configureSudoers(){
 	cat <<EOF >> /etc/sudoers.d/ApplianceManager
 #Nursery open source Appliance
 Defaults:www-data    !requiretty
-Cmnd_Alias      NURSERY_APPLIANCE_CMDS=/usr/local/OSA/RunTimeAppliance/shell/doAppliance.sh
-Cmnd_Alias      NURSERY_VH_APPLIANCE_CMDS=/usr/local/OSA/RunTimeAppliance/shell/doVHAppliance.sh
-Cmnd_Alias      NURSERY_VH_APPLIANCE_ENAB_DISAB_CMDS=/usr/local/OSA/RunTimeAppliance/shell/enableDisableNode.sh
+Cmnd_Alias      NURSERY_APPLIANCE_CMDS=$INSTALL_DIR/RunTimeAppliance/shell/doAppliance.sh
+Cmnd_Alias      NURSERY_VH_APPLIANCE_CMDS=$INSTALL_DIR/RunTimeAppliance/shell/doVHAppliance.sh
+Cmnd_Alias      NURSERY_VH_APPLIANCE_ENAB_DISAB_CMDS=$INSTALL_DIR/RunTimeAppliance/shell/enableDisableNode.sh
 User_Alias      NURSERY_APPLIANCE_USERS=www-data  NURSERY_APPLIANCE_USERS       ALL = NOPASSWD: NURSERY_APPLIANCE_CMDS, NURSERY_VH_APPLIANCE_CMDS, NURSERY_VH_APPLIANCE_ENAB_DISAB_CMDS
 #End of Nursery open source Appliance
 EOF
