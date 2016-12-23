@@ -26,6 +26,11 @@ require_once "../../include/Localization.php";
 								<div class="col-md-5 col-xs-4 search-control">
 									<input class="form-control" placeholder="<?php echo Localization::getString("service.backendEndpoint.placeholder")?>" id="backEndEndPointFilter" value="{backEndEndPointFilterPrevVal}">
 								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-10 search-control">
+									<select id="nodeNameFilter" class="form-control"></select>
+								</div>
 								<div col="col-xs-4 col-md-2">
 										<button type="button" class="btn btn-default" title="<?php echo Localization::getString("button.filter.tooltip")?>" onclick=showServices()>
 											<span><?php echo Localization::getString("button.filter")?></span>

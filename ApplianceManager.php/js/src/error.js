@@ -31,8 +31,16 @@
 
 			function displayErrorV2(jqXHR, textStatus, errorThrown){
 				errorText=jqXHR.responseText;
-				eval("err =" + errorText);
+				//eval("err =" + errorText);
 				hideWait();
+				var err;
+				try{
+					err=JSON.parse(errorText);
+				}catch (e){
+					alert("An error as occursed: " + errorText + " (HTTP_STATUS=" + jqXHR.status + ")");
+					return;
+				}	
+
 				try{
 					alert("An error as occursed: " + err.error.message + " (HTTP_STATUS=" + jqXHR.status + ")");
 				}catch (e){

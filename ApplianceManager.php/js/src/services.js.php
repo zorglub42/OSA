@@ -31,6 +31,7 @@
 			var serviceGroupNameFilterPrevVal="";
 			var frontEndEndPointFilterPrevVal="";
 			var backEndEndPointFilterPrevVal="";
+			var nodeNameFilterPrevVal="";
 
 			function setServiceModified(isModified){
 				serviceModified=isModified;
@@ -46,7 +47,24 @@
 				}
 
 			}
-			
+			function populateNodeListFilter(nodeList){
+				$('#nodeNameFilter').append($('<option>', { 
+					value: "",
+					text : "<?php echo Localization::getString("service.label.chooseNode")?>" 
+				}));
+				$.each(nodeList, function (i, item) {
+					$('#nodeNameFilter').append($('<option>', { 
+						value: item.nodeName,
+						text : item.nodeDescription!=""?item.nodeDescription:item.nodeName 
+					}));
+				});
+				if (nodeNameFilterPrevVal != ""){
+					$("#nodeNameFilter option[value=" + nodeNameFilterPrevVal + "]").prop("selected", "selected");
+				}
+			}
+			function startLoadNodes(){
+				$.getJSON("nodes", populateNodeListFilter).error(displayErrorV2);
+			}
 
 			function startEditService(serviceURI){
 				$.getJSON(serviceURI, editService).error(displayErrorV2);
@@ -475,6 +493,7 @@ function handelServiceFilterFormKeypress(e) {
 							edit.removeAttribute("id");
 						}
 						setServiceModified(false);
+						startLoadNodes();
 				});
 
 
@@ -506,15 +525,19 @@ function handelServiceFilterFormKeypress(e) {
 				$('#serviceGroupNameFilter').val("")
 				$('#frontEndEndPointFilter').val("");
 				$('#backEndEndPointFilter').val("");
+				$('#nodeNameFilter option[value=""]').prop("selected", "selected");
 				showServices();
 			}
 			
 			function showServices(){
+							
 				prms="order=serviceName";
 				prms=prms + "&serviceNameFilter=" + encodeURIComponent(getFilterValue('serviceNameFilter'));
 				prms=prms + "&groupNameFilter=" + encodeURIComponent(getFilterValue('serviceGroupNameFilter'));
 				prms=prms + "&frontEndEndPointFilter=" + encodeURIComponent(getFilterValue('frontEndEndPointFilter'));
 				prms=prms + "&backEndEndPointFilter=" + encodeURIComponent(getFilterValue('backEndEndPointFilter'));
+				prms=prms + "&nodeNameFilter=" + encodeURIComponent(getFilterValue('nodeNameFilter'));
+
 
 				$.ajax({
 					url : './services/',

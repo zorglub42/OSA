@@ -68,6 +68,10 @@ function getService($serviceName = NULL, $request_data=NULL){
 			if (isset($request_data["withLog"])){
 				$strSQLComp=" WHERE exists (SELECT 'x' FROM hits h WHERE h.serviceName=s.serviceName)";
 			}
+			if (isset($request_data["nodeNameFilter"]) && !empty($request_data["nodeNameFilter"])){
+				$strSQLComp=addSQLFilter("(onAllNodes=1 or exists (SELECT 'x' FROM servicesnodes sn WHERE sn.serviceName=s.serviceName AND sn.nodeName = ?))", $strSQLComp);
+				array_push($bindPrms,  cut($request_data["nodeNameFilter"], NODENAME_LENGTH));
+			}
 			if (isset($request_data["withQuotas"])){
 				$strSQLComp=addSQLFilter("(isGlobalQuotasEnabled=1 or isUserQuotasenabled=1)",$strSQLComp);
 			}

@@ -119,6 +119,7 @@ $strings["service.properties"]="Propriétés du service {serviceName}";
 
 $strings["service.label.name"]="Nom du service";
 $strings["service.label.chooseOne"]="-- Chosissez un groupe --";
+$strings["service.label.chooseNode"]="-- Exposé(s) sur n'importe quel noeud --";
 $strings["service.label.isPublished"]="Publié";
 $strings["service.label.frontendEndpoint"]="Alias publique";
 $strings["service.label.backendEndpoint"]="Serveur backend";
