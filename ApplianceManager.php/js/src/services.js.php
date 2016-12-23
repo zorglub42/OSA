@@ -48,9 +48,10 @@
 
 			}
 			function populateNodeListFilter(nodeList){
+				defaultLabel='<?php echo Localization::getJSString("service.label.chooseNode")?>';
 				$('#nodeNameFilter').append($('<option>', { 
 					value: "",
-					text : "<?php echo Localization::getString("service.label.chooseNode")?>" 
+					text : defaultLabel 
 				}));
 				$.each(nodeList, function (i, item) {
 					$('#nodeNameFilter').append($('<option>', { 
