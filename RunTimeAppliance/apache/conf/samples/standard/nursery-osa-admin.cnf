@@ -12,4 +12,4 @@ prompt                  = no
 policy			= policy_anything
 
 [ req_distinguished_name ]
-commonName                      = r-lnx-jmjb0521rd.francetelecom.fr
+commonName                      = r-lnx-jmjb0521

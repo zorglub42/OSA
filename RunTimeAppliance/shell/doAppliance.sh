@@ -32,7 +32,7 @@ unset http_proxy
 # Configuration section #############################################################################
 APPLIANCE_INSTALL_DIR=/usr/local/OSA
 APPLIANCE_CONFIG_LOC=$APPLIANCE_INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance
-APPLIANCE_LOCAL_SERVER="http://127.0.0.1:82"
+APPLIANCE_LOCAL_SERVER="http://127.0.0.1:81"
 APPLIANCE_LOCAL_USER=""
 APPLIANCE_LOCAL_PWD=""
 HTTP_FQDN="r-lnx-jmjb0521"

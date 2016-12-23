@@ -30,7 +30,16 @@
 			} 
 
 			function displayErrorV2(jqXHR, textStatus, errorThrown){
-				eval("err =" + jqXHR.responseText);
-				alert("An error as occursed: " + err.error.message + " (HTTP_STATUS=" + jqXHR.status + ")");
+				errorText=jqXHR.responseText;
+				eval("err =" + errorText);
 				hideWait();
+				try{
+					alert("An error as occursed: " + err.error.message + " (HTTP_STATUS=" + jqXHR.status + ")");
+				}catch (e){
+					try{
+						alert("An error as occursed: " + err.label + " (HTTP_STATUS=" + jqXHR.status + ")");
+					}catch (e2){
+						alert("An error as occursed: " + errorText + " (HTTP_STATUS=" + jqXHR.status + ")");
+					}
+				}
 			} 

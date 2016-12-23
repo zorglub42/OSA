@@ -144,8 +144,9 @@ require_once '../include/PDOFunc.php';
 		$BACK_END     = $row["backEndEndPoint"];
 		$FRONT_END    = $row["frontEndEndPoint"];
 
-		echo 'RewriteCond     %{REQUEST_URI}      ^' . $FRONT_END . '.*$' . "\n";
-		echo 'RewriteRule  <?' . $FRONT_END .'(.*) ' . $BACK_END . '$1 [P,L]' . "\n\n";
+		#echo 'RewriteCond     %{REQUEST_URI}      ^' . $FRONT_END . '.*$' . "\n";
+		#echo 'RewriteRule  <?' . $FRONT_END .'(.*) ' . $BACK_END . '$1 [P,L]' . "\n\n";
+		echo "ProxyPass $FRONT_END $BACK_END nocanon\n\n";
 	}
 	
 	
