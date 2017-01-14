@@ -32,7 +32,12 @@ First of all, install required packages and clone OSA repository
 	**Since Ubuntu 16.04 (included)**
 
     		apt-get install mysql-server apache2 php php-mysql php-curl libapache2-mod-php openssl curl zip autoconf libmysqlclient-dev apache2-dev git		
-  - clone git repo
+    
+	**For Raspbian**
+
+    		apt-get install mysql-server apache2 php5 php5-mysql php5-curl openssl curl zip autoconf libmysqlclient-dev apache2-prefork-dev automake git
+
+- clone git repo
 
 		git clone https://github.com/zorglub42/OSA
   - Go to OSA clone folder
