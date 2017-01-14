@@ -25,6 +25,7 @@
 
 #!/bin/bash
 
+APPLIANCE_LOG_DIR=/var/log/OSA
 
 function enableRedhatSite(){
 	[ -f /etc/httpd/conf.d/$1.conf ] && rm /etc/httpd/conf.d/$1
@@ -73,9 +74,11 @@ case $2 in
 	0)
 		$APACHE_DISABLE_SITE nursery-osa-node-$1.conf
 		$APACHE_INITD_FILE graceful 2>&1
+		chmod 666 $APPLIANCE_LOG_DIR/*.log
 	;;
 	1)
 		$APACHE_ENABLE_SITE nursery-osa-node-$1.conf
 		$APACHE_INITD_FILE graceful 2>&1
+		chmod 666 $APPLIANCE_LOG_DIR/*.log
 	;;
 esac

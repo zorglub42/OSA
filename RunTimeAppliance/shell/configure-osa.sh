@@ -348,6 +348,7 @@ function configureShellScripts(){
 	changeProperty $INSTALL_DIR/RunTimeAppliance/shell/doAppliance.sh HTTPS_FQDN '"'$HTTP_VHOST_NAME'"'
 	changeProperty $INSTALL_DIR/RunTimeAppliance/shell/doAppliance.sh USE_HTTP $USE_HTTP
 	changeProperty $INSTALL_DIR/RunTimeAppliance/shell/doAppliance.sh USE_HTTPS $USE_HTTPS
+	changeProperty $INSTALL_DIR/RunTimeAppliance/shell/doAppliance.sh APPLIANCE_LOG_DIR $LOG_DIR
 
 	#VirtualHost generator
 	changeProperty $INSTALL_DIR/RunTimeAppliance/shell/doVHAppliance.sh APPLIANCE_INSTALL_DIR $INSTALL_DIR
@@ -356,10 +357,14 @@ function configureShellScripts(){
 	changeProperty $INSTALL_DIR/RunTimeAppliance/shell/doVHAppliance.sh APPLIANCE_LOCAL_USER '""'
 	changeProperty $INSTALL_DIR/RunTimeAppliance/shell/doVHAppliance.sh APPLIANCE_LOCAL_PWD '""'
 
+	#VirtualHost enabler/disabler
+	changeProperty $INSTALL_DIR/RunTimeAppliance/shell/enableDisableNode.sh APPLIANCE_LOG_DIR $LOG_DIR
+		
 
 	
 	chmod 700 $INSTALL_DIR/RunTimeAppliance/shell/doAppliance.sh
 	chmod 700 $INSTALL_DIR/RunTimeAppliance/shell/doVHAppliance.sh
+	chmod 700 $INSTALL_DIR/RunTimeAppliance/shell/enableDisableNode.sh
 	
 	
 }

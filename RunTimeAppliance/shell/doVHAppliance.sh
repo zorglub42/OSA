@@ -375,4 +375,5 @@ done < /tmp/$$.nodes
 $EXEC_DIR/doAppliance.sh $* -nobackup
 RC=$?
 echo exiting doVHAppliance  with RC=$RC
+chmod 666 $APPLIANCE_LOG_DIR/*.log
 shellExit $RC

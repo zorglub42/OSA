@@ -31,6 +31,7 @@ unset http_proxy
 
 # Configuration section #############################################################################
 APPLIANCE_INSTALL_DIR=/usr/local/OSA
+APPLIANCE_LOG_DIR=/var/log/OSA
 APPLIANCE_CONFIG_LOC=$APPLIANCE_INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance
 APPLIANCE_LOCAL_SERVER="http://127.0.0.1:81"
 APPLIANCE_LOCAL_USER=""
@@ -234,4 +235,5 @@ if [ $apacheReload -eq 1 ] ; then
 	fi
 
 fi
+chmod 666 $APPLIANCE_LOG_DIR/*.log
 shellExit 0
