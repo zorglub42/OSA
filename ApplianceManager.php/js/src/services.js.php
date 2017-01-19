@@ -411,12 +411,12 @@
 
 			}
 
-function handelServiceFilterFormKeypress(e) {
-	if (e.keyCode == 13) {
-		showServices();
-		return false;
-	}
-}			
+			function handelServiceFilterFormKeypress(e) {
+				if (e.keyCode == 13) {
+					showServices();
+					return false;
+				}
+			}			
 			function displayServiceNodes(nodeList){
 				$('#serviceNodesList')
 				.find('option')
@@ -484,14 +484,28 @@ function handelServiceFilterFormKeypress(e) {
 															 .replaceAll("{serviceList[i].uri}", serviceList[i].uri);
 															 
 							table.appendChild(newRow);
+
 							edit=document.getElementById("btnEdit");
 							del=document.getElementById("btnDelete");
+							publish=document.getElementById("btnPublish");
+							unpublish=document.getElementById("btnUnpublish");
+
 							if (serviceList[i].serviceName.startsWith("ApplianceManagerAdmin")){
 								del.remove();
 							}else{
 								del.removeAttribute("id");
 							}
 							edit.removeAttribute("id");
+							
+							
+							if (serviceList[i].isPublished == 1){
+								publish.remove();
+								unpublish.removeAttribute("id");
+							}else{
+								unpublish.remove();
+								publish.removeAttribute("id");
+							}
+							
 						}
 						setServiceModified(false);
 						startLoadNodes();
@@ -550,6 +564,21 @@ function handelServiceFilterFormKeypress(e) {
 				});
 			}
 
+
+			function publishService(serviceURI, state){
+				
+				
+					showWait();
+					$.ajax({
+						  url: serviceURI,
+						  dataType: 'json',
+						  type:'PUT',
+						  data: "isPublished=" + state,
+						  success: showServices,
+						  error: displayErrorV2
+						});
+				
+			}
 			
 			
 			

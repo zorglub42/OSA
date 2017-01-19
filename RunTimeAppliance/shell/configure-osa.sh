@@ -162,14 +162,26 @@ addLogRotateForApache(){
 $LOG_DIR/$1/main.access.log  {
     rotate 5
     daily
+    postrotate
+		touch  $LOG_DIR/$1/main.access.log
+		chown  $APACHE_USER:$APACHE_GROUP /var/log/OSA/HTTP/main.access.log
+    endscript
 }
 $LOG_DIR/$1/main.error.log  {
     rotate 5
     daily
+    postrotate
+		touch  $LOG_DIR/$1/main.access.log
+		chown  $APACHE_USER:$APACHE_GROUP /var/log/OSA/HTTP/main.error.log
+    endscript
 }
 $LOG_DIR/$1/rewrite.log  {
     rotate 5
     daily
+    postrotate
+		touch  $LOG_DIR/$1/main.access.log
+		chown  $APACHE_USER:$APACHE_GROUP /var/log/OSA/HTTP/rewrite.log
+    endscript
 }
 EOF
 }
@@ -192,24 +204,24 @@ $LOG_DIR/doAppliance.log  {
     rotate 5
     daily
     postrotate
-        touch /var/log/OSA/doAppliance.log
-        chown $APACHE_USER:$APACHE_GROUP doAppliance.log
+        touch $LOG_DIR/doAppliance.log
+        chown $APACHE_USER:$APACHE_GROUP $LOG_DIR/doAppliance.log
     endscript
 }
 $LOG_DIR/doVHAppliance.log  {
     rotate 5
     daily
     postrotate
-        touch /var/log/OSA/doVHAppliance.log
-        chown $APACHE_USER:$APACHE_GROUP doVHAppliance.log
+        touch $LOG_DIR/doVHAppliance.log
+        chown $APACHE_USER:$APACHE_GROUP $LOG_DIR/doVHAppliance.log
     endscript
 }
 $LOG_DIR/enabDisabVH.log  {
     rotate 5
     daily
     postrotate
-        touch /var/log/OSA/enabDisabVH.log
-        chown $APACHE_USER:$APACHE_GROUP enabDisabVH.log
+        touch $LOG_DIR/enabDisabVH.log
+        chown $APACHE_USER:$APACHE_GROUP $LOG_DIR/enabDisabVH.log
     endscript
 }
 EOF
@@ -255,38 +267,6 @@ fi
 }	
 
 
-######################################################################
-# getApacheUserDebian
-######################################################################
-# retreive the user used to run apache2
-######################################################################
-function getApacheUserDebian(){
-	grep "APACHE_RUN_USER=" /etc/apache2/envvars|sed 's/.*APACHE_RUN_USER=\(.*\)/\1/'
-}
-######################################################################
-# getApacheGroupDebian
-######################################################################
-# retreive the group used to run apache2
-######################################################################
-function getApacheGroupDebian(){
-	grep "APACHE_RUN_GROUP=" /etc/apache2/envvars|sed 's/.*APACHE_RUN_GROUP=\(.*\)/\1/'
-}
-######################################################################
-# getApacheUserRedhat
-######################################################################
-# retreive the user used to run apache2
-######################################################################
-function getApacheUserRedhat(){
-	egrep "^User .*" //etc/httpd/conf/httpd.conf|sed 's/User \(.*\)/\1/'
-}
-######################################################################
-# getApacheGroupRedhat
-######################################################################
-# retreive the group used to run apache2
-######################################################################
-function getApacheGroupRedhat(){
-	egrep "^Group .*" /etc/httpd/conf/httpd.conf|sed 's/Group \(.*\)/\1/'
-}
 
 ######################################################################
 # configureSudoers
@@ -309,22 +289,6 @@ User_Alias      NURSERY_APPLIANCE_USERS=www-data  NURSERY_APPLIANCE_USERS       
 EOF
 	chmod 0440 /etc/sudoers.d/ApplianceManager
 }
-
-######################################################################
-# deleteTempFiles
-######################################################################
-# delete temporary files
-######################################################################
-function deleteTempFiles(){
-	ls /tmp/$$.* > /dev/null
-	if [ $? -eq 0 ] ; then
-		echo "Deleting temp files"
-		rm /tmp/$$.*
-	else
-		echo "No file delete (/tmp/$$.*)"
-	fi
-}
-
 
 function shellExit(){
 	deleteTempFiles
@@ -997,15 +961,6 @@ echo "KEEP_DB=$KEEP_DB"
 
 }
 
-function enableRedhatSite(){
-	[ -f /etc/httpd/conf.d/$1.conf ] && rm /etc/httpd/conf.d/$1
-	ln -s $APACHE_SITES_DEFINITION_DIR/$1  /etc/httpd/conf.d/$1
-	chown $APACHE_USER:$APACHE_GROUP    /etc/httpd/conf.d/$1
-	chmod 644  /etc/httpd/conf.d/$1.conf
-}
-function disableRedhatSite(){
-	[  -f /etc/httpd/conf.d/$1 ] && rm /etc/httpd/conf.d/$1
-}
 
 
 
@@ -1041,7 +996,10 @@ fi
 
 
 #set default values for parameters a first time to have basic paramters (Ex INSTALL_DIR)
-. envvars.sh
+EXEC_DIR=`dirname $0`
+cd $EXEC_DIR
+. ./osa-funcs.sh
+. ./envvars.sh
 chmod 700 envvars.sh
 chown -R root:root $INSTALL_DIR
 

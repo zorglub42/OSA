@@ -36,6 +36,7 @@ APPLIANCE_LOCAL_USER=""
 APPLIANCE_LOCAL_PWD=""
 # End of Configuration section #############################################################################
 
+
 removeLogRotateForAllNodes(){
 	
 	startLine=`grep -n "##Nodes section START" $EXEC_DIR/logrotate.conf| awk -F: '{print $1}'`
@@ -79,6 +80,7 @@ $APPLIANCE_LOG_DIR/$1/main.access.log  {
     daily
     postrotate
 		touch  $APPLIANCE_LOG_DIR/$1/main.access.log
+		chown  $APACHE_USER:$APACHE_GROUP $APPLIANCE_LOG_DIR/$1/main.access.log
     endscript
 }
 $APPLIANCE_LOG_DIR/$1/main.error.log  {
@@ -86,6 +88,7 @@ $APPLIANCE_LOG_DIR/$1/main.error.log  {
     daily
     postrotate
 		touch  $APPLIANCE_LOG_DIR/$1/main.error.log
+		chown  $APACHE_USER:$APACHE_GROUP $APPLIANCE_LOG_DIR/$1/main.error.log
     endscript
 }
 $APPLIANCE_LOG_DIR/$1/rewrite.log  {
@@ -93,6 +96,7 @@ $APPLIANCE_LOG_DIR/$1/rewrite.log  {
     daily
     postrotate
 		touch  $APPLIANCE_LOG_DIR/$1/rewrite.log
+		chown  $APACHE_USER:$APACHE_GROUP $APPLIANCE_LOG_DIR/$1/rewrite.log
     endscript
 }
 ##Node $1 END
@@ -101,32 +105,9 @@ cat /tmp/$$.logrotate.conf >> $EXEC_DIR/logrotate.conf
 }
 
 
-######################################################################
-# deleteTempFiles
-######################################################################
-# delete temporary files
-######################################################################
-function deleteTempFiles(){
-	ls /tmp/$$.* > /dev/null
-	if [ $? -eq 0 ] ; then
-		#echo "Deleting temp files"
-		rm /tmp/$$.*
-	#else
-		#echo "No file delete (/tmp/$$.*)"
-	fi
-}
-
-
 function shellExit(){
 	deleteTempFiles
 	exit $1
-}
-
-function enableRedhatSite(){
-	[ -f /etc/httpd/conf.d/$1.conf ] && rm /etc/httpd/conf.d/$1.conf
-	ln -s $APACHE_SITES_DEFINITION_DIR/$1  /etc/httpd/conf.d/$1.conf
-	chown $APACHE_USER:$APACHE_GROUP    /etc/httpd/conf.d/$1.conf
-	chmod 644  /etc/httpd/conf.d/$1.conf
 }
 
 function generateCerts(){
@@ -179,6 +160,9 @@ function getRealIp(){
 }
 
 EXEC_DIR=`dirname $0`
+cd $EXEC_DIR
+. ./osa-funcs.sh
+
 if [ -f /etc/redhat-release ] ; then
 	echo "RedHat system"
 
@@ -191,6 +175,8 @@ if [ -f /etc/redhat-release ] ; then
 	APACHE_ENABLE_SITE=enableRedhatSite
 	APACHE_LISTEN_PORTS=/etc/httpd/conf.d/nursery-osa-0-ports.conf
 	APACHE_LOG_DIR=/var/log/httpd
+	APACHE_USER=`getApacheUserRedhat`
+	APACHE_GROUP=`getApacheGroupRedhat`
 
 	touch $APACHE_LISTEN_PORTS
 	mkdir -p  /etc/ssl/certs
@@ -208,6 +194,11 @@ elif [ -f /etc/debian_version ] ; then
 	fi
 	APACHE_ENABLE_SITE=a2ensite
 	APACHE_LOG_DIR=/var/log/apache2
+	APACHE_ENABLE_SITE=a2ensite
+	APACHE_DISABLE_SITE=a2dissite
+	APACHE_USER=`getApacheUserDebian`
+	APACHE_GROUP=`getApacheGroupDebian`
+
 	#on some install a2ensite and other are not in the PATH....
 	PATH=$PATH:/usr/sbin
 	export PATH
@@ -356,6 +347,8 @@ do
 				fi
 			fi
 			[ ! -d $APPLIANCE_LOG_DIR/$nodeName ] && mkdir -p $APPLIANCE_LOG_DIR/$nodeName
+			chown $APACHE_USER:$APACHE_GROUP $APPLIANCE_LOG_DIR/$nodeName
+			chmod 700 $APPLIANCE_LOG_DIR/$nodeName
 			
 			curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$nodeName/virtualHost>$APACHE_SITES_DEFINITION_DIR/nursery-osa-node-$nodeName.conf
 			if  [ $IS_PUBLISHED -eq 1 ] ; then

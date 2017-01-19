@@ -67,6 +67,12 @@ require_once "../../include/Localization.php";
 								<button type="button" class="btn btn-default" id="btnDelete" title="<?php echo Localization::getString("service.delete.tooltip")?>" onclick="deleteService('{serviceList[i].uri}', '{serviceList[i].serviceName}')">
 								  <span class="glyphicon glyphicon glyphicon-trash" aria-hidden="true"></span>
 								</button>
+								<button type="button" class="btn btn-default" id="btnPublish" title="<?php echo Localization::getString("service.publish.tooltip")?>" onclick="publishService('{serviceList[i].uri}', '1')">
+								  <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+								</button>
+								<button type="button" class="btn btn-default" id="btnUnpublish" title="<?php echo Localization::getString("service.unpublish.tooltip")?>" onclick="publishService('{serviceList[i].uri}', '0')">
+								  <span class="glyphicon glyphicon-pause" aria-hidden="true"></span>
+								</button>
 							</div>
 						</div>
 					</a>

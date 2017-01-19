@@ -75,6 +75,8 @@ $strings["service.list.backendEndpoint"]="Backend";
 $strings["service.list.quotas.reqSec"]="Max/sec";
 $strings["service.list.quotas.reqDay"]="Max/jour";
 $strings["service.list.quotas.reqMonth"]="Max/mois";
+$strings["service.publish.tooltip"]="Publier ce service";
+$strings["service.unpublish.tooltip"]="Stopper la publication de ce service";
 /* Details */
 $strings["service.delete.confirm"]="Etes vous sûr de vouloir supprimer le service";
 /*Placeholders*/
