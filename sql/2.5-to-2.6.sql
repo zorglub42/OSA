@@ -23,6 +23,9 @@
 *
 * 1.0.0 - 2017-02-07 : Release of the file
 **/
+DROP TABLE IF EXISTS `headersmapping`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE headersmapping (
   id INT NOT NULL AUTO_INCREMENT,
   serviceName VARCHAR(45) NOT NULL,
@@ -34,4 +37,7 @@ CREATE TABLE headersmapping (
     FOREIGN KEY (serviceName)
     REFERENCES services (serviceName)
     ON DELETE CASCADE
-    ON UPDATE NO ACTION);
+    ON UPDATE NO ACTION) CHARSET=LATIN1  ENGINE=InnoDB;
+
+/*!40101 SET character_set_client = @saved_cs_client */;
+

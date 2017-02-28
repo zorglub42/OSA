@@ -240,9 +240,13 @@ KEY `FK_user_quotas_user` (`userName`) USING BTREE,
 CONSTRAINT `FK_user_quotas_resource` FOREIGN KEY (`serviceName`) REFERENCES `services` (`serviceName`) ON DELETE CASCADE,
 CONSTRAINT `FK_user_quotas_user` FOREIGN KEY (`userName`) REFERENCES `users` (`userName`) ON DELETE CASCADE
 ) CHARSET=LATIN1  ENGINE=InnoDB;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 
 
+DROP TABLE IF EXISTS `headersmapping`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE headersmapping (
   id INT NOT NULL AUTO_INCREMENT,
   serviceName VARCHAR(45) NOT NULL,
@@ -254,7 +258,7 @@ CREATE TABLE headersmapping (
     FOREIGN KEY (serviceName)
     REFERENCES services (serviceName)
     ON DELETE CASCADE
-    ON UPDATE NO ACTION);
+    ON UPDATE NO ACTION) CHARSET=LATIN1  ENGINE=InnoDB;
 
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
