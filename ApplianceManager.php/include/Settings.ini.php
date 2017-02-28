@@ -63,7 +63,7 @@
 		
 
 	#Identity forwarding headers name
-	$defaultHeadersName = array(	"userName" => "X_REMOTE_USER",
+	$defaultHeadersName=array(	"userName" => "X_REMOTE_USER",
 					"firstName" => "X_OSA_FIRSTNAME",
 					"lastName" => "X_OSA_LASTNAME",
 					"entity" => "X_OSA_ENTITY",
