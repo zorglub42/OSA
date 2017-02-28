@@ -242,6 +242,8 @@ function getDateFromIso($strDate){
 
 
 function getRequestor($request_data=null){
+	GLOBAL $defaultHeadersName;
+
 	$hdrs=getallheaders();
 	if (isset($hdrs[$defaultHeadersName["userName"]])){
 		$requestor=$hdrs[$defaultHeadersName["userName"]];

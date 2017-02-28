@@ -42,6 +42,8 @@ function getUser($userName = NULL, $request_data = NULL){
 	GLOBAL $BDName;
 	GLOBAL $BDUser;
 	GLOBAL $BDPwd;
+	GLOBAL $defaultHeadersName;
+
 	$error = new OSAError();
 			
 
