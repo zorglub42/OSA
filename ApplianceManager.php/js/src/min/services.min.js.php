@@ -324,12 +324,12 @@
 				var mappings=Array()
 				var hdrNum=0
 				
-				<?php for ($i=0;$i<count(userProperties);$i++){?>
-					if (document.getElementById("cb<?php echo userProperties[$i]?>Header").checked){
+				<?php for ($i=0;$i<count($userProperties);$i++){?>
+					if (document.getElementById("cb<?php echo $userProperties[$i]?>Header").checked){
 						m=new Object()
 						mappings[hdrNum]=m
-						mappings[hdrNum].userProperty="<?php echo userProperties[$i]?>"
-						mappings[hdrNum].headerName=$("#<?php echo userProperties[$i]?>Header").val()
+						mappings[hdrNum].userProperty="<?php echo $userProperties[$i]?>"
+						mappings[hdrNum].headerName=$("#<?php echo $userProperties[$i]?>Header").val()
 						hdrNum++
 					}
 				<?php }?>
@@ -470,9 +470,9 @@
 							$("#mainForm").height($("#tabs").height()+10);
 					});
 					
-					<?php foreach (userProperties as $property){?>
+					<?php foreach ($userProperties as $property){?>
 						$("#cb<?php echo $property?>Header").prop("checked", true);
-						$("#<?php echo $property?>Header").val('<?php echo defaultHeadersName[$property]?>');
+						$("#<?php echo $property?>Header").val('<?php echo $defaultHeadersName[$property]?>');
 					<?php }?>
 					
 					setServiceModified(false);

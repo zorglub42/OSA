@@ -67,7 +67,7 @@ require_once '../include/Constants.php';
 		}
 		
 		if (!$FORWARD_IDENT){
-			echo "\tRequestHeader unset " . defaultHeadersName["userName"] . "\n";
+			echo "\tRequestHeader unset " . $defaultHeadersName["userName"] . "\n";
 		}else{
 			echo "\tOSAIdentityHeadersMapping " . $IDENTITY_MAPPING . "\n";
 		}

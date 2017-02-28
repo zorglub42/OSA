@@ -49,7 +49,7 @@ function getServiceHeadersMapping($serviceName , $userProperty=NULL){
 		$qryPrms=array("serviceName" => $serviceName);
 		$strSQL="SELECT * FROM headersmapping h WHERE serviceName=:serviceName";
 		if ( ! empty($userProperty)){
-			if (! in_array($userProperty, userProperties)){
+			if (! in_array($userProperty, $userProperties)){
 				$error->setFunctionalCode(4);
 				$error->setHttpStatus(400);
 				$error->setFunctionalLabel("User property " . $userProperty . " can not be mapped");
@@ -68,10 +68,10 @@ function getServiceHeadersMapping($serviceName , $userProperty=NULL){
 			}
 			if (count($rc)==0){
 				if (empty($userProperty)){
-					foreach(userProperties as $property){
+					foreach($userProperties as $property){
 						$row["serviceName"]=$serviceName;
 						$row["userProperty"]=$property;
-						$row["headerName"]=defaultHeadersName[$property];
+						$row["headerName"]=$defaultHeadersName[$property];
 
 						$mapping = new HeaderMapping($row);
 						array_push($rc,$mapping->toArray());
@@ -110,7 +110,7 @@ function createServiceHeadersMapping($serviceName , $userProperty, $headerName){
 	$error = new OSAError();
 	$error->setHttpStatus(200);
 
-	if (! in_array($userProperty, userProperties)){
+	if (! in_array($userProperty, $userProperties)){
 		$error->setFunctionalCode(4);
 		$error->setHttpStatus(400);
 		$error->setFunctionalLabel("User property " . $userProperty . " can not be mapped");

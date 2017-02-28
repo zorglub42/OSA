@@ -83,13 +83,13 @@ require_once "../../include/Settings.ini.php";
 				<div class="row" id="idMapping">
 					<div class="col-md-12 header"><?php echo Localization::getString("service.label.headers")?></div>
 					
-					<?php foreach (userProperties as $property){?>
+					<?php foreach ($userProperties as $property){?>
 						<div class="col-md-3">
 							<input type="checkbox" id="cb<?php echo $property?>Header" onchange="cbHeaderClicked('<?php echo $property?>')" onkeypress="cbHeaderClicked('<?php echo $property?>')">
 							<label for="cb<?php echo $property?>Header"><?php echo Localization::getString("service.label.headers." . $property)?></label>
 						</div>
 						<div class="col-md-3">
-							<input disabled class="form-control" placeholder="<?php echo defaultHeadersName[$property]?>" type="text" id="<?php echo $property?>Header"  value="<?php echo defaultHeadersName[$property]?>"  onchange="setServiceModified(true)" onkeypress="setServiceModified(true)">
+							<input disabled class="form-control" placeholder="<?php echo $defaultHeadersName[$property]?>" type="text" id="<?php echo $property?>Header"  value="<?php echo $defaultHeadersName[$property]?>"  onchange="setServiceModified(true)" onkeypress="setServiceModified(true)">
 						</div>
 					<?php }?>
 					<div class="col-md-12"><hr></div>

@@ -101,11 +101,11 @@ require_once '../services/serviceDAO.php';
 				$IDENTITY_MAPPING=$IDENTITY_MAPPING . $mapping["userProperty"] . "," . $mapping["headerName"];
 			}
 			if (empty($IDENTITY_MAPPING)){
-				foreach(userProperties as $property){
+				foreach($userProperties as $property){
 					if (!empty($IDENTITY_MAPPING)){
 						$IDENTITY_MAPPING=$IDENTITY_MAPPING. ";";
 					}
-					$IDENTITY_MAPPING=$IDENTITY_MAPPING . $property . "," . defaultHeadersName[$property];
+					$IDENTITY_MAPPING=$IDENTITY_MAPPING . $property . "," . $defaultHeadersName[$property];
 				}
 			}
 		}

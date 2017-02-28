@@ -63,12 +63,12 @@
 		
 
 	#Identity forwarding headers name
-	define ("defaultHeadersName", array("userName" => "X_REMOTE_USER",
-										"firstName" => "X_OSA_FIRSTNAME",
-										"lastName" => "X_OSA_LASTNAME",
-										"entity" => "X_OSA_ENTITY",
-										"emailAddress" => "X_OSA_EMAIL",
-										"extra" => "X_OSA_EXTRA")
+	$defaultHeadersName = array(	"userName" => "X_REMOTE_USER",
+					"firstName" => "X_OSA_FIRSTNAME",
+					"lastName" => "X_OSA_LASTNAME",
+					"entity" => "X_OSA_ENTITY",
+					"emailAddress" => "X_OSA_EMAIL",
+					"extra" => "X_OSA_EXTRA"
 	);
 /*							  
 	define("userNameHeader", "X_REMOTE_USER");

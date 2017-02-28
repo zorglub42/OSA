@@ -31,11 +31,11 @@ $firstName="";
 $lastName="";
 
 $hdrs=getallheaders();
-if (isset($hdrs[defaultHeadersName["firstName"]])){
-	$firstName=$hdrs[defaultHeadersName["firstName"]];
+if (isset($hdrs[$defaultHeadersName["firstName"]])){
+	$firstName=$hdrs[$defaultHeadersName["firstName"]];
 }
-if (isset($hdrs[defaultHeadersName["lastName"]])){
-	$lastName=$hdrs[defaultHeadersName["lastName"]];
+if (isset($hdrs[$defaultHeadersName["lastName"]])){
+	$lastName=$hdrs[$defaultHeadersName["lastName"]];
 }
 ?>
 <html>

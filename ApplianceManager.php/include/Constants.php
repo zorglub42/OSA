@@ -60,5 +60,11 @@ define ("ADMIN_SERVICE", "ApplianceManagerAdmin");
 define ("version", "3.1");
 
 
-define ("userProperties", array("userName", "firstName", "lastName", "entity", "emailAddress", "extra"));
+$userProperties = array("userName", 
+			"firstName", 
+			"lastName", 
+			"entity", 
+			"emailAddress", 
+			"extra"
+);
 ?>
