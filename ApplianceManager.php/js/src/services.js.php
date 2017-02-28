@@ -24,6 +24,7 @@
 <?php
 	require_once "../include/Constants.php";
 	require_once "../include/Settings.ini.php";
+	require_once "../include/Localization.php";
 ?>
 	
 			var currentService;
