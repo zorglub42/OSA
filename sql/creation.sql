@@ -26,7 +26,7 @@
 * 1.0.0 - 2012-10-01 : Release of the file
 **/
 
--- Version: 2.5
+-- Version: 2.6
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -240,6 +240,22 @@ KEY `FK_user_quotas_user` (`userName`) USING BTREE,
 CONSTRAINT `FK_user_quotas_resource` FOREIGN KEY (`serviceName`) REFERENCES `services` (`serviceName`) ON DELETE CASCADE,
 CONSTRAINT `FK_user_quotas_user` FOREIGN KEY (`userName`) REFERENCES `users` (`userName`) ON DELETE CASCADE
 ) CHARSET=LATIN1  ENGINE=InnoDB;
+
+
+
+CREATE TABLE headersmapping (
+  id INT NOT NULL AUTO_INCREMENT,
+  serviceName VARCHAR(45) NOT NULL,
+  columnName VARCHAR(45) NOT NULL,
+  headerName VARCHAR(45) NOT NULL,
+  PRIMARY KEY (id),
+  INDEX fk_headersmapping_1_idx (serviceName ASC),
+  CONSTRAINT fk_headersmapping_1
+    FOREIGN KEY (serviceName)
+    REFERENCES appliance.services (serviceName)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION);
+
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
