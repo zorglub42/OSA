@@ -34,12 +34,15 @@ require_once '../include/Constants.php';
 require_once '../include/PDOFunc.php';
 require_once '../include/Func.inc.php';
 require_once '../include/Settings.ini.php';
+require_once '../include/Constants.php';
 
 function getServiceHeadersMapping($serviceName , $userProperty=NULL){
 	GLOBAL $BDName;
 	GLOBAL $BDUser;
 	GLOBAL $BDPwd;
-
+	GLOBAL $userProperties;
+	GLOBAL $defaultHeadersName;
+	
 	$serviceName=normalizeName($serviceName);
 
 	$error = new OSAError();
@@ -68,7 +71,7 @@ function getServiceHeadersMapping($serviceName , $userProperty=NULL){
 			}
 			if (count($rc)==0){
 				if (empty($userProperty)){
-					foreach($userProperties as $property){
+					foreach ($userProperties as $property){
 						$row["serviceName"]=$serviceName;
 						$row["userProperty"]=$property;
 						$row["headerName"]=$defaultHeadersName[$property];
@@ -104,6 +107,8 @@ function createServiceHeadersMapping($serviceName , $userProperty, $headerName){
 	GLOBAL $BDName;
 	GLOBAL $BDUser;
 	GLOBAL $BDPwd;
+	GLOBAL $userProperties;
+	GLOBAL $defaultHeadersName;
 
 	$serviceName=normalizeName($serviceName);
 
