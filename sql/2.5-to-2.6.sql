@@ -32,6 +32,6 @@ CREATE TABLE headersmapping (
   INDEX fk_headersmapping_1_idx (serviceName ASC),
   CONSTRAINT fk_headersmapping_1
     FOREIGN KEY (serviceName)
-    REFERENCES appliance.services (serviceName)
+    REFERENCES services (serviceName)
     ON DELETE CASCADE
     ON UPDATE NO ACTION);
