@@ -51,25 +51,26 @@ require_once "../../include/Localization.php";
 						<div class="col-xs-5 col-md-2 ellipsis" title="<?php echo Localization::getString("list.actions")?>"><?php echo Localization::getString("list.actions")?></div>
 				</div>
 				<div class="list-group" id="data" >
-					<a class="list-group-item row" id="rowTpl" style="display:none" >
-						<div class="col-xs-4 col-md-2 ellipsis" title="{nodeList[i].nodeName}">{nodeList[i].nodeName}</div>
-						<div class="col-xs-1 col-md-1 ellipsis mobile-optional"><input type="checkbox" title="<?php echo Localization::getString("node.isHTTPS.tooltip")?>" {cbIsHTTPS} disabled></div>
-						<div class="col-xs-2 col-md-2 ellipsis mobile-optional" title="{nodeList[i].serverFQDN}">{nodeList[i].serverFQDN}</div>
-						<div class="col-xs-3 col-md-2 ellipsis" title="{nodeList[i].localIP}:{nodeList[i].port}">{nodeList[i].localIP}:{nodeList[i].port}</div>
-						<div class="col-xs-2 col-md-3 ellipsis mobile-optional" title="{nodeList[i].nodeDescription}">{nodeList[i].nodeDescription}</div>
-						<div class="col-xs-5 col-md-2">
-								<button type="button" class="btn btn-default" id="btnEdit" title="<?php echo Localization::getString("node.edit.tooltip")?>" onclick="startEditNode('{nodeList[i].uri}')">
-								  <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
-								</button>
-								<button type="button" class="btn btn-default" id="btnDelete" title="<?php echo Localization::getString("node.delete.tooltip")?>" onclick="deleteNode('{nodeList[i].uri}', '{nodeList[i].nodeName}')">
-								  <span class="glyphicon glyphicon glyphicon-trash" aria-hidden="true"></span>
-								</button>
-								<button type="button" class="btn btn-default" id="btnPublish" title="<?php echo Localization::getString("node.publish.tooltip")?>" onclick="publishNode('{nodeList[i].uri}', '1')">
-								  <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
-								</button>
-								<button type="button" class="btn btn-default" id="btnUnpublish" title="<?php echo Localization::getString("node.unpublish.tooltip")?>" onclick="publishNode('{nodeList[i].uri}', '0')">
-								  <span class="glyphicon glyphicon-pause" aria-hidden="true"></span>
-								</button>
+					<a class="list-group-item row"  id="rowTpl" style="display:none">
+						<div  ondblclick="startEditNode('{nodeList[i].uri}')">
+							<div class="col-xs-4 col-md-2 ellipsis" title="{nodeList[i].nodeName}">{nodeList[i].nodeName}</div>
+							<div class="col-xs-1 col-md-1 ellipsis mobile-optional"><input type="checkbox" title="<?php echo Localization::getString("node.isHTTPS.tooltip")?>" {cbIsHTTPS} disabled></div>
+							<div class="col-xs-2 col-md-2 ellipsis mobile-optional" title="{nodeList[i].serverFQDN}">{nodeList[i].serverFQDN}</div>
+							<div class="col-xs-3 col-md-2 ellipsis" title="{nodeList[i].localIP}:{nodeList[i].port}">{nodeList[i].localIP}:{nodeList[i].port}</div>
+							<div class="col-xs-2 col-md-3 ellipsis mobile-optional" title="{nodeList[i].nodeDescription}">{nodeList[i].nodeDescription}</div>
+							<div class="col-xs-5 col-md-2">
+									<button type="button" class="btn btn-default" id="btnEdit" title="<?php echo Localization::getString("node.edit.tooltip")?>" onclick="startEditNode('{nodeList[i].uri}')">
+									  <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+									</button>
+									<button type="button" class="btn btn-default" id="btnDelete" title="<?php echo Localization::getString("node.delete.tooltip")?>" onclick="deleteNode('{nodeList[i].uri}', '{nodeList[i].nodeName}')">
+									  <span class="glyphicon glyphicon glyphicon-trash" aria-hidden="true"></span>
+									</button>
+									<button type="button" class="btn btn-default" id="btnPublish" title="<?php echo Localization::getString("node.publish.tooltip")?>" onclick="publishNode('{nodeList[i].uri}', '1')">
+									  <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+									</button>
+									<button type="button" class="btn btn-default" id="btnUnpublish" title="<?php echo Localization::getString("node.unpublish.tooltip")?>" onclick="publishNode('{nodeList[i].uri}', '0')">
+									  <span class="glyphicon glyphicon-pause" aria-hidden="true"></span>
+									</button>
 							</div>
 						</div>
 					</a>

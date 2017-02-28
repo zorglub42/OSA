@@ -49,8 +49,8 @@ function getUser($userName = NULL, $request_data = NULL){
 		
 	if ($userName==="me"){
 		$hdrs=getallheaders();
-		if (isset($hdrs[userNameHeader])){
-			$userName=$hdrs[userNameHeader];
+		if (isset($hdrs[defaultHeadersName["userName"]])){
+			$userName=$hdrs[defaultHeadersName["userName"]];
 		}else{
 			throw new Exception("current user not found in request");
 		}

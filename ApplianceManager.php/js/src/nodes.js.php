@@ -68,12 +68,7 @@ function startResetCASSL(){
 	if (confirm("<?php echo Localization::getJSString("node.deleteCASSL.confirm")?>")){
 		removeCASSLSetting=true;
 		setNodeModified(true);
-		clearFileInput("CAfileuploadFLD");
 		clearFileInput("CHAINfileuploadFLD");
-
-		//$("#lblCa").html("Add CA cert.");
-		//$("#lblChain").html("Add chain cert.");
-
 	}
 	
 }
@@ -147,7 +142,6 @@ function clearFileInput(id)
 function toggleAuthority(){
 	$("#sslAuthority").toggle();
 	if (!$('#manageCaCert').is(':checked')){
-		clearFileInput("CAfileuploadFLD");
 		clearFileInput("CHAINfileuploadFLD");
 		
 		
@@ -176,14 +170,6 @@ function editNode(node){
 		currentNode=node;
 
 
-		//lblCa="Add CA cert.";
-		//lblChain="Add chain cert.";
-		//if (node.caUri != "") {
-		//	lblCa = "Change current CA cert.";
-		//}
-		//if (node.chainUri != "") {
-		//	lblChain = "Change current chain cert.";
-		//}
 		
 		$("#content").html(data.replaceAll("{node.uri}", node.uri)
 							   .replaceAll("{node.additionalConfiguration}", node.additionalConfiguration)
@@ -237,7 +223,6 @@ function saveOrUpdateNode(method){
 	showWait();
 	 var uploadPrivKeyFLD=document.getElementById("PKfileuploadFLD");
 	 var uploadCertFLD=document.getElementById("CERTfileuploadFLD");
-	 var uploadCaFLD=document.getElementById("CAfileuploadFLD");
 	 var uploadChainFLD=document.getElementById("CHAINfileuploadFLD");
 	del=true;
 	if (removeSSLSetting && uploadPrivKeyFLD.files.length==0 && uploadCertFLD.files.length==0){
@@ -257,22 +242,6 @@ function saveOrUpdateNode(method){
 			del=false;
 			$.ajax({
 			  url: "nodes/" + currentNode.nodeName + "/privateKey" ,
-			  dataType: 'json',
-			  type:'DELETE',
-			  async: false,
-			  success: function (e){
-				  del=true;
-			  },
-			  error: displayErrorV2
-			});
-		
-		}
-	}	
-	if (removeCASSLSetting && uploadCaFLD.files.length==0){
-		if (del){
-			del=false;
-			$.ajax({
-			  url: "nodes/" + currentNode.nodeName + "/ca" ,
 			  dataType: 'json',
 			  type:'DELETE',
 			  async: false,
@@ -374,13 +343,6 @@ function saveOrUpdateNode(method){
 			ssl=true;
 		$('#fileupload').fileupload('destroy');
 	 }
-	 if (uploadCaFLD.files.length>0){
-		$('#fileupload').fileupload();
-		$('#fileupload').fileupload('send', {async: false, files: uploadCaFLD.files, url:nodeURI + "/ca"})
-			.error(function (jqXHR, textStatus, errorThrown) {error=error||true; $('#fileupload').fileupload('destroy');displayErrorV2(jqXHR, textStatus, errorThrown)});
-			ssl=true;
-		$('#fileupload').fileupload('destroy');
-	 }
 	 if (uploadChainFLD.files.length>0){
 		$('#fileupload').fileupload();
 		$('#fileupload').fileupload('send', {async: false, files: uploadChainFLD.files, url:nodeURI + "/chain"})
@@ -414,9 +376,6 @@ function addNode(){
 		currentNode=null;
 
 
-		//lblCa="Add CA cert.";
-		//lblChain="Add chain cert.";
-		
 		$("#content").html(data.replaceAll("{node.uri}", "")
 							   .replaceAll("{node.additionalConfiguration}", "")
 							   .replaceAll("{nodeNameAsLabel}", "")

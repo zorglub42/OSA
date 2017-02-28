@@ -243,8 +243,8 @@ function getDateFromIso($strDate){
 
 function getRequestor($request_data=null){
 	$hdrs=getallheaders();
-	if (isset($hdrs[userNameHeader])){
-		$requestor=$hdrs[userNameHeader];
+	if (isset($hdrs[defaultHeadersName["userName"]])){
+		$requestor=$hdrs[defaultHeadersName["userName"]];
 	}else{
 		throw new RestException(400,"Missing authentication credentials");
 	}

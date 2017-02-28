@@ -67,14 +67,14 @@ require_once '../include/Constants.php';
 		}
 		
 		if (!$FORWARD_IDENT){
-			echo "\tRequestHeader unset " . userNameHeader . "\n";
+			echo "\tRequestHeader unset " . defaultHeadersName["userName"] . "\n";
 		}else{
-			echo "\tOSAIdentityHeadersMapping userName," . userNameHeader . ";firstName," . firstNameHeader . ";lastName," .lastNameHeader . ";entity," . entityHeader . ";emailAddress," . emailAddressHeader . ";extra," . extraHeader . "\n";
+			echo "\tOSAIdentityHeadersMapping " . $IDENTITY_MAPPING . "\n";
 		}
+		
 	}else{
 		echo "\tOSAEnable Off\n";
 	}
-	
 	
 	?>
 	

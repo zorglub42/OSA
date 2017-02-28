@@ -38,16 +38,17 @@ require_once "../../include/Localization.php";
 						<div class="col-xs-3 col-md-2	 ellipsis"><?php echo Localization::getString("list.actions")?></div>
 				</div>
 				<div class="list-group" id="data">
-					<a class="list-group-item row" id="rowTpl" style="display:none" >
-						<div class="col-xs-4 col-md-4 ellipsis" title="{groupList[i].groupName}">{groupList[i].groupName}</div>
-						<div class="col-xs-5 col-md-6 ellipsis" title="{groupList[i].description}">{groupList[i].description}</div>
-						<div class="col-xs-3 col-md-2 ">
-							<button type="button" class="btn btn-default" id="btnEdit" title="<?php echo Localization::getString("group.edit.tooltip")?>" onclick="startEditGroup('{groupList[i].uri}')">
-							  <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
-							</button>
-							<button type="button" class="btn btn-default" id="btnDelete" title="<?php echo Localization::getString("group.edit.tooltip")?>" onclick="deleteGroup('{groupList[i].uri}', '{groupList[i].groupName}')">
-							  <span class="glyphicon glyphicon glyphicon-trash" aria-hidden="true"></span>
-							</button>
+					<a class="list-group-item row" id="rowTpl" style="display:none">
+						<div ondblclick="startEditGroup('{groupList[i].uri}')">							<div class="col-xs-4 col-md-4 ellipsis" title="{groupList[i].groupName}">{groupList[i].groupName}</div>
+							<div class="col-xs-5 col-md-6 ellipsis" title="{groupList[i].description}">{groupList[i].description}</div>
+							<div class="col-xs-3 col-md-2 ">
+								<button type="button" class="btn btn-default" id="btnEdit" title="<?php echo Localization::getString("group.edit.tooltip")?>" onclick="startEditGroup('{groupList[i].uri}')">
+								  <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+								</button>
+								<button type="button" class="btn btn-default" id="btnDelete" title="<?php echo Localization::getString("group.edit.tooltip")?>" onclick="deleteGroup('{groupList[i].uri}', '{groupList[i].groupName}')">
+								  <span class="glyphicon glyphicon glyphicon-trash" aria-hidden="true"></span>
+								</button>
+							</div>
 						</div>
 					</a>
 				</div>

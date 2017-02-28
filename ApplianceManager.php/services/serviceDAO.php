@@ -29,10 +29,156 @@ require_once '../objects/Service.class.php';
 require_once '../objects/Node.class.php';
 require_once '../objects/Quota.class.php';
 require_once '../objects/User.class.php';
+require_once '../objects/HeaderMapping.class.php';
 require_once '../include/Constants.php';
 require_once '../include/PDOFunc.php';
 require_once '../include/Func.inc.php';
 require_once '../include/Settings.ini.php';
+
+function getServiceHeadersMapping($serviceName , $userProperty=NULL){
+	GLOBAL $BDName;
+	GLOBAL $BDUser;
+	GLOBAL $BDPwd;
+
+	$serviceName=normalizeName($serviceName);
+
+	$error = new OSAError();
+	$error->setHttpStatus(200);
+
+	try{
+		$qryPrms=array("serviceName" => $serviceName);
+		$strSQL="SELECT * FROM headersmapping h WHERE serviceName=:serviceName";
+		if ( ! empty($userProperty)){
+			if (! in_array($userProperty, userProperties)){
+				$error->setFunctionalCode(4);
+				$error->setHttpStatus(400);
+				$error->setFunctionalLabel("User property " . $userProperty . " can not be mapped");
+			}
+			$strSQL = $strSQL . " AND userProperty=:userProperty";
+			$qryPrms["userProperty"]=$userProperty;
+		}
+		if ($error->getHttpStatus() ==200){
+			$db=openDB($BDName, $BDUser, $BDPwd);
+			$stmt=$db->prepare($strSQL);
+			$stmt->execute($qryPrms);
+			$rc =  Array();
+			while ($row=$stmt->fetch(PDO::FETCH_ASSOC)){
+				$mapping = new HeaderMapping($row);
+				array_push($rc,$mapping->toArray());
+			}
+			if (count($rc)==0){
+				if (empty($userProperty)){
+					foreach(userProperties as $property){
+						$row["serviceName"]=$serviceName;
+						$row["userProperty"]=$property;
+						$row["headerName"]=defaultHeadersName[$property];
+
+						$mapping = new HeaderMapping($row);
+						array_push($rc,$mapping->toArray());
+						
+					}
+				}else{
+					$error->setFunctionalCode(4);
+					$error->setHttpStatus(404);
+					$error->setFunctionalLabel("No headers mapping defined for service " . $serviceName . " and user property " . $userProperty);
+				}
+			}
+		}
+	}catch (Exception $e){
+		if ($error->getHttpStatus() ==200){
+			$error->setHttpStatus(500);
+			$error->setFunctionalLabel($e->getMessage());
+		}
+		$error->setFunctionalCode(3);
+		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());;
+		
+	}
+	if ($error->getHttpStatus() == 200){
+		return $rc;
+	}else{
+		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());;
+	}
+}
+
+function createServiceHeadersMapping($serviceName , $userProperty, $headerName){
+	GLOBAL $BDName;
+	GLOBAL $BDUser;
+	GLOBAL $BDPwd;
+
+	$serviceName=normalizeName($serviceName);
+
+	$error = new OSAError();
+	$error->setHttpStatus(200);
+
+	if (! in_array($userProperty, userProperties)){
+		$error->setFunctionalCode(4);
+		$error->setHttpStatus(400);
+		$error->setFunctionalLabel("User property " . $userProperty . " can not be mapped");
+		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());;
+	}elseif (empty($headerName)){
+		$error->setFunctionalCode(4);
+		$error->setHttpStatus(400);
+		$error->setFunctionalLabel("headerName is required");
+		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());;
+	}else{
+		try{
+			$qryPrms=array("serviceName" => $serviceName, "userProperty"=>$userProperty, "headerName"=>$headerName);
+
+			$strSQL="INSERT headersmapping(serviceName, userProperty, headerName) values (:serviceName, :userProperty, :headerName)";
+			$db=openDB($BDName, $BDUser, $BDPwd);
+			$stmt=$db->prepare($strSQL);
+			$stmt->execute($qryPrms);
+		}catch (Exception $e){
+			if (strpos($e->getMessage,"Duplicate entry")){
+				$error->setHttpStatus(409);
+				$error->setFunctionalCode(5);
+				$error->setFunctionalLabel("Header mapping for user property " . $userProperty . " and Service " . $serviceName . " already exists " );
+
+			}elseif ($error->getHttpStatus() ==200){
+				$error->setFunctionalCode(3);
+				$error->setHttpStatus(500);
+				$error->setFunctionalLabel($e->getMessage());
+			}
+			throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());;
+			
+		}
+		$rc =  getServiceHeadersMapping($serviceName, $userProperty);
+		return $rc;
+	}
+}
+
+
+
+function deleteServiceHeadersMapping($serviceName){
+	GLOBAL $BDName;
+	GLOBAL $BDUser;
+	GLOBAL $BDPwd;
+
+	$serviceName=normalizeName($serviceName);
+
+	$error = new OSAError();
+	$error->setHttpStatus(200);
+
+	try{
+		$qryPrms=array("serviceName" => $serviceName);
+		$strSQL="DELETE FROM headersmapping WHERE serviceName=:serviceName";
+
+		$db=openDB($BDName, $BDUser, $BDPwd);
+		$stmt=$db->prepare($strSQL);
+		$stmt->execute($qryPrms);
+		$rc =  Array();
+	}catch (Exception $e){
+		if ($error->getHttpStatus() ==200){
+			$error->setHttpStatus(500);
+			$error->setFunctionalLabel($e->getMessage());
+		}
+		$error->setFunctionalCode(3);
+		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());;
+		
+	}
+	return $rc;
+}
+
 
 
 function getService($serviceName = NULL, $request_data=NULL){

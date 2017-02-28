@@ -2,10 +2,10 @@
 	<div class="col-md-12 col-xs-12">
 			<div id="tabs">
 				<ul>
-					<li><a  href="#tabs-general">General</a></li>
-					<li><a  href="#tabs-SSL">SSL certs and key</a></li>
-					<li id="showServices"><a  href="#tabs-node-services" onclick="loadNodeServices('{node.uri}')">Services</a></li>
-					<li><a href="#tabs-node-advance" >Advance</a></li>
+					<li><a  href="#tabs-general"><?php echo Localization::getString("node.tab.general")?></a></li>
+					<li><a  href="#tabs-SSL"><?php echo Localization::getString("node.tab.ssl")?></a></li>
+					<li id="showServices"><a  href="#tabs-node-services" onclick="loadNodeServices('{node.uri}')"><?php echo Localization::getString("node.tab.services")?></a></li>
+					<li><a href="#tabs-node-advance" ><?php echo Localization::getString("node.tab.advance")?></a></li>
 				</ul>
 
 				<div id="tabs-node-services">
@@ -114,10 +114,10 @@
 						<form enctype="multipart/form-data">
 							<div id="fileupload"/>
 							<div class="row">
-								<div class="col-md-6 col-xs-6" title="<?php echo Localization::getString("node.ca.tooltip")?>">
+<!--								<div class="col-md-6 col-xs-6" title="<?php echo Localization::getString("node.ca.tooltip")?>">
 									<label id="lblCa" for="CAfileuploadFLD"><?php echo Localization::getString("node.label.ca")?></label>
 									<input class="form-control" id="CAfileuploadFLD" type="file"  onchange="setNodeModified(true)" >
-								</div>
+								</div>-->
 								<div class="col-md-6 col-xs-6" title="<?php echo Localization::getString("node.cert.tooltip")?>" >
 									<label id="lblChain" for="CHAINfileuploadFLD"><?php echo Localization::getString("node.label.chain")?></label><br>
 									<input id="CHAINfileuploadFLD" type="file" class="form-control" onchange="setNodeModified(true)" >

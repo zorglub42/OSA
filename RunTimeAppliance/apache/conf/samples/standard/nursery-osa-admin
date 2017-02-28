@@ -99,7 +99,7 @@ SSLStaplingCache        shmcb:/var/run/ocsp(128000)
 			OSACheckUserQuotas Off
 
 
-			OSALogHit On
+			OSALogHit Off
 			
 			ProxyPassReverseCookieDomain 127.0.0.1 HTTPS_ADMIN_VHOST_NAME
 
@@ -154,7 +154,7 @@ SSLStaplingCache        shmcb:/var/run/ocsp(128000)
 			OSACheckUserQuotas Off
 
 
-			OSALogHit On
+			OSALogHit Off
 			
 			ProxyPassReverseCookieDomain localhost HTTPS_ADMIN_VHOST_NAME
 			ProxyPassReverseCookiePath /  /auth/token
@@ -185,7 +185,7 @@ SSLStaplingCache        shmcb:/var/run/ocsp(128000)
 			OSACheckUserQuotas Off
 
 
-			OSALogHit On
+			OSALogHit Off
 			
 			ProxyPassReverseCookieDomain localhost HTTPS_ADMIN_VHOST_NAME
 			ProxyPassReverseCookiePath /  /users/me

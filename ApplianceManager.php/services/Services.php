@@ -39,6 +39,56 @@ class Services{
 		}
 	}
 	
+	/**
+	 * @url POST :serviceName/headers-mapping/:userProperty
+	 */
+	 function createHeadersMapping($serviceName, $userProperty, $headerName){
+		try{
+			return createServiceHeadersMapping($serviceName, $userProperty, $headerName);
+		}catch (Exception $e){
+			throw new RestException($e->getCode(), $e->getMessage());
+		}
+	 }
+	
+	/**
+	 * @url POST :serviceName/headers-mapping/
+	 */
+	 function setHeadersMappings($serviceName, $request_data){
+		try{
+			$this->deleteHeadersMapping($serviceName);
+			foreach ($request_data as $header){
+				if (!empty($header["userProperty"])  && !empty($header["headerName"])){
+					$this->createHeadersMapping($serviceName, $header["userProperty"], $header["headerName"]);
+				}
+			}
+			return $this->getHeadersMapping($serviceName);
+		}catch (Exception $e){
+			throw new RestException($e->getCode(), $e->getMessage());
+		}
+	 }	
+	/**
+	 * @url GET :serviceName/headers-mapping/:userProperty
+	 * @url GET :serviceName/headers-mapping
+	 */
+	 function getHeadersMapping($serviceName, $userProperty=NULL){
+		try{
+			return getServiceHeadersMapping($serviceName, $userProperty);
+		}catch (Exception $e){
+			throw new RestException($e->getCode(), $e->getMessage());
+		}
+	 }
+	
+	
+	/**
+	 * @url DELETE :serviceName/headers-mapping
+	 */
+	 function deleteHeadersMapping($serviceName){
+		try{
+			return deleteServiceHeadersMapping($serviceName);
+		}catch (Exception $e){
+			throw new RestException($e->getCode(), $e->getMessage());
+		}
+	 }
 	
 	
 	/**

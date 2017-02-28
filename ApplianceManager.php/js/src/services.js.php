@@ -21,7 +21,11 @@
  * History     :
  * 1.0.0 - 2012-10-01 : Release of the file
 */
-
+<?php
+	require_once "../include/Constants.php";
+	require_once "../include/Settings.ini.php";
+?>
+	
 			var currentService;
 			var currentServiceGroup;
 			var serviceModified;
@@ -104,16 +108,37 @@
 					 }else{
 						$('#isIdentityForwardingEnabled').prop("disabled", false);
 					 }
+					 cbForwardIdentClicked();
 						 
 				}else{
 					 $('#loginForm').hide();
 					 $('#allowAnonymous').hide();
 					 $('#group').hide();
 					 $('#idForwarding').hide();
+					 $('#idMapping').hide();
 					 $('#userQuota').hide();
 				}
 				setServiceModified(true);
 			}
+			
+			function cbForwardIdentClicked(){
+					if (!document.getElementById("isIdentityForwardingEnabled").checked){
+						$("#idMapping").hide();
+					}else{
+						$("#idMapping").show();
+					}
+					setServiceModified(true)
+			}
+			function cbHeaderClicked(header){
+					/*if (!document.getElementById("cb" + header + "Header").checked){
+						$("#" + header + "Header").hide();
+					}else{
+						$("#" + header + "Header").show();
+					}*/
+					$("#" + header + "Header").prop('disabled',!document.getElementById("cb" + header + "Header").checked);
+					setServiceModified(true);
+			}
+				
 			
 			function editService(service){
 
@@ -183,11 +208,21 @@
 					setNodesVisiblility();
 					startPopulateGroups();
 					checkUserAuth();
-					setServiceModified(false);
 					$("#mainForm").height($("#tabs").height()+10);
 					$("#mainForm").click(function(){
 							$("#mainForm").height($("#tabs").height()+10);
 					});
+					cbForwardIdentClicked();
+					$.getJSON( service.uri + "/headers-mapping", 
+						function (data){ 
+							for (i=0;i<data.length;i++){
+								$("#cb" + data[i].userProperty + "Header").prop("checked",true);
+								$("#" + data[i].userProperty + "Header").val(data[i].headerName);
+								cbHeaderClicked(data[i].userProperty);
+								setServiceModified(false);
+							}
+						}
+					);
 				});
 			}
 
@@ -277,10 +312,37 @@
 					  dataType: 'json',
 					  type:method,
 					  data: postData,
+					  success: setHeadersMappings,
+					  error: displayErrorV2
+
+				});
+			}
+			
+			
+			function setHeadersMappings(){
+				var mappings=Array()
+				var hdrNum=0
+				
+				<?php for ($i=0;$i<count(userProperties);$i++){?>
+					if (document.getElementById("cb<?php echo userProperties[$i]?>Header").checked){
+						m=new Object()
+						mappings[hdrNum]=m
+						mappings[hdrNum].userProperty="<?php echo userProperties[$i]?>"
+						mappings[hdrNum].headerName=$("#<?php echo userProperties[$i]?>Header").val()
+						hdrNum++
+					}
+				<?php }?>
+				$.ajax({
+					  url: "services/" + encodeURIComponent($("#serviceName").val()) + "/headers-mapping" ,
+					  dataType: 'json',
+					  type:'POST',
+					  contentType: 'application/json',
+					  data: JSON.stringify(mappings),
 					  success: manageNodesList,
 					  error: displayErrorV2
 
-					});
+				});
+
 			}
 			
 			function manageNodesList(){
@@ -401,12 +463,18 @@
 					startPopulateGroups();
 					setQuotasVisibility();
 					setNodesVisiblility();
-					setServiceModified(false);
 
 					$("#mainForm").height($("#tabs").height()+10);
 					$("#mainForm").click(function(){
 							$("#mainForm").height($("#tabs").height()+10);
 					});
+					
+					<?php foreach (userProperties as $property){?>
+						$("#cb<?php echo $property?>Header").prop("checked", true);
+						$("#<?php echo $property?>Header").val('<?php echo defaultHeadersName[$property]?>');
+					<?php }?>
+					
+					setServiceModified(false);
 				});
 
 			}

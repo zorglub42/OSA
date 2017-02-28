@@ -146,7 +146,7 @@ function configureApachePorts(){
 
 				echo "Listen $LOCAL_IP:$PORT" >>$APACHE_LISTEN_PORTS
 			fi
-			echo "NameVirtualHost $LOCAL_IP:$PORT" >>$APACHE_LISTEN_PORTS
+			#echo "NameVirtualHost $LOCAL_IP:$PORT" >>$APACHE_LISTEN_PORTS
 		fi
 }
 
@@ -330,20 +330,13 @@ do
 		else
 			if [ "$isHTTPS" == "1" ] ; then
 				curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$nodeName/cert>/etc/ssl/certs/nursery-osa-node-$nodeName.pem
+				curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$nodeName/chain>>/etc/ssl/certs/nursery-osa-node-$nodeName.pem
 				curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$nodeName/privateKey>/etc/ssl/private/nursery-osa-node-$nodeName.key
-				curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$nodeName/ca>/etc/ssl/certs/nursery-osa-node-$nodeName-ca.pem
-				curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$nodeName/chain>/etc/ssl/certs/nursery-osa-node-$nodeName-chain.pem
 				if [ -s  /etc/ssl/certs/nursery-osa-node-$nodeName.pem -a -s /etc/ssl/private/nursery-osa-node-$nodeName.key  ] ; then
 					chmod 600 /etc/ssl/certs/nursery-osa-node-$nodeName.pem
 					chmod 600 /etc/ssl/private/nursery-osa-node-$nodeName.key
 				else
 					generateCerts $serverFQDN $nodeName
-				fi
-				if [ -s  /etc/ssl/certs/nursery-osa-node-$nodeName-ca.pem ] ; then
-					chmod 600 /etc/ssl/certs/nursery-osa-node-$nodeName-ca.pem
-				fi
-				if [ -s  /etc/ssl/certs/nursery-osa-node-$nodeName-chain.pem ] ; then
-					chmod 600 /etc/ssl/certs/nursery-osa-node-$nodeName-chain.pem
 				fi
 			fi
 			[ ! -d $APPLIANCE_LOG_DIR/$nodeName ] && mkdir -p $APPLIANCE_LOG_DIR/$nodeName

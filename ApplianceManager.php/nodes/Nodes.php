@@ -80,7 +80,8 @@ class Nodes{
 	 function removeChain($nodeName){
 		try{
 			updateCaChain($nodeName,NULL);
-			$this->getChain($nodeName);
+			return true;
+			//$this->getChain($nodeName);
 		}catch (Exception $e){
 			throw new RestException($e->getCode(), $e->getMessage());
 		}
@@ -108,7 +109,8 @@ class Nodes{
 	 function removeCert($nodeName){
 		try{
 			updateCert($nodeName,NULL);
-			$this->getCert($nodeName);
+			return true;
+			//$this->getCert($nodeName);
 		}catch (Exception $e){
 			throw new RestException($e->getCode(), $e->getMessage());
 		}
@@ -157,7 +159,7 @@ class Nodes{
 	 function removePrivateKey($nodeName){
 		try{
 			updatePrivateKey($nodeName, NULL);
-			$this->getPrivateKey($nodeName);
+			return true;
 		}catch (Exception $e){
 			throw new RestException($e->getCode(), $e->getMessage());
 		}

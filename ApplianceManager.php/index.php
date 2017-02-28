@@ -29,12 +29,13 @@ require_once 'include/Mobile_Detect.php';
 require_once 'include/Localization.php';
 $firstName="";
 $lastName="";
+
 $hdrs=getallheaders();
-if (isset($hdrs[firstNameHeader])){
-	$firstName=$hdrs[firstNameHeader];
+if (isset($hdrs[defaultHeadersName["firstName"]])){
+	$firstName=$hdrs[defaultHeadersName["firstName"]];
 }
-if (isset($hdrs[lastNameHeader])){
-	$lastName=$hdrs[lastNameHeader];
+if (isset($hdrs[defaultHeadersName["lastName"]])){
+	$lastName=$hdrs[defaultHeadersName["lastName"]];
 }
 ?>
 <html>

@@ -1,3 +1,7 @@
+<?php
+require_once "../../include/Constants.php";
+require_once "../../include/Settings.ini.php";
+?>
 <div class="row">
 	<div class="col-md-12 col-xs-12">
 		<div id="tabs">
@@ -69,12 +73,26 @@
 					</fieldset>
 				</form>
 			</div>
-			<div id="tabs-backEnd">
-				<div class="row" id="idForwarding">
+			<div id="tabs-backEnd" >
+				<div class="row" id="idForwarding" title="<?php echo Localization::getString("service.forwardIdentity.tooltip")?>">
 					<div class="col-md-12 col-xs-12" title="<?php echo Localization::getString("service.forwardIdentity.tooltip")?>">
 						<label for="isIdentityForwardingEnabled"><?php echo Localization::getString("service.label.forwardIdentity")?></label>
-						<input type="checkbox" id="isIdentityForwardingEnabled" onClick="setServiceModified(true)"  onchange="setServiceModified(true)" onkeypress="setServiceModified(true)" {cbIdentFwd}>
+						<input type="checkbox" id="isIdentityForwardingEnabled" onClick="cbForwardIdentClicked()"  onchange="cbForwardIdentClicked()" onkeypress="cbForwardIdentClicked()" {cbIdentFwd}>
 					</div>
+				</div>
+				<div class="row" id="idMapping">
+					<div class="col-md-12 header"><?php echo Localization::getString("service.label.headers")?></div>
+					
+					<?php foreach (userProperties as $property){?>
+						<div class="col-md-3">
+							<input type="checkbox" id="cb<?php echo $property?>Header" onchange="cbHeaderClicked('<?php echo $property?>')" onkeypress="cbHeaderClicked('<?php echo $property?>')">
+							<label for="cb<?php echo $property?>Header"><?php echo Localization::getString("service.label.headers." . $property)?></label>
+						</div>
+						<div class="col-md-3">
+							<input disabled class="form-control" placeholder="<?php echo defaultHeadersName[$property]?>" type="text" id="<?php echo $property?>Header"  value="<?php echo defaultHeadersName[$property]?>"  onchange="setServiceModified(true)" onkeypress="setServiceModified(true)">
+						</div>
+					<?php }?>
+					<div class="col-md-12"><hr></div>
 				</div>
 				<div class="row">
 					<div class="col-md-6 col-xs-6" title="<?php echo Localization::getString("service.baUsername.tooltip")?>">

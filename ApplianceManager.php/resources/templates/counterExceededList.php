@@ -19,19 +19,21 @@ require_once "../../include/Localization.php";
 				</div>
 				<div class="list-group" id="data" >
 					<a class="list-group-item row" id="rowTpl" style="display:none" >
-						<div class="col-xs-2 col-md-3 ellipsis" title="{counterList[i].resourceName}">{counterList[i].resourceName}</div>
-						<div class="col-xs-2 col-md-2 ellipsis" title="{counterList[i].userName}">{counterList[i].userName}</div>
-						<div class="col-xs-1 col-md-1 ellipsis" title="{counterList[i].timeUnit}">{counterList[i].timeUnit}</div>
-						<div class="col-xs-2 col-md-2 ellipsis" title="{counterList[i].timeValue}">{counterList[i].timeValue}</div>
-						<div class="col-xs-1 col-md-1 ellipsis" title="{counterList[i].value}">{counterList[i].value}</div>
-						<div class="col-xs-1 col-md-1 ellipsis" title="{counterList[i].value}">{counterList[i].maxValue}</div>
-						<div class="col-xs-3 col-md-2">
-								<button type="button" class="btn btn-default" id="btnEdit" title="<?php echo Localization::getString("counter.edit.tooltip")?>" onclick="startEditCounter('{i}')"">
-								  <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
-								</button>
-								<button type="button" class="btn btn-default" id="btnDelete" title="<?php echo Localization::getString("counter.delete.tooltip")?>" onclick="deleteCounter('{i}')">
-								  <span class="glyphicon glyphicon glyphicon-trash" aria-hidden="true"></span>
-								</button>
+						<div ondblclick="startEditCounter('{i}')"">
+							<div class="col-xs-2 col-md-3 ellipsis" title="{counterList[i].resourceName}">{counterList[i].resourceName}</div>
+							<div class="col-xs-2 col-md-2 ellipsis" title="{counterList[i].userName}">{counterList[i].userName}</div>
+							<div class="col-xs-1 col-md-1 ellipsis" title="{counterList[i].timeUnit}">{counterList[i].timeUnit}</div>
+							<div class="col-xs-2 col-md-2 ellipsis" title="{counterList[i].timeValue}">{counterList[i].timeValue}</div>
+							<div class="col-xs-1 col-md-1 ellipsis" title="{counterList[i].value}">{counterList[i].value}</div>
+							<div class="col-xs-1 col-md-1 ellipsis" title="{counterList[i].value}">{counterList[i].maxValue}</div>
+							<div class="col-xs-3 col-md-2">
+									<button type="button" class="btn btn-default" id="btnEdit" title="<?php echo Localization::getString("counter.edit.tooltip")?>" onclick="startEditCounter('{i}')"">
+									  <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+									</button>
+									<button type="button" class="btn btn-default" id="btnDelete" title="<?php echo Localization::getString("counter.delete.tooltip")?>" onclick="deleteCounter('{i}')">
+									  <span class="glyphicon glyphicon glyphicon-trash" aria-hidden="true"></span>
+									</button>
+								</div>
 							</div>
 						</div>
 					</a>

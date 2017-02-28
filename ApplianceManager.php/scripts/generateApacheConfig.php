@@ -29,6 +29,7 @@ require_once '../include/Constants.php';
 require_once '../include/Settings.ini.php';
 require_once '../include/Func.inc.php';
 require_once '../include/PDOFunc.php';
+require_once '../services/serviceDAO.php';
 
 
 
@@ -90,6 +91,23 @@ require_once '../include/PDOFunc.php';
 		$FORWARD_IDENT=true;
 		if ($row["isIdentityForwardingEnabled"]==0){
 			$FORWARD_IDENT=false;
+			
+		}else{
+			$IDENTITY_MAPPING="";
+			foreach (getServiceHeadersMapping($SERVICE_NAME) as $mapping){
+				if (!empty($IDENTITY_MAPPING)){
+					$IDENTITY_MAPPING=$IDENTITY_MAPPING. ";";
+				}
+				$IDENTITY_MAPPING=$IDENTITY_MAPPING . $mapping["userProperty"] . "," . $mapping["headerName"];
+			}
+			if (empty($IDENTITY_MAPPING)){
+				foreach(userProperties as $property){
+					if (!empty($IDENTITY_MAPPING)){
+						$IDENTITY_MAPPING=$IDENTITY_MAPPING. ";";
+					}
+					$IDENTITY_MAPPING=$IDENTITY_MAPPING . $property . "," . defaultHeadersName[$property];
+				}
+			}
 		}
 		//$BACK_END_DOMAIN=getServerDomain($BACK_END);
 		//$BACK_END_PATH = getPath($BACK_END);
