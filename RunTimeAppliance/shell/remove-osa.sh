@@ -111,9 +111,6 @@ function rmDir(){
 ######################################################################
 function removeApacheConf(){
 
-	#Old versions cleaning
-	find $APACHE_BASE -name "*nursery*" | xargs rm -rf
-	find $INSTALL_DIR -name "*nursery*" | xargs rm -rf
 	
 	
 	for sDef in `ls $APACHE_SITES_DEFINITION_DIR/osa*` ; do
@@ -284,6 +281,11 @@ function migrateApacheConfig(){
 ######################################################################
 
 function loadFromConfig(){
+
+	#Old versions cleaning
+	find $APACHE_BASE -name "*nursery*" | xargs rm -rf
+	find $INSTALL_DIR -name "*nursery*" | xargs rm -rf
+
 	if [ -f $APACHE_SITES_DEFINITION_DIR/osa-local.conf ] ; then
 		if [ -f $APACHE_SITES_DEFINITION_DIR/osa-http.conf ] ; then
 			USE_HTTP=1
