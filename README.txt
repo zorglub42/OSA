@@ -31,12 +31,12 @@ INSTALL:
 		run install.sh with $INSTALL_DIR as argument  (you may add -m option to also compile and install apache module)
 		*** Note: 
 			- $INSTALL_DIR will be created by install.sh if it does not exists
-			- Application is pre-configured to be installed in  /usr/local/nursery/ApplianceManager
+			- Application is pre-configured to be installed in  /usr/local/ApplianceManager
 
 		Ex:
-			./install.sh /usr/local/nursery/ApplianceManager
+			./install.sh /usr/local/ApplianceManager
 			or
-			./install.sh -m /usr/local/nursery/ApplianceManager
+			./install.sh -m /usr/local/ApplianceManager
 			
 		
 		Go to $INSTALL_DIR/RunTimeAppliance/shell

@@ -111,42 +111,46 @@ function rmDir(){
 ######################################################################
 function removeApacheConf(){
 
+	#Old versions cleaning
+	find $APACHE_BASE -name "*nursery*" | xargs rm -rf
+	find $INSTALL_DIR -name "*nursery*" | xargs rm -rf
+	
+	
+	for sDef in `ls $APACHE_SITES_DEFINITION_DIR/osa*` ; do
+		site=`basename $sDef`
+		$APACHE_DISABLE_SITE $site
+	done
 
-for sDef in `ls $APACHE_SITES_DEFINITION_DIR/nursery-osa*` ; do
-	site=`basename $sDef`
-	$APACHE_DISABLE_SITE $site
-done
+
+	#Configure ports.conf
+		if  [ ! -d /etc/apache2/conf.d ] ; then
+			a2disconf osa-0-ports.conf
+		fi
+		rmFile $APACHE_LISTEN_PORTS
+
+	if [ $PURGE_ALL -eq 1 ]  ; then
+
+	#remove logs
+		rmDir $LOG_DIR
+		
+		rmFile $LOG_DIR/doAppliance.log
+		
+		for sDef in  `ls $APACHE_SITES_DEFINITION_DIR/osa*` ; do
+			rmFile $sDef
+		done
+
+	#remove cretificates
+		for cert in `ls /etc/ssl/certs/osa-*` ; do
+			rm  $cert
+		done
+		for key in `ls /etc/ssl/private/osa-*` ; do
+			rm  $key
+		done
 
 
-#Configure ports.conf
-	if  [ ! -d /etc/apache2/conf.d ] ; then
-		a2disconf nursery-osa-0-ports.conf
+
+		
 	fi
-	rmFile $APACHE_LISTEN_PORTS
-
-if [ $PURGE_ALL -eq 1 ]  ; then
-
-#remove logs
-	rmDir $LOG_DIR
-	
-	rmFile $LOG_DIR/doAppliance.log
-	
-	for sDef in  `ls $APACHE_SITES_DEFINITION_DIR/nursery-osa*` ; do
-		rmFile $sDef
-	done
-
-#remove cretificates
-	for cert in `ls /etc/ssl/certs/nursery-osa-*` ; do
-		rm  $cert
-	done
-	for key in `ls /etc/ssl/private/nursery-osa-*` ; do
-		rm  $key
-	done
-
-
-
-	
-fi
 }
 
 
@@ -257,7 +261,7 @@ echo "LOG_DIR=$LOG_DIR"
 
 #Migrate apache OSA conf from Apache2.2 packaging mode to Apache2.4
 function migrateApacheConfig(){
-	for f in `ls $APACHE_SITES_DEFINITION_DIR/nursery-osa*` ; do
+	for f in `ls $APACHE_SITES_DEFINITION_DIR/osa*` ; do
 		echo $f| grep ".conf">/dev/null
 		if [ $? -ne 0 ] ; then
 			$APACHE_DISABLE_SITE `basename $f`
@@ -266,10 +270,10 @@ function migrateApacheConfig(){
 	done
 	if [ ! -d /etc/apache2/conf.d ] ; then
 		#we are on Apache2.4 like installation, migrate from 2.2 like
-		if [ -f /etc/apache2/conf.d/nursery-osa-0-ports.conf ] ; then
-			mv /etc/apache2/conf.d/nursery-osa-0-ports.conf $APACHE_LISTEN_PORTS
+		if [ -f /etc/apache2/conf.d/osa-0-ports.conf ] ; then
+			mv /etc/apache2/conf.d/osa-0-ports.conf $APACHE_LISTEN_PORTS
 		fi
-		a2enconf nursery-osa-0-ports.conf
+		a2enconf osa-0-ports.conf
 	fi
 }
 
@@ -280,32 +284,32 @@ function migrateApacheConfig(){
 ######################################################################
 
 function loadFromConfig(){
-	if [ -f $APACHE_SITES_DEFINITION_DIR/nursery-osa-local.conf ] ; then
-		if [ -f $APACHE_SITES_DEFINITION_DIR/nursery-osa-http.conf ] ; then
+	if [ -f $APACHE_SITES_DEFINITION_DIR/osa-local.conf ] ; then
+		if [ -f $APACHE_SITES_DEFINITION_DIR/osa-http.conf ] ; then
 			USE_HTTP=1
-			addrPort=`cat $APACHE_SITES_DEFINITION_DIR/nursery-osa-http.conf| grep "<VirtualHost" |sed 's/<VirtualHost \(.*\)>.*/\1/'`
+			addrPort=`cat $APACHE_SITES_DEFINITION_DIR/osa-http.conf| grep "<VirtualHost" |sed 's/<VirtualHost \(.*\)>.*/\1/'`
 			HTTP_VHOST_ADDR=`echo $addrPort | awk -F: '{print $1}'` 
 			HTTP_VHOST_PORT=`echo $addrPort | awk -F: '{print $2}'`
 			
 			
 		fi
-		if [ -f $APACHE_SITES_DEFINITION_DIR/nursery-osa-https.conf ] ; then
+		if [ -f $APACHE_SITES_DEFINITION_DIR/osa-https.conf ] ; then
 			USE_HTTPS=1
-			addrPort=`cat $APACHE_SITES_DEFINITION_DIR/nursery-osa-https.conf| grep "<VirtualHost" |sed 's/<VirtualHost \(.*\)>.*/\1/'`
+			addrPort=`cat $APACHE_SITES_DEFINITION_DIR/osa-https.conf| grep "<VirtualHost" |sed 's/<VirtualHost \(.*\)>.*/\1/'`
 			HTTPS_VHOST_ADDR=`echo $addrPort | awk -F: '{print $1}'` 
 			HTTPS_VHOST_PORT=`echo $addrPort | awk -F: '{print $2}'`
 		fi
-		addrPort=`cat $APACHE_SITES_DEFINITION_DIR/nursery-osa-admin.conf| grep "<VirtualHost" |sed 's/<VirtualHost \(.*\)>.*/\1/'`
+		addrPort=`cat $APACHE_SITES_DEFINITION_DIR/osa-admin.conf| grep "<VirtualHost" |sed 's/<VirtualHost \(.*\)>.*/\1/'`
 		HTTPS_ADMIN_VHOST_ADDR=`echo $addrPort | awk -F: '{print $1}'` 
 		HTTPS_ADMIN_VHOST_PORT=`echo $addrPort | awk -F: '{print $2}'`
 
-		addrPort=`cat $APACHE_SITES_DEFINITION_DIR/nursery-osa-local.conf| grep "<VirtualHost" |sed 's/<VirtualHost \(.*\)>.*/\1/'`
+		addrPort=`cat $APACHE_SITES_DEFINITION_DIR/osa-local.conf| grep "<VirtualHost" |sed 's/<VirtualHost \(.*\)>.*/\1/'`
 		PRIVATE_VHOST_PORT=`echo $addrPort | awk -F: '{print $2}'`
 			
 		DB_SCHEMA_NAME=`grep "BDName" /etc/ApplianceManager/Settings.ini.php | awk -F= '{print $2}' | sed 's/"//g' | awk -F@ '{print $1}'`
 		DB_USER=`grep "BDUser" /etc/ApplianceManager/Settings.ini.php | awk -F= '{print $2}' | sed 's/"//g' |sed 's/;$//'`
 		
-		LOG_DIR=`grep "ErrorLog " $APACHE_SITES_DEFINITION_DIR/nursery-osa-local.conf  | sed 's|.*ErrorLog \(.*\)/local/main.error.log|\1|'`
+		LOG_DIR=`grep "ErrorLog " $APACHE_SITES_DEFINITION_DIR/osa-local.conf  | sed 's|.*ErrorLog \(.*\)/local/main.error.log|\1|'`
 		
 	else
 		echo "Hummmmm... It seems that there's no OSA installed here..."
@@ -332,9 +336,10 @@ if [ -f /etc/redhat-release ] ; then
 	[ ! -d $INSTALL_DIR/RunTimeAppliance/apache/conf/sites-availables ]  && mkdir -p $INSTALL_DIR/RunTimeAppliance/apache/conf/sites-availables
 	APACHE_SITES_DEFINITION_DIR=$INSTALL_DIR/RunTimeAppliance/apache/conf/sites-availables
 	APACHE_DISABLE_SITE=disableRedhatSite
-	APACHE_LISTEN_PORTS=/etc/httpd/conf.d/nursery-osa-0-ports.conf
+	APACHE_LISTEN_PORTS=/etc/httpd/conf.d/osa-0-ports.conf
 	APACHE_LOAD_MOD=ensureModuleIsAvailableRedhat
 	APACHE_LOG_DIR=/var/log/httpd
+	APACHE_BASE=/etc/httpd
 
 	grep "#includedir /etc/sudoers.d" /etc/sudoers>/dev/null
 	if [ $? -ne 0 ] ; then
@@ -347,7 +352,7 @@ if [ -f /etc/redhat-release ] ; then
 	touch $APACHE_LISTEN_PORTS
 	mkdir -p  /etc/ssl/certs
 	mkdir -p   /etc/ssl/private
-	[ -f /etc/httpd/conf.d/nursery-osa-0-modules.conf ]  && rm /etc/httpd/conf.d/nursery-osa-0-modules.conf
+	[ -f /etc/httpd/conf.d/osa-0-modules.conf ]  && rm /etc/httpd/conf.d/osa-0-modules.conf
 
 elif [ -f /etc/debian_version ] ; then
 	echo "Debian system"
@@ -358,12 +363,14 @@ elif [ -f /etc/debian_version ] ; then
 	APACHE_SITES_DEFINITION_DIR=/etc/apache2/sites-available
 	APACHE_DISABLE_SITE=a2dissite
 	if [ ! -d /etc/apache2/conf.d ] ; then
-		APACHE_LISTEN_PORTS=/etc/apache2/conf-available/nursery-osa-0-ports.conf
+		APACHE_LISTEN_PORTS=/etc/apache2/conf-available/osa-0-ports.conf
 	else
-		APACHE_LISTEN_PORTS=/etc/apache2/conf.d/nursery-osa-0-ports.conf
+		APACHE_LISTEN_PORTS=/etc/apache2/conf.d/osa-0-ports.conf
 	fi
 	APACHE_LOAD_MOD=ensureModuleIsAvailableDebian
 	APACHE_LOG_DIR=/var/log/apache2
+	APACHE_BASE=/etc/apache2
+	
 	migrateApacheConfig
 else
 	echo "This script only works with debian or redhat"

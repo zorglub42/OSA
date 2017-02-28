@@ -67,10 +67,10 @@ function configureCryptoKey(){
 
 function configureFileSystemPrivileges(){
 	#Protect database creds in include for endpoint (ReverseProxies)
-	chown $APACHE_USER:$APACHE_GROUP $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/nursery-appliance-settings.inc
-	chown -h $APACHE_USER:$APACHE_GROUP    /etc/ApplianceManager/nursery-appliance-settings.inc
+	chown $APACHE_USER:$APACHE_GROUP $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc
+	chown -h $APACHE_USER:$APACHE_GROUP    /etc/ApplianceManager/osa-endpoints-settings.inc
 
-	chmod 500 $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/nursery-appliance-settings.inc
+	chmod 500 $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc
 
 	#Protect creds for PHP app
 	chown $APACHE_USER:$APACHE_GROUP $INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php
@@ -140,8 +140,8 @@ function configureEtc(){
 	[ -f Settings.ini.php ] &&  rm Settings.ini.php
 	ln -s $INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php Settings.ini.php
 	#Apache Module Settings
-	[ -f nursery-appliance-settings.inc ] && rm nursery-appliance-settings.inc
-	ln -s $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/nursery-appliance-settings.inc nursery-appliance-settings.inc
+	[ -f osa-endpoints-settings.inc ] && rm osa-endpoints-settings.inc
+	ln -s $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc osa-endpoints-settings.inc
 	
 	#Template for apache config generation (virtualHosts/node, Location/endpoints)
 	[ -f https_virtualhost_template.php ] &&  rm https_virtualhost_template.php
@@ -391,9 +391,9 @@ function configureMySQLCreds(){
 	changeProperty $INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php BDUser '"'$APPLIANCE_MYSQL_USER'";'
 	changeProperty $INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php BDName '"'$APPLIANCE_MYSQL_SCHEMA'@'$APPLIANCE_MYSQL_HOST':'$APPLIANCE_MYSQL_PORT'";'
 	
-	cat $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/nursery-appliance-settings.inc | sed "s/\(OSAPort \).*/\1$APPLIANCE_MYSQL_PORT/g"| sed "s/\(OSAHost \).*/\1$APPLIANCE_MYSQL_HOST/g" | sed "s/\(OSAPassword \).*/\1$APPLIANCE_MYSQL_PW/g"| sed "s/\(OSADB \).*/\1$APPLIANCE_MYSQL_SCHEMA/g"| sed "s/\(OSAUser \).*/\1$APPLIANCE_MYSQL_USER/g" > /tmp/$$.nursery-appliance-settings.inc
-	:>$INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/nursery-appliance-settings.inc
-	cat /tmp/$$.nursery-appliance-settings.inc >> $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/nursery-appliance-settings.inc
+	cat $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc | sed "s/\(OSAPort \).*/\1$APPLIANCE_MYSQL_PORT/g"| sed "s/\(OSAHost \).*/\1$APPLIANCE_MYSQL_HOST/g" | sed "s/\(OSAPassword \).*/\1$APPLIANCE_MYSQL_PW/g"| sed "s/\(OSADB \).*/\1$APPLIANCE_MYSQL_SCHEMA/g"| sed "s/\(OSAUser \).*/\1$APPLIANCE_MYSQL_USER/g" > /tmp/$$.osa-endpoints-settings.inc
+	:>$INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc
+	cat /tmp/$$.osa-endpoints-settings.inc >> $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc
 }
 ######################################################################
 # configurePathAndSettings
@@ -418,12 +418,12 @@ function configurePathAndSettings(){
 	
 	
 	
-	cat $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/nursery-appliance-settings.inc \
+	cat $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc \
 		| sed "s/\(OSAPassword \).*/\1$APPLIANCE_MYSQL_PW/g" \
-		> /tmp/$$.nursery-appliance-settings.inc
+		> /tmp/$$.osa-endpoints-settings.inc
 	
-	:>$INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/nursery-appliance-settings.inc
-	cat /tmp/$$.nursery-appliance-settings.inc >> $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/nursery-appliance-settings.inc
+	:>$INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc
+	cat /tmp/$$.osa-endpoints-settings.inc >> $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc
 	
 	
 	curPath=`cat $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/applianceManagerRewriting.conf | grep "<Directory" | awk -F\" '{print $2}' | sed 's|\(.*\)/ApplianceManager.php|\1|'`
@@ -458,7 +458,7 @@ function ensureModuleIsAvailableRedhat(){
 	if [ -f /etc/httpd/modules/mod_$1.so ] ; then
 		egrep "^LoadModule $1_module modules/mod_$1.so" /etc/httpd/conf/httpd.conf>/dev/null
 		if [ $? -ne 0 ] ; then
-			echo "LoadModule $1_module modules/mod_$1.so" >>/etc/httpd/conf.d/nursery-osa-0-modules.conf
+			echo "LoadModule $1_module modules/mod_$1.so" >>/etc/httpd/conf.d/osa-0-modules.conf
 		fi
 	else
 		echo "Apache module $1 is not available...."
@@ -522,7 +522,7 @@ function createApacheConf(){
 	:>$APACHE_LISTEN_PORTS 
 	cat /tmp/$$.ports.conf.2 >> $APACHE_LISTEN_PORTS 
 	if [ ! -d /etc/apache2/conf.d ] ; then
-		a2enconf nursery-osa-0-ports.conf
+		a2enconf osa-0-ports.conf
 		service apache2 restart
 	fi
 
@@ -535,41 +535,30 @@ function createApacheConf(){
 	ln -s $INSTALL_DIR/ApplianceManager.php /var/www/local/main/ApplianceManager
 
 	echo "Listen 127.0.0.1:$PRIVATE_VHOST_PORT" >> $APACHE_LISTEN_PORTS 
-	cat   $INSTALL_DIR/RunTimeAppliance/apache/conf/samples/standard/nursery-osa-local | sed "s/PRIVATE_VHOST_PORT/$PRIVATE_VHOST_PORT/g" | sed "s/APACHE_ADMIN_MAIL/$APACHE_ADMIN_MAIL/g" | sed "s|INSTALL_DIR|$INSTALL_DIR|"| sed "s|LOG_DIR|$LOG_DIR|g" > $APACHE_SITES_DEFINITION_DIR/nursery-osa-local.conf
-	$APACHE_ENABLE_SITE nursery-osa-local.conf
+	cat   $INSTALL_DIR/RunTimeAppliance/apache/conf/samples/standard/osa-local | sed "s/PRIVATE_VHOST_PORT/$PRIVATE_VHOST_PORT/g" | sed "s/APACHE_ADMIN_MAIL/$APACHE_ADMIN_MAIL/g" | sed "s|INSTALL_DIR|$INSTALL_DIR|"| sed "s|LOG_DIR|$LOG_DIR|g" > $APACHE_SITES_DEFINITION_DIR/osa-local.conf
+	$APACHE_ENABLE_SITE osa-local.conf
 
 #Create vitual host for admin usage (publishing of core app protected by osa module)
 	echo "Creating apache conf for HTTPS ADMIN site"
-	cat $INSTALL_DIR/RunTimeAppliance/apache/conf/samples/standard/ssleay.cnf | sed "s/@HostName@/$HTTPS_ADMIN_VHOST_NAME/g" >  $INSTALL_DIR/RunTimeAppliance/apache/conf/samples/standard/nursery-osa-admin.cnf
-	openssl req -config $INSTALL_DIR/RunTimeAppliance/apache/conf/samples/standard/nursery-osa-admin.cnf  -new -x509  -days 3650 -nodes  -out  /etc/ssl/certs/nursery-osa-admin.pem  -keyout  /etc/ssl/private/nursery-osa-admin.key
-	chmod 600   /etc/ssl/certs/nursery-osa-admin.pem
-	chmod 600   /etc/ssl/private/nursery-osa-admin.key
+	cat $INSTALL_DIR/RunTimeAppliance/apache/conf/samples/standard/ssleay.cnf | sed "s/@HostName@/$HTTPS_ADMIN_VHOST_NAME/g" >  $INSTALL_DIR/RunTimeAppliance/apache/conf/samples/standard/osa-admin.cnf
+	openssl req -config $INSTALL_DIR/RunTimeAppliance/apache/conf/samples/standard/osa-admin.cnf  -new -x509  -days 3650 -nodes  -out  /etc/ssl/certs/osa-admin.pem  -keyout  /etc/ssl/private/osa-admin.key
+	chmod 600   /etc/ssl/certs/osa-admin.pem
+	chmod 600   /etc/ssl/private/osa-admin.key
 	mkdir -p $LOG_DIR/admin/
-	[ -f $APACHE_SITES_DEFINITION_DIR/nursery-osa-admin.conf ] && rm $APACHE_SITES_DEFINITION_DIR/nursery-osa-admin.conf
+	[ -f $APACHE_SITES_DEFINITION_DIR/osa-admin.conf ] && rm $APACHE_SITES_DEFINITION_DIR/osa-admin.conf
 	echo "Listen $HTTPS_ADMIN_VHOST_ADDR:$HTTPS_ADMIN_VHOST_PORT" >> $APACHE_LISTEN_PORTS 
-	cat   $INSTALL_DIR/RunTimeAppliance/apache/conf/samples/standard/nursery-osa-admin  | sed "s/HTTPS_ADMIN_VHOST_ADDR/$HTTPS_ADMIN_VHOST_ADDR/g" | sed "s/HTTPS_ADMIN_VHOST_PORT/$HTTPS_ADMIN_VHOST_PORT/g"  | sed "s/HTTPS_ADMIN_VHOST_NAME/$HTTPS_ADMIN_VHOST_NAME/g"  | sed "s/PRIVATE_VHOST_PORT/$PRIVATE_VHOST_PORT/g" | sed "s/APACHE_ADMIN_MAIL/$APACHE_ADMIN_MAIL/g" | sed "s|LOG_DIR|$LOG_DIR|g" > $APACHE_SITES_DEFINITION_DIR/nursery-osa-admin.conf
+	cat   $INSTALL_DIR/RunTimeAppliance/apache/conf/samples/standard/osa-admin  | sed "s/HTTPS_ADMIN_VHOST_ADDR/$HTTPS_ADMIN_VHOST_ADDR/g" | sed "s/HTTPS_ADMIN_VHOST_PORT/$HTTPS_ADMIN_VHOST_PORT/g"  | sed "s/HTTPS_ADMIN_VHOST_NAME/$HTTPS_ADMIN_VHOST_NAME/g"  | sed "s/PRIVATE_VHOST_PORT/$PRIVATE_VHOST_PORT/g" | sed "s/APACHE_ADMIN_MAIL/$APACHE_ADMIN_MAIL/g" | sed "s|LOG_DIR|$LOG_DIR|g" > $APACHE_SITES_DEFINITION_DIR/osa-admin.conf
 	if [ $ABSOLUTE_URI -eq 0 ] ; then
-		cat $APACHE_SITES_DEFINITION_DIR/nursery-osa-admin.conf | grep -v "RequestHeader set Public-Root-URI" > /tmp/$$.nursery-osa-admin
-		cp /tmp/$$.nursery-osa-admin $APACHE_SITES_DEFINITION_DIR/nursery-osa-admin.conf
+		cat $APACHE_SITES_DEFINITION_DIR/osa-admin.conf | grep -v "RequestHeader set Public-Root-URI" > /tmp/$$.osa-admin
+		cp /tmp/$$.osa-admin $APACHE_SITES_DEFINITION_DIR/osa-admin.conf
 		
 		cat $INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php | sed 's|.*"defaultUriPrefix".*|	define("defaultUriPrefix",  "");|'  > /tmp/$$.Settings.ini.php
 		:>$INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php
 		cat /tmp/$$.Settings.ini.php >> $INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php
 
 	fi
-	$APACHE_ENABLE_SITE nursery-osa-admin.conf
+	$APACHE_ENABLE_SITE osa-admin.conf
 
-	#OSA V1 decomissioning
-	if [ -f $APACHE_SITES_DEFINITION_DIR/nursery-osa-http.conf ] ; then
-		$APACHE_DISABLE_SITE nursery-osa-http.conf
-		rm $APACHE_SITES_DEFINITION_DIR/nursery-osa-http.conf
-	fi
-
-	if [ -f $APACHE_SITES_DEFINITION_DIR/nursery-osa-https.conf ] ; then
-		$APACHE_DISABLE_SITE nursery-osa-https.conf
-		rm $APACHE_SITES_DEFINITION_DIR/nursery-osa-https.conf
-	fi
-	
 
 }
 
@@ -966,7 +955,7 @@ echo "KEEP_DB=$KEEP_DB"
 
 #Migrate apache OSA conf from Apache2.2 packaging mode to Apache2.4
 function migrateApacheConfig(){
-	for f in `ls $APACHE_SITES_DEFINITION_DIR/nursery-osa*` ; do
+	for f in `ls $APACHE_SITES_DEFINITION_DIR/osa*` ; do
 		echo $f| grep ".conf">/dev/null
 		if [ $? -ne 0 ] ; then
 			$APACHE_DISABLE_SITE `basename $f`
@@ -975,10 +964,10 @@ function migrateApacheConfig(){
 	done
 	if [ ! -d /etc/apache2/conf.d ] ; then
 		#we are on Apache2.4 like installation, migrate form 2.2 like
-		if [ -f /etc/apache2/conf.d/nursery-osa-0-ports.conf ] ; then
-			mv /etc/apache2/conf.d/nursery-osa-0-ports.conf $APACHE_LISTEN_PORTS
+		if [ -f /etc/apache2/conf.d/osa-0-ports.conf ] ; then
+			mv /etc/apache2/conf.d/osa-0-ports.conf $APACHE_LISTEN_PORTS
 		fi
-		a2enconf nursery-osa-0-ports.conf
+		a2enconf osa-0-ports.conf
 	fi
 }
 
@@ -1017,7 +1006,7 @@ if [ -f /etc/redhat-release ] ; then
 	APACHE_SITES_DEFINITION_DIR=$INSTALL_DIR/RunTimeAppliance/apache/conf/sites-availables
 	APACHE_ENABLE_SITE=enableRedhatSite
 	APACHE_DISABLE_SITE=disableRedhatSite
-	APACHE_LISTEN_PORTS=/etc/httpd/conf.d/nursery-osa-0-ports.conf
+	APACHE_LISTEN_PORTS=/etc/httpd/conf.d/osa-0-ports.conf
 	APACHE_LOAD_MOD=ensureModuleIsAvailableRedhat
 	APACHE_LOG_DIR=/var/log/httpd
 
@@ -1032,7 +1021,7 @@ if [ -f /etc/redhat-release ] ; then
 	touch $APACHE_LISTEN_PORTS
 	mkdir -p  /etc/ssl/certs
 	mkdir -p   /etc/ssl/private
-	[ -f /etc/httpd/conf.d/nursery-osa-0-modules.conf ]  && rm /etc/httpd/conf.d/nursery-osa-0-modules.conf
+	[ -f /etc/httpd/conf.d/osa-0-modules.conf ]  && rm /etc/httpd/conf.d/osa-0-modules.conf
 
 elif [ -f /etc/debian_version ] ; then
 	echo "Debian system"
@@ -1049,9 +1038,9 @@ elif [ -f /etc/debian_version ] ; then
 	APACHE_ENABLE_SITE=a2ensite
 	APACHE_DISABLE_SITE=a2dissite
 	if [ ! -d /etc/apache2/conf.d ] ; then
-		APACHE_LISTEN_PORTS=/etc/apache2/conf-available/nursery-osa-0-ports.conf
+		APACHE_LISTEN_PORTS=/etc/apache2/conf-available/osa-0-ports.conf
 	else
-		APACHE_LISTEN_PORTS=/etc/apache2/conf.d/nursery-osa-0-ports.conf
+		APACHE_LISTEN_PORTS=/etc/apache2/conf.d/osa-0-ports.conf
 	fi
 	APACHE_LOAD_MOD=ensureModuleIsAvailableDebian
 	APACHE_LOG_DIR=/var/log/apache2

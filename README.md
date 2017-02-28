@@ -124,12 +124,12 @@ To deploy a new version of OSA from github do the folowing
 
 ##Trouble shooting
 If after using additional apache directives (on service or node) OSA doesn't answer it's probably because apache configuration is corrupted due to invalid directives. To fix it:
-- go to apache available and enabled sites configuration folder and remove all  nursery-osa-node files (DO NOT REMOVE nursery-osa* but only nursery-osa-node*)
+- go to apache available and enabled sites configuration folder and remove all  osa-node files (DO NOT REMOVE osa* but only osa-node*)
 
 		cd /etc/apache2/sites-available
-		rm nursery-osa-node*
+		rm osa-node*
 		cd /etc/apache2/sites-enabled
-		rm nursery-osa-node*
+		rm osa-node*
 - restart apache
 
 		service apache2 restart

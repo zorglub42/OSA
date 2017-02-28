@@ -793,7 +793,7 @@ char strHttpBody[2000];
 
 strHttpBody[0]=0;
 strcat(strHttpBody,"<?xml version='1.0' encoding='UTF-8'?>\n");
-strcat(strHttpBody,"<appliance:Error xmlns:appliance='http://nursery.orange.com/appliance/V1'  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' >\n");
+strcat(strHttpBody,"<appliance:Error xmlns:appliance='http://nursery.orange.com/appliance/V2'  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' >\n");
 strcat(strHttpBody,"	<appliance:Code>-1</appliance:Code>\n");
 strcat(strHttpBody,"	<appliance:Label>");
 strcat(strHttpBody,errMSG);
@@ -903,7 +903,7 @@ return rc;
 
 
 /*--------------------------------------------------------------------------------------------------*/
-/*                 int nursery_error(request_rec *r, char *errMSG, int status)                      */
+/*                 int osa_error(request_rec *r, char *errMSG, int status)                      */
 /*--------------------------------------------------------------------------------------------------*/
 /* Error management for Nursery's mediations                                                        */
 /* Display error text in main body for request and as a HTTP HEADER                                 */
@@ -916,7 +916,7 @@ return rc;
 /* RETURN: apache processing status                                                                 */
 /*         DONE                                                                                     */
 /*--------------------------------------------------------------------------------------------------*/
-int nursery_error(request_rec *r, char *errMSG, int status){
+int osa_error(request_rec *r, char *errMSG, int status){
 
 
 
@@ -958,7 +958,7 @@ while (!getLock && tryNumber <DEAD_LOCK_MAX_RETRY){
         	LOG_ERROR_1(APLOG_ERR, 0, r, "P_db MySQL ERROR: %s: ", mysql_error(connection.handle));
 			sprintf(query,"rollback");
 			mysql_query(connection.handle, query) ; 
-        	nursery_error(r,"DB query error",500);
+        	osa_error(r,"DB query error",500);
 		}
 	}else{
 		getLock=1;
@@ -968,7 +968,7 @@ if (tryNumber >=DEAD_LOCK_MAX_RETRY) {
 	LOG_ERROR_1(APLOG_ERR, 0, r, "Max retry of %d on deadlock reached", DEAD_LOCK_MAX_RETRY);
 	sprintf(query,"rollback");
 	mysql_query(connection.handle, query) ;
-	nursery_error(r,"Can't lock counter.......",500);
+	osa_error(r,"Can't lock counter.......",500);
 }
 }
 
@@ -1979,14 +1979,14 @@ sprintf(counterSecName,"%s$$$S=%d-%02d-%02dT%02d:%02d:%02d",counterPrefix,
 sprintf(query, "DELETE FROM %s WHERE  %s!='%s' and %s like '%s$$$S%%'",sec->countersTable, sec->counterNameField, counterSecName, sec->counterNameField, counterPrefix);
 if (mysql_query(connection.handle, query) != 0) {
         LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.delete.old.per.second MySQL ERROR: %s: ", mysql_error(connection.handle));
-        return nursery_error(r,"DB query error",500);
+        return osa_error(r,"DB query error",500);
 }
 
 /*    2.1 retreive counter value for current "per second counter" */
 sprintf(query, "SELECT %s FROM %s WHERE %s='%s'", sec->counterValueField, sec->countersTable, sec->counterNameField, counterSecName);
 if (mysql_query(connection.handle, query) != 0) {
         LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.select_current.per_second MySQL ERROR: %s: ", mysql_error(connection.handle));
-        return nursery_error(r,"DB query error",500);
+        return osa_error(r,"DB query error",500);
 }
 result = mysql_store_result(connection.handle);
 if (result && (mysql_num_rows(result) >= 1)) {
@@ -1999,7 +1999,7 @@ if (result && (mysql_num_rows(result) >= 1)) {
         sprintf(query, "INSERT INTO %s (%s,%s) VALUES ('%s',0)", sec->countersTable, sec->counterNameField, sec->counterValueField, counterSecName);
         if (mysql_query(connection.handle, query) != 0) {
                 LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.insert.per.second MySQL ERROR: %s: ", mysql_error(connection.handle));
-                return nursery_error(r,"DB query error", 500);
+                return osa_error(r,"DB query error", 500);
         }
 }
 if (result) mysql_free_result(result);
@@ -2008,14 +2008,14 @@ if (result) mysql_free_result(result);
 sprintf(query, "UPDATE %s SET %s=%lu WHERE %s='%s'", sec->countersTable, sec->counterValueField, reqSec+1, sec->counterNameField, counterSecName);
 if (mysql_query(connection.handle, query) != 0) {
 	LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.update.per.second MySQL ERROR: %s: ", mysql_error(connection.handle));
-    return nursery_error(r,"DB query error",500);
+    return osa_error(r,"DB query error",500);
 }
 /*    2.3 if new coutner value exceed quota, display error and stop */
 if (reqSec+1 > maxReqSec){
 	char err[255];
 	sprintf(err, "Maximum number of request (%s %lu/%lu) per second allowed exedeed", quotaScope, reqSec+1, maxReqSec);
 	
-        return nursery_error(r,err,httpStatusOver);
+        return osa_error(r,err,httpStatusOver);
 }
 
 
@@ -2033,13 +2033,13 @@ sprintf(counterDayName,"%s$$$D=%d-%02d-%02d",counterPrefix,
 sprintf(query, "DELETE FROM %s WHERE  %s!='%s' and %s like '%s$$$D%%'",sec->countersTable, sec->counterNameField, counterDayName, sec->counterNameField, counterPrefix);
 if (mysql_query(connection.handle, query) != 0) {
         LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.delete.old.per.day MySQL ERROR: %s: ", mysql_error(connection.handle));
-        return nursery_error(r,"DB query error", 500);
+        return osa_error(r,"DB query error", 500);
 }
 /*    3.1 retreive counter value for current "per day counter" */
 sprintf(query, "SELECT %s FROM %s WHERE %s='%s'", sec->counterValueField, sec->countersTable, sec->counterNameField, counterDayName);
 if (mysql_query(connection.handle, query) != 0) {
         LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.select_current.per.day MySQL ERROR: %s: ", mysql_error(connection.handle));
-        return nursery_error(r,"DB query error", 500);
+        return osa_error(r,"DB query error", 500);
 }
 result = mysql_store_result(connection.handle);
 if (result && (mysql_num_rows(result) >= 1)) {
@@ -2052,21 +2052,21 @@ if (result && (mysql_num_rows(result) >= 1)) {
         sprintf(query, "INSERT INTO %s (%s,%s) VALUES ('%s',0)", sec->countersTable, sec->counterNameField, sec->counterValueField, counterDayName);
         if (mysql_query(connection.handle, query) != 0) {
                 LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.insert.per.day MySQL ERROR: %s: ", mysql_error(connection.handle));
-                return nursery_error(r,"DB query error", 500);
+                return osa_error(r,"DB query error", 500);
         }
 }
 if (result) mysql_free_result(result);/*    3.2 increment coutner (in DB too) */
 sprintf(query, "UPDATE %s SET %s=%lu WHERE %s='%s'", sec->countersTable, sec->counterValueField, reqDay+1, sec->counterNameField, counterDayName);
 if (mysql_query(connection.handle, query) != 0) {
         LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.update.per.day MySQL ERROR: %s: ", mysql_error(connection.handle));
-        return nursery_error(r,"DB query error", 500);
+        return osa_error(r,"DB query error", 500);
 }
 /*    3.3 if new coutner value exceed quota, display error and stop */
 if (reqDay+1 > maxReqDay){
         char err[255];
         sprintf(err, "Maximum number of request (%s %lu/%lu) per day allowed exedeed", quotaScope, reqDay+1, maxReqDay);
 	
-        return nursery_error(r,err, httpStatusOver);
+        return osa_error(r,err, httpStatusOver);
 }
 
 
@@ -2080,13 +2080,13 @@ sprintf(counterMonName,"%s$$$M=%d-%02d",counterPrefix,
 sprintf(query, "DELETE FROM %s WHERE  %s!='%s' and %s like '%s$$$M%%'",sec->countersTable, sec->counterNameField, counterMonName, sec->counterNameField, counterPrefix);
 if (mysql_query(connection.handle, query) != 0) {
         LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.delete.old.per.month MySQL ERROR: %s: ", mysql_error(connection.handle));
-        return nursery_error(r,"DB query error", 500);
+        return osa_error(r,"DB query error", 500);
 }
 /*    4.1 retreive counter value for current "per month counter" */
 sprintf(query, "SELECT %s FROM %s WHERE %s='%s'", sec->counterValueField, sec->countersTable, sec->counterNameField, counterMonName);
 if (mysql_query(connection.handle, query) != 0) {
         LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.select_current.per.month MySQL ERROR: %s: ", mysql_error(connection.handle));
-        return nursery_error(r,"DB query error", 500);
+        return osa_error(r,"DB query error", 500);
 }
 result = mysql_store_result(connection.handle);
 if (result && (mysql_num_rows(result) >= 1)) {
@@ -2099,7 +2099,7 @@ if (result && (mysql_num_rows(result) >= 1)) {
         sprintf(query, "INSERT INTO %s (%s,%s) VALUES ('%s',0)", sec->countersTable, sec->counterNameField, sec->counterValueField, counterMonName);
         if (mysql_query(connection.handle, query) != 0) {
                 LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.insert.per.month MySQL ERROR: %s: ", mysql_error(connection.handle));
-                return nursery_error(r,"DB query error", 500);
+                return osa_error(r,"DB query error", 500);
         }
 }
 if (result) mysql_free_result(result);
@@ -2107,14 +2107,14 @@ if (result) mysql_free_result(result);
 sprintf(query, "UPDATE %s SET %s=%lu WHERE %s='%s'", sec->countersTable, sec->counterValueField, reqMon+1, sec->counterNameField, counterMonName);
 if (mysql_query(connection.handle, query) != 0) {
         LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.update.per.month MySQL ERROR: %s: ", mysql_error(connection.handle));
-        return nursery_error(r,"DB query error", 500);
+        return osa_error(r,"DB query error", 500);
 }
 /*    4.3 if new coutner value exceed quota, display error and stop */
 if (reqMon+1 > maxReqMon){
         char err[255];
         sprintf(err, "Maximum number of request (%s %lu/%lu) per month allowed exedeed", quotaScope, reqMon+1, maxReqMon);
 	
-        return nursery_error(r,err, httpStatusOver);
+        return osa_error(r,err, httpStatusOver);
 
 }
 
@@ -2159,7 +2159,7 @@ if (sec->mysqlGlobalQuotasCondition){
 if (mysql_query(connection.handle, query) != 0) {
 	/*    2.2 No quota definition was found in DB ==> ERROR */
         LOG_ERROR_1(APLOG_ERR, 0, r, "checkGlobalQuotas: MySQL ERROR: %s: ", mysql_error(connection.handle));
-        return nursery_error(r,"checkGlobalQuotas: DB query error", 500);
+        return osa_error(r,"checkGlobalQuotas: DB query error", 500);
 }
 
 result = mysql_store_result(connection.handle);
@@ -2228,7 +2228,7 @@ if (sec->mysqlUserQuotasCondition){
 if (mysql_query(connection.handle, query) != 0) {
 	/*    2.2 No quota definition was found in DB ==> ERROR */
         LOG_ERROR_1(APLOG_ERR, 0, r, "checkUserQuotas: MySQL ERROR: %s: ", mysql_error(connection.handle));
-        return nursery_error(r,"checkUserQuotas: DB query error", 500);
+        return osa_error(r,"checkUserQuotas: DB query error", 500);
 }
 
 result = mysql_store_result(connection.handle);
@@ -2242,7 +2242,7 @@ if (result && (mysql_num_rows(result) >= 1)) {
   if (result){
   	char err[100];
   	sprintf(err,"No quota defined for user %s with user quotas control is activated on resource %s",r->user, sec->resourceName); 
-        return nursery_error(r,err, 500);
+        return osa_error(r,err, 500);
   }
 }
 if (result) mysql_free_result(result);
@@ -2391,7 +2391,7 @@ int getTokenFromCookie(request_rec *r, char *token){
 			if (!sec->basicAuthEnable){
 				if(sec->cookieAuthLoginForm==NULL){
 					//authCookie is the only authentication mode: no cookie=error
-					return nursery_error(r,"No authentication cookie found",400);
+					return osa_error(r,"No authentication cookie found",400);
 				}else{
 					return redirectToLoginForm(r, NULL);
 				}
@@ -2430,7 +2430,7 @@ int validateToken(request_rec *r , char *token, int *stillValidFor){
 		sprintf(query,"DELETE FROM %s WHERE %s<now()",sec->cookieAuthTable, sec->cookieAuthValidityField);
 		if (mysql_query(connection.handle, query) != 0) {
 			LOG_ERROR_1(APLOG_ERR, 0, r, "mysql_check_auth_cookie: MySQL ERROR: %s: ", mysql_error(connection.handle));
-			return nursery_error(r,"DB query error",500);
+			return osa_error(r,"DB query error",500);
 		}
 
 		sprintf(query,"SELECT %s,TIMESTAMPDIFF(SECOND, now(), %s)  FROM %s WHERE token='%s' AND %s>=now()",
@@ -2442,7 +2442,7 @@ int validateToken(request_rec *r , char *token, int *stillValidFor){
 
 		if (mysql_query(connection.handle, query) != 0) {
 			LOG_ERROR_1(APLOG_ERR, 0, r, "mysql_check_auth_cookie: MySQL ERROR: %s: ", mysql_error(connection.handle));
-			return nursery_error(r,"DB query error",500);
+			return osa_error(r,"DB query error",500);
 		}
 		result = mysql_store_result(connection.handle);
 		if (result && (mysql_num_rows(result) >= 1)) {
@@ -2462,7 +2462,7 @@ int validateToken(request_rec *r , char *token, int *stillValidFor){
 				deleteAuthCookie(r);
 				rc = DECLINED;
 			}else{
-				rc= nursery_error(r,"Invalid or outdated token", 401);
+				rc= osa_error(r,"Invalid or outdated token", 401);
 			}
 		}
 		if (result) mysql_free_result(result);
@@ -2493,7 +2493,7 @@ do{
 		if (mysql_query(connection.handle, query) != 0) {
 			if (strstr(mysql_error(connection.handle),"Duplicate entry") == NULL){
 				LOG_ERROR_1(APLOG_ERR, 0, r, "mysql_check_auth_cookie: MySQL ERROR: %s: ", mysql_error(connection.handle));
-				return nursery_error(r,"DB query error",500);
+				return osa_error(r,"DB query error",500);
 			}else{
 				LOG_ERROR_1(APLOG_ERR, 0, r, "%s", "Generated token already exists: retry");
 			}	
@@ -2513,7 +2513,7 @@ if (sec->cookieAuthBurn){
 		
 	if (mysql_query(connection.handle, query) != 0) {
 		LOG_ERROR_1(APLOG_ERR, 0, r, "mysql_check_auth_cookie: MySQL ERROR: %s: ", mysql_error(connection.handle));
-		return nursery_error(r,"DB query error",500);
+		return osa_error(r,"DB query error",500);
 	}
 }
 
@@ -2557,7 +2557,7 @@ if (sec->cookieAuthEnable){
 		if (connection.handle==NULL){
 			/* connect database */
 			if(!open_db_handle(r,sec)) {
-				return nursery_error(r,"Unable to connect database", 500);
+				return osa_error(r,"Unable to connect database", 500);
 			}
 		}
 		
@@ -2615,7 +2615,7 @@ if (sec->checkUserQuotas || sec->checkGlobalQuotas){
 		if (connection.handle==NULL){
 			/* connect database */
 			if(!open_db_handle(r,sec)) {
-				return nursery_error(r,"Unable to connect database", 500);
+				return osa_error(r,"Unable to connect database", 500);
 			}
 		}
 //	LOG_ERROR_1(APLOG_NOERRNO|APLOG_ERR, 0, r, "User=%s\n", r->user);
@@ -2744,7 +2744,7 @@ static int mysql_authenticate_basic_user (request_rec *r)
 		return DECLINED;
 	}else{
 		if (r->user==NULL){
-			return nursery_error(r,"User not authentifed!", NOT_AUTHORIZED);
+			return osa_error(r,"User not authentifed!", NOT_AUTHORIZED);
 		}
 	}
 			
@@ -2769,7 +2769,7 @@ static int mysql_authenticate_basic_user (request_rec *r)
       LOG_ERROR_1(APLOG_NOERRNO|APLOG_ERR, 0, r,"%s",  authenticationError);
       //ap_note_basic_auth_failure(r);
       send_request_basic_auth(r);
-	  return nursery_error(r,authenticationError,NOT_AUTHORIZED);
+	  return osa_error(r,authenticationError,NOT_AUTHORIZED);
       //return NOT_AUTHORIZED;
 
     }
@@ -2815,7 +2815,7 @@ static int mysql_authenticate_basic_user (request_rec *r)
     //ap_note_basic_auth_failure (r);
     send_request_basic_auth(r);
 
-    return nursery_error(r,"Wrong username password or account expired", NOT_AUTHORIZED);
+    return osa_error(r,"Wrong username password or account expired", NOT_AUTHORIZED);
     if (!sec->mysqlAuthoritative)
       return DECLINED;		/* let other schemes find user */
     else{
@@ -2843,7 +2843,7 @@ static int mysql_authenticate_basic_user (request_rec *r)
 
     //ap_note_basic_auth_failure (r);
     send_request_basic_auth(r);
-	return nursery_error(r,authenticationError,NOT_AUTHORIZED);
+	return osa_error(r,authenticationError,NOT_AUTHORIZED);
     //return NOT_AUTHORIZED;
   }
 }
@@ -2942,7 +2942,7 @@ static int mysql_check_auth(request_rec *r)
 		  deleteAuthCookie(r);
 		  send_request_basic_auth(r);
 	  }
-	  return nursery_error(r,authorizationError,NOT_AUTHORIZED);
+	  return osa_error(r,authorizationError,NOT_AUTHORIZED);
 	  
 	
       //return NOT_AUTHORIZED;
@@ -2963,7 +2963,7 @@ static int mysql_register_hit(request_rec *r)
 		if (connection.handle==NULL){
 			/* connect database */
 			if(!open_db_handle(r,sec)) {
-				return nursery_error(r,"Unable to connect database", 500);
+				return osa_error(r,"Unable to connect database", 500);
 			}
 		}
 		P_db(sec, r, "hits");
@@ -3028,7 +3028,7 @@ static int mysql_forward_identity(request_rec *r)
 		if (connection.handle==NULL){
 			/* connect database */
 			if(!open_db_handle(r,sec)) {
-				return nursery_error(r,"Unable to connect database", 500);
+				return osa_error(r,"Unable to connect database", 500);
 			}
 		}
 	      	
@@ -3063,7 +3063,7 @@ static int mysql_forward_identity(request_rec *r)
 			
 			if (mysql_query(connection.handle, query) != 0) {
 					LOG_ERROR_1(APLOG_ERR, 0, r, "mysql_forward_identity: MySQL ERROR: %s: ", mysql_error(connection.handle));
-					return nursery_error(r,"DB query error",500);
+					return osa_error(r,"DB query error",500);
 			}
 			result = mysql_store_result(connection.handle);
 			if (result && (mysql_num_rows(result) >= 1)) {

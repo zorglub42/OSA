@@ -111,14 +111,14 @@ function shellExit(){
 }
 
 function generateCerts(){
-	cat $APPLIANCE_INSTALL_DIR/RunTimeAppliance/apache/conf/samples/standard/ssleay.cnf | sed "s/@HostName@/$1/g" >  $APPLIANCE_INSTALL_DIR/RunTimeAppliance/apache/conf/samples/standard/nursery-osa-node-$2.cnf
-	openssl req -config $APPLIANCE_INSTALL_DIR/RunTimeAppliance/apache/conf/samples/standard/nursery-osa-node-$2.cnf  -new -x509  -days 3650 -nodes  -out  /etc/ssl/certs/nursery-osa-node-$2.pem  -keyout  /etc/ssl/private/nursery-osa-node-$2.key 2>&1 >/dev/null
-	chmod 600   /etc/ssl/certs/nursery-osa-node-$2.pem
-	chmod 600   /etc/ssl/private/nursery-osa-node-$2.key
+	cat $APPLIANCE_INSTALL_DIR/RunTimeAppliance/apache/conf/samples/standard/ssleay.cnf | sed "s/@HostName@/$1/g" >  $APPLIANCE_INSTALL_DIR/RunTimeAppliance/apache/conf/samples/standard/osa-node-$2.cnf
+	openssl req -config $APPLIANCE_INSTALL_DIR/RunTimeAppliance/apache/conf/samples/standard/osa-node-$2.cnf  -new -x509  -days 3650 -nodes  -out  /etc/ssl/certs/osa-node-$2.pem  -keyout  /etc/ssl/private/osa-node-$2.key 2>&1 >/dev/null
+	chmod 600   /etc/ssl/certs/osa-node-$2.pem
+	chmod 600   /etc/ssl/private/osa-node-$2.key
 	
 	
-	curl -s -X POST -k   --form "files[]=@/etc/ssl/certs/nursery-osa-node-$2.pem" --user "$OSA_USAGE_USER:$OSA_ADMIN_PWD"  $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$2/cert	>/dev/null
-	curl -s -X POST -k   --form "files[]=@/etc/ssl/private/nursery-osa-node-$2.key" --user "$OSA_USAGE_USER:$OSA_ADMIN_PWD"  $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$2/privateKey>	/dev/null
+	curl -s -X POST -k   --form "files[]=@/etc/ssl/certs/osa-node-$2.pem" --user "$OSA_USAGE_USER:$OSA_ADMIN_PWD"  $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$2/cert	>/dev/null
+	curl -s -X POST -k   --form "files[]=@/etc/ssl/private/osa-node-$2.key" --user "$OSA_USAGE_USER:$OSA_ADMIN_PWD"  $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$2/privateKey>	/dev/null
 
 }
 
@@ -171,9 +171,9 @@ if [ -f /etc/redhat-release ] ; then
 	[ ! -d $APPLIANCE_INSTALL_DIR/RunTimeAppliance/apache/conf/sites-availables ]  && mkdir -p $APPLIANCE_INSTALL_DIR/RunTimeAppliance/apache/conf/sites-availables
 	APACHE_SITES_DEFINITION_DIR=$APPLIANCE_INSTALL_DIR/RunTimeAppliance/apache/conf/sites-availables
 	APACHE_SITES_ENABLED_DIR=/etc/httpd/conf.d
-	APACHE_LISTEN_PORTS=/etc/httpd/conf.d/nursery-osa-0-ports.conf
+	APACHE_LISTEN_PORTS=/etc/httpd/conf.d/osa-0-ports.conf
 	APACHE_ENABLE_SITE=enableRedhatSite
-	APACHE_LISTEN_PORTS=/etc/httpd/conf.d/nursery-osa-0-ports.conf
+	APACHE_LISTEN_PORTS=/etc/httpd/conf.d/osa-0-ports.conf
 	APACHE_LOG_DIR=/var/log/httpd
 	APACHE_USER=`getApacheUserRedhat`
 	APACHE_GROUP=`getApacheGroupRedhat`
@@ -188,9 +188,9 @@ elif [ -f /etc/debian_version ] ; then
 	APACHE_SITES_DEFINITION_DIR=/etc/apache2/sites-available
 	APACHE_SITES_ENABLED_DIR=/etc/apache2/sites-enabled
 	if [ ! -d /etc/apache2/conf.d ] ; then
-		APACHE_LISTEN_PORTS=/etc/apache2/conf-available/nursery-osa-0-ports.conf
+		APACHE_LISTEN_PORTS=/etc/apache2/conf-available/osa-0-ports.conf
 	else
-		APACHE_LISTEN_PORTS=/etc/apache2/conf.d/nursery-osa-0-ports.conf
+		APACHE_LISTEN_PORTS=/etc/apache2/conf.d/osa-0-ports.conf
 	fi
 	APACHE_ENABLE_SITE=a2ensite
 	APACHE_LOG_DIR=/var/log/apache2
@@ -242,16 +242,16 @@ echo "Starting $0 with $*"
 
 $EXEC_DIR/backupConf.sh -backup
 if [ "$1" == "D" -o "$1" == "U"  -o "$1" == "C" ] ; then
-	delFiles "/etc/ssl/certs/nursery-osa-node-$2-ca.pem"
-	delFiles "/etc/ssl/certs/nursery-osa-node-$2-chain.pem"
-	delFiles "/etc/ssl/certs/nursery-osa-node-$2.pem"
-	delFiles "/etc/ssl/private/nursery-osa-node-$2.key"
-	delFiles "$APACHE_SITES_DEFINITION_DIR/nursery-osa-node-$2"
-	delFiles "$APACHE_SITES_DEFINITION_DIR/nursery-osa-node-$2.conf"
+	delFiles "/etc/ssl/certs/osa-node-$2-ca.pem"
+	delFiles "/etc/ssl/certs/osa-node-$2-chain.pem"
+	delFiles "/etc/ssl/certs/osa-node-$2.pem"
+	delFiles "/etc/ssl/private/osa-node-$2.key"
+	delFiles "$APACHE_SITES_DEFINITION_DIR/osa-node-$2"
+	delFiles "$APACHE_SITES_DEFINITION_DIR/osa-node-$2.conf"
 	delFiles "/etc/ApplianceManager/applianceManagerServices-node-$2.endpoints"
 	delFiles "$APPLIANCE_CONFIG_LOC/applianceManagerServices-node-$2.endpoints"
-	delFiles "$APACHE_SITES_ENABLED_DIR/nursery-osa-node-$2"
-	delFiles "$APACHE_SITES_ENABLED_DIR/nursery-osa-node-$2.conf"
+	delFiles "$APACHE_SITES_ENABLED_DIR/osa-node-$2"
+	delFiles "$APACHE_SITES_ENABLED_DIR/osa-node-$2.conf"
 	removeLogRotateForNode $2
 
 	#if [ "$1" == "U"  -o "$1" == "C" ] ; then
@@ -263,12 +263,12 @@ if [ "$1" == "D" -o "$1" == "U"  -o "$1" == "C" ] ; then
 		$APACHE_INITD_FILE graceful 2>&1
 	fi
 elif [ "$1" ==  "" ] ; then
-	delFiles "/etc/ssl/certs/nursery-osa-node-*.pem"
-	delFiles "/etc/ssl/private/nursery-osa-node-*.key"
-	delFiles "$APACHE_SITES_DEFINITION_DIR/nursery-osa-node-*"
+	delFiles "/etc/ssl/certs/osa-node-*.pem"
+	delFiles "/etc/ssl/private/osa-node-*.key"
+	delFiles "$APACHE_SITES_DEFINITION_DIR/osa-node-*"
 	delFiles "/etc/ApplianceManager/applianceManagerServices-node-*.endpoints"
 	delFiles "$APPLIANCE_CONFIG_LOC/applianceManagerServices-node-*.endpoints"
-	delFiles "$APACHE_SITES_ENABLED_DIR/nursery-osa-node-*"
+	delFiles "$APACHE_SITES_ENABLED_DIR/osa-node-*"
 	removeLogRotateForAllNodes
 	
 	echo getting all nodes definitions
@@ -329,12 +329,12 @@ do
 			[ -L /etc/ApplianceManager/applianceManagerServices-node-$nodeName.endpoints ] && rm /etc/ApplianceManager/applianceManagerServices-node-$nodeName.endpoints
 		else
 			if [ "$isHTTPS" == "1" ] ; then
-				curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$nodeName/cert>/etc/ssl/certs/nursery-osa-node-$nodeName.pem
-				curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$nodeName/chain>>/etc/ssl/certs/nursery-osa-node-$nodeName.pem
-				curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$nodeName/privateKey>/etc/ssl/private/nursery-osa-node-$nodeName.key
-				if [ -s  /etc/ssl/certs/nursery-osa-node-$nodeName.pem -a -s /etc/ssl/private/nursery-osa-node-$nodeName.key  ] ; then
-					chmod 600 /etc/ssl/certs/nursery-osa-node-$nodeName.pem
-					chmod 600 /etc/ssl/private/nursery-osa-node-$nodeName.key
+				curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$nodeName/cert>/etc/ssl/certs/osa-node-$nodeName.pem
+				curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$nodeName/chain>>/etc/ssl/certs/osa-node-$nodeName.pem
+				curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$nodeName/privateKey>/etc/ssl/private/osa-node-$nodeName.key
+				if [ -s  /etc/ssl/certs/osa-node-$nodeName.pem -a -s /etc/ssl/private/osa-node-$nodeName.key  ] ; then
+					chmod 600 /etc/ssl/certs/osa-node-$nodeName.pem
+					chmod 600 /etc/ssl/private/osa-node-$nodeName.key
 				else
 					generateCerts $serverFQDN $nodeName
 				fi
@@ -343,9 +343,9 @@ do
 			chown $APACHE_USER:$APACHE_GROUP $APPLIANCE_LOG_DIR/$nodeName
 			chmod 700 $APPLIANCE_LOG_DIR/$nodeName
 			
-			curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$nodeName/virtualHost>$APACHE_SITES_DEFINITION_DIR/nursery-osa-node-$nodeName.conf
+			curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$nodeName/virtualHost>$APACHE_SITES_DEFINITION_DIR/osa-node-$nodeName.conf
 			if  [ $IS_PUBLISHED -eq 1 ] ; then
-				$APACHE_ENABLE_SITE nursery-osa-node-$nodeName.conf
+				$APACHE_ENABLE_SITE osa-node-$nodeName.conf
 			fi
 			echo touch $APPLIANCE_CONFIG_LOC/applianceManagerServices-node-$nodeName.endpoints
 			touch $APPLIANCE_CONFIG_LOC/applianceManagerServices-node-$nodeName.endpoints

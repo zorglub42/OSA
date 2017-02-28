@@ -54,26 +54,26 @@ function backup(){
 	cd $APPLIANCE_CONFIG_LOC
 	[ ! -d backup ] && mkdir backup
 	rm backup/*
-	cp /etc/ssl/certs/nursery-osa-node-*.pem backup
-	cp /etc/ssl/private/nursery-osa-node-*.key backup
-	cp $APACHE_SITES_DEFINITION_DIR/nursery-osa-node-* backup
+	cp /etc/ssl/certs/osa-node-*.pem backup
+	cp /etc/ssl/private/osa-node-*.key backup
+	cp $APACHE_SITES_DEFINITION_DIR/osa-node-* backup
 	cp $APPLIANCE_CONFIG_LOC/applianceManagerServices-node-*.endpoints backup
-	cp $APACHE_SITES_ENABLED_DIR/nursery-osa-node-* backup
+	cp $APACHE_SITES_ENABLED_DIR/osa-node-* backup
 	cp $APACHE_LISTEN_PORTS backup
 	cd $APACHE_SITES_ENABLED_DIR
-	ls nursery-osa-node-* > $APPLIANCE_CONFIG_LOC/backup/sites-enabled
+	ls osa-node-* > $APPLIANCE_CONFIG_LOC/backup/sites-enabled
 }
 
 function restaure(){
 	cd $APPLIANCE_CONFIG_LOC/backup
-	cp nursery-osa-node-*.pem /etc/ssl/certs/ 
-	cp nursery-osa-node-*.key /etc/ssl/private/
-	rm $APACHE_SITES_DEFINITION_DIR/nursery-osa-node-*
-	cp nursery-osa-node-* $APACHE_SITES_DEFINITION_DIR/
+	cp osa-node-*.pem /etc/ssl/certs/ 
+	cp osa-node-*.key /etc/ssl/private/
+	rm $APACHE_SITES_DEFINITION_DIR/osa-node-*
+	cp osa-node-* $APACHE_SITES_DEFINITION_DIR/
 	cp applianceManagerServices-node-*.endpoints $APPLIANCE_CONFIG_LOC/
-	cp nursery-osa-node-* $APACHE_SITES_ENABLED_DIR/
-	cp nursery-osa-0-ports.conf $APACHE_LISTEN_PORTS
-	rm $APACHE_SITES_ENABLED_DIR/nursery-osa-node-* 
+	cp osa-node-* $APACHE_SITES_ENABLED_DIR/
+	cp osa-0-ports.conf $APACHE_LISTEN_PORTS
+	rm $APACHE_SITES_ENABLED_DIR/osa-node-* 
 	for s in `cat sites-enabled`; do
 		$APACHE_ENABLE_SITE $s
 	done
@@ -110,9 +110,9 @@ if [ -f /etc/redhat-release ] ; then
 	[ ! -d $APPLIANCE_INSTALL_DIR/RunTimeAppliance/apache/conf/sites-availables ]  && mkdir -p $APPLIANCE_INSTALL_DIR/RunTimeAppliance/apache/conf/sites-availables
 	APACHE_SITES_DEFINITION_DIR=$APPLIANCE_INSTALL_DIR/RunTimeAppliance/apache/conf/sites-availables
 	APACHE_SITES_ENABLED_DIR=/etc/httpd/conf.d
-	APACHE_LISTEN_PORTS=/etc/httpd/conf.d/nursery-osa-0-ports.conf
+	APACHE_LISTEN_PORTS=/etc/httpd/conf.d/osa-0-ports.conf
 	APACHE_ENABLE_SITE=enableRedhatSite
-	APACHE_LISTEN_PORTS=/etc/httpd/conf.d/nursery-osa-0-ports.conf
+	APACHE_LISTEN_PORTS=/etc/httpd/conf.d/osa-0-ports.conf
 	APACHE_LOG_DIR=/var/log/httpd
 
 	touch $APACHE_LISTEN_PORTS
@@ -125,9 +125,9 @@ elif [ -f /etc/debian_version ] ; then
 	APACHE_SITES_DEFINITION_DIR=/etc/apache2/sites-available
 	APACHE_SITES_ENABLED_DIR=/etc/apache2/sites-enabled
 	if [ ! -d /etc/apache2/conf.d ] ; then
-		APACHE_LISTEN_PORTS=/etc/apache2/conf-available/nursery-osa-0-ports.conf
+		APACHE_LISTEN_PORTS=/etc/apache2/conf-available/osa-0-ports.conf
 	else
-		APACHE_LISTEN_PORTS=/etc/apache2/conf.d/nursery-osa-0-ports.conf
+		APACHE_LISTEN_PORTS=/etc/apache2/conf.d/osa-0-ports.conf
 	fi
 	APACHE_ENABLE_SITE=a2ensite
 	#on some install a2ensite and other are not in the PATH....

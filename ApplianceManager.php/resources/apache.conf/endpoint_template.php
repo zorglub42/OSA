@@ -27,7 +27,7 @@ require_once '../include/Constants.php';
 ?>
 <Location  <?php echo $FRONT_END?>>
 
-	Include <?php echo runtimeApplianceConfigLocation?>/nursery-appliance-settings.inc	
+	Include <?php echo runtimeApplianceConfigLocation?>/osa-endpoints-settings.inc	
 <?php
 	if (isset($BASIC_AUTH_TOKEN) && $BASIC_AUTH_TOKEN != "" ){
 			echo "\tRequestHeader add Authorization \"Basic $BASIC_AUTH_TOKEN\"\n";

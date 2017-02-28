@@ -48,14 +48,14 @@
        #   SSLCertificateFile directive is needed.
     
 <?php if ($HTTPS_HAVE_CA_CERT){?>
-	#SSLCaCertificateFile /etc/ssl/certs/nursery-osa-node-<?php echo $NODE_NAME?>-ca.pem
+	#SSLCaCertificateFile /etc/ssl/certs/osa-node-<?php echo $NODE_NAME?>-ca.pem
 <?php }?>
 <?php if ($HTTPS_HAVE_CHAIN_CERT){?>
-	#SSLCertificateChainFile /etc/ssl/certs/nursery-osa-node-<?php echo $NODE_NAME?>-chain.pem
+	#SSLCertificateChainFile /etc/ssl/certs/osa-node-<?php echo $NODE_NAME?>-chain.pem
 <?php }?>
 
-	SSLCertificateFile /etc/ssl/certs/nursery-osa-node-<?php echo $NODE_NAME?>.pem
-	SSLCertificateKeyFile /etc/ssl/private/nursery-osa-node-<?php echo $NODE_NAME?>.key
+	SSLCertificateFile /etc/ssl/certs/osa-node-<?php echo $NODE_NAME?>.pem
+	SSLCertificateKeyFile /etc/ssl/private/osa-node-<?php echo $NODE_NAME?>.key
 
 
        #   SSL Protocol Adjustments:
