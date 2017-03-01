@@ -136,19 +136,19 @@ function delFiles(){
 function configureApachePorts(){
 		echo Configuring listing port for $1
 
-		#~ LADDR=`echo "$LOCAL_IP"| sed 's/\*/\\\\*/g'` 
-		#~ grep -v "$LADDR:$PORT" $APACHE_LISTEN_PORTS>/tmp/$$.port
-		#~ cat /tmp/$$.port >$APACHE_LISTEN_PORTS
+		LADDR=`echo "$LOCAL_IP"| sed 's/\*/\\\\*/g'` 
+		grep -v "$LADDR:$PORT" $APACHE_LISTEN_PORTS>/tmp/$$.port
+		cat /tmp/$$.port >$APACHE_LISTEN_PORTS
 		
-		#~ if [ ! "$1" == "D" ] ; then
-			#~ realIp=`getRealIp "$LOCAL_IP"`
-			#~ grep "$realIp:$PORT" /tmp/$$.APACHE_LISTENING>/dev/null
-			#~ if [ $? -ne 0 ] ; then
+		if [ ! "$1" == "D" ] ; then
+			realIp=`getRealIp "$LOCAL_IP"`
+			grep "$realIp:$PORT" /tmp/$$.APACHE_LISTENING>/dev/null
+			if [ $? -ne 0 ] ; then
 
-				#~ echo "Listen $LOCAL_IP:$PORT" >>$APACHE_LISTEN_PORTS
-			#~ fi
-			#~ #echo "NameVirtualHost $LOCAL_IP:$PORT" >>$APACHE_LISTEN_PORTS
-		#~ fi
+				echo "Listen $LOCAL_IP:$PORT" >>$APACHE_LISTEN_PORTS
+			fi
+			#echo "NameVirtualHost $LOCAL_IP:$PORT" >>$APACHE_LISTEN_PORTS
+		fi
 }
 
 
