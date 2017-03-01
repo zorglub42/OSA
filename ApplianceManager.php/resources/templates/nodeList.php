@@ -27,7 +27,7 @@ require_once "../../include/Localization.php";
 									<input type="text" class="form-control" placeholder="<?php echo Localization::getString("node.localIP.placeholder")?>" id="localIPFilter"value="{localIPFilterPrevVal}"> 
 								</div>
 								<div class="col-md-4 col-xs-4 search-control">
-									<input class="form-control" placeholder="<?php echo Localization::getString("node.port.placeholder")?>" id="nodeDescriptionFilter" value="{nodeDescriptionFilterPrevVal}">
+									<input class="form-control" placeholder="<?php echo Localization::getString("node.port.placeholder")?>" id="portFilter" value="{portFilterPrevVal}">
 								</div>
 								<div class="col-md-4 col-xs-4 search-control" >
 										<button type="button" class="btn btn-default" title="<?php echo Localization::getString("button.filter.tooltip")?>" onclick=showNodes()>

@@ -223,8 +223,8 @@ fi
 echo reload=$apacheReload
 if [ $apacheReload -eq 1 ] ; then
 	echo restart apache
-	echo $APACHE_INIT_SCRIPT graceful 
-	$APACHE_INIT_SCRIPT graceful 2>&1
+	#$APACHE_INIT_SCRIPT graceful 2>&1
+	$APACHE_INIT_SCRIPT reload 2>&1
 	sleep 1
 	$APACHE_INIT_SCRIPT status 2>&1
 	rc=$?

@@ -33,7 +33,7 @@ function startsWith($haystack, $needle)
 
 function allowedChar($char, $str){
 	$allowed=false;
-	for ($i=0;$i<strlen($name) && !$allowed;$i++){
+	for ($i=0;$i<strlen($str) && !$allowed;$i++){
 		$allowed=(substr($str,$i,1)==$char);
 	}
 	return $allowed;
@@ -138,7 +138,7 @@ function enableDisableNode($nodeName, $published){
 		
 	$remoteCmd="sudo " . runtimeApplianceEnableDisableVirtulaHostScript . ' "' . $nodeName . '" ' . $published ;
 	$remoteCmd = $remoteCmd . " 2>&1 >> " . runtimeApplianceEnableDisableVirtulaHostLogFile;
-	
+		
 	system("$remoteCmd",$rc);
 	if ($rc != 0){
 		return false;
@@ -157,6 +157,7 @@ function applyApacheConfiguration(){
 		if (runtimeApplianceConfigScriptLogFile!=""){
 			$remoteCmd = $remoteCmd . " 2>&1 >> " . runtimeApplianceConfigScriptLogFile;
 		}
+		
 		system("$remoteCmd",$rc);
 		if ($rc != 0){
 			return false;
@@ -178,6 +179,7 @@ function applyApacheNodesConfiguration($nodeName="", $action=""){
 		if (runtimeApplianceVirtualHostsConfigScriptLogFile!=""){
 			$remoteCmd = $remoteCmd . " 2>&1 >> " . runtimeApplianceVirtualHostsConfigScriptLogFile;
 		}
+
 		
 		system("$remoteCmd",$rc);
 		if ($rc != 0){

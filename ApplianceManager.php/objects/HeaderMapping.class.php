@@ -60,8 +60,8 @@ class HeaderMapping extends ApplianceObject{
 		if ($rqt != NULL){
 			$this->setServicename($rqt["serviceName"]);
 			$this->setHeadername($rqt["headerName"]);
-			$this->setUserProperty($rqt["userProperty"]);
-			$this->setUri( "services/" . urlencode($rqt["serviceName"]) . "/headers-mapping/" . urlencode($rqt["userProperty"]));
+			$this->setUserProperty($rqt["columnName"]);
+			$this->setUri( "services/" . urlencode($rqt["serviceName"]) . "/headers-mapping/" . urlencode($rqt["columnName"]));
 		}
 	}
 	

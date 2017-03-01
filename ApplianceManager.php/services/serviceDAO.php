@@ -57,7 +57,7 @@ function getServiceHeadersMapping($serviceName , $userProperty=NULL){
 				$error->setHttpStatus(400);
 				$error->setFunctionalLabel("User property " . $userProperty . " can not be mapped");
 			}
-			$strSQL = $strSQL . " AND userProperty=:userProperty";
+			$strSQL = $strSQL . " AND columnName=:userProperty";
 			$qryPrms["userProperty"]=$userProperty;
 		}
 		if ($error->getHttpStatus() ==200){
@@ -73,7 +73,7 @@ function getServiceHeadersMapping($serviceName , $userProperty=NULL){
 				if (empty($userProperty)){
 					foreach ($userProperties as $property){
 						$row["serviceName"]=$serviceName;
-						$row["userProperty"]=$property;
+						$row["columnName"]=$property;
 						$row["headerName"]=$defaultHeadersName[$property];
 
 						$mapping = new HeaderMapping($row);
@@ -129,7 +129,7 @@ function createServiceHeadersMapping($serviceName , $userProperty, $headerName){
 		try{
 			$qryPrms=array("serviceName" => $serviceName, "userProperty"=>$userProperty, "headerName"=>$headerName);
 
-			$strSQL="INSERT headersmapping(serviceName, userProperty, headerName) values (:serviceName, :userProperty, :headerName)";
+			$strSQL="INSERT headersmapping(serviceName, columnName, headerName) values (:serviceName, :userProperty, :headerName)";
 			$db=openDB($BDName, $BDUser, $BDPwd);
 			$stmt=$db->prepare($strSQL);
 			$stmt->execute($qryPrms);
@@ -610,7 +610,7 @@ function createService($serviceName = NULL, $request_data=NULL){
 				throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());;
 			}
 		}catch (Exception $e){
-			if (strpos($e->getMessage,"Duplicate entry")){
+			if (strpos($e->getMessage(),"Duplicate entry")){
 				$error->setHttpStatus(409);
 				$error->setFunctionalCode(5);
 				$error->setFunctionalLabel("Service " . $serviceName . " already exists or a sevice with " . $request_data["frontEndEndPoint"] . " as front end URI already exists" );
@@ -652,13 +652,13 @@ function deleteService($serviceName = NULL){
 			$error->setHttpLabel("Unknown service");
 			$error->setFunctionalCode(4);
 			$error->setFunctionalLabel("Service ". $serviceName . " does not exists");
-			throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());;
+			throw new RestException($error->getHttpStatus(), $error->GetFunctionalLabel());;
 		}else{
 			if (startsWith($serviceName, ADMIN_SERVICE)){
 				$error->setHttpStatus(403);
 				$error->setFunctionalCode(3);
 				$error->setFunctionalLabel($serviceName . " service can't be suppressed");
-				throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());;
+				throw new RestException($error->getHttpStatus(), $error->GetFunctionalLabel());;
 			}
 			$service = new Service($row);
 			try{
@@ -672,7 +672,7 @@ function deleteService($serviceName = NULL){
 					$error->setHttpStatus(400);
 					$error->setFunctionalLabel("The service " . $serviceName . " is used by some users. Please remove subscribtions to it first");
 				}
-				throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
+				throw new RestException($error->getHttpStatus(), $error->GetFunctionalLabel());
 				
 			}
 			$strSQL="DELETE FROM counters WHERE  counterName like ?";
@@ -686,7 +686,7 @@ function deleteService($serviceName = NULL){
 				$error->setHttpStatus(500);
 				$error->setFunctionalCode(1);
 				$error->setFunctionalLabel("Service successfully saved but unable to apply configuration on runtime appliance");
-				throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
+				throw new RestException($error->getHttpStatus(), $error->GetFunctionalLabel());
 			}
 			
 		}
@@ -695,7 +695,7 @@ function deleteService($serviceName = NULL){
 		$error->setHttpStatus(400);
 		$error->setFunctionalCode(1);
 		$error->setFunctionalLabel($error->getFunctionalLabel() . "serviceName is required\n");
-		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
+		throw new RestException($error->getHttpStatus(), $error->GetFunctionalLabel());
 	}
 	return $rc;
 }
