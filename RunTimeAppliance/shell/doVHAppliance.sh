@@ -107,6 +107,7 @@ cat /tmp/$$.logrotate.conf >> $EXEC_DIR/logrotate.conf
 
 function shellExit(){
 	deleteTempFiles
+	echo "Exiting with status $1"
 	exit $1
 }
 
@@ -135,19 +136,19 @@ function delFiles(){
 function configureApachePorts(){
 		echo Configuring listing port for $1
 
-		LADDR=`echo "$LOCAL_IP"| sed 's/\*/\\\\*/g'` 
-		grep -v "$LADDR:$PORT" $APACHE_LISTEN_PORTS>/tmp/$$.port
-		cat /tmp/$$.port >$APACHE_LISTEN_PORTS
+		#~ LADDR=`echo "$LOCAL_IP"| sed 's/\*/\\\\*/g'` 
+		#~ grep -v "$LADDR:$PORT" $APACHE_LISTEN_PORTS>/tmp/$$.port
+		#~ cat /tmp/$$.port >$APACHE_LISTEN_PORTS
 		
-		if [ ! "$1" == "D" ] ; then
-			realIp=`getRealIp "$LOCAL_IP"`
-			grep "$realIp:$PORT" /tmp/$$.APACHE_LISTENING>/dev/null
-			if [ $? -ne 0 ] ; then
+		#~ if [ ! "$1" == "D" ] ; then
+			#~ realIp=`getRealIp "$LOCAL_IP"`
+			#~ grep "$realIp:$PORT" /tmp/$$.APACHE_LISTENING>/dev/null
+			#~ if [ $? -ne 0 ] ; then
 
-				echo "Listen $LOCAL_IP:$PORT" >>$APACHE_LISTEN_PORTS
-			fi
-			#echo "NameVirtualHost $LOCAL_IP:$PORT" >>$APACHE_LISTEN_PORTS
-		fi
+				#~ echo "Listen $LOCAL_IP:$PORT" >>$APACHE_LISTEN_PORTS
+			#~ fi
+			#~ #echo "NameVirtualHost $LOCAL_IP:$PORT" >>$APACHE_LISTEN_PORTS
+		#~ fi
 }
 
 
@@ -256,11 +257,13 @@ if [ "$1" == "D" -o "$1" == "U"  -o "$1" == "C" ] ; then
 
 	#if [ "$1" == "U"  -o "$1" == "C" ] ; then
 	echo getting node definition
-		curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$2 >/tmp/$$.nodes
+	echo curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$2
+	curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$2 >/tmp/$$.nodes
 	#else
 	if [ "$1" == "D" ] ; then
 		[ -d $APPLIANCE_LOG_DIR/$2 ] && rm -rf $APPLIANCE_LOG_DIR/$2
-		$APACHE_INITD_FILE graceful 2>&1
+		 #$APACHE_INITD_FILE graceful 2>&1
+		 $APACHE_INITD_FILE reload 2>&1
 	fi
 elif [ "$1" ==  "" ] ; then
 	delFiles "/etc/ssl/certs/osa-node-*.pem"
