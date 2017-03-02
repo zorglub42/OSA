@@ -357,4 +357,19 @@ class Nodes{
 		 
 		 return getDAONode($nodeName);
 	 }
-}
+
+	/**
+	 * @url POST :nodeName/virtualHost
+	 */
+	 function applyConf($nodeName){
+		try{
+			$node=$this->get($nodeName);
+			applyApacheNodesConfiguration($nodeName, "U");
+			return $node;
+
+		}catch (Exception $e){
+			throw new RestException($e->getCode(), $e->getMessage());
+		}
+	}
+}	
+
