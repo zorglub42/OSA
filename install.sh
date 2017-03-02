@@ -50,7 +50,7 @@ cp -R RunTimeAppliance $INSTALL_DIR
 cp -R sql $INSTALL_DIR
 [ -f $INSTALL_DIR/Crypto.ini.php.sav ] && mv $INSTALL_DIR/Crypto.ini.php.sav $INSTALL_DIR/ApplianceManager.php/include/Crypto.ini.php
 [ -f $INSTALL_DIR/RunTimeAppliance/shell/envvars.sh.sav ] && mv $INSTALL_DIR/RunTimeAppliance/shell/envvars.sh.sav $INSTALL_DIR/RunTimeAppliance/shell/envvars.sh
-[ -d $INSTALL_DIR/addons ] && mv $INSTALL_DIR/addons $INSTALL_DIR/ApplianceManager.php/addons
+[ -d $INSTALL_DIR/addons ] && mv $INSTALL_DIR/addons $INSTALL_DIR/ApplianceManager.php
 
 
 
