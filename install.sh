@@ -43,12 +43,14 @@ if [ "$INSTALL_DIR" == "" -o $USAGE -eq 1 ] ; then
 fi
 mkdir -p $INSTALL_DIR
 [ -f $INSTALL_DIR/ApplianceManager.php/include/Crypto.ini.php ] && cp $INSTALL_DIR/ApplianceManager.php/include/Crypto.ini.php $INSTALL_DIR/Crypto.ini.php.sav
+[ -d $INSTALL_DIR/ApplianceManager.php/addons ] && mv $INSTALL_DIR/ApplianceManager.php/addons $INSTALL_DIR/addons
 [ -f $INSTALL_DIR/RunTimeAppliance/shell/envvars.sh ] && cp $INSTALL_DIR/RunTimeAppliance/shell/envvars.sh $INSTALL_DIR/RunTimeAppliance/shell/envvars.sh.sav && rm -rf $INSTALL_DIR/ApplianceManager.php
 cp -R ApplianceManager.php $INSTALL_DIR
 cp -R RunTimeAppliance $INSTALL_DIR
 cp -R sql $INSTALL_DIR
 [ -f $INSTALL_DIR/Crypto.ini.php.sav ] && mv $INSTALL_DIR/Crypto.ini.php.sav $INSTALL_DIR/ApplianceManager.php/include/Crypto.ini.php
 [ -f $INSTALL_DIR/RunTimeAppliance/shell/envvars.sh.sav ] && mv $INSTALL_DIR/RunTimeAppliance/shell/envvars.sh.sav $INSTALL_DIR/RunTimeAppliance/shell/envvars.sh
+[ -d $INSTALL_DIR/addons ] && mv $INSTALL_DIR/addons $INSTALL_DIR/ApplianceManager.php/addons
 
 
 
