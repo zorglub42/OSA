@@ -182,7 +182,7 @@ $strings["service.onAllNodes.tooltip"]="If this box is checked, this service wil
 $strings["service.publishedOnNodes.tooltip"]="Select (with CTRL+Click) nodes on whitch {serviceName} will be published";
 $strings["service.logHits.tooltip"]="If this box is checked, hits to this service will be recorded in logs\nATTENTION: this can dramatically affect OSA performances";
 $strings["service.additionalConfiguration.tooltip"]="You can add here additinnal apache directives relative to </Location> tag";
-$strings["service.isUserAuthenticationEnabled.tooltip"]="If this box is checked, OSA will check identity of authenticated users"
+$strings["service.isUserAuthenticationEnabled.tooltip"]="If this box is checked, OSA will check identity of authenticated users";
 
 /*Labels*/
 $strings["service.properties.new"]="New service properties";
