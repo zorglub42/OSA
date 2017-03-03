@@ -200,28 +200,12 @@ function configureCron(){
 ##Common section START
 compress
 
-$LOG_DIR/doAppliance.log  {
+$LOG_DIR/*.log  {
     rotate 5
     daily
     postrotate
         touch $LOG_DIR/doAppliance.log
         chown $APACHE_USER:$APACHE_GROUP $LOG_DIR/doAppliance.log
-    endscript
-}
-$LOG_DIR/doVHAppliance.log  {
-    rotate 5
-    daily
-    postrotate
-        touch $LOG_DIR/doVHAppliance.log
-        chown $APACHE_USER:$APACHE_GROUP $LOG_DIR/doVHAppliance.log
-    endscript
-}
-$LOG_DIR/enabDisabVH.log  {
-    rotate 5
-    daily
-    postrotate
-        touch $LOG_DIR/enabDisabVH.log
-        chown $APACHE_USER:$APACHE_GROUP $LOG_DIR/enabDisabVH.log
     endscript
 }
 EOF
