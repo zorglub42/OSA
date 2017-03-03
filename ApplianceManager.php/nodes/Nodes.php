@@ -349,13 +349,18 @@ class Nodes{
 	 * @url POST :nodeName/status
 	 * 
 	 */
-	 function setPublished($nodeName, $published){
-		 setPublicationStatus($nodeName, $published);
-		 enableDisableNode($nodeName, $published);
+	 function setPublished($nodeName, $published, $reload=""){
+		 if ($reload == "no"){
+			$noreload="noreload";
+		}else{
+			$noreload="";
+		}
+		setPublicationStatus($nodeName, $published);
+		enableDisableNode($nodeName, $published,$noreload);
 		 
 		 
 		 
-		 return getDAONode($nodeName);
+		return getDAONode($nodeName);
 	 }
 
 	/**

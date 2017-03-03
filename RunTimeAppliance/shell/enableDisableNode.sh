@@ -69,18 +69,18 @@ if [ ! -f $APACHE_SITES_DEFINITION_DIR/osa-node-$1.conf ] ; then
 	exit 1
 fi 
 
-
+echo starting $0 with $*
 case $2 in
 	0)
 		$APACHE_DISABLE_SITE osa-node-$1.conf
 		#$APACHE_INITD_FILE graceful 2>&1
-		$APACHE_INITD_FILE reload 2>&1
+		[ "$3" == noreload" ] && $APACHE_INITD_FILE reload 2>&1
 		chmod 666 $APPLIANCE_LOG_DIR/*.log
 	;;
 	1)
 		$APACHE_ENABLE_SITE osa-node-$1.conf
 		#$APACHE_INITD_FILE graceful 2>&1
-		$APACHE_INITD_FILE reload 2>&1
+		[ "$3" == noreload" ] && $APACHE_INITD_FILE reload 2>&1
 		chmod 666 $APPLIANCE_LOG_DIR/*.log
 	;;
 esac
