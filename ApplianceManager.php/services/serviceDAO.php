@@ -975,6 +975,15 @@ function updateService($serviceName = NULL, $request_data=NULL){
 			$db=openDB($BDName, $BDUser, $BDPwd);
 			$stmt=$db->prepare($strSQL);
 			$stmt->execute($bindPrms);
+			if ($service["onAllNodes"]==1){
+				//Remove potential nodes association 
+				//on future nodes list application, an empty existing list means that service was previously deployed on all node
+				$strSQL="DELETE FROM servicesnodes WHERE serviceName=:serviceName";
+				$stmt=$db->prepare($strSQL);
+				$stmt->execute(array("serviceName" => $mySQLServiceName));
+			}
+				
+			
 		}catch (Exception $e){
 			if (strpos($e->getMessage(),"Duplicate entry")){
 				$error->setHttpStatus(409);
@@ -1148,7 +1157,8 @@ function setNodesListForService($serviceName, $request_data=NULL){
 	GLOBAL $BDName;
 	GLOBAL $BDUser;
 	GLOBAL $BDPwd;
-	
+
+	$impactedNodes=array();
 
 	$serviceName=normalizeName($serviceName);
 	$error = new OSAError();
@@ -1159,6 +1169,17 @@ function setNodesListForService($serviceName, $request_data=NULL){
 
 
 	$db=openDB($BDName, $BDUser, $BDPwd);
+	
+	//Get nodes previously ising this service
+	$nodes=nodesListForService($serviceName);
+	$fromAllNodes=True;
+	foreach ($nodes as $node){
+		$nodeName=$node["node"]["nodeName"];
+		if ($node["published"] == 1 && !isset($impactedNodes[$nodeName])){
+			$impactedNodes[$nodeName]=$nodeName;
+			$fromAllNodes=False;
+		}
+	}
 
 	$stmt=$db->prepare("DELETE FROM servicesnodes WHERE serviceName=?");
 	$stmt->execute(array($serviceName));
@@ -1167,10 +1188,13 @@ function setNodesListForService($serviceName, $request_data=NULL){
 	for ($i=0;$i<count($request_data) ;$i++){
 		$bindPrms=array($serviceName, $request_data[$i]);
 		$stmt->execute($bindPrms);
+		if (!isset($impactedNodes[$request_data[$i]])){
+			$impactedNodes[$request_data[$i]]=$request_data[$i];
+		}
 	}
 	if (isset($request_data["noApply"])){
 		return nodesListForService($serviceName);
-	}else if (applyApacheNodesConfiguration()){
+	}else if (($fromAllNodes && applyApacheNodesConfiguration()) || applyApacheConfiguration($impactedNodes) ){
 		return nodesListForService($serviceName);
 	}else{
 		$error->setHttpStatus(500);

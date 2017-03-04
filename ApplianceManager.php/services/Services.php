@@ -195,7 +195,7 @@ class Services{
 	 
 	 /**
 	  * @url GET :serviceName/nodes
-	  * @url GET //nodes
+	  * @url GET /nodes
 	  */
 	  function getNodesForService($serviceName=NULL){
 		try{

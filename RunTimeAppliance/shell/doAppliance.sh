@@ -138,6 +138,11 @@ if [ "$1" == "D" -o "$1" == "U"  -o "$1" == "C" ] ; then
 	fi
 elif [ "$1" ==  "" -o "$1" == "-nobackup" ] ; then
 	curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/>/tmp/$$.nodes
+else
+	touch /tmp/$$.nodes
+	for node in $1; do
+		curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$node>>/tmp/$$.nodes
+	done
 fi
 echo "" >>/tmp/$$.nodes
 

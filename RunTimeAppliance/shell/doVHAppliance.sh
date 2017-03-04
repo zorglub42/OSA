@@ -226,7 +226,7 @@ elif [ -f /etc/debian_version ] ; then
 	for l in `grep Listen /etc/apache2/ports.conf | grep ":"| awk '{print $2}'| sort -u` ; do
 		ip=`echo $l|awk -F: '{print $1}'`
 		port=`echo $l|awk -F: '{print $2}'`
-		echo "searching ip for  $i"
+		echo "searching ip for  $ip"
 		realIp=`getRealIp "$ip"`
 		APACHE_DEFAULT_LISTENING="$APACHE_DEFAULT_LISTENING $realIp:$port"
 	done

@@ -56,12 +56,12 @@ function normalizeName($name, $allowedExtra=""){
 /* Enhance basic PHP behaviour to handel PUT HTTP verb */
 /* ==> add parameter received in a PUT request into $_REQUEST array */
 function LoadPutParameters(){
-$method=$_SERVER['REQUEST_METHOD'];
-if ($method == "PUT" ) {
-		$prm=Array();
-        parse_str(file_get_contents('php://input'), $prm);
-        $_REQUEST=array_merge($_REQUEST,$prm);
-}
+	$method=$_SERVER['REQUEST_METHOD'];
+	if ($method == "PUT" ) {
+			$prm=Array();
+			parse_str(file_get_contents('php://input'), $prm);
+			$_REQUEST=array_merge($_REQUEST,$prm);
+	}
 	
 }
 
@@ -149,15 +149,17 @@ function enableDisableNode($nodeName, $published,$noreload=""){
 }
 
 
-function applyApacheConfiguration(){
+function applyApacheConfiguration($nodeList=null){
 
 	if (runtimeApplianceAutomaticConfiguration){
 		
 		$remoteCmd="sudo " . runtimeApplianceConfigScript;
+		if ($nodeList !== null){
+			$remoteCmd = $remoteCmd . " \"" . implode(" ", $nodeList) . "\"";
+		}
 		if (runtimeApplianceConfigScriptLogFile!=""){
 			$remoteCmd = $remoteCmd . " 2>&1 >> " . runtimeApplianceConfigScriptLogFile;
 		}
-		
 		system("$remoteCmd",$rc);
 		if ($rc != 0){
 			return false;
