@@ -28,14 +28,45 @@ require_once '../objects/ApplianceObject.class.php';
 class User extends ApplianceObject{
 
 	//Private mebers
-	private $userName;
-	private $password;
-	private $email;
-	private $endDate;
-	private $firstName;
-	private $lastName;
-	private $entity;
-	private $extra;
+	/**
+	 * @var string userName users's identifier {@required true}
+	 */
+	public $userName;
+
+	/**
+	 * @var string password users's password {@required true}
+	 */
+	public $password;
+
+	/**
+	 * @var email email users's email
+	 */
+	public $email;
+
+	/**
+	 * @var string firstName email users's first name
+	 */
+	public $firstName;
+
+	/**
+	 * @var string lastName email users's last name
+	 */
+	public $lastName;
+
+	/**
+	 * @var string entity users's entity
+	 */
+	public $entity;
+
+	/**
+	 * @var string endDate users's validity end date in ISO 8601 full format
+	 */
+	public $endDate;
+
+	/**
+	 * @var string extra users's extra data in free format
+	 */
+	public $extra;
 
 	
 	function setFirstname($firstName){

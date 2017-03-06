@@ -99,57 +99,58 @@ function shellExit(){
 }
 
 
+(
+	echo "Starting $0 with $*"
 
-echo "Starting $0 with $*"
+	if [ -f /etc/redhat-release ] ; then
+		echo "RedHat system"
 
-if [ -f /etc/redhat-release ] ; then
-	echo "RedHat system"
+		APACHE_INITD_FILE=/etc/init.d/httpd
 
-	APACHE_INITD_FILE=/etc/init.d/httpd
+		[ ! -d $APPLIANCE_INSTALL_DIR/RunTimeAppliance/apache/conf/sites-availables ]  && mkdir -p $APPLIANCE_INSTALL_DIR/RunTimeAppliance/apache/conf/sites-availables
+		APACHE_SITES_DEFINITION_DIR=$APPLIANCE_INSTALL_DIR/RunTimeAppliance/apache/conf/sites-availables
+		APACHE_SITES_ENABLED_DIR=/etc/httpd/conf.d
+		APACHE_LISTEN_PORTS=/etc/httpd/conf.d/osa-0-ports.conf
+		APACHE_ENABLE_SITE=enableRedhatSite
+		APACHE_LISTEN_PORTS=/etc/httpd/conf.d/osa-0-ports.conf
+		APACHE_LOG_DIR=/var/log/httpd
 
-	[ ! -d $APPLIANCE_INSTALL_DIR/RunTimeAppliance/apache/conf/sites-availables ]  && mkdir -p $APPLIANCE_INSTALL_DIR/RunTimeAppliance/apache/conf/sites-availables
-	APACHE_SITES_DEFINITION_DIR=$APPLIANCE_INSTALL_DIR/RunTimeAppliance/apache/conf/sites-availables
-	APACHE_SITES_ENABLED_DIR=/etc/httpd/conf.d
-	APACHE_LISTEN_PORTS=/etc/httpd/conf.d/osa-0-ports.conf
-	APACHE_ENABLE_SITE=enableRedhatSite
-	APACHE_LISTEN_PORTS=/etc/httpd/conf.d/osa-0-ports.conf
-	APACHE_LOG_DIR=/var/log/httpd
+		touch $APACHE_LISTEN_PORTS
+		mkdir -p  /etc/ssl/certs
+		mkdir -p   /etc/ssl/private
+	elif [ -f /etc/debian_version ] ; then
+		echo "Debian system"
 
-	touch $APACHE_LISTEN_PORTS
-	mkdir -p  /etc/ssl/certs
-	mkdir -p   /etc/ssl/private
-elif [ -f /etc/debian_version ] ; then
-	echo "Debian system"
+		APACHE_INITD_FILE=/etc/init.d/apache2
+		APACHE_SITES_DEFINITION_DIR=/etc/apache2/sites-available
+		APACHE_SITES_ENABLED_DIR=/etc/apache2/sites-enabled
+		if [ ! -d /etc/apache2/conf.d ] ; then
+			APACHE_LISTEN_PORTS=/etc/apache2/conf-available/osa-0-ports.conf
+		else
+			APACHE_LISTEN_PORTS=/etc/apache2/conf.d/osa-0-ports.conf
+		fi
+		APACHE_ENABLE_SITE=a2ensite
+		#on some install a2ensite and other are not in the PATH....
+		PATH=$PATH:/usr/sbin
+		export PATH
 
-	APACHE_INITD_FILE=/etc/init.d/apache2
-	APACHE_SITES_DEFINITION_DIR=/etc/apache2/sites-available
-	APACHE_SITES_ENABLED_DIR=/etc/apache2/sites-enabled
-	if [ ! -d /etc/apache2/conf.d ] ; then
-		APACHE_LISTEN_PORTS=/etc/apache2/conf-available/osa-0-ports.conf
 	else
-		APACHE_LISTEN_PORTS=/etc/apache2/conf.d/osa-0-ports.conf
-	fi
-	APACHE_ENABLE_SITE=a2ensite
-	#on some install a2ensite and other are not in the PATH....
-	PATH=$PATH:/usr/sbin
-	export PATH
-
-else
-	echo "This script only works with debian or redhat"
-	shellExit 1
-fi
-
-
-case $1 in
-	-backup)
-		backup
-	;;
-	-restaure)
-		restaure
-	;;
-	*)
-		echo "Usage: "`basename $0`" -backup|-restaure"
+		echo "This script only works with debian or redhat"
 		shellExit 1
-	;;
-esac;
-shellExit 0	
+	fi
+
+
+	case $1 in
+		-backup)
+			backup
+		;;
+		-restaure)
+			restaure
+		;;
+		*)
+			echo "Usage: "`basename $0`" -backup|-restaure"
+			shellExit 1
+		;;
+	esac;
+	shellExit 0	
+) 2>&1

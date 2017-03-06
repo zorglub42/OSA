@@ -25,8 +25,16 @@
 require_once '../objects/ApplianceObject.class.php';
 
 class Group extends ApplianceObject{
-	private $groupName;
-	private $description;
+	
+	/**
+	 * @var string groupName group identifier
+	 */ 
+	public $groupName;
+	
+	/**
+	 * @var string description group description
+	*/
+	public $description;
 	
     public function __construct($rqt=NULL)
     {

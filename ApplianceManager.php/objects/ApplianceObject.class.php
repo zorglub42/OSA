@@ -27,8 +27,11 @@ require_once '../include/Settings.ini.php';
 
  class ApplianceObject{
 
-	//Private mebers
-	private $uri;
+	/**
+	 * @var url uri
+	 */
+	public $uri;
+	//Private members
 	private $publicUriPrefix="";
 
 	public function getPublicUriPrefix(){

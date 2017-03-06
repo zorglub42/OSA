@@ -26,7 +26,10 @@
 require_once '../objects/Counter.class.php';
 class ExcedeedCounter extends Counter{
 
-	private $maxValue;
+	/**
+	 * @param int maxValue Maximum allowed value
+	 */
+	public $maxValue;
 	
 	public function getMaxValue(){
 		return $this->maxValue;

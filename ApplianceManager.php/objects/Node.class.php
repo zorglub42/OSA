@@ -28,20 +28,62 @@ require_once '../objects/ApplianceObject.class.php';
 class Node extends ApplianceObject{
 
 	//Private mebers
-	private $nodeName;
-	private $nodeDescription;
-	private $isHTTPS;
-	private $isBasicAuthEnabled;
-	private $iscookieAuthEnabled;
-	private $serverFQDN;
-	private $localIP;
-	private $port;
-	private $privateKey;
-	private $cert;
-	private $ca;
-	private $caChain;
-	private $additionalConfiguration;
-	private $isPublished;
+	/**
+	 * @var string nodeName node identifier
+	 */
+	public $nodeName;
+	/**
+	 * @var string nodeDescription description of this node
+	 */
+	public $nodeDescription;
+	/**
+	 * @var int isHTTPS Does this node use HTTPS? (O: no, 1: yes) {@choice 0,1}
+	 */
+	public $isHTTPS;
+	/**
+	 * @var int isBasicAuthEnabled  Does this node handle basic authentication? (O: no, 1: yes) {@choice 0,1}
+	 */
+	public $isBasicAuthEnabled;
+	/**
+	 * @var int iscookieAuthEnabled Does this not handel cookie based authentication? (O: no, 1: yes) {@choice 0,1}
+	 */
+	public $iscookieAuthEnabled;
+	/**
+	 * @var string serverFQDN public FQDN for this node
+	 */
+	public $serverFQDN;
+	/**
+	 * @var string loalIP local listening IP (or *) of this note
+	 */
+	public $localIP;
+	/**
+	 * @var int port listening port
+	 */
+	public $port;
+	/**
+	 * @var string privateKey for HTTPS
+	 */
+	public $publicKey;
+	/**
+	 * @var string cert server certificate for HTTPS
+	 */
+	public $cert;
+	/**
+	 * @var string ca Certification authority certificate
+	 */
+	public $ca;
+	/**
+	 * @var string intermediate certification authority certificates
+	 */
+	public $caChain;
+	/**
+	 * @var string additionalConfiguration additionnal apache directive for this virtualHost/node
+	 */
+	public $additionalConfiguration;
+	/**
+	 * @var int isPublished Is this node published? (O: no, 1: yes) {@choice 0,1}
+	 */
+	public $isPublished;
 
 	
 	function setAdditionalConfiguration($additionalConfiguration){

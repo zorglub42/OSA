@@ -33,7 +33,7 @@ unset http_proxy
 APPLIANCE_INSTALL_DIR=/usr/local/OSA
 APPLIANCE_LOG_DIR=/var/log/OSA
 APPLIANCE_CONFIG_LOC=$APPLIANCE_INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance
-APPLIANCE_LOCAL_SERVER="http://127.0.0.1:81"
+APPLIANCE_LOCAL_SERVER="http://127.0.0.1:82"
 APPLIANCE_LOCAL_USER=""
 APPLIANCE_LOCAL_PWD=""
 HTTP_FQDN="r-lnx-jmjb0521"
@@ -140,8 +140,9 @@ elif [ "$1" ==  "" -o "$1" == "-nobackup" ] ; then
 	curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/>/tmp/$$.nodes
 else
 	touch /tmp/$$.nodes
-	for node in $1; do
+	for node in `echo $1`; do
 		curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$node>>/tmp/$$.nodes
+		echo "" >>/tmp/$$.nodes
 	done
 fi
 echo "" >>/tmp/$$.nodes

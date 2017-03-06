@@ -25,13 +25,40 @@
 require_once '../objects/ApplianceObject.class.php';
 
 class Quota extends ApplianceObject{
-	private $reqSec=0;
-	private $reqDay=0;
-	private $reqMonth=0;
-	private $serviceName;
-	private $serviceUri;
-	private $userName;
-	private $userUri;
+	/**
+	 * @var string relative service identifier
+	 */
+	public $serviceName;
+	
+	/**
+	 * @var url relative service uri
+	 */
+	public $serviceUri;
+	
+	/**
+	 * @var string relative user identifier
+	 */
+	public $userName;
+	
+	/**
+	 * @var url relative user uri
+	 */
+	public $userUri;
+	
+	/**
+	 * @var int reqSec maximum number of request per seconds allowed
+	 */
+	public $reqSec=0;
+	
+	/**
+	 * @var int reqDay maximum number of request per days allowed
+	 */
+	public $reqDay=0;
+	
+	/**
+	 * @var int reqMonth maximum number of request pre months allowed
+	 */
+	public $reqMonth=0;
 	
 	
 	

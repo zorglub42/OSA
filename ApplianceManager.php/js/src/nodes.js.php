@@ -527,7 +527,9 @@ function showNodes(){
 	prms=prms + "&nodeNameFilter=" + encodeURIComponent(getFilterValue('nodeNameFilter'));
 	prms=prms + "&nodeDescriptionFilter=" + encodeURIComponent(getFilterValue('nodeDescriptionFilter'));
 	prms=prms + "&localIPFilter=" + encodeURIComponent(getFilterValue('localIPFilter'));
-	prms=prms + "&portFilter=" + encodeURIComponent(getFilterValue('portFilter'));
+	if (getFilterValue('portFilter')!=""){
+		prms=prms + "&portFilter=" + encodeURIComponent(getFilterValue('portFilter'));
+	}
 	prms=prms + "&serverFQDNFilter=" + encodeURIComponent(getFilterValue('serverFQDNFilter'));
 
 

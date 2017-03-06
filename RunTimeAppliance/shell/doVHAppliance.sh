@@ -31,7 +31,7 @@ unset http_proxy
 APPLIANCE_INSTALL_DIR=/usr/local/OSA
 APPLIANCE_CONFIG_LOC=$APPLIANCE_INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance
 APPLIANCE_LOG_DIR=/var/log/OSA
-APPLIANCE_LOCAL_SERVER="http://127.0.0.1:81"
+APPLIANCE_LOCAL_SERVER="http://127.0.0.1:82"
 APPLIANCE_LOCAL_USER=""
 APPLIANCE_LOCAL_PWD=""
 # End of Configuration section #############################################################################
@@ -258,7 +258,7 @@ if [ "$1" == "D" -o "$1" == "U"  -o "$1" == "C" ] ; then
 	#if [ "$1" == "U"  -o "$1" == "C" ] ; then
 	echo getting node definition
 	echo curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$2
-	curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$2 >/tmp/$$.nodes
+	curl  -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$2 >/tmp/$$.nodes
 	#else
 	if [ "$1" == "D" ] ; then
 		[ -d $APPLIANCE_LOG_DIR/$2 ] && rm -rf $APPLIANCE_LOG_DIR/$2
@@ -291,7 +291,7 @@ if [ $? -eq 0 ] ; then
 	shellExit 1
 fi
 
-
+		
 while read line  
 do   
 	echo $line | grep "nodeName">/dev/null

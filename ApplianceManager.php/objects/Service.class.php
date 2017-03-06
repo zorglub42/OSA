@@ -22,29 +22,87 @@
  * History     :
  * 1.0.0 - 2012-10-01 : Release of the file
 */
+require_once "../include/Func.inc.php";
 require_once '../objects/ApplianceObject.class.php';
 
 class Service extends ApplianceObject{
 
-	private $serviceName;
-	private $groupName;
-	private $reqSec;
-	private $reqDay;
-	private $reqMonth;
-	private $isGlobalQuotasEnabled;
-	private $isUserQuotasEnabled;
-	private $isIdentityForwardingEnabled;
-	private $isPublished;
-	private $frontEndEndPoint;
-	private $backEndEndPoint;
-	private $backEndUserName;
-	private $backEndPassword;
-	private $isUserAuthenticationEnabled;
-	private $isHitLoggingEnabled;
-	private $additionalConfiguration;
-	private $onAllNodes;
-	private $isAnonymousAllowed;
-	private $loginFormUri;
+	/**
+	 * @var string serviceName service identifier
+	 **/
+	public $serviceName;
+	/**
+	 * @var string groupName Users have to be member of this group to use this service
+	 */
+	public $groupName;
+	/**
+	 * @var int reqSec maximun number of request allowed per seconds
+	 */
+	public $reqSec;
+	/**
+	 * @var int reqSec maximun number of request allowed per days
+	 */
+	public $reqDay;
+	/**
+	 * @var int reqSec maximun number of request allowed per months
+	 */
+	public $reqMonth;
+	/**
+	 * @var int isGlobalQuotasEnabled Is there global quotas management on this service? (O: no, 1: yes) {@choice 0,1}
+	 */
+	public $isGlobalQuotasEnabled;
+	/**
+	 * @var int isGlobalQuotasEnabled Is there quotas management at user level on this service? (O: no, 1: yes) {@choice 0,1}
+	 */
+	public $isUserQuotasEnabled;
+	/**
+	 * @var int isIdentityForwardingEnabled Authenticated user identity is forwarded to backend? (O: no, 1: yes) {@choice 0,1}
+	 */
+	public $isIdentityForwardingEnabled;
+	/**
+	 * @var int isPublished Is this server currently available on nodes? (O: no, 1: yes) {@choice 0,1}
+	 */
+	public $isPublished;
+	/**
+	 * @var url frontEndEndPoint URI on frontend node
+	 */
+	public $frontEndEndPoint;
+	/**
+	 * @var url backEndEndPoint URL to backend server
+	 */
+	public $backEndEndPoint;
+	/**
+	 * @var string username to authenticate against backend server (basic auth)
+	 */
+	public $backEndUserName;
+	/**
+	 * @var string password to authenticate against backend server (basic auth)
+	 */
+	public $backEndPassword;
+	/**
+	 * @var int isUserAuthenticationEnabled Is authentication enabled for this service? (O: no, 1: yes) {@choice 0,1}
+	 */
+	public $isUserAuthenticationEnabled;
+	/**
+	 * @var int isHitLoggingEnabled IS log recording activiated for this service? (O: no, 1: yes) {@choice 0,1}
+	 */
+	public $isHitLoggingEnabled;
+	/**
+	 * @var string additionalConfiguration Additionnal Apache configuration directive (for "Location" tag)
+	 */
+	public $additionalConfiguration;
+	/**
+	 * @var int isHitLoggingEnabled Is this service available for all running nodes? (O: no, 1: yes) {@choice 0,1}
+	 */
+	public $onAllNodes;
+	/**
+	 * @var int isAnonymousAllowed Is authentication absolutly required to invoke this service or anonymous access is also possible? (O: no, 1: yes) {@choice 0,1}
+	 */
+	public $isAnonymousAllowed;
+	/**
+	 * @var url loginFormUri Login form url to redirect to for unauthenticated access
+	 */
+	public $loginFormUri;
 	
 	
 	

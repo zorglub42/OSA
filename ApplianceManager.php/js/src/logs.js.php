@@ -127,10 +127,10 @@ function addFetch(logsList){
 }
 
 function startPopulateAutoCompleteServices(){
-	$.getJSON("services/?withLog=&order=serviceName", populatePopulateAutoCompleteServices).error(displayError);
+	$.getJSON("services/?withLog=1&order=serviceName", populatePopulateAutoCompleteServices).error(displayError);
 }
 function startPopulateAutoCompleteUsers(){
-	$.getJSON("users/?withLog=&order=userName", populatePopulateAutoCompleteUsers).error(displayError);
+	$.getJSON("users/?withLog=1&order=userName", populatePopulateAutoCompleteUsers).error(displayError);
 }
 function populatePopulateAutoCompleteServices(servicesList){
 	var serviceListAutoComplete=new Array();

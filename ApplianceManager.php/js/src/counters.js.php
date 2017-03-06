@@ -218,7 +218,7 @@ function showCounters(){
 }
 
 function startPopulateServices(){
-	$.getJSON("services/?withQuotas&order=serviceName", populateServices).error(displayErrorV2);
+	$.getJSON("services/?withQuotas=1&order=serviceName", populateServices).error(displayErrorV2);
 }
 function startPopulateUsers(){
 	$.getJSON("users/?order=userName", populateUsers).error(displayErrorV2);

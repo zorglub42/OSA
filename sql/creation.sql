@@ -248,17 +248,17 @@ DROP TABLE IF EXISTS `headersmapping`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE headersmapping (
-  id INT NOT NULL AUTO_INCREMENT,
-  serviceName VARCHAR(45) NOT NULL,
-  columnName VARCHAR(45) NOT NULL,
-  headerName VARCHAR(45) NOT NULL,
-  PRIMARY KEY (id),
-  INDEX fk_headersmapping_1_idx (serviceName ASC),
-  CONSTRAINT fk_headersmapping_1
-    FOREIGN KEY (serviceName)
-    REFERENCES services (serviceName)
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION) CHARSET=LATIN1  ENGINE=InnoDB;
+id INT NOT NULL AUTO_INCREMENT,
+serviceName VARCHAR(45) NOT NULL,
+columnName VARCHAR(45) NOT NULL,
+headerName VARCHAR(45) NOT NULL,
+PRIMARY KEY (id),
+INDEX fk_headersmapping_1_idx (serviceName ASC),
+CONSTRAINT fk_headersmapping_1
+FOREIGN KEY (serviceName)
+REFERENCES services (serviceName)
+ON DELETE CASCADE
+ON UPDATE NO ACTION) CHARSET=LATIN1  ENGINE=InnoDB;
 
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

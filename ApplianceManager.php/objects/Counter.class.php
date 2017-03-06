@@ -26,12 +26,30 @@
 require_once '../objects/ApplianceObject.class.php';
 
 class Counter extends ApplianceObject{
-
-	private $resourceName;
-	private $timeUnit;
-	private $timeValue;
-	private $value;
-	private $userName;
+	/**
+	 * @var string counter name
+	 */
+	public $counterName;
+	/**
+	 * @var string controled resource (service)
+	 */
+	public $resourceName;
+	/**
+	 * @var string time unit for this counter (S: second, D: day, M: Month) {@choice S,D,M}
+	 */
+	public $timeUnit;
+	/**
+	 * @var string timeValue reference time for tis counter
+	 */
+	public $timeValue;
+	/**
+	 * @var int value counter value
+	 */
+	public $value;
+	/**
+	 * @var string userName relative user
+	 */
+	public $userName;
 	
 	
 	function setUserName($userName){
@@ -71,10 +89,18 @@ class Counter extends ApplianceObject{
 	function getValue(){
 		return $this->value;
 	}
-	
+
+
+	function setCounterName($counterName){
+		$this->counterName=$counterName;
+	}
+	function getCounterName(){
+		return $this->counterName;
+	}
 	public function toArray(){
 		return Array(
 			"uri" => $this->getUri(),
+			"counterName" => $this->getCounterName(),
 			"userName" => $this->getUsername()==NULL?"":$this->getUsername(),
 			"resourceName" => $this->getResourceName(),
 			"timeUnit" => $this->getTimeUnit(),
@@ -89,6 +115,7 @@ class Counter extends ApplianceObject{
 		if ($rqt != NULL){
 			$this->setValue($rqt["value"]);		
 			$this->setUri( "counters/" . urlencode($rqt["counterName"]));
+			$this->setCounterName( $rqt["counterName"]);
 			$counterName=($rqt["counterName"]);
 
 			$cnPart=explode("$$$", $counterName);

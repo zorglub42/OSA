@@ -25,7 +25,7 @@
 	#Database connection parameter
 	$BDName="appliance@localhost:3306";
 	$BDUser="appliance";
-	$BDPwd="osapwd";
+	$BDPwd="mysql";
 	
 	define("runtimeApplianceConfigLocation",  "/usr/local/OSA/RunTimeAppliance/apache/conf/vhAppliance");
 	

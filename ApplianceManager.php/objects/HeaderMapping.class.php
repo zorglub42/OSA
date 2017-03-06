@@ -25,12 +25,30 @@
 
 require_once '../objects/ApplianceObject.class.php';
 
+class HeaderMappingCreation{
+	/**
+	 * @var string headerName HTTP Header name
+	 */
+	public $headerName;
+	/**
+	 * @var string userProperty corresponding user property
+	 */
+	public $userProperty;
+}
 class HeaderMapping extends ApplianceObject{
 
-	//Private mebers
-	private $serviceName;
-	private $headerName;
-	private $userProperty;
+	/**
+	 * @var string serviceName Service identifier
+	 */
+	public $serviceName;
+	/**
+	 * @var string headerName HTTP Header name
+	 */
+	public $headerName;
+	/**
+	 * @var string userProperty corresponding user property
+	 */
+	public $userProperty;
 
 	
 	function setServicename($serviceName){

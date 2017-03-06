@@ -25,13 +25,34 @@
 require_once '../objects/ApplianceObject.class.php';
 
 class Log extends ApplianceObject{
-	private $id;
-	private $message=0;
-	private $frontEndUri;
-	private $status;
-	private $serviceName;
-	private $userName;
-	private $timeStamp;
+	/**
+	 * @var int id log identifier
+	 */	
+	public $id;
+	/**
+	 * @var string message message Logged message
+	 */
+	public $message;
+	/**
+	 * @var uri front end uri invoked
+	 */
+	public $frontEndUri;
+	/**
+	 * @var int status HTTP Response status
+	 */
+	public $status;
+	/**
+	 * @var string serviceName service invoked
+	 */
+	public $serviceName;
+	/**
+	 * @var string userName [optional] authentifed user
+	 */
+	public $userName;
+	/**
+	 * @var string timeStamp hit date in ISO 8601 full format
+	 */
+	public $timeStamp;
 	
 
 	function setId($id){

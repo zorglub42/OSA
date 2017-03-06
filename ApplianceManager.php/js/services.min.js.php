@@ -358,10 +358,11 @@
 							selectedCount++;
 						}
 					}
+					postData={ "nodes": selectedNodes};
 					$.ajax({
 						  url: "services/" + encodeURIComponent($('#serviceName').val()) + "/nodes/" ,
 						  dataType: 'json',
-						  data: JSON.stringify(selectedNodes),
+						  data: JSON.stringify(postData),
 						  contentType: 'application/json; charset=utf-8',
 						  type:"POST",
 						  success: showServices,
