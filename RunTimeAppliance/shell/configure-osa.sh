@@ -25,7 +25,7 @@
 
 #!/bin/bash
 unset http_proxy
-ABSOLUTE_URI=0
+ABSOLUTE_URI=1
 
 
 function randomString(){
@@ -219,12 +219,43 @@ mv /tmp/$$.logrotate.conf $INSTALL_DIR/RunTimeAppliance/shell/logrotate.conf
 
 
 ######################################################################
+# updateAdminService
+######################################################################
+# Update the admin service to be sure to have it in proper conf
+######################################################################
+function updateAdminService(){
+	echo "Setting up admin service"
+	curl -H "Accept: application/json"  "http://127.0.0.1:$PRIVATE_VHOST_PORT/ApplianceManager/services/ApplianceManagerAdmin"|grep -v '"uri"' | grep -v '"groupUri"'| sed 's/"additionalConfiguration":.*/"additionalConfiguration": "RequestHeader set Public-Root-URI \\"%{publicServerProtocol}e%{publicServerName}e%{frontEndEndPoint}e\\"",/'>/tmp/$$.putdata
+
+	#curl -i -X PUT -H "Content-Type: application/json" -d @"/tmp/x2" localhost:82/ApplianceManager/services/ApplianceManagerAdmin
+	curl -i -X PUT -H "Content-Type: application/json" -d @"/tmp/$$.putdata" "http://127.0.0.1:$PRIVATE_VHOST_PORT/ApplianceManager/services/ApplianceManagerAdmin" >/tmp/$$.curl
+ grep " 200 OK" /tmp/$$.curl>/dev/null
+if [ $? -ne 0 ] ; then
+	cat /tmp/$$.curl
+	echo ""
+	echo ""
+	echo ""
+	echo "                 *****************************************"
+	echo ""
+	echo "Something has failed in this configuration.... check ouput for details...."
+	echo "OSA Configuration IS NOT done, exiting..."
+	echo ""
+	echo "                 *****************************************"
+	echo ""
+	echo ""
+	shellExit 1
+fi
+
+
+}	
+######################################################################
 # updateAdminUser
 ######################################################################
 # Update the default application user (Admin) to set it a customized password
 ######################################################################
 function updateAdminUser(){
 	
+	echo "Setting password for Admin user"
 	cat <<EOF >/tmp/$$.putdata
 password=$APPLIANCE_ADMIN_PW&email=$APACHE_ADMIN_MAIL&endDate=2100-12-31T23:59:59Z&firstName=Administrator&lastName=&entity=
 EOF
@@ -520,7 +551,7 @@ function createApacheConf(){
 	[ -d $INSTALL_DIR/ApplianceManager.php/api/cache ] && $INSTALL_DIR/ApplianceManager.php/api/cache
 	mkdir -p $INSTALL_DIR/ApplianceManager.php/api/cache
 	chown $APACHE_USER:$APACHE_GROUP $INSTALL_DIR/ApplianceManager.php/api/cache
-	sed -i -e "s/\$r = new Restler.*/\$r = new Restler(True);/" $INSTALL_DIR/ApplianceManager.php/api/restler-gateway.php
+	sed -i -e "s/\$r = new Restler.*/\$r = new Restler();/" $INSTALL_DIR/ApplianceManager.php/api/restler-gateway.php
 
 	echo "Listen 127.0.0.1:$PRIVATE_VHOST_PORT" >> $APACHE_LISTEN_PORTS 
 	cat   $INSTALL_DIR/RunTimeAppliance/apache/conf/samples/standard/osa-local | sed "s/PRIVATE_VHOST_PORT/$PRIVATE_VHOST_PORT/g" | sed "s/APACHE_ADMIN_MAIL/$APACHE_ADMIN_MAIL/g" | sed "s|INSTALL_DIR|$INSTALL_DIR|"| sed "s|LOG_DIR|$LOG_DIR|g" > $APACHE_SITES_DEFINITION_DIR/osa-local.conf
@@ -536,6 +567,7 @@ function createApacheConf(){
 	[ -f $APACHE_SITES_DEFINITION_DIR/osa-admin.conf ] && rm $APACHE_SITES_DEFINITION_DIR/osa-admin.conf
 	echo "Listen $HTTPS_ADMIN_VHOST_ADDR:$HTTPS_ADMIN_VHOST_PORT" >> $APACHE_LISTEN_PORTS 
 	cat   $INSTALL_DIR/RunTimeAppliance/apache/conf/samples/standard/osa-admin  | sed "s/HTTPS_ADMIN_VHOST_ADDR/$HTTPS_ADMIN_VHOST_ADDR/g" | sed "s/HTTPS_ADMIN_VHOST_PORT/$HTTPS_ADMIN_VHOST_PORT/g"  | sed "s/HTTPS_ADMIN_VHOST_NAME/$HTTPS_ADMIN_VHOST_NAME/g"  | sed "s/PRIVATE_VHOST_PORT/$PRIVATE_VHOST_PORT/g" | sed "s/APACHE_ADMIN_MAIL/$APACHE_ADMIN_MAIL/g" | sed "s|LOG_DIR|$LOG_DIR|g" > $APACHE_SITES_DEFINITION_DIR/osa-admin.conf
+
 	if [ $ABSOLUTE_URI -eq 0 ] ; then
 		cat $APACHE_SITES_DEFINITION_DIR/osa-admin.conf | grep -v "RequestHeader set Public-Root-URI" > /tmp/$$.osa-admin
 		cp /tmp/$$.osa-admin $APACHE_SITES_DEFINITION_DIR/osa-admin.conf
@@ -546,7 +578,6 @@ function createApacheConf(){
 
 	fi
 	$APACHE_ENABLE_SITE osa-admin.conf
-
 
 }
 
@@ -1173,6 +1204,7 @@ fi
 
 createBasicNodes
 updateAdminUser
+updateAdminService
 
 deleteTempFiles
 echo "OSA Configuration done, exiting..."

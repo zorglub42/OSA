@@ -27,29 +27,38 @@
 
 
 require_once('../include/commonHeaders.php');
+require_once('../include/Settings.ini.php');
 require_once 'Users.php';
 require_once 'Groups.php';
 require_once 'Logs.php';
 require_once 'Counters.php';
 require_once 'Nodes.php';
 require_once 'Services.php';
+require_once 'Auth.php';
 require_once '../include/restler3/restler.php';
 use Luracast\Restler\Restler;
 
 
 Resources::$useFormatAsExtension = false;
 JsonFormat::$prettyPrint=True;
-$r = new Restler(True);
-$r->setBaseUrl("https://localhost:6443");
+
+$r = new Restler();
+
+if (isset(getallheaders()[uriPrefixHeader])){
+	$r->setBaseUrl(getallheaders()[uriPrefixHeader]);
+}
 $r->setSupportedFormats('JsonFormat' ,'UrlEncodedFormat','UploadFormat');
 
 $r->addAPIClass('Luracast\\Restler\\Resources');  //this creates resources.json at API root 
+
+$r->addAPIClass('Auth');
 $r->addAPIClass('Counters');
 $r->addAPIClass('Groups');
 $r->addAPIClass('Logs');
 $r->addAPIClass('Nodes');
 $r->addAPIClass('Users');
 $r->addAPIClass('Services');
+
 
 $r->handle();
 

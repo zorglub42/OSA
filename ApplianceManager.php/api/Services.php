@@ -230,7 +230,7 @@ class Services{
 	 * @param int isPublished [Optional] {@choice 0,1} Is tis service deployed? (O: no 1: yes, default 1)
 	 * @param string additionalConfiguration [Optional] Additional Apache "<Location>" tag directives 
 	 * @param int isHitLoggingEnabled [Optional] {@choice 0,1} Is log recording is enabled? (O: no 1: yes, default 0)
-	 * @param string onAllNodes [Optional] {@choice 0,1} Is this service alavaliable on all publshed nodes? (O: no 1: yes, default 1)
+	 * @param int onAllNodes [Optional] {@choice 0,1} Is this service alavaliable on all publshed nodes? (O: no 1: yes, default 1)
 	 * @param int isUserAuthenticationEnabled [Optional] {@choice 0,1} Is user authentication enabled? (O: no 1: yes, default 0)
 	 * @param string groupName [Optional] User must be a member of this group to use this service (required if isUserAuthenticationEnabled=1) 
 	 * @param int isIdentityForwardingEnabled [Optional] {@choice 0,1} Is authenticated user's identity forwarded to backend system? (O: no 1: yes, default 0)
@@ -291,7 +291,7 @@ class Services{
 	 * @param int isPublished [Optional] {@choice 0,1} Is tis service deployed? (O: no 1: yes, default 1)
 	 * @param string additionalConfiguration [Optional] Additional Apache "<Location>" tag directives 
 	 * @param int isHitLoggingEnabled [Optional] {@choice 0,1} Is log recording is enabled? (O: no 1: yes, default 0)
-	 * @param string onAllNodes [Optional] {@choice 0,1} Is this service alavaliable on all publshed nodes? (O: no 1: yes, default 1)
+	 * @param int onAllNodes [Optional] {@choice 0,1} Is this service alavaliable on all publshed nodes? (O: no 1: yes, default 1)
 	 * @param int isUserAuthenticationEnabled [Optional] {@choice 0,1} Is user authentication enabled? (O: no 1: yes, default 0)
 	 * @param string groupName [Optional] User must be a member of this group to use this service (required if isUserAuthenticationEnabled=1) 
 	 * @param int isIdentityForwardingEnabled [Optional] {@choice 0,1} Is authenticated user's identity forwarded to backend system? (O: no 1: yes, default 0)

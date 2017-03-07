@@ -18,9 +18,9 @@ SSLStaplingCache        shmcb:/var/run/ocsp(128000)
 
 
        SetEnv publicServerProtocol https://
-       SetEnv publicServerName HTTPS_ADMIN_VHOST_NAME
+       SetEnvIf Host "(.*)" publicServerName=$1
        SetEnv publicServerPort HTTPS_ADMIN_VHOST_PORT
-       SetEnv publicServerPrefix HTTPS_ADMIN_VHOST_NAME:HTTPS_ADMIN_VHOST_PORT
+       SetEnv publicServerPrefix https://HTTPS_ADMIN_VHOST_NAME:HTTPS_ADMIN_VHOST_PORT
         
         
        CustomLog LOG_DIR/admin/main.access.log combined
@@ -107,7 +107,8 @@ SSLStaplingCache        shmcb:/var/run/ocsp(128000)
 
 
 			ProxyPassReverse http://127.0.0.1:PRIVATE_VHOST_PORT/ApplianceManager
-			
+			RequestHeader set Public-Root-URI "%{publicServerProtocol}e%{publicServerName}e"
+		
 		</Location>
 
 		<Location  /auth/>
@@ -131,6 +132,7 @@ SSLStaplingCache        shmcb:/var/run/ocsp(128000)
 
 
 			ProxyPassReverse http://localhost:PRIVATE_VHOST_PORT/ApplianceManager/auth/
+			RequestHeader set Public-Root-URI "%{publicServerProtocol}e%{publicServerName}e"
 			
 		</Location>
 
@@ -163,6 +165,7 @@ SSLStaplingCache        shmcb:/var/run/ocsp(128000)
 
 
 			ProxyPassReverse http://localhost:PRIVATE_VHOST_PORT/ApplianceManager/auth/token
+			RequestHeader set Public-Root-URI "%{publicServerProtocol}e%{publicServerName}e"
 			
 		</Location>
 		<Location  /users/me>
@@ -194,6 +197,7 @@ SSLStaplingCache        shmcb:/var/run/ocsp(128000)
 
 
 			ProxyPassReverse http://localhost:PRIVATE_VHOST_PORT/ApplianceManager/users/me
+			RequestHeader set Public-Root-URI "%{publicServerProtocol}e%{publicServerName}e"
 			
 		</Location>
 
