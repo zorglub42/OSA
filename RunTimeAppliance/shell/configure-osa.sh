@@ -551,7 +551,7 @@ function createApacheConf(){
 	[ -d $INSTALL_DIR/ApplianceManager.php/api/cache ] && $INSTALL_DIR/ApplianceManager.php/api/cache
 	mkdir -p $INSTALL_DIR/ApplianceManager.php/api/cache
 	chown $APACHE_USER:$APACHE_GROUP $INSTALL_DIR/ApplianceManager.php/api/cache
-	sed -i -e "s/\$r = new Restler.*/\$r = new Restler();/" $INSTALL_DIR/ApplianceManager.php/api/restler-gateway.php
+	sed -i -e "s/\$r = new Restler.*/\$r = new Restler(True);/" $INSTALL_DIR/ApplianceManager.php/api/restler-gateway.php
 
 	echo "Listen 127.0.0.1:$PRIVATE_VHOST_PORT" >> $APACHE_LISTEN_PORTS 
 	cat   $INSTALL_DIR/RunTimeAppliance/apache/conf/samples/standard/osa-local | sed "s/PRIVATE_VHOST_PORT/$PRIVATE_VHOST_PORT/g" | sed "s/APACHE_ADMIN_MAIL/$APACHE_ADMIN_MAIL/g" | sed "s|INSTALL_DIR|$INSTALL_DIR|"| sed "s|LOG_DIR|$LOG_DIR|g" > $APACHE_SITES_DEFINITION_DIR/osa-local.conf

@@ -157,7 +157,8 @@ class Resources implements iUseAuthentication, iProvideMultiVersionApi
         ) {
             //by pass call, compose, postCall stages and directly send response
             $this->restler->composeHeaders();
-            die($this->restler->cache->get($this->cacheName));
+            
+            die(preg_replace('/"basePath": ".*"/', '"basePath": "' . $this->restler->getBaseUrl() . '"', $this->restler->cache->get($this->cacheName)));
         }
     }
 
@@ -854,7 +855,7 @@ class Resources implements iUseAuthentication, iProvideMultiVersionApi
         ) {
             //by pass call, compose, postCall stages and directly send response
             $this->restler->composeHeaders();
-            die($this->restler->cache->get($this->cacheName));
+            die(preg_replace('/"basePath": ".*"/', '"basePath": "' . $this->restler->getBaseUrl() . '"', $this->restler->cache->get($this->cacheName)));
         }
     }
 
@@ -872,7 +873,8 @@ class Resources implements iUseAuthentication, iProvideMultiVersionApi
     public function _post_index_json($responseData)
     {
         if ($this->restler->getProductionMode()) {
-            $this->restler->cache->set($this->cacheName, $responseData);
+			
+			$this->restler->cache->set($this->cacheName, $responseData);
         }
         return $responseData;
     }

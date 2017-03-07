@@ -42,7 +42,7 @@ use Luracast\Restler\Restler;
 Resources::$useFormatAsExtension = false;
 JsonFormat::$prettyPrint=True;
 
-$r = new Restler();
+$r = new Restler(True);
 
 if (isset(getallheaders()[uriPrefixHeader])){
 	$r->setBaseUrl(getallheaders()[uriPrefixHeader]);

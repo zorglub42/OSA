@@ -91,12 +91,13 @@ class Auth{
 	 * 
 	 * @param string userName User namme to log in
 	 * @param string password Password to authenticate
+	 * @param string d domain to set cookie
 	 * 
 	 * @url POST /login
 	 * 
 	 * @return AuthToken Authentication token 
 	 */
-	function generateTokenFormUserAndPass($userName, $password){
+	function generateTokenFormUserAndPass($userName, $password, $d=null){
 
 			$httpClient = new HttpClient("","","","",true);
 			
@@ -110,8 +111,8 @@ class Auth{
 					header($key . ": " . $value);
 			}*/
 			$tokenObj=json_decode($httpResponse->getBody(), true);
-			if (isset($request_data["d"]) && $request_data["d"] != ""){
-				setcookie(authTokenCookieName, $tokenObj["token"],NULL,"/",$request_data["d"]);
+			if (!empty($d)){
+				setcookie(authTokenCookieName, $tokenObj["token"],NULL,"/",$d);
 			}else{
 				setcookie(authTokenCookieName, $tokenObj["token"],NULL,"/");
 			}
