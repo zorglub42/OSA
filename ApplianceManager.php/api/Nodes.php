@@ -28,7 +28,9 @@ require_once('../include/commonHeaders.php');
 
 require_once 'nodeDAO.php';
 
-
+/**
+ * Nodes management
+ */
 class Nodes{
 	
 	/**
@@ -209,7 +211,7 @@ class Nodes{
 	 * @param array $files {@field files}{@type associative} Private key as multipart/form-data Uploaded File 
 	 * 
 	 * @return int True in case of success
-	 * 	
+	 * 			
 	 */
 	 function uploadPrivateKey($nodeName, array $files){
 		try{
