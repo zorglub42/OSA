@@ -480,7 +480,6 @@ class Nodes{
 			$nodeName=normalizeName($nodeName);
 			$rc= addNode($nodeName, $params);
 			if ($apply=="1" || empty($apply)){ 
-				echo "**************** applying";
 				if (!applyApacheNodesConfiguration($nodeName, "C")){
 					$this->delete($nodeName, array("apply"=>0));
 					throw new RestException(400, "Invalid apache configuration");

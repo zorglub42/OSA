@@ -536,6 +536,9 @@ function createApacheConf(){
 	
 	:>$APACHE_LISTEN_PORTS 
 	cat /tmp/$$.ports.conf.2 >> $APACHE_LISTEN_PORTS 
+	echo "" >> $APACHE_LISTEN_PORTS 
+	echo "#Deployed nodes" >> $APACHE_LISTEN_PORTS 
+
 	if [ ! -d /etc/apache2/conf.d ] ; then
 		a2enconf osa-0-ports.conf
 		service apache2 restart

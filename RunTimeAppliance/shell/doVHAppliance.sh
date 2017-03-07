@@ -36,6 +36,38 @@ APPLIANCE_LOCAL_USER=""
 APPLIANCE_LOCAL_PWD=""
 # End of Configuration section #############################################################################
 
+function configureApacheListening(){
+	line=`grep -n "#Deployed nodes" $APACHE_LISTEN_PORTS 	| awk -F ':' '{print $1}'`
+	head -$line $APACHE_LISTEN_PORTS >/tmp/$$.listening	
+
+curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/ >/tmp/$$.allNodes
+while read line  
+do   
+	echo $line | grep "nodeName">/dev/null
+	if [ $? -eq 0 ] ; then
+		nodeName=`echo $line | awk -F\" '{print $4}'`
+	fi
+	echo $line | grep "localIP">/dev/null
+	if [ $? -eq 0 ] ; then
+		localIP=`echo $line | awk -F\" '{print $4}'`
+		localIP=`getRealIp "$localIP"`
+	fi
+	echo $line | grep "port">/dev/null
+	if [ $? -eq 0 ] ; then
+		port=`echo $line | sed 's/[^0-9]*\([0-9]*\).*/\1/'` 
+	fi
+
+	if [ "$line" == "}" -o "$line" == "}," ] ; then
+		grep "$localIP:$port" /tmp/$$.listening >/dev/null
+		if [ $? -ne 0 ] ; then
+			echo "Listen $localIP:$port" >> /tmp/$$.listening
+		fi
+	fi
+done < /tmp/$$.allNodes
+mv /tmp/$$.listening $APACHE_LISTEN_PORTS
+
+
+}
 
 removeLogRotateForAllNodes(){
 	
@@ -133,25 +165,6 @@ function delFiles(){
 }
 
 
-function configureApachePorts(){
-		echo Configuring listing port for $1
-
-		LADDR=`echo "$LOCAL_IP"| sed 's/\*/\\\\*/g'` 
-		grep -v "$LADDR:$PORT" $APACHE_LISTEN_PORTS>/tmp/$$.port
-		cat /tmp/$$.port >$APACHE_LISTEN_PORTS
-		
-		if [ ! "$1" == "D" ] ; then
-			realIp=`getRealIp "$LOCAL_IP"`
-			grep "$realIp:$PORT" /tmp/$$.APACHE_LISTENING>/dev/null
-			if [ $? -ne 0 ] ; then
-
-				echo "Listen $LOCAL_IP:$PORT" >>$APACHE_LISTEN_PORTS
-			fi
-			#echo "NameVirtualHost $LOCAL_IP:$PORT" >>$APACHE_LISTEN_PORTS
-		fi
-}
-
-
 function getRealIp(){
 	if [ "$1" == '*' ] ; then
 		echo '*'
@@ -163,6 +176,8 @@ function getRealIp(){
 EXEC_DIR=`dirname $0`
 cd $EXEC_DIR
 . ./osa-funcs.sh
+
+
 
 if [ -f /etc/redhat-release ] ; then
 	echo "RedHat system"
@@ -237,7 +252,6 @@ else
 	shellExit 1
 fi
 echo $APACHE_DEFAULT_LISTENING>/tmp/$$.APACHE_LISTENING
-
 
 echo "Starting $0 with $*"
 
@@ -326,7 +340,6 @@ do
 	fi
 	if [ "$line" == "}" -o "$line" == "}," ] ; then
 
-		configureApachePorts $1
 		if [ "$1" == "D" ] ; then
 			[ -d $APPLIANCE_LOG_DIR/$nodeName ] && rm -rf $APPLIANCE_LOG_DIR/$nodeName
 			[ -L /etc/ApplianceManager/applianceManagerServices-node-$nodeName.endpoints ] && rm /etc/ApplianceManager/applianceManagerServices-node-$nodeName.endpoints
@@ -358,6 +371,7 @@ do
 	fi
 	
 done < /tmp/$$.nodes
+configureApacheListening
 
 
 

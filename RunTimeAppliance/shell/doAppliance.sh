@@ -58,7 +58,6 @@ USE_HTTPS=1
 
 
 
-
 if [ -f /etc/init.d/httpd ] ; then
 	APACHE_INIT_SCRIPT=/etc/init.d/httpd
 else
@@ -128,7 +127,6 @@ done
 if [ $DO_BACKUP -eq 1 ] ; then
 	`dirname $0`/backupConf.sh -backup
 fi
-
 
 if [ "$1" == "D" -o "$1" == "U"  -o "$1" == "C" ] ; then
 	if [ "$1" == "U"  -o "$1" == "C" ] ; then
