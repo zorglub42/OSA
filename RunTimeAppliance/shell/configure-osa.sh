@@ -536,8 +536,6 @@ function createApacheConf(){
 	
 	:>$APACHE_LISTEN_PORTS 
 	cat /tmp/$$.ports.conf.2 >> $APACHE_LISTEN_PORTS 
-	echo "" >> $APACHE_LISTEN_PORTS 
-	echo "#Deployed nodes" >> $APACHE_LISTEN_PORTS 
 
 	if [ ! -d /etc/apache2/conf.d ] ; then
 		a2enconf osa-0-ports.conf
@@ -553,7 +551,7 @@ function createApacheConf(){
 	ln -s $INSTALL_DIR/ApplianceManager.php /var/www/local/main/ApplianceManager
 	[ -d $INSTALL_DIR/ApplianceManager.php/api/cache ] && $INSTALL_DIR/ApplianceManager.php/api/cache
 	mkdir -p $INSTALL_DIR/ApplianceManager.php/api/cache
-	chown $APACHE_USER:$APACHE_GROUP $INSTALL_DIR/ApplianceManager.php/api/cache
+	chown -R $APACHE_USER:$APACHE_GROUP $INSTALL_DIR/ApplianceManager.php/api/cache
 	sed -i -e "s/\$r = new Restler.*/\$r = new Restler(True);/" $INSTALL_DIR/ApplianceManager.php/api/restler-gateway.php
 
 	echo "Listen 127.0.0.1:$PRIVATE_VHOST_PORT" >> $APACHE_LISTEN_PORTS 
@@ -580,6 +578,10 @@ function createApacheConf(){
 		cat /tmp/$$.Settings.ini.php >> $INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php
 
 	fi
+	echo "" >> $APACHE_LISTEN_PORTS 
+	echo "#Deployed nodes" >> $APACHE_LISTEN_PORTS 
+	
+	
 	$APACHE_ENABLE_SITE osa-admin.conf
 
 }
