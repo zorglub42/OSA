@@ -1,24 +1,21 @@
 var divHooks=[];
 
 var osaAddonsObserver = new MutationObserver(function(mutations) {
-													mutations.forEach(	function(mutation) {
-																			for (var i = 0; i < mutation.addedNodes.length; i++){
-																				for (var j=0;j<divHooks.length;j++){
-																					if (mutation.addedNodes[i].nodeName == "DIV" && mutation.addedNodes[i].innerHTML.indexOf(divHooks[j].name)>=0){
-																						divHooks[j].callback();
-																					}
-																				}
-																			}
-																		}
-													)
-												});
+												for (var j=0;j<divHooks.length;j++){
+													if ($(divHooks[j].selector).length){
+														divHooks[j].callback();
+													}
+												}
+											});
 
 
-function addOSADivHook(divName, callback){
-	divHooks.push({"name": divName, "callback": callback});	
+
+
+
+function addonAddGUIHook(selector, callback){
+	divHooks.push({"selector": selector, "callback": callback});	
 }
 
 $( document ).ready(function() {
-	console.log( "ready!" );
 	osaAddonsObserver.observe(document.getElementById("content"), { childList: true });
 });

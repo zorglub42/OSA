@@ -5,6 +5,6 @@
 			}
 			$(			
 				function (){
-					$('#apiDoc').click(loadDoc);
+					$('#apiDocMenu').click(loadDoc);
 				}
 			);

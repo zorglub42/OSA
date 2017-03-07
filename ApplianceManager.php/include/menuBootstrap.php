@@ -37,7 +37,7 @@
           <a id="searchLogs" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo Localization::getString("nav.logs")?></a>
         </li>
         <li>
-          <a id="apiDoc" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo Localization::getString("nav.apiDoc")?></a>
+          <a id="apiDocMenu" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo Localization::getString("nav.apiDoc")?></a>
         </li>
 
       </ul>

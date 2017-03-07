@@ -4,7 +4,6 @@ done
 for f in *.js.php; do
 	jsName=`echo $f | sed 's/\.js\.php//'`
 	if [ "$f" != "services.js.php" ] ; then
-		echo $jsName
 		cat $f|sed 's/<?php/ZZOPEN/g'|sed 's/?>/ZZCLOSE/g'|sed 's/JSString("/JSString(QUOTE/g'|sed 's/")ZZCLOSE/QUOTE)ZZCLOSE/g'> $jsName.js
 		./minifyjs $jsName.js
 		cat min/$jsName.min.js| sed 's/QUOTE)ZZCLOSE/")?>/g'|sed 's/JSString(QUOTE/JSString("/g'|sed 's/ZZOPEN/<?php/g'| sed 's/quote)zzclose/")?>/g'|sed 's/jsstring(quote/JSString("/g'|sed 's/zzopen/<?php/g'>min/$jsName.min.js.php
