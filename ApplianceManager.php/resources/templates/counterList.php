@@ -4,7 +4,7 @@ require_once "../../include/Localization.php";
 <?php
 require_once "../../include/Localization.php";
 ?>
-<div class="row">
+<div class="row" id="countersList">
 	<div class="col-md-10 col-md-offset-1">
 		<div class="panel panel-default">
 			<div class="panel-heading">

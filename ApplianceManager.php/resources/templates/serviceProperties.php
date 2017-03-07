@@ -2,7 +2,7 @@
 require_once "../../include/Constants.php";
 require_once "../../include/Settings.ini.php";
 ?>
-<div class="row">
+<div class="row" id="serviceProperties">
 	<div class="col-md-12 col-xs-12">
 		<div id="tabs">
 			<ul>

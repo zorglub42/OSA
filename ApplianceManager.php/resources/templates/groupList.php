@@ -1,7 +1,7 @@
 <?php
 require_once "../../include/Localization.php";
 ?>
-<div class="row">
+<div class="row" id="groupsList">
 	<div class="col-md-10 col-md-offset-1 col-xs-12">
 		<div class="panel panel-default">
 			<div class="panel-heading">
