@@ -33,6 +33,11 @@ require_once '../include/PDOFunc.php';
 require_once '../include/HTTPClient.php';
 require_once '../include/Settings.ini.php';
 
+/**
+ * Authentication management
+ * 
+ * Services to login, logout and generate authentication token
+ */
 class Auth{
 	/**
 	 * Logout from system 

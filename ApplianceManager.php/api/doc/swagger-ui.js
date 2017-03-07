@@ -717,12 +717,15 @@ templates['resource'] = template(function (Handlebars,depth0,helpers,partials,da
   helpers = helpers || Handlebars.helpers;
   var buffer = "", stack1, foundHelper, functionType="function", escapeExpression=this.escapeExpression;
 
-
+  labelComp="";
   buffer += "<div class='heading'>\n    <h2>\n        <a href='#!/";
   foundHelper = helpers.name;
   if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
   buffer += escapeExpression(stack1) + "' onclick=\"Docs.toggleEndpointListForResource('";
+  if (depth0.description != ""){
+	  labelComp= " : " + depth0.description;
+  }  
   foundHelper = helpers.name;
   if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
@@ -730,7 +733,7 @@ templates['resource'] = template(function (Handlebars,depth0,helpers,partials,da
   foundHelper = helpers.name;
   if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
-  buffer += escapeExpression(stack1) + "</a>\n    </h2>\n    <ul class='options'>\n        <li>\n            <a href='#!/";
+  buffer += escapeExpression(stack1) + "</a>" + labelComp + "\n    </h2>\n    <ul class='options'>\n        <li>\n            <a href='#!/";
   foundHelper = helpers.name;
   if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1() : stack1; }

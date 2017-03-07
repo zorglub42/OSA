@@ -26,7 +26,9 @@
 require_once('../include/commonHeaders.php');
 require_once 'counterDAO.php';
 
-
+/**
+ * Counters and exceeded counters management
+ */
 class Counters{
 	
 	
