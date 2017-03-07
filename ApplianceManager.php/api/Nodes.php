@@ -128,11 +128,13 @@ class Nodes{
 	 * @url POST :nodeName/chain
 	 * 
 	 * @param string Node identifier
+	 * @param array $files {@field files}{@type associative} Certificate(s) as multipart/form-data Uploaded File 
 	 * 
+	 * @return int True in case of success	
 	 */
-	 function uploadChain($nodeName){
+	 function uploadChain($nodeName, array $files){
 		try{
-			$chain=file_get_contents($_FILES["files"]["tmp_name"][0]);
+			$chain=file_get_contents($files["tmp_name"][0]);
 			if ($chain == NULL || $chain=="" ){
 				throw new RestException(400 ,"chain cert is required\n");
 			}else{
@@ -169,19 +171,22 @@ class Nodes{
 	 * Upload certificate
 	 * 
 	 * Upload server certificate
-	 * Expect Certificates as multipart/form-data; Uploaded File (files name collection name: files)
+	 * Expect Certificates as multipart/form-data; Uploaded File (files field)
+	 * 
+	 * @param string nodeName Node identifier
+	 * @param array $files {@field files}{@type associative} Certificate as multipart/form-data Uploaded File 
 	 * 
 	 * @url POST :nodeName/cert
 	 * 
-	 * @param string Node identifier
+	 * @return int True in case of success	
 	 * 
 	 */
-	 function uploadCert($nodeName){
+	 function uploadCert($nodeName,array $files){
 		try{
 			//if ($_FILES["files"]["type"][0] != "application/x-x509-ca-cert"){
 			//	throw new RestException(400, $_FILES["files"]["name"][0] . " is not a valid certificate file (" . $_FILES["files"]["type"][0] . ")"); 
 			//}
-			$cert=file_get_contents($_FILES["files"]["tmp_name"][0]);
+			$cert=file_get_contents($files["tmp_name"][0]);
 			if ($cert == NULL || $cert=="" ){
 				throw new RestException(400 ,"cert is required\n");
 			}else{
@@ -201,14 +206,17 @@ class Nodes{
 	 * @url POST :nodeName/privatekey
 	 * 
 	 * @param string Node identifier
+	 * @param array $files {@field files}{@type associative} Private key as multipart/form-data Uploaded File 
 	 * 
+	 * @return int True in case of success
+	 * 	
 	 */
-	 function uploadPrivateKey($nodeName){
+	 function uploadPrivateKey($nodeName, array $files){
 		try{
 			//if ($_FILES["files"]["type"][0] != "application/pgp-keys"){
 			//	throw new RestException(400, $_FILES["files"]["name"][0] . " is not a valid private key file (" . $_FILES["files"]["type"][0] . ")"); 
 			//}
-			$key=file_get_contents($_FILES["files"]["tmp_name"][0]);
+			$key=file_get_contents($files["tmp_name"][0]);
 			if ($key == NULL || $key=="" ){
 				throw new RestException(400 ,"private key is required\n");
 			}else{

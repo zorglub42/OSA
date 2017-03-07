@@ -16,6 +16,7 @@ $strings["nav.counters.search"]="Rechercher...";
 $strings["nav.counters.exceeded"]="Quotas dépassés";
 $strings["nav.nodes"]="Noeuds";
 $strings["nav.logs"]="Logs";
+$strings["nav.apiDoc"]="API Doc";
 
 /* Global list labels */
 $strings["list.actions"]="Actions";
