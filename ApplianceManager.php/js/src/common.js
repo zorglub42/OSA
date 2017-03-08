@@ -26,5 +26,7 @@
 function addItem(list, item, distinct){
 	if (list.indexOf(item)<0 || !distinct){
 		list.push(item);
+		list.sort();
+		console.log("Sorted");
 	}
 }

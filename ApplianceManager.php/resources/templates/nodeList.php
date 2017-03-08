@@ -13,21 +13,21 @@ require_once "../../include/Localization.php";
 						<div class="form-group">
 							<div class="row">
 								<div class="col-md-4 col-xs-4 search-control">
-									<input type="text" class="form-control" id="nodeNameFilter" value="{nodeNameFilterPrevVal}" placeholder="<?php echo Localization::getString("node.nodeName.placeholder")?>"  onfocus="javascript:$(this).autocomplete('search',$(this).value);">  
+									<input type="text" class="form-control" id="nodeNameFilter" value="{nodeNameFilterPrevVal}" placeholder="<?php echo Localization::getString("node.nodeName.placeholder")?>">  
 								</div>
 								<div class="col-md-4 col-xs-4 search-control">
-									<input class="form-control" placeholder="<?php echo Localization::getString("node.description.placeholder")?>" id="nodeDescriptionFilter" value="{nodeDescriptionFilterPrevVal}"  onfocus="javascript:$(this).autocomplete('search',$(this).value);">
+									<input class="form-control" placeholder="<?php echo Localization::getString("node.description.placeholder")?>" id="nodeDescriptionFilter" value="{nodeDescriptionFilterPrevVal}">
 								</div>
 								<div class="col-md-4 col-xs-4 search-control">
-									<input class="form-control" placeholder="<?php echo Localization::getString("node.serverFQDN.placeholder")?>" id="serverFQDNFilter" value="{serverFQDNFilterPrevVal}"  onfocus="javascript:$(this).autocomplete('search',$(this).value);">
+									<input class="form-control" placeholder="<?php echo Localization::getString("node.serverFQDN.placeholder")?>" id="serverFQDNFilter" value="{serverFQDNFilterPrevVal}">
 								</div>
 							</div>
 							<div class="row">
 								<div class="col-md-4 col-xs-4 search-control">
-									<input type="text" class="form-control" placeholder="<?php echo Localization::getString("node.localIP.placeholder")?>" id="localIPFilter"value="{localIPFilterPrevVal}"  onfocus="javascript:$(this).autocomplete('search',$(this).value);">  
+									<input type="text" class="form-control" placeholder="<?php echo Localization::getString("node.localIP.placeholder")?>" id="localIPFilter"value="{localIPFilterPrevVal}">  
 								</div>
 								<div class="col-md-4 col-xs-4 search-control">
-									<input class="form-control" placeholder="<?php echo Localization::getString("node.port.placeholder")?>" id="portFilter" value="{portFilterPrevVal}"  onfocus="javascript:$(this).autocomplete('search',$(this).value);">
+									<input class="form-control" placeholder="<?php echo Localization::getString("node.port.placeholder")?>" id="portFilter" value="{portFilterPrevVal}">
 								</div>
 								<div class="col-md-4 col-xs-4 search-control" >
 										<button type="button" class="btn btn-default" title="<?php echo Localization::getString("button.filter.tooltip")?>" onclick=showNodes()>
