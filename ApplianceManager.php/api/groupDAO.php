@@ -80,12 +80,10 @@ function getGroup($groupName = NULL, $request_data = NULL){
 				$strSQLComp = addSQLFilter("groupName like ?", $strSQLComp);
 				array_push($bindPrms,"%" . $request_data["groupNameFilter"] . "%");
 			}
-			
 			$strSQL="SELECT * FROM groups" . $strSQLComp;
 			if (isset($request_data["order"]) && $request_data["order"] != ""){
 				$strSQL=$strSQL . " ORDER BY " . EscapeOrder($request_data["order"]);
 			}
-			
 			$stmt=$db->prepare($strSQL);
 			$stmt->execute($bindPrms);
 			$rc=Array();

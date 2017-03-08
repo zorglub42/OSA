@@ -348,10 +348,23 @@ function displayUserList(userList) {
 		rowPattern=document.getElementById("rowTpl");
 		table.removeChild(rowPattern);
 
+						
+		var usersListAutoComplete=new Array();
+		var emailsListAutoComplete=new Array();
+		var entitiesListAutoComplete=new Array();
+		var firtNameListAutoComplete=new Array();
+		var lastNameListAutoComplete=new Array();
+
+
 		for (i=0;i<userList.length;i++){
 			var d = new Date();
 			d.setISO8601(userList[i].endDate);
 
+			addItem(usersListAutoComplete, userList[i].userName);
+			addItem(emailsListAutoComplete, userList[i].emailAddress, true);
+			addItem(entitiesListAutoComplete, userList[i].entity, true);
+			addItem(firtNameListAutoComplete, userList[i].firstName, true);
+			addItem(lastNameListAutoComplete, userList[i].lastName, true);
 			
 			newRow=rowPattern.cloneNode(true);
 			newRow.removeAttribute('id');
@@ -374,6 +387,27 @@ function displayUserList(userList) {
 		if (userList.length==0){
 			$('#usersList').hide();
 		}
+		$( "#userNameFilter" ).autocomplete({
+			source: usersListAutoComplete,
+			minLength: 0
+		});
+		$( "#emailAddressFilter" ).autocomplete({
+			source: emailsListAutoComplete,
+			minLength: 0
+		});
+		$( "#entityFilter" ).autocomplete({
+			source: entitiesListAutoComplete,
+			minLength: 0
+		});
+		$( "#firstNameFilter" ).autocomplete({
+			source: firtNameListAutoComplete,
+			minLength: 0
+		});
+		$( "#lastNameFilter" ).autocomplete({
+			source: lastNameListAutoComplete,
+			minLength: 0
+		});
+
 	});
 
 

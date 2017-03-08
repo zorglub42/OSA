@@ -13,18 +13,18 @@ require_once "../../include/Localization.php";
 						<div class="form-group">
 							<div class="row">
 								<div class="col-md-5 col-xs-4 search-control">
-									<input class="form-control" placeholder="<?php echo Localization::getString("service.name.placeholder")?>"  id="serviceNameFilter" value="{serviceNameFilterPrevVal}">
+									<input class="form-control" placeholder="<?php echo Localization::getString("service.name.placeholder")?>"  id="serviceNameFilter" value="{serviceNameFilterPrevVal}"  onfocus="javascript:$(this).autocomplete('search',$(this).value);">
 								</div>
 								<div class="col-md-5 col-xs-4 search-control">
-									<input class="form-control" placeholder="<?php echo Localization::getString("service.groupName.placeholder")?>" id="serviceGroupNameFilter" value="{serviceGroupNameFilterPrevVal}">
+									<input class="form-control" placeholder="<?php echo Localization::getString("service.groupName.placeholder")?>" id="serviceGroupNameFilter" value="{serviceGroupNameFilterPrevVal}" onfocus="javascript:$(this).autocomplete('search',$(this).value);">
 								</div>
 							</div>
 							<div class="row">
 								<div class="col-md-5  col-xs-4 search-control" >
-									<input class="form-control" placeholder="<?php echo Localization::getString("service.frontendEndpoint.placeholder")?>"   id="frontEndEndPointFilter"value="{frontEndEndPointFilterPrevVal}">
+									<input class="form-control" placeholder="<?php echo Localization::getString("service.frontendEndpoint.placeholder")?>"   id="frontEndEndPointFilter"value="{frontEndEndPointFilterPrevVal}"  onfocus="javascript:$(this).autocomplete('search',$(this).value);">
 								</div>
 								<div class="col-md-5 col-xs-4 search-control">
-									<input class="form-control" placeholder="<?php echo Localization::getString("service.backendEndpoint.placeholder")?>" id="backEndEndPointFilter" value="{backEndEndPointFilterPrevVal}">
+									<input class="form-control" placeholder="<?php echo Localization::getString("service.backendEndpoint.placeholder")?>" id="backEndEndPointFilter" value="{backEndEndPointFilterPrevVal}"  onfocus="javascript:$(this).autocomplete('search',$(this).value);">
 								</div>
 							</div>
 							<div class="row">

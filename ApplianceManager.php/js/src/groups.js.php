@@ -130,8 +130,16 @@
 						table=document.getElementById("data");
 						rowPattern=document.getElementById("rowTpl");
 						table.removeChild(rowPattern);
+
+
+						var groupsNamesListAutoComplete=new Array();
+						var groupsDescriptionsListAutoComplete=new Array();
+
 						
 						for (i=0;i<groupList.length;i++){
+
+							addItem(groupsNamesListAutoComplete, groupList[i].groupName, true);
+							addItem(groupsDescriptionsListAutoComplete, groupList[i].description, true);
 							
 							newRow=rowPattern.cloneNode(true);
 							newRow.removeAttribute('id');
@@ -150,7 +158,16 @@
 							}
 							edit.removeAttribute("id");
 						}
-						setGroupModified(false);
+						$( "#groupNameFilter" ).autocomplete({
+									source: groupsNamesListAutoComplete,
+									minLength: 0
+						});
+						$( "#groupDescritpionFilter" ).autocomplete({
+									source: groupsDescriptionsListAutoComplete,
+									minLength: 0
+						});
+
+					setGroupModified(false);
 				});
 
 				

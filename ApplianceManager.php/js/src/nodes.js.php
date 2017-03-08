@@ -433,6 +433,13 @@ function displayNodeList(nodeList){
 		table=document.getElementById("data");
 		rowPattern=document.getElementById("rowTpl");
 		table.removeChild(rowPattern);
+
+		var nodesListAutoComplete=new Array();
+		var descriptionsListAutoComplete=new Array();
+		var fqdnsListAutoComplete=new Array();
+		var ipsListAutoComplete=new Array();
+		var portsListAutoComplete=new Array();
+
 		
 		for (i=0;i<nodeList.length;i++){
 			if (nodeList[i].isHTTPS==1){
@@ -441,6 +448,11 @@ function displayNodeList(nodeList){
 				cbIsHTTPS=""
 			}
 
+			addItem(nodesListAutoComplete, nodeList[i].nodeName);
+			addItem(descriptionsListAutoComplete, nodeList[i].nodeDescription, true);
+			addItem(fqdnsListAutoComplete, nodeList[i].serverFQDN, true);
+			addItem(ipsListAutoComplete, nodeList[i].localIP, true);
+			addItem(portsListAutoComplete, nodeList[i].port.toString(), true);
 			
 			newRow=rowPattern.cloneNode(true);
 			newRow.removeAttribute('id');
@@ -472,6 +484,27 @@ function displayNodeList(nodeList){
 			}
 
 		}
+		$( "#nodeNameFilter" ).autocomplete({
+						source: nodesListAutoComplete,
+						minLength: 0
+		});
+		$( "#nodeDescriptionFilter" ).autocomplete({
+						source: descriptionsListAutoComplete,
+						minLength: 0
+		});
+		$( "#serverFQDNFilter" ).autocomplete({
+						source: fqdnsListAutoComplete,
+						minLength: 0
+		});
+		$( "#localIPFilter" ).autocomplete({
+						source: ipsListAutoComplete,
+						minLength: 0
+		});
+		$( "#portFilter" ).autocomplete({
+						source: portsListAutoComplete,
+						minLength: 0
+		});
+		
 		if (nodeList.length == 0 ){
 			$("#nodesList").hide();
 		}

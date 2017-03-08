@@ -533,6 +533,11 @@
 						rowPattern=document.getElementById("rowTpl");
 						table.removeChild(rowPattern);
 						
+						var servicesListAutoComplete=new Array();
+						var groupsListAutoComplete=new Array();
+						var aliasesListAutoComplete=new Array();
+						var backendsListAutoComplete=new Array();
+
 						for (i=0;i<serviceList.length;i++){
 							if (serviceList[i].isPublished==1){
 								cbPublishedCheck="checked";
@@ -540,7 +545,11 @@
 								cbPublishedCheck=""
 							}
 
-							
+							addItem(servicesListAutoComplete, serviceList[i].serviceName);
+							addItem(groupsListAutoComplete, serviceList[i].groupName, true);
+							addItem(aliasesListAutoComplete, serviceList[i].frontEndEndPoint, true);
+							addItem(backendsListAutoComplete, serviceList[i].backEndEndPoint, true);
+
 							newRow=rowPattern.cloneNode(true);
 							newRow.removeAttribute('id');
 							newRow.removeAttribute('style');
@@ -579,6 +588,23 @@
 						}
 						setServiceModified(false);
 						startLoadNodes();
+						$( "#serviceGroupNameFilter" ).autocomplete({
+										source: groupsListAutoComplete,
+										minLength: 0
+						});
+						
+						$("#serviceNameFilter").autocomplete({
+										source: servicesListAutoComplete,
+										minLength: 0
+						});
+						$("#frontEndEndPointFilter").autocomplete({
+										source: aliasesListAutoComplete,
+										minLength: 0
+						});
+						$("#backEndEndPointFilter").autocomplete({
+										source: backendsListAutoComplete,
+										minLength: 0
+						});
 				});
 
 
@@ -633,6 +659,8 @@
 					error : displayErrorV2
 				});
 			}
+			
+			
 
 
 			function publishService(serviceURI, state){

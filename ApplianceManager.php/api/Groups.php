@@ -51,11 +51,10 @@ class Groups{
 	 * 
 	 * @param string groupNameFilter [optional] Only retreive groups with groupName containing that string (filter conbination is AND)
 	 * @param string groupDescritpionFilter [optional] Only retreive groups with description containing that string (filter conbination is AND)
-	 * @param string order [optional] "SQL Like" order clause based on Group properties
 	 * 
 	 * @return array {@type Group}
 	 */
-	function getAll( $groupNameFilter=null, $groupDescritpionFilter=null, $order=null){
+	function getAll( $groupNameFilter=null, $groupDescritpionFilter=null, $protecting=null, $order=null){
 		#Array param is legacy from previous (initial) version of Restler 
 		$params=array("order" =>$order,
 					  "groupNameFilter" =>$groupNameFilter,

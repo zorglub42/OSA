@@ -13,10 +13,10 @@ require_once "../../include/Localization.php";
 						<div class="form-group">
 							<div class="row ">
 								<div class="col-xs-4 col-md-4 search-control">
-									<input class="form-control" placeholder="<?php echo Localization::getString("group.name.placeholder")?>" id="groupNameFilter" value="{groupNameFilterPrevVal}">
+									<input class="form-control" placeholder="<?php echo Localization::getString("group.name.placeholder")?>" id="groupNameFilter" value="{groupNameFilterPrevVal}"  onfocus="javascript:$(this).autocomplete('search',$(this).value);">
 								</div>
 								<div class="col-xs-5 col-md-6 search-control">
-									<input class="form-control" placeholder="<?php echo Localization::getString("group.description.placeholder")?>" id="groupDescritpionFilter" value="{groupDescritpionFilterPrevVal}">
+									<input class="form-control" placeholder="<?php echo Localization::getString("group.description.placeholder")?>" id="groupDescritpionFilter" value="{groupDescritpionFilterPrevVal}"  onfocus="javascript:$(this).autocomplete('search',$(this).value);">
 								</div>
 								<div class="col-xs-3 col-md-2 search-control">
 									<button type="button" class="btn btn-default" title="<?php echo Localization::getString("button.filter.tooltip")?>" onclick=showGroups()>

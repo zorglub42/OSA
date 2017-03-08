@@ -13,21 +13,21 @@ require_once "../../include/Localization.php";
 						<div class="form-group">
 							<div class="row">
 								<div class="col-md-4 col-xs-4 search-control">
-									<input class="form-control" placeholder="<?php echo Localization::getString("user.userName.placeholder")?>"  id="userNameFilter" value="{userNameFilterPrevVal}">
+									<input class="form-control" placeholder="<?php echo Localization::getString("user.userName.placeholder")?>"  id="userNameFilter" value="{userNameFilterPrevVal}"  onfocus="javascript:$(this).autocomplete('search',$(this).value);">
 								</div>
 								<div class="col-md-4 col-xs-4 search-control">
-									<input class="form-control" placeholder="<?php echo Localization::getString("user.email.placeholder")?>" id="emailAddressFilter" value="{emailAddressFilterPrevVal}">
+									<input class="form-control" placeholder="<?php echo Localization::getString("user.email.placeholder")?>" id="emailAddressFilter" value="{emailAddressFilterPrevVal}"  onfocus="javascript:$(this).autocomplete('search',$(this).value);">
 								</div>
 								<div class="col-md-4 col-xs-4 search-control">
-									<input class="form-control" placeholder="<?php echo Localization::getString("user.entity.placeholder")?>" id="entityFilter" value="{entityFilterPrevVal}">
+									<input class="form-control" placeholder="<?php echo Localization::getString("user.entity.placeholder")?>" id="entityFilter" value="{entityFilterPrevVal}"  onfocus="javascript:$(this).autocomplete('search',$(this).value);">
 								</div>
 							</div>
 							<div class="row">
 								<div class="col-md-4 col-xs-4 search-control">
-									<input class="form-control" placeholder="<?php echo Localization::getString("user.firstName.placeholder")?>"   id="firstNameFilter"value="{firstNameFilterPrevVal}">
+									<input class="form-control" placeholder="<?php echo Localization::getString("user.firstName.placeholder")?>"   id="firstNameFilter"value="{firstNameFilterPrevVal}"  onfocus="javascript:$(this).autocomplete('search',$(this).value);">
 								</div>
 								<div class="col-md-4 col-xs-4 search-control">
-									<input class="form-control" placeholder="<?php echo Localization::getString("user.lastName.placeholder")?>" id="lastNameFilter" value="{lastNameFilterPrevVal}">
+									<input class="form-control" placeholder="<?php echo Localization::getString("user.lastName.placeholder")?>" id="lastNameFilter" value="{lastNameFilterPrevVal}"  onfocus="javascript:$(this).autocomplete('search',$(this).value);">
 								</div>
 								<div class="col-xs-3 col-md-4 search-control">
 									<button type="button" class="btn btn-default" title="<?php echo Localization::getString("button.filter.tooltip")?>" onclick=showUsers()>
