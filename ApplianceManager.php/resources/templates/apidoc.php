@@ -8,5 +8,5 @@
 	}
 </style>
 <div id="apidoc" style="height: 179px;">
-	<iframe id="apidocframe" src="api/doc"></iframe>
+	<iframe id="apidocframe" src=""></iframe>
 </div>

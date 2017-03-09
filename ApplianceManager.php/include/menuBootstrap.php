@@ -36,9 +36,14 @@
         <li>
           <a id="searchLogs" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo Localization::getString("nav.logs")?></a>
         </li>
-        <li>
-          <a id="apiDocMenu" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo Localization::getString("nav.apiDoc")?></a>
+        <li class="dropdown">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo Localization::getString("nav.apiDoc")?><span class="caret"></span></a>
+				<ul class="dropdown-menu" ID="apiDocList">
+					<li><a id="apiDocMenu" onclick='loadDoc("api/doc")' href="#">OSA</a></li>
+				</ul>
         </li>
+		</li>
 
       </ul>
     </div><!-- /.navbar-collapse -->
