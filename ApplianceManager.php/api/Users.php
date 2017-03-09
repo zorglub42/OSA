@@ -168,7 +168,7 @@ class Users{
 			);
 			$this->get($userName);	
 			$s= new Services();
-			$s->get($serviceName);
+			$s->getOne($serviceName);
 			return addUserQuota($userName, $serviceName, $params);
 		}catch (Exception $e){
 			throw new RestException($e->getCode(), $e->getMessage());
@@ -251,7 +251,7 @@ class Users{
 			$this->get($userName);
 			
 			$g= new Groups();
-			$g->get($groupName);
+			$g->getOne($groupName);
 			
 			return removeUserFromGroup($userName, $groupName);
 		}catch (Exception $e){
