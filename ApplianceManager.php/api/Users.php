@@ -76,7 +76,12 @@ class Users{
 			 $me=getRequestor();
 			 return $this->get($me);
 		}catch (Exception $e){
-			throw new RestException($e->getCode(), $e->getMessage());
+			if (is_numeric($e->getCode())){
+				throw new RestException($e->getCode(), $e->getMessage());
+			}else{
+				throw new RestException(500, $e->getMessage());
+			}
+
 		}
 	 }
 	
@@ -103,7 +108,12 @@ class Users{
 			$this->getOne($userName);
 			return getUnsetQuota($userName);
 		}catch (Exception $e){
-			throw new RestException($e->getCode(), $e->getMessage());
+			if (is_numeric($e->getCode())){
+				throw new RestException($e->getCode(), $e->getMessage());
+			}else{
+				throw new RestException(500, $e->getMessage());
+			}
+
 		}
 	}
 	/**
@@ -141,7 +151,12 @@ class Users{
 		try{
 			return getUserQuota($userName, $serviceName);
 		}catch (Exception $e){
-			throw new RestException($e->getCode(), $e->getMessage());
+			if (is_numeric($e->getCode())){
+				throw new RestException($e->getCode(), $e->getMessage());
+			}else{
+				throw new RestException(500, $e->getMessage());
+			}
+
 		}
 	}
 	/**
@@ -171,7 +186,12 @@ class Users{
 			$s->getOne($serviceName);
 			return addUserQuota($userName, $serviceName, $params);
 		}catch (Exception $e){
-			throw new RestException($e->getCode(), $e->getMessage());
+			if (is_numeric($e->getCode())){
+				throw new RestException($e->getCode(), $e->getMessage());
+			}else{
+				throw new RestException(500, $e->getMessage());
+			}
+
 		}
 	}
 	/**
@@ -190,7 +210,12 @@ class Users{
 			$this->getOne($userName);
 			return getAvailableGroup($userName);
 		}catch (Exception $e){
-			throw new RestException($e->getCode(), $e->getMessage());
+			if (is_numeric($e->getCode())){
+				throw new RestException($e->getCode(), $e->getMessage());
+			}else{
+				throw new RestException(500, $e->getMessage());
+			}
+
 		}
 	}
 	
@@ -231,7 +256,12 @@ class Users{
 		try{
 			return getDAOUserGroup($userName, $groupName);
 		}catch (Exception $e){
-			throw new RestException($e->getCode(), $e->getMessage());
+			if (is_numeric($e->getCode())){
+				throw new RestException($e->getCode(), $e->getMessage());
+			}else{
+				throw new RestException(500, $e->getMessage());
+			}
+
 		}
 	}
 	/**
@@ -255,7 +285,12 @@ class Users{
 			
 			return removeUserFromGroup($userName, $groupName);
 		}catch (Exception $e){
-			throw new RestException($e->getCode(), $e->getMessage());
+			if (is_numeric($e->getCode())){
+				throw new RestException($e->getCode(), $e->getMessage());
+			}else{
+				throw new RestException(500, $e->getMessage());
+			}
+
 		}
 	}
 	/**
@@ -277,7 +312,12 @@ class Users{
 			$g->getOne($groupName);
 			return addUserToGroup($userName, $groupName);
 		}catch (Exception $e){
-			throw new RestException($e->getCode(), $e->getMessage());
+			if (is_numeric($e->getCode())){
+				throw new RestException($e->getCode(), $e->getMessage());
+			}else{
+				throw new RestException(500, $e->getMessage());
+			}
+
 		}
 	}
 	/**
@@ -330,7 +370,12 @@ class Users{
 		try{
 			return getUser($userName, $request_data);
 		}catch (Exception $e){
-			throw new RestException($e->getCode(), $e->getMessage());
+			if (is_numeric($e->getCode())){
+				throw new RestException($e->getCode(), $e->getMessage());
+			}else{
+				throw new RestException(500, $e->getMessage());
+			}
+
 		}
 	}
 	/**
@@ -365,7 +410,12 @@ class Users{
 			);
 			return addUser($userName, $params);
 		}catch (Exception $e){
-			throw new RestException($e->getCode(), $e->getMessage());
+			if (is_numeric($e->getCode())){
+				throw new RestException($e->getCode(), $e->getMessage());
+			}else{
+				throw new RestException(500, $e->getMessage());
+			}
+
 		}
 	}
 	/**
@@ -402,7 +452,12 @@ class Users{
 			
 			return updateUser($userName, $params);
 		}catch (Exception $e){
-			throw new RestException($e->getCode(), $e->getMessage());
+			if (is_numeric($e->getCode())){
+				throw new RestException($e->getCode(), $e->getMessage());
+			}else{
+				throw new RestException(500, $e->getMessage());
+			}
+
 		}
 	}
 	/**
@@ -420,7 +475,12 @@ class Users{
 		try{
  			return deleteUser($userName);
 		}catch (Exception $e){
-			throw new RestException($e->getCode(), $e->getMessage());
+			if (is_numeric($e->getCode())){
+				throw new RestException($e->getCode(), $e->getMessage());
+			}else{
+				throw new RestException(500, $e->getMessage());
+			}
+
 		}
 	}
 }
