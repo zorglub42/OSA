@@ -388,7 +388,7 @@ class Users{
 	 * 
 	 * @param string userName user identitfier
 	 * @param string password password to authenticate against OSA
-	 * @param email email user's mail address
+	 * @param string email user's mail address
 	 * @param string endDate users's validity end date in ISO 8601 full format
 	 * @param string firstName [Optional] user's first name
 	 * @param string lastName [Optional] user's last name
@@ -427,7 +427,7 @@ class Users{
 	 * 
 	 * @param string userName user identitfier
 	 * @param string password password to authenticate against OSA
-	 * @param email email user's mail address
+	 * @param string email user's mail address
 	 * @param string endDate users's validity end date in ISO 8601 full format
 	 * @param string firstName [Optional] user's first name
 	 * @param string lastName [Optional] user's last name

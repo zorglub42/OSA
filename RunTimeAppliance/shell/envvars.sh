@@ -44,8 +44,8 @@
 #   - USE_HTTP if set to 1 API publishing via regular HTTP will be enabled
 #   - USE_HTTPS if set to 1 API publishing via  HTTPS will be enabled
 
-BOX_DOMAIN="acme.com" #This variable is a configuration commodity. It's just used in the folloing config (see APACHE_ADMIN_MAIL, HTTP_VHOST_NAME, HTTPS_VHOST_NAME and HTTPS_ADMIN_VHOST_NAME)
-APACHE_ADMIN_MAIL="webmaster@$BOX_DOMAIN"
+BOX_DOMAIN="" #This variable is a configuration commodity. It's just used in the folloing config (see APACHE_ADMIN_MAIL, HTTP_VHOST_NAME, HTTPS_VHOST_NAME and HTTPS_ADMIN_VHOST_NAME)
+APACHE_ADMIN_MAIL="webmaster@localhost"
 ROOT_MYSQL_PW="your-root-mysql-password"
 APPLIANCE_MYSQL_PW="choose-a-mysql-password"
 APPLIANCE_ADMIN_PW="choose-your-admin-password"
