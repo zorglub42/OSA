@@ -39,7 +39,7 @@ class User extends ApplianceObject{
 	public $password;
 
 	/**
-	 * @var email email users's email
+	 * @var string email users's email
 	 */
 	public $email;
 

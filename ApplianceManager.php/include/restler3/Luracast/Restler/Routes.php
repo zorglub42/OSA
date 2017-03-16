@@ -129,7 +129,7 @@ class Routes
                     $type = $m['type'];
                 }
                 if ($m['name'] == 'email' && empty($m[CommentParser::$embeddedDataName]['type']) && $type == 'string')
-                    $m[CommentParser::$embeddedDataName]['type'] = 'email';
+                    $m[CommentParser::$embeddedDataName]['type'] = 'string';
                 $m ['default'] = $defaults [$position];
                 $m ['required'] = !$param->isOptional();
                 $contentType = Util::nestedValue(
