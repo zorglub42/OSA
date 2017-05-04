@@ -61,7 +61,7 @@ git pull
 cd $INSTALL_DIR/RunTimeAppliance/shell
 ./configure-osa.sh
 EOF
-chmod u+x $INSTALL_DIR/update.sh
+chmod u+x $PWD/update.sh
 
 if [ $COMPILE_MODULE -eq 1 ] ; then
 	cd $INSTALL_DIR/RunTimeAppliance/apache/module
