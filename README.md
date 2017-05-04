@@ -109,6 +109,8 @@ Using port mapping will limit the accessibility of created node in the container
 
 	docker run --name OSA --net=host -d zorglub42:osa
 
+**IMPORTANT NOTE:** With --net=host option, container assume that ports 3306, 80, 443 and 6443 are not used on host running it.th
+
 ## Update
 To deploy a new version of OSA from github do the following
 1.  **If you whant to keep your DB contents:** ensure that KEEP_DB environnement variable is set to 1 in INSTALL_DIR/RunTimeAppliance/shell. You don't have to check that point on next updates unless you want a factory reset.
