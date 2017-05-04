@@ -103,23 +103,20 @@ Where parameters are:
 - domain (optional): your FQDN (Ex: zorglub42.fr)
 
 ### Run OSA container
-Due to the fact that OSA can create Listening port (nodes), it's better to bnd OSA container to host network.
-Specifying will limit the accessibility of created node in the container.
+Due to the fact that OSA can create Listening port (nodes), it's better to bind OSA container to host network.
+Using port mapping will limit the accessibility of created node in the container.
+(refer to docker documentation if you want to use it anyway)
 
 	docker run --net=host -d zorglub42:osa
 
 ## Update
-To deploy a new version of OSA from github do the folowing
-- Ensure that KEEP_DB environnement variable is set to 1 in INSTALL_DIR/RunTimeAppliance/shell if you whant to keep your DB contents
-- update local git repository from github (git pull)
-- restart install process from git local repository (checking envvars.sh file is no more required)
+To deploy a new version of OSA from github do the following
+1.  **If you whant to keep your DB contents:** ensure that KEEP_DB environnement variable is set to 1 in INSTALL_DIR/RunTimeAppliance/shell. You don't have to check that point on next updates unless you want a factory reset.
+2.  start "update.sh" from the folder where initial checkout was done
 	
 		Ex:
 			cd OSA
-			git pull
-			./install.sh -m /usr/local/OSA
-			cd /usr/local/OSA/RunTimeAppliance/shell
-			./configure-osa.sh
+			./update.sh
 
 
 ##Trouble shooting
