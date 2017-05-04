@@ -74,12 +74,12 @@ https=0;
 http=0;
 
 function generateConf(){
-		
-		if [ "$3" != "1" -a "$3" != "0" ] ; then 
+
+		if [ "$3" != "1" -a "$3" != "0" ] ; then
 			echo "Prameter 3 of generateConf (BasicAuth enabled) should be 0 or 1";
 			exit 1
 		fi
-		if [ "$4" != "1" -a "$4" != "0" ] ; then 
+		if [ "$4" != "1" -a "$4" != "0" ] ; then
 			echo "Prameter 4 of generateConf (CookieAuthAuth enabled) should be 0 or 1";
 			exit 1
 		fi
@@ -88,7 +88,7 @@ function generateConf(){
         wget --user="$APPLIANCE_LOCAL_USER" --password="$APPLIANCE_LOCAL_PWD" "$APPLIANCE_LOCAL_SERVER/ApplianceManager/scripts/generateApacheConfig.php?domain=$1&BasicAuthEnabled=$3&CookieAuthEnabled=$4&node=$2&serverPrefix=$5" -O /tmp/applianceManagerServices.endpoints 2>&1
         [ ! -f $APPLIANCE_CONFIG_LOC/applianceManagerServices-node-$2.endpoints ] && touch $APPLIANCE_CONFIG_LOC/applianceManagerServices-node-$2.endpoints
         diffCount=`diff $APPLIANCE_CONFIG_LOC/applianceManagerServices-node-$2.endpoints /tmp/applianceManagerServices.endpoints | wc -l`
-        
+
         echo "dc=$diffCount"
         if [ $diffCount -ne 0 ] ; then
                 mv /tmp/applianceManagerServices.endpoints $APPLIANCE_CONFIG_LOC/applianceManagerServices-node-$2.endpoints
@@ -150,14 +150,14 @@ echo "" >>/tmp/$$.nodes
 
 grep '"error"' /tmp/$$.nodes>/dev/null
 if [ $? -eq 0 ] ; then
-	echo "An error occursed while downloding node list"; 
+	echo "An error occursed while downloding node list";
 	shellExit 1
 fi
-apacheReload=1;
+# By default no apache reload. Will be set to 1 if at least one node have its endpoints apache conf upated
+apacheReload=0;
 
 
-while read line  
-do   
+while read line ; do
 	echo $line | grep "nodeName">/dev/null
 	if [ $? -eq 0 ] ; then
 		nodeName=`echo $line | awk -F\" '{print $4}'`
@@ -170,22 +170,22 @@ do
 	fi
 	echo $line | grep "isCookieAuthEnabled">/dev/null
 	if [ $? -eq 0 ] ; then
-		isCookieAuthEnabled=`echo $line | sed 's/[^0-9]*\([0-9]*\).*/\1/'` 
+		isCookieAuthEnabled=`echo $line | sed 's/[^0-9]*\([0-9]*\).*/\1/'`
 		echo "isCookieAuthEnabled=$isCookieAuthEnabled";
 	fi
 	echo $line | grep "isBasicAuthEnabled">/dev/null
 	if [ $? -eq 0 ] ; then
-		isBasicAuthEnabled=`echo $line | sed 's/[^0-9]*\([0-9]*\).*/\1/'` 
+		isBasicAuthEnabled=`echo $line | sed 's/[^0-9]*\([0-9]*\).*/\1/'`
 		echo "isBasicAuthEnabled=$isBasicAuthEnabled";
 	fi
 	echo $line | grep "isHTTPS">/dev/null
 	if [ $? -eq 0 ] ; then
-		isHTTPS=`echo $line | sed 's/[^0-9]*\([0-9]*\).*/\1/'` 
+		isHTTPS=`echo $line | sed 's/[^0-9]*\([0-9]*\).*/\1/'`
 		echo "isHTTPS=$isHTTPS";
 	fi
 	echo $line | grep "port">/dev/null
 	if [ $? -eq 0 ] ; then
-		port=`echo $line | sed 's/[^0-9]*\([0-9]*\).*/\1/'` 
+		port=`echo $line | sed 's/[^0-9]*\([0-9]*\).*/\1/'`
 		echo "port=$port";
 	fi
 
@@ -196,21 +196,19 @@ do
 			else
 				serverPrefix="https://$serverFQDN:$port"
 			fi
-	else
+		else
 			if [ $port -eq 80 ] ; then
 				serverPrefix="http://$serverFQDN"
 			else
 				serverPrefix="http://$serverFQDN:$port"
 			fi
-	fi
-				
+		fi
+
+		echo "GENERATE CONF $nodeName"
 		generateConf $serverFQDN $nodeName $isBasicAuthEnabled $isCookieAuthEnabled $serverPrefix
 		rc=$?
 		if [ $rc -eq 1 ] ; then
 			apacheReload=1;
-		else
-			apacheReload=0
-			echo "RC=$?"
 		fi
 	fi
 done < /tmp/$$.nodes
