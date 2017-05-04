@@ -107,7 +107,9 @@ Due to the fact that OSA can create Listening port (nodes), it's better to bind 
 Using port mapping will limit the accessibility of created node in the container.
 (refer to docker documentation if you want to use it anyway)
 
-	docker run --net=host -d zorglub42:osa
+	docker run --name OSA --net=host -d zorglub42:osa
+
+**IMPORTANT NOTE:** With --net=host option, container assume that ports 3306, 80, 443 and 6443 are not used on host running it.th
 
 ## Update
 To deploy a new version of OSA from github do the following
