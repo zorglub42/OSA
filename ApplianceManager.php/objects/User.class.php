@@ -68,6 +68,11 @@ class User extends ApplianceObject{
 	 */
 	public $extra;
 
+	/**
+	 * @var datetime last login with token (cookie) creation
+	 */
+	public $lastTokenLogin;
+
 	
 	function setFirstname($firstName){
 		$this->firstName=$firstName;
@@ -131,9 +136,16 @@ class User extends ApplianceObject{
 	function getEndDate(){
 		return $this->endDate;
 	}
+	
+	function setLastTokenLogin($lastTokenLogin){
+		$this->lastTokenLogin=$lastTokenLogin;
+	}
+	function getLastTokenLogin(){
+		return $this->lastTokenLogin;
+	}
 
 
-    public function __construct($rqt=NULL)
+     public function __construct($rqt=NULL)
     {
 		if ($rqt != NULL){
 			$this->setUsername($rqt["userName"]);		
@@ -148,6 +160,13 @@ class User extends ApplianceObject{
 			$t=explode(":",$dt[1]);
 			$date = str_replace(" ","T", $rqt["endDate"]) . ".0" . @date('P', @mktime($t[0],$t[1],$t[2],$d[1],$d[2],$d[0])) ;
 			$this->setEndDate($date);
+			if (!empty($rqt["lastTokenLogin"])){
+				$dt=explode(" ",$rqt["lastTokenLogin"]);
+				$d=explode("-",$dt[0]);
+				$t=explode(":",$dt[1]);
+				$date = str_replace(" ","T", $rqt["lastTokenLogin"]) . ".0" . @date('P', @mktime($t[0],$t[1],$t[2],$d[1],$d[2],$d[0])) ;
+				$this->setLastTokenLogin($date);
+			}
 			$this->setUri( "users/" . urlencode($rqt["userName"]));
 		}
 	}
@@ -163,6 +182,7 @@ class User extends ApplianceObject{
 				"emailAddress"  => $this->getEmail(),
 				"endDate"  => $this->getEndDate(),
 				"extra"  => $this->getExtra(),
+				"lastTokenLogin"  => $this->getLastTokenLogin(),
 			);
 	}
 				
