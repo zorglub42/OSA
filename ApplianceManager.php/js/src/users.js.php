@@ -131,6 +131,8 @@ function addUser() {
 							   .replaceAll("{extra}", "")
 		);
 		$('#userEndDate').datepicker();
+		$('#lastTokenLogin').hide();
+		$('#lastTokenLoginLabel').hide();
 		setUserModified(false);
 	});
 }
@@ -233,6 +235,13 @@ function editUser(user) {
 	$.get( "resources/templates/userEdit.php", function( data ) {
 		userDate = new Date(user.endDate);
 		dateFormated = userDate.format("<?php echo Localization::getJSString("date.format.parseexact")?>");
+		
+		if (user.lastTokenLogin != null){
+			loginDate = new Date(user.lastTokenLogin);
+			lastTokenLogin = loginDate.format("<?php echo Localization::getJSString("date.format.parseexact.long")?>");
+		}else{
+			lastTokenLogin="";
+		}
 		currentUser=user;
 		$('#content').html(data.replaceAll("{userNameAsLabel}",user.userName)
 							   .replaceAll("{userNameInputType}", "hidden")
@@ -243,6 +252,7 @@ function editUser(user) {
 							   .replaceAll("{entity}", user.entity)
 							   .replaceAll("{emailAddress}", user.emailAddress)
 							   .replaceAll("{endDate}", dateFormated)
+							   .replaceAll("{lastTokenLogin}", lastTokenLogin)
 							   .replaceAll("{extra}", user.extra==null?"":user.extra)
 							   .replaceAll("{uri}", user.uri)
 		);

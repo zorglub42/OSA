@@ -151,16 +151,8 @@ function toggleAuthority(){
 function editNode(node){
 	$.get("resources/templates/nodeEdit.php", function (data){
 		servicesLoaded=false
-		cbIsBasicAuthEnabled="checked";
-		cbIsCookieAuthEnabled="checked";
 		cbIsHTTPS="checked";
 		cbManageCAEnabled="";
-		if (node.isCookieAuthEnabled==0){
-			cbIsCookieAuthEnabled="";
-		}
-		if (node.isBasicAuthEnabled==0){
-			cbIsBasicAuthEnabled="";
-		}
 		if (node.isHTTPS==0){
 			cbIsHTTPS="";
 		}
@@ -181,8 +173,6 @@ function editNode(node){
 							   .replaceAll("{node.port}", node.port)
 							   .replaceAll("{node.serverFQDN}", node.serverFQDN)
 							   .replaceAll("{node.nodeDescription}", node.nodeDescription)
-							   .replaceAll("{cbIsBasicAuthEnabled}", cbIsBasicAuthEnabled)
-							   .replaceAll("{cbIsCookieAuthEnabled}", cbIsCookieAuthEnabled)
 							   .replaceAll("{cbManageCAEnabled}", cbManageCAEnabled)
 		);
 
@@ -205,10 +195,6 @@ function editNode(node){
 
 			
 function saveOrUpdateNode(method){
-	if (!$('#isCookieAuthEnabled').is(':checked') && !$('#isBasicAuthEnabled').is(':checked') ){
-		alert("<?php echo Localization::getJSString("node.no-authent-warning")?>");
-		return false;
-	}
 	
 	if ($("#port").val() == "80" && document.getElementById("isHTTPS").checked){
 		if (!confirm('<?php echo Localization::getJSString("node.https-on-80-warning")?>')){
@@ -285,21 +271,9 @@ function saveOrUpdateNode(method){
 	}else{
 		isHTTPS="isHTTPS=0";
 	}
-	if (document.getElementById("isBasicAuthEnabled").checked){
-		isBasicAuthEnabled="isBasicAuthEnabled=1";
-	}else{
-		isBasicAuthEnabled="isBasicAuthEnabled=0";
-	}
-	if (document.getElementById("isCookieAuthEnabled").checked){
-		isCookieAuthEnabled="isCookieAuthEnabled=1";
-	}else{
-		isCookieAuthEnabled="isCookieAuthEnabled=0";
-	}
 	postData=localIP + 
 	"&" + serverFQDN + 
 	"&" + port + 
-	"&" + isBasicAuthEnabled + 
-	"&" + isCookieAuthEnabled + 
 	"&" + nodeDescription + 
 	"&" + additionalConfiguration + 
 	"&" + isHTTPS;
@@ -386,8 +360,6 @@ function addNode(){
 							   .replaceAll("{node.port}", "")
 							   .replaceAll("{node.serverFQDN}", "")
 							   .replaceAll("{node.nodeDescription}", "")
-							   .replaceAll("{cbIsBasicAuthEnabled}", "")
-							   .replaceAll("{cbIsCookieAuthEnabled}", "")
 							   .replaceAll("{cbManageCAEnabled}", "")
 							   .replaceAll("{lblChain}", "")
 		);

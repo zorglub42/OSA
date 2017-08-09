@@ -122,6 +122,20 @@ class Auth{
 				setcookie(authTokenCookieName, $tokenObj["token"],NULL,"/");
 			}
 
+
+			GLOBAL $BDName;
+			GLOBAL $BDUser;
+			GLOBAL $BDPwd;
+			$db=openDB($BDName, $BDUser, $BDPwd );
+			
+
+			$strSQL="";
+			$strSQL=$strSQL . "UPDATE users SET lastTokenLogin=now() WHERE userName=? ";
+			
+			$stmt=$db->prepare($strSQL);
+			$stmt->execute(array($userName));
+			
+
 			return $tokenObj;
 	}
 	private function getAleat(){

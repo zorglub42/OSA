@@ -30,9 +30,13 @@
 		</div>
 	</div>
 	<div class="row">
-		<div  class="col-md-12 col-xs-12"  title="<?php echo Localization::getString("user.endDate.tooltip")?>">
+		<div  class="col-md-6 col-xs-6"  title="<?php echo Localization::getString("user.endDate.tooltip")?>">
 			<label for="userEndDate"><?php echo Localization::getString("user.label.endDate")?></label><br>
 			<input type="text" class="form-control"  placeholder="<?php echo Localization::getString("user.endDate.placeholder")?>" id="userEndDate" value="{endDate}" onchange="setUserModified(true)" onkeypress="setUserModified(true)">
+		</div>
+		<div  class="col-md-6 col-xs-6"  title="<?php echo Localization::getString("user.lastTokenLogin.tooltip")?>">
+			<label id="lastTokenLoginLabel" for="lastTokenLogin"><?php echo Localization::getString("user.label.lastTokenLogin")?></label><br>
+			<div id="lastTokenLogin">{lastTokenLogin}</div>
 		</div>
 	</div>
 	<div class="row">
