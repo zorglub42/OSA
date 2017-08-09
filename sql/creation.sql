@@ -26,7 +26,7 @@
 * 1.0.0 - 2012-10-01 : Release of the file
 **/
 
--- Version: 2.6
+-- Version: 2.7
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -201,6 +201,7 @@ CREATE TABLE `users` (
 `lastName` varchar(45) DEFAULT NULL,
 `entity` varchar(45) DEFAULT NULL,
 `extra` TEXT NULL,
+`lastTokenLogin` datetime NULL,
 PRIMARY KEY (`userName`) USING BTREE
 ) CHARSET=LATIN1  ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
