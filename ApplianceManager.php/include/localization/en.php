@@ -1,6 +1,7 @@
 <?php
 $strings["date.format"]="MM/dd/yyyy";
 $strings["date.format.parseexact"]="mm/dd/yyyy";
+$strings["date.format.parseexact.long"]="mm/dd/yyyy hh:MM:ss";
 $strings["locale"]="fr";
 /* Global app labels */
 $strings["app.title"]="Open Services Access";
@@ -110,6 +111,7 @@ $strings["user.quotas.serviceName.tooltip"]="Select service to define user quota
 $strings["user.quotas.reqSec.tooltip"]="Enter here the maximum of number of request per sercond allowed for the user on this service.";
 $strings["user.quotas.reqDay.tooltip"]="Enter here the maximum of number of request per day allowed for the user on this service.";
 $strings["user.quotas.reqMonth.tooltip"]="Enter here the maximum of number of request per month allowed for the user on this service.";
+$strings["user.lastTokenLogin.tooltip"]="Last user login using a cookie/token";
 
 /* Details*/
 $strings["user.properties.new"]="New user properties";
@@ -130,7 +132,8 @@ $strings["user.label.emailAddress"]="Email address";
 $strings["user.label.endDate"]="End date";
 $strings["user.label.additionalData"]="Additionnal data";
 $strings["user.label.membership"]="Member of";
-$strings["user.label.availableGroups"]="Available groups";
+$strings["user.label.lastTokenLogin"]="Last login (cookie)";
+
 
 
 /*Services */

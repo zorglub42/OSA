@@ -1,6 +1,7 @@
 <?php
 $strings["date.format"]="dd/MM/yyyy";
 $strings["date.format.parseexact"]="dd/mm/yyyy";
+$strings["date.format.parseexact.long"]="dd/mm/yyyy hh:MM:ss";
 $strings["locale"]="fr";
 /* Global app labels */
 $strings["app.title"]="Open Services Access";
@@ -108,6 +109,7 @@ $strings["user.quotas.serviceName.tooltip"]="Selectionner le service pour lequel
 $strings["user.quotas.reqSec.tooltip"]="Saisissez ici le nombre maximal de requête par secondes qu'un utilisateur peut passer sur le service";
 $strings["user.quotas.reqDay.tooltip"]="Saisissez ici le nombre maximal de requête par jours qu'un utilisateur peut passer sur le service";
 $strings["user.quotas.reqMonth.tooltip"]="Saisissez ici le nombre maximal de requête par mois qu'un utilisateur peut passer sur le service";
+$strings["user.lastTokenLogin.tooltip"]="Dernière fois que l'utilisateur s'est connecté en utilisant un cookie/token";
 
 /* Details*/
 $strings["user.properties.new"]="Proriétés du nouvel utilisateur";
@@ -129,6 +131,7 @@ $strings["user.label.endDate"]="Date de fin";
 $strings["user.label.additionalData"]="Données aditionnelles";
 $strings["user.label.membership"]="Fait partie de";
 $strings["user.label.availableGroups"]="Groupes disponbles";
+$strings["user.label.lastTokenLogin"]="Dernière connexion (cookie)";
 
 
 /*Services */
@@ -143,8 +146,6 @@ $strings["service.list.backendEndpoint"]="Backend";
 $strings["service.list.quotas.reqSec"]="Max/sec";
 $strings["service.list.quotas.reqDay"]="Max/jour";
 $strings["service.list.quotas.reqMonth"]="Max/mois";
-$strings["service.publish.tooltip"]="Publier ce service";
-$strings["service.unpublish.tooltip"]="Stopper la publication de ce service";
 /* Details */
 $strings["service.delete.confirm"]="Etes vous sûr de vouloir supprimer le service";
 /*Placeholders*/
@@ -183,6 +184,8 @@ $strings["service.publishedOnNodes.tooltip"]="Seléctionnez (avec CTRL+Click) le
 $strings["service.logHits.tooltip"]="Si cette case est cochée, les appels au service seront enregistrés dans les logs\nATTENTION: Cela peut altérer considérablement les performances";
 $strings["service.additionalConfiguration.tooltip"]="Vous pouvez ici rajouter des directives apache applicables au tag apache </Location>";
 $strings["service.isUserAuthenticationEnabled.tooltip"]="Si cette case est cochée OSA vérifiera l'identité des utlisateurs se connectant au service";
+$strings["service.publish.tooltip"]="Publier ce service";
+$strings["service.unpublish.tooltip"]="Stopper la publication de ce service";
 
 /*Labels*/
 $strings["service.properties.new"]="Propriétés du nouveau service";
