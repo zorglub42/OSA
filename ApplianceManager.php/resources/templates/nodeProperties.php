@@ -75,17 +75,6 @@
 							<input class="form-control" placeholder="<?php echo Localization::getString("node.nodeDescription.placeholder")?>" type="text" id="nodeDescription" value="{node.nodeDescription}" onchange="setNodeModified(true)" onkeypress="setNodeModified(true)">
 						</div>
 					</div>
-					<hr>
-					<div class="row">
-						<div class="col-md-6 col-xs-6" title="<?php echo Localization::getString("node.isBasicAuthEnabled.tooltip")?>">
-							<label for="isBasicAuthEnabled"><?php echo Localization::getString("node.label.isBasicAuthEnabled")?></label><br>
-							<input  type="checkbox" id="isBasicAuthEnabled" onClick="setNodeModified(true)"  onchange="setNodeModified(true)" onkeypress="setNodeModified(true)" {cbIsBasicAuthEnabled} >
-						</div>
-						<div class="col-md-6 col-xs-6" title="<?php echo Localization::getString("node.isCookieAuthEnabled.tooltip")?>" >
-							<label for="isCookieAuthEnabled"><?php echo Localization::getString("node.label.isCookieAuthEnabled")?></label><br>
-							<input  type="checkbox" id="isCookieAuthEnabled" onClick="setNodeModified(true)"  onchange="setNodeModified(true)" onkeypress="setNodeModified(true)" {cbIsCookieAuthEnabled} >
-						</div>
-					</div>
 				</div>
 				<div id="tabs-SSL">
 					<form enctype="multipart/form-data">
