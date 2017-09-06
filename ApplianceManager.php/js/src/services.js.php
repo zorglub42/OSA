@@ -229,94 +229,96 @@
 
 			
 			function saveOrUpdateService(method){
-				isUserAuthenticationEnabled="isUserAuthenticationEnabled=0";
-				isHitLoggingEnabled="isHitLoggingEnabled=0";
-				isUserQuotasEnabled="isUserQuotasEnabled=0";
-				isGlobalQuotasEnabled="isGlobalQuotasEnabled=0";
-				isIdentityForwardingEnabled="isIdentityForwardingEnabled=0";
-				isAnonymousAllowed="isAnonymousAllowed=0";
-				isPublished="isPublished=1";
-				serviceName="serviceName=" + encodeURIComponent(document.getElementById("serviceName").value);
-				frontEndEndPoint="frontEndEndPoint=" + encodeURIComponent(document.getElementById("frontEndEndPoint").value);
-				backEndEndPoint="backEndEndPoint=" + encodeURIComponent(document.getElementById("backEndEndPoint").value);
-				backEndUsername="backEndUsername=" + encodeURIComponent(document.getElementById("backEndUsername").value);
-				backEndPassword="backEndPassword=" + encodeURIComponent(document.getElementById("backEndPassword").value);
-				groupName="groupName=" + encodeURIComponent(document.getElementById("groupName").value);
-				additionalConfiguration="additionalConfiguration=" + encodeURIComponent(document.getElementById("additionalConfiguration").value);
-
-				loginFormUri="loginFormUri="+ encodeURIComponent(document.getElementById("loginFormUri").value);
-
-				if  (document.getElementById('onAllNodes').checked) {
-					onAllNodes="onAllNodes=1";
-				}else{
-					onAllNodes="onAllNodes=0";
-				}
-				if (document.getElementById("isGlobalQuotasEnabled").checked){
-					isGlobalQuotasEnabled="isGlobalQuotasEnabled=1";
-					reqSec="reqSec=" + document.getElementById("reqSec").value;
-					reqDay="reqDay=" + document.getElementById("reqDay").value;
-					reqMonth="reqMonth=" + document.getElementById("reqMonth").value;
-				}
-				if (document.getElementById("isUserQuotasEnabled").checked){
-					isUserQuotasEnabled="isUserQuotasEnabled=1";
-				}
-				if (!document.getElementById("isPublished").checked){
-					isPublished="isPublished=0";
-				}
-				if (document.getElementById("isIdentityForwardingEnabled").checked){
-					isIdentityForwardingEnabled="isIdentityForwardingEnabled=1";
-				}
-				if (document.getElementById("isUserAuthenticationEnabled").checked){
-					isUserAuthenticationEnabled="isUserAuthenticationEnabled=1";
-				}else{
+				if (checkNodesList()){
+					isUserAuthenticationEnabled="isUserAuthenticationEnabled=0";
+					isHitLoggingEnabled="isHitLoggingEnabled=0";
 					isUserQuotasEnabled="isUserQuotasEnabled=0";
+					isGlobalQuotasEnabled="isGlobalQuotasEnabled=0";
 					isIdentityForwardingEnabled="isIdentityForwardingEnabled=0";
-				}
-				if (document.getElementById("isHitLoggingEnabled").checked){
-					isHitLoggingEnabled="isHitLoggingEnabled=1";
-				}
-				if (document.getElementById("isAnonymousAllowed").checked){
-					isAnonymousAllowed="isAnonymousAllowed=1";
-				}
-				postData=isUserQuotasEnabled + 
-		  		"&" + isGlobalQuotasEnabled + 
-		  		"&" + isIdentityForwardingEnabled + 
-		  		"&" + isPublished + 
-		  		"&" + frontEndEndPoint + 
-		  		"&" + backEndEndPoint +
-		  		"&" + backEndUsername +
-		  		"&" + backEndPassword +
-		  		"&" + groupName +
-		  		"&" + isUserAuthenticationEnabled + 
-		  		"&" + isHitLoggingEnabled +
-		  		"&" + onAllNodes +
-		  		"&" + additionalConfiguration +
-		  		"&" + isAnonymousAllowed +
-		  		"&" + loginFormUri;
-				if (document.getElementById("isGlobalQuotasEnabled").checked){
-					postData+="&" + reqSec +
-					"&" + reqDay +
-					"&" + reqMonth;
-				}
-				if (method=='PUT'){
-					businessUrl="services/" + encodeURIComponent(document.getElementById("serviceName").value);
-				}else{
-					businessUrl="services/";
-					postData="serviceName=" +encodeURIComponent(document.getElementById("serviceName").value) + "&" + postData ;
-				}
-				if (!document.getElementById('onAllNodes').checked){
-					postData = postData + "&noApply=";
-				}
-				showWait();
-				$.ajax({
-					  url: businessUrl ,
-					  dataType: 'json',
-					  type:method,
-					  data: postData,
-					  success: setHeadersMappings,
-					  error: displayErrorV2
+					isAnonymousAllowed="isAnonymousAllowed=0";
+					isPublished="isPublished=1";
+					serviceName="serviceName=" + encodeURIComponent(document.getElementById("serviceName").value);
+					frontEndEndPoint="frontEndEndPoint=" + encodeURIComponent(document.getElementById("frontEndEndPoint").value);
+					backEndEndPoint="backEndEndPoint=" + encodeURIComponent(document.getElementById("backEndEndPoint").value);
+					backEndUsername="backEndUsername=" + encodeURIComponent(document.getElementById("backEndUsername").value);
+					backEndPassword="backEndPassword=" + encodeURIComponent(document.getElementById("backEndPassword").value);
+					groupName="groupName=" + encodeURIComponent(document.getElementById("groupName").value);
+					additionalConfiguration="additionalConfiguration=" + encodeURIComponent(document.getElementById("additionalConfiguration").value);
 
-				});
+					loginFormUri="loginFormUri="+ encodeURIComponent(document.getElementById("loginFormUri").value);
+
+					if  (document.getElementById('onAllNodes').checked) {
+						onAllNodes="onAllNodes=1";
+					}else{
+						onAllNodes="onAllNodes=0";
+					}
+					if (document.getElementById("isGlobalQuotasEnabled").checked){
+						isGlobalQuotasEnabled="isGlobalQuotasEnabled=1";
+						reqSec="reqSec=" + document.getElementById("reqSec").value;
+						reqDay="reqDay=" + document.getElementById("reqDay").value;
+						reqMonth="reqMonth=" + document.getElementById("reqMonth").value;
+					}
+					if (document.getElementById("isUserQuotasEnabled").checked){
+						isUserQuotasEnabled="isUserQuotasEnabled=1";
+					}
+					if (!document.getElementById("isPublished").checked){
+						isPublished="isPublished=0";
+					}
+					if (document.getElementById("isIdentityForwardingEnabled").checked){
+						isIdentityForwardingEnabled="isIdentityForwardingEnabled=1";
+					}
+					if (document.getElementById("isUserAuthenticationEnabled").checked){
+						isUserAuthenticationEnabled="isUserAuthenticationEnabled=1";
+					}else{
+						isUserQuotasEnabled="isUserQuotasEnabled=0";
+						isIdentityForwardingEnabled="isIdentityForwardingEnabled=0";
+					}
+					if (document.getElementById("isHitLoggingEnabled").checked){
+						isHitLoggingEnabled="isHitLoggingEnabled=1";
+					}
+					if (document.getElementById("isAnonymousAllowed").checked){
+						isAnonymousAllowed="isAnonymousAllowed=1";
+					}
+					postData=isUserQuotasEnabled + 
+					"&" + isGlobalQuotasEnabled + 
+					"&" + isIdentityForwardingEnabled + 
+					"&" + isPublished + 
+					"&" + frontEndEndPoint + 
+					"&" + backEndEndPoint +
+					"&" + backEndUsername +
+					"&" + backEndPassword +
+					"&" + groupName +
+					"&" + isUserAuthenticationEnabled + 
+					"&" + isHitLoggingEnabled +
+					"&" + onAllNodes +
+					"&" + additionalConfiguration +
+					"&" + isAnonymousAllowed +
+					"&" + loginFormUri;
+					if (document.getElementById("isGlobalQuotasEnabled").checked){
+						postData+="&" + reqSec +
+						"&" + reqDay +
+						"&" + reqMonth;
+					}
+					if (method=='PUT'){
+						businessUrl="services/" + encodeURIComponent(document.getElementById("serviceName").value);
+					}else{
+						businessUrl="services/";
+						postData="serviceName=" +encodeURIComponent(document.getElementById("serviceName").value) + "&" + postData ;
+					}
+					if (!document.getElementById('onAllNodes').checked){
+						postData = postData + "&noApply=";
+					}
+					showWait();
+					$.ajax({
+						  url: businessUrl ,
+						  dataType: 'json',
+						  type:method,
+						  data: postData,
+						  success: setHeadersMappings,
+						  error: displayErrorV2
+
+					});
+				}
 			}
 			
 			
@@ -453,7 +455,7 @@
 										   .replaceAll("{cbIdentFwd}", "")
 										   .replaceAll("{backEndUsername}", "")
 										   .replaceAll("{backEndPassword}", "")
-										   .replaceAll("{cbOnAllNodes}", "checked")
+										   .replaceAll("{cbOnAllNodes}", "")
 										   .replaceAll("{cbIsHitLoggingEnabled}", "")
 										   .replaceAll("{additionalConfiguration}", "")
 					);
@@ -486,7 +488,32 @@
 					showServices();
 					return false;
 				}
-			}			
+			}
+			
+			function checkNodesList(){
+				if  (document.getElementById('onAllNodes').checked) {
+					return true;
+				}else{
+					nodes = document.getElementById('serviceNodesList');
+					// count selected item to be able to start reload page on last one
+					var selectedNodes = new Array();
+					selectedCount=0;
+					for (i = 0; i < nodes.options.length; i++) {
+						if (nodes.options[i].selected) {
+							selectedNodes[selectedCount]=nodes.options[i].value
+							selectedCount++;
+						}
+					}
+					if (selectedCount == 0 ){
+						var index = $('#tabs a[href="#tabs-nodes"]').parent().index();
+						$('#tabs').tabs('select', index);
+						alert("<?php echo Localization::getJSString("service.submit.alert.nodeList")?>");
+						return false;
+					}else{
+						return true;
+					}
+				}	
+			}
 			function displayServiceNodes(nodeList){
 				$('#serviceNodesList')
 				.find('option')

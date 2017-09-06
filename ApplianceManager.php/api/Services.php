@@ -506,7 +506,7 @@ class Services{
 	  *
 	  * @return ServiceNode All Nodes with pulication indicator
 	  */
-	  function getNodesForService($serviceName){
+	  function getNodesForService($serviceName=null){
 		try{
 			return nodesListForService($serviceName);
 		}catch (Exception $e){

@@ -148,6 +148,7 @@ $strings["service.list.quotas.reqDay"]="Max/jour";
 $strings["service.list.quotas.reqMonth"]="Max/mois";
 /* Details */
 $strings["service.delete.confirm"]="Etes vous sûr de vouloir supprimer le service";
+$strings["service.submit.alert.nodeList"]="Au moins un noeud d'exposition doit être selectionné";
 /*Placeholders*/
 $strings["service.name.placeholder"]="Nom du service";
 $strings["service.groupName.placeholder"]="Nom du groupe autorisant l'accès";

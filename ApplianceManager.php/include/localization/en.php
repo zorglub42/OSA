@@ -152,6 +152,8 @@ $strings["service.publish.tooltip"]="Publish this service";
 $strings["service.unpublish.tooltip"]="Unpublish this service";
 /* Details */
 $strings["service.delete.confirm"]="Do you really want to remove service";
+$strings["service.submit.alert.nodeList"]="At list one node must be selected";
+
 /*Placeholders*/
 $strings["service.name.placeholder"]="Service name";
 $strings["service.groupName.placeholder"]="Group name to allow access";
