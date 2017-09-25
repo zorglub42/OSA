@@ -27,8 +27,11 @@
 				eval("err =" + jqXHR.responseText);
 				alert("An error as occursed: " + err.label + " (HTTP_STATUS=" + jqXHR.status + ")");
 				hideWait();
-			} 
+			}
 
+			function displayErrorV2(jqXHR){
+				displayErrorV2(jqXHR, null, null);
+			}
 			function displayErrorV2(jqXHR, textStatus, errorThrown){
 				errorText=jqXHR.responseText;
 				//eval("err =" + errorText);
@@ -39,7 +42,7 @@
 				}catch (e){
 					alert("An error as occursed: " + errorText + " (HTTP_STATUS=" + jqXHR.status + ")");
 					return;
-				}	
+				}
 
 				try{
 					alert("An error as occursed: " + err.error.message + " (HTTP_STATUS=" + jqXHR.status + ")");
@@ -50,4 +53,4 @@
 						alert("An error as occursed: " + errorText + " (HTTP_STATUS=" + jqXHR.status + ")");
 					}
 				}
-			} 
+			}

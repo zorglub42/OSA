@@ -78,7 +78,8 @@
 				</div>
 				<div id="tabs-SSL">
 					<form enctype="multipart/form-data">
-					<div id="fileupload"/>
+					<div id="fileuploadKEY"/>
+					<div id="fileuploadPEM"/>
 					
 					<div class="row">
 						<div class="col-md-6 col-xs-6" title="<?php echo Localization::getString("node.privateKey.tooltip")?>">
@@ -101,7 +102,7 @@
 					<hr><label for="manageCaCert"><?php echo Localization::getString("node.label.manageCA")?></label> <input  title="<?php echo Localization::getString("node.manageCA.tooltip")?>" type="checkbox" id="manageCaCert" {cbManageCAEnabled} onclick="toggleAuthority()"><br>
 					<div id="sslAuthority"
 						<form enctype="multipart/form-data">
-							<div id="fileupload"/>
+							<div id="fileuploadCHAIN"/>
 							<div class="row">
 <!--								<div class="col-md-6 col-xs-6" title="<?php echo Localization::getString("node.ca.tooltip")?>">
 									<label id="lblCa" for="CAfileuploadFLD"><?php echo Localization::getString("node.label.ca")?></label>
