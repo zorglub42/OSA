@@ -35,6 +35,7 @@ var localIPFilterPrevVal="";
 var portFilterPrevVal="";
 var serverFQDNFilterPrevVal="";
 
+/* Enable or disable UI control according to quota properties updates */
 function setNodeModified(isModified){
 	nodeModified=isModified;
 	if (isModified){
@@ -47,31 +48,37 @@ function setNodeModified(isModified){
 	}else{
 		$('#tabs').tabs( "disable", 1);
 	}
-	
+
 	if ($("#additionalConfiguration").val() != ""){
 		$("#warnAdditionalConfig").show();
 	}else{
 		$("#warnAdditionalConfig").hide();
 	}
-	
+
 }
 
+/* Load node properties and start edit form */
 function startEditNode(nodeURI){
 	$.getJSON(nodeURI, editNode).error(displayErrorV2);
 }
-			
+
+/* Update node properties */
 function updateNode(nodeURI){
-	saveOrUpdateNode('PUT');
+	/* del existing certs if required and start new certs upload if required
+	 * then save node properties and finally open nodes list */
+	delCerts();
 }
 
+/* Manager for "Reset CA/Chain certs" button */
 function startResetCASSL(){
 	if (confirm("<?php echo Localization::getJSString("node.deleteCASSL.confirm")?>")){
 		removeCASSLSetting=true;
 		setNodeModified(true);
 		clearFileInput("CHAINfileuploadFLD");
 	}
-	
+
 }
+/* Manager for "reset Priv key/cert" button */
 function startResetSSL(){
 	if (confirm("<?php echo Localization::getJSString("node.deleteSSL.confirm")?>")){
 		removeSSLSetting=true;
@@ -79,8 +86,10 @@ function startResetSSL(){
 		clearFileInput("PKfileuploadFLD");
 		clearFileInput("CERTfileuploadFLD");
 	}
-	
+
 }
+
+/* Load services deployed on a node and starts method to display */
 function loadNodeServices(nodeURI){
 	if (!servicesLoaded){
 		showWait();
@@ -88,15 +97,16 @@ function loadNodeServices(nodeURI){
 	}
 }
 
+/* Display services deployed on a node */
 function displayNodeServices(serviceList){
-	
+
 	hideWait();
 	table=document.getElementById("data");
 	rowPattern=document.getElementById("rowTpl");
 	table.removeChild(rowPattern);
-	
-	
-	
+
+
+
 	$("#serviceListTitle").html($("#serviceListTitle").html().replaceAll("{serviceList.length}", serviceList.length))	;
 	for (i=0;i<serviceList.length;i++){
 		if (serviceList[i].isPublished==1){
@@ -105,7 +115,7 @@ function displayNodeServices(serviceList){
 			cbPublishedCheck=""
 		}
 
-		
+
 		newRow=rowPattern.cloneNode(true);
 		newRow.removeAttribute('id');
 		newRow.removeAttribute('style');
@@ -124,30 +134,38 @@ function displayNodeServices(serviceList){
 	servicesLoaded=true;
 
 }
+
+
+/* Clear a "file upload" form field */
 function clearFileInput(id)
 {
 	var oldInput = document.getElementById(id);
-	
+
 	var newInput = document.createElement("input");
-	
+
 	newInput.type = "file";
 	newInput.id = oldInput.id;
 	newInput.name = oldInput.name;
 	newInput.className = oldInput.className;
 	newInput.style.cssText = oldInput.style.cssText;
 	// copy any other relevant attributes
-	
+
 	oldInput.parentNode.replaceChild(newInput, oldInput);
 }
+
+/* Toggle check box 'manage authority chain
+ * and clear upload chain file upload filed is if check box unchecked */
 function toggleAuthority(){
 	$("#sslAuthority").toggle();
 	if (!$('#manageCaCert').is(':checked')){
 		clearFileInput("CHAINfileuploadFLD");
-		
-		
+
+
 	}
 }
-			
+
+
+/* Load node properties template and display node properties */
 function editNode(node){
 	$.get("resources/templates/nodeEdit.php", function (data){
 		servicesLoaded=false
@@ -162,7 +180,7 @@ function editNode(node){
 		currentNode=node;
 
 
-		
+
 		$("#content").html(data.replaceAll("{node.uri}", node.uri)
 							   .replaceAll("{node.additionalConfiguration}", node.additionalConfiguration)
 							   .replaceAll("{nodeNameAsLabel}", node.nodeName)
@@ -193,9 +211,13 @@ function editNode(node){
 	});
 }
 
-			
-function saveOrUpdateNode(method){
-	
+
+/* Save (create) or update node properties (and not sub items like certs)
+	 once done, starts "nextStep"
+	 method: PUT=update, POST=create
+ */
+function saveOrUpdateNodeBase(method, nextStep, apply){
+
 	if ($("#port").val() == "80" && document.getElementById("isHTTPS").checked){
 		if (!confirm('<?php echo Localization::getJSString("node.https-on-80-warning")?>')){
 			return false;
@@ -207,59 +229,7 @@ function saveOrUpdateNode(method){
 		}
 	}
 	showWait();
-	 var uploadPrivKeyFLD=document.getElementById("PKfileuploadFLD");
-	 var uploadCertFLD=document.getElementById("CERTfileuploadFLD");
-	 var uploadChainFLD=document.getElementById("CHAINfileuploadFLD");
-	del=true;
-	if (removeSSLSetting && uploadPrivKeyFLD.files.length==0 && uploadCertFLD.files.length==0){
-		del=false;
-		
-		$.ajax({
-		  url: "nodes/" + currentNode.nodeName + "/cert" ,
-		  dataType: 'json',
-		  async: false,
-		  type:'DELETE',
-		  success: function (e){
-			  del=true;
-		  },
-		  error: displayErrorV2
-		});
-		if (del){
-			del=false;
-			$.ajax({
-			  url: "nodes/" + currentNode.nodeName + "/privateKey" ,
-			  dataType: 'json',
-			  type:'DELETE',
-			  async: false,
-			  success: function (e){
-				  del=true;
-			  },
-			  error: displayErrorV2
-			});
-		
-		}
-	}	
-	if (removeCASSLSetting && uploadChainFLD.files.length==0){
-		if (del){
-			del=false;
-			$.ajax({
-			  url: "nodes/" + currentNode.nodeName + "/chain" ,
-			  dataType: 'json',
-			  type:'DELETE',
-			  async: false,
-			  success: function (e){
-				  del=true;
-			  },
-			  error: displayErrorV2
-			});
-		
-		}
-	}	
-	if (!del){
-		hideWait();
-		return false;
-	}
-	
+
 	nodeName="nodeName=" + encodeURIComponent($("#nodeNameFld").val());
 	localIP="localIP=" + encodeURIComponent(document.getElementById("localIP").value);
 	port="port=" + encodeURIComponent(document.getElementById("port").value);
@@ -271,11 +241,11 @@ function saveOrUpdateNode(method){
 	}else{
 		isHTTPS="isHTTPS=0";
 	}
-	postData=localIP + 
-	"&" + serverFQDN + 
-	"&" + port + 
-	"&" + nodeDescription + 
-	"&" + additionalConfiguration + 
+	postData=localIP +
+	"&" + serverFQDN +
+	"&" + port +
+	"&" + nodeDescription +
+	"&" + additionalConfiguration +
 	"&" + isHTTPS;
 	if (method=='PUT'){
 		businessUrl="nodes/" + encodeURIComponent(document.getElementById("nodeNameFld").value);
@@ -283,68 +253,181 @@ function saveOrUpdateNode(method){
 		businessUrl="nodes/";
 		postData="nodeName=" +encodeURIComponent(document.getElementById("nodeNameFld").value) + "&" + postData;
 	}
-	if (method=='POST'){
-		//In case of create, first create to be able to update SSL setting in next step
-		postOk=false;
-		$.ajax({
-			  url: businessUrl ,
-			  dataType: 'json',
-			  type:method,
-			  data: postData + "&apply=0",
-			  async: false,
-			  success: function(){postOk=true},
-			  error: displayErrorV2
-			});
-		if (!postOk){
-			return false;
-		}
-	 }
-
-	 error=false;
-	 ssl=false;
-	 nodeURI="nodes/" + encodeURIComponent(document.getElementById("nodeNameFld").value);
-	 if (uploadPrivKeyFLD.files.length>0){
-		$('#fileupload').fileupload();
-		$('#fileupload').fileupload('send', {async: false, files: uploadPrivKeyFLD.files, url:nodeURI + "/privateKey"})
-			.error(function (jqXHR, textStatus, errorThrown) {error=error||true; $('#fileupload').fileupload('destroy');displayErrorV2(jqXHR, textStatus, errorThrown)});
-		ssl=true;
-		$('#fileupload').fileupload('destroy');
-	 }
-	 if (uploadCertFLD.files.length>0){
-		$('#fileupload').fileupload();
-		$('#fileupload').fileupload('send', {async: false, files: uploadCertFLD.files, url:nodeURI + "/cert"})
-			.error(function (jqXHR, textStatus, errorThrown) {error=error||true; $('#fileupload').fileupload('destroy');displayErrorV2(jqXHR, textStatus, errorThrown)});
-			ssl=true;
-		$('#fileupload').fileupload('destroy');
-	 }
-	 if (uploadChainFLD.files.length>0){
-		$('#fileupload').fileupload();
-		$('#fileupload').fileupload('send', {async: false, files: uploadChainFLD.files, url:nodeURI + "/chain"})
-			.error(function (jqXHR, textStatus, errorThrown) {error=error||true; $('#fileupload').fileupload('destroy');displayErrorV2(jqXHR, textStatus, errorThrown)});
-			ssl=true;
-		$('#fileupload').fileupload('destroy');
-	 }
-	 if (error){
-		 return false;
-	 }
-	 //Anyway, update and apply config
+	if (!apply){
+		applyComp="&apply=0"
+	}else {
+		applyComp=""
+	}
 	$.ajax({
 		  url: businessUrl ,
 		  dataType: 'json',
-		  type:'PUT',
-		  data: postData,
-		  success: showNodes,
+		  type:method,
+		  data: postData + applyComp,
+		  success: nextStep,
 		  error: displayErrorV2
 		});
 
 }
 
-function saveNewNode(){
-	saveOrUpdateNode('POST');
+
+/* Delete existing SSL certs if requested and then  starts upload new certs
+*  (if required). Upload method will then start update of "core" node properties
+* and node deployment */
+function delCerts(){
+	promises=[];
+	var uploadPrivKeyFLD=document.getElementById("PKfileuploadFLD");
+	var uploadCertFLD=document.getElementById("CERTfileuploadFLD");
+	var uploadChainFLD=document.getElementById("CHAINfileuploadFLD");
+	showWait()
+
+	if (removeSSLSetting && uploadPrivKeyFLD.files.length==0 && uploadCertFLD.files.length==0){
+		/* remove key/cert requested and no upload requested => clear certs */
+		cert = new Promise(function(resolv, reject){
+
+			$.ajax({
+				url: "nodes/" + currentNode.nodeName + "/cert" ,
+				dataType: 'json',
+				async: false,
+				type:'DELETE',
+				success: resolv,
+				error: reject
+			});
+		});
+		promises.push[cert];
+
+		key = new Promise(function (resolv, reject){
+			$.ajax({
+			  url: "nodes/" + currentNode.nodeName + "/privateKey" ,
+			  dataType: 'json',
+			  type:'DELETE',
+			  async: false,
+			  success: resolv,
+			  error: reject
+			});
+
+		});
+		promises.push(key);
+	}
+
+	if (removeCASSLSetting && uploadChainFLD.files.length==0){
+		/* remove chain requested and no upload requested => clear cert */
+		chain = new Promise(function(resolv, reject){
+			$.ajax({
+				url: "nodes/" + currentNode.nodeName + "/chain" ,
+				dataType: 'json',
+				type:'DELETE',
+				async: false,
+				success: resolv,
+				error: reject
+			});
+		});
+	}
+	if (promises.length){
+		/* at least on delete requested */
+		Promise.all(promises).then(function(res){
+			/* Delete done, start upload certs management */
+			uploadCerts()
+		}).catch(function(reason){
+			displayErrorV2(reason);
+		});
+	}else{
+		/* No delete requested, start upload certs management */
+		uploadCerts();
+	}
+
 }
-			
-			
-			
+
+/* Upload priv key/cert/chain management.
+* Upload certs if required and trigger node "core" properties update and
+* node deployment */
+function uploadCerts(){
+	var uploadPrivKeyFLD=document.getElementById("PKfileuploadFLD");
+	var uploadCertFLD=document.getElementById("CERTfileuploadFLD");
+	var uploadChainFLD=document.getElementById("CHAINfileuploadFLD");
+	nodeURI="nodes/" + encodeURIComponent(document.getElementById("nodeNameFld").value);
+	promises=[]
+
+	if (uploadPrivKeyFLD.files.length>0){
+		/* priv key upload requested */
+		key = new Promise(function(resolv, reject){
+
+									$('#fileuploadKEY').fileupload();
+									jqxhr = $('#fileuploadKEY').fileupload('send', {files: uploadPrivKeyFLD.files, url:nodeURI + "/privateKey"})
+																						 .error(function (jqXHR, textStatus, errorThrown) {
+																							 					$('#fileuploadKEY').fileupload('destroy')
+																							 					reject(jqXHR);
+																							}).complete(function (jqXHR, textStatus, errorThrown) {
+																								$('#fileuploadKEY').fileupload('destroy');
+																								resolv(true);
+																							});
+ 		});
+		promises.push(key);
+	}
+	if (uploadCertFLD.files.length>0){
+		/* Public cert upload requested */
+		cert = new Promise(function (resolv, reject){
+									$('#fileuploadPEM').fileupload();
+									jqxhr = $('#fileuploadPEM').fileupload('send', { files: uploadCertFLD.files, url:nodeURI + "/cert"})
+																						 .error(function (jqXHR, textStatus, errorThrown) {
+																							 			$('#fileuploadPEM').fileupload('destroy');
+																										reject(jqXHR);
+																						 }).complete(function (){
+													 													$('#fileuploadPEM').fileupload('destroy');
+																										resolv(true);
+													 									 });
+		});
+		promises.push(cert);
+	}
+	if (uploadChainFLD.files.length>0){
+		/* chain cert upload requested */
+		chain = new Promise(function (resolv, reject){
+								 $('#fileuploadCHAIN').fileupload();
+								 jqxhr = $('#fileuploadCHAIN').fileupload('send', { files: uploadChainFLD.files, url:nodeURI + "/chain"})
+									 														.error(function (jqXHR, textStatus, errorThrown) {
+																										$('#fileuploadCHAIN').fileupload('destroy');
+																										reject(jqXHR)})
+																							.complete(function (){
+														 									 			$('#fileuploadCHAIN').fileupload('destroy');
+																										resolv(true);
+														 								 });
+		});
+		promises.push(chain)
+	}
+	if (promises.length>0){
+		/* at least one upload was requested */
+		Promise.all(promises).then(function (res){
+				/* once done, update node properties and deploy it,
+				   then switch to nod list */
+				saveOrUpdateNodeBase('PUT', showNodes, true);
+		}).catch(function (reason){
+				displayErrorV2(reason);
+		});
+	}else{
+		/* No upload, update node properties and deploy it,
+			 then switch to nodes list */
+		saveOrUpdateNodeBase('PUT', showNodes, true);
+	}
+}
+
+
+/* Create and deploy a new node */
+function saveNewNode(){
+	var uploadCertFLD=document.getElementById("CERTfileuploadFLD");
+	var uploadPrivKeyFLD=document.getElementById("PKfileuploadFLD");
+	var uploadChainFLD=document.getElementById("CHAINfileuploadFLD");
+
+	if ((uploadPrivKeyFLD.files.length >0 && uploadPrivKeyFLD.length >0) || uploadPrivKeyFLD.files.length>0 ){
+		/* Some cert upload are required, so first create node in DB without
+		* deployment and then, apply update, i.e certs upload and deployment */
+		saveOrUpdateNodeBase('POST', updateNode, false);
+	}else{
+		/* No certs upload requested, so create and deploy new node and then
+		* switch to nodes list */
+		saveOrUpdateNodeBase('POST', showNodes, true);
+	}
+}
+
+/* Load add node template and display correspnding form */
 function addNode(){
 	$.get("resources/templates/nodeAdd.php", function (data){
 		currentNode=null;
@@ -363,7 +446,7 @@ function addNode(){
 							   .replaceAll("{cbManageCAEnabled}", "")
 							   .replaceAll("{lblChain}", "")
 		);
-		
+
 		$('#sslAuthority').hide();
 		$("#showServices").hide();
 		$("#resetSSL").hide();
@@ -382,26 +465,28 @@ function addNode(){
 	});
 }
 
+
+/* Handle key press on node filter form to apply filter when "enter" key
+* is pressed */
 function handelNodeFilterFormKeypress(e) {
 	if (e.keyCode == 13) {
 		showNodes();
 		return false;
 	}
-}			
-			
+}
+
+/* Load node list templay and display nodes list */
 function displayNodeList(nodeList){
-	
-	
 	hideWait();
 	$.get( "resources/templates/nodeList.php", function( data ) {
-		
+
 		$( "#content" ).html( data.replaceAll("{nodeList.length}", nodeList.length )
-								  .replaceAll("{nodeNameFilterPrevVal}", nodeNameFilterPrevVal )	
+								  .replaceAll("{nodeNameFilterPrevVal}", nodeNameFilterPrevVal )
 								  .replaceAll("{nodeDescriptionFilterPrevVal}", nodeDescriptionFilterPrevVal )
 								  .replaceAll("{serverFQDNFilterPrevVal}", serverFQDNFilterPrevVal )
 								  .replaceAll("{localIPFilterPrevVal}", localIPFilterPrevVal )
 								  .replaceAll("{portFilterPrevVal}", portFilterPrevVal )
-							);	
+							);
 		table=document.getElementById("data");
 		rowPattern=document.getElementById("rowTpl");
 		table.removeChild(rowPattern);
@@ -412,7 +497,7 @@ function displayNodeList(nodeList){
 		var ipsListAutoComplete=new Array();
 		var portsListAutoComplete=new Array();
 
-		
+
 		for (i=0;i<nodeList.length;i++){
 			if (nodeList[i].isHTTPS==1){
 				cbIsHTTPS="checked";
@@ -425,7 +510,7 @@ function displayNodeList(nodeList){
 			addItem(fqdnsListAutoComplete, nodeList[i].serverFQDN, true);
 			addItem(ipsListAutoComplete, nodeList[i].localIP, true);
 			addItem(portsListAutoComplete, nodeList[i].port.toString(), true);
-			
+
 			newRow=rowPattern.cloneNode(true);
 			newRow.removeAttribute('id');
 			newRow.removeAttribute('style');
@@ -444,7 +529,7 @@ function displayNodeList(nodeList){
 			del=document.getElementById("btnDelete");
 			del.removeAttribute("id");
 			edit.removeAttribute("id");
-		
+
 			publish=document.getElementById("btnPublish");
 			unpublish=document.getElementById("btnUnpublish");
 			if (nodeList[i].isPublished == 1){
@@ -476,18 +561,19 @@ function displayNodeList(nodeList){
 						source: portsListAutoComplete,
 						minLength: 0
 		});
-		
+
 		if (nodeList.length == 0 ){
 			$("#nodesList").hide();
 		}
-		
+
 	});
 }
 
 
+/* Delete and undeploy a node and then switch to node list */
 function deleteNode(nodeURI, nodeName){
-	
-	
+
+
 	if (confirm("<?php echo Localization::getJSString("node.delete.confirm")?> " + nodeName + "?")){
 		showWait();
 		$.ajax({
@@ -499,12 +585,12 @@ function deleteNode(nodeURI, nodeName){
 			  error: displayErrorV2
 			});
 	}
-	
+
 }
 
+/* Publish/unpublish (deploy/undeploy) a node
+   then switch to node list */
 function publishNode(nodeURI, state){
-	
-	
 		showWait();
 		$.ajax({
 			  url: nodeURI + "/status",
@@ -514,10 +600,10 @@ function publishNode(nodeURI, state){
 			  success: showNodes,
 			  error: displayErrorV2
 			});
-	
+
 }
 
-
+/* Reset node filter form and apply */
 function  resetNodeFilter(){
 	$('#nodeNameFilter').val("");
 	$('#nodeDescriptionFilter').val("")
@@ -527,6 +613,8 @@ function  resetNodeFilter(){
 	showNodes();
 }
 
+
+/* Load node list and start display */
 function showNodes(){
 	prms="order=nodeName";
 	prms=prms + "&nodeNameFilter=" + encodeURIComponent(getFilterValue('nodeNameFilter'));
@@ -553,7 +641,7 @@ function showNodes(){
 
 
 
-//Event 			
+/* Attach Event to UI main menu controls */
 $(
 		function (){
 			$('#listNode').click(resetNodeFilter);

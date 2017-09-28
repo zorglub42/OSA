@@ -80,7 +80,7 @@
 					<form enctype="multipart/form-data">
 					<div id="fileuploadKEY"/>
 					<div id="fileuploadPEM"/>
-					
+
 					<div class="row">
 						<div class="col-md-6 col-xs-6" title="<?php echo Localization::getString("node.privateKey.tooltip")?>">
 							<label for="PKfileuploadFLD"><?php echo Localization::getString("node.label.privateKey")?></label>
@@ -122,7 +122,7 @@
 						</div>
 					</div>
 				</div>
-				
+
 			</div>
 	</div>
 </div>

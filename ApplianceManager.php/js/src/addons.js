@@ -36,13 +36,17 @@ var osaAddonsObserver = new MutationObserver(function(mutations) {
 											});
 
 
+/* Folling methods are used by add-ons developpers to intergate addons
+   in OSA GUI */
 
 // add a hook on a particular GUI Element selected with JQuery
+// "callback" is executed when HTML element with id "selector" is found
 function addonAddGUIHook(selector, callback){
-	divHooks.push({"selector": selector, "callback": callback});	
+	divHooks.push({"selector": selector, "callback": callback});
 }
 
 // declare an item in API Documentation menu
+// Doc URL = <OSA BASE URL>/addons/<addon>/<uri>
 function addonAddDocURI(addon, uri){
 	apiDocsURI.push({"addon" : addon, "uri" : uri});
 	apiDocsURI.sort();
@@ -53,13 +57,11 @@ function addonAddDocURI(addon, uri){
 $( document ).ready(function() {
 	//Start mutation observer
 	osaAddonsObserver.observe(document.getElementById("content"), { childList: true });
-	
+
 	//Add items to API documentation menu
 	apiDocListHtml = $("#apiDocList").html()
 	apiDocsURI.forEach(function(item){
-			apiDocListHtml = apiDocListHtml + '<li><a id="apiDocMenu' + item.addon+ '" href="#"  onclick="loadDoc(\'addons/'+ item.addon + '/' + item.uri + '\')">' + item.addon + '</a></li>'
-	}); 
+			apiDocListHtml = apiDocListHtml + '<li><a id="apiDocMenu' + item.addon + '" href="#"  onclick="loadDoc(\'addons/'+ item.addon + '/' + item.uri + '\')">' + item.addon + '</a></li>'
+	});
 	$("#apiDocList").html(apiDocListHtml);
 });
-
-

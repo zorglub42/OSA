@@ -38,7 +38,7 @@ var emailAddressFilterPrevVal="";
 var entityFilterPrevVal="";
 
 
-
+/* Delete a user quota */
 function deleteUserQuotas(quotaURI, serviceName) {
 	if (confirm("<?php echo Localization::getJSString("user.deleteQuota.confirm")?> " + serviceName + "?")) {
 		$.ajax({
@@ -53,6 +53,7 @@ function deleteUserQuotas(quotaURI, serviceName) {
 
 }
 
+/* Enable or disable UI control according to user properties updates */
 function setUserModified(isModified) {
 	userModified = isModified;
 	if (isModified) {
@@ -70,6 +71,7 @@ function setUserModified(isModified) {
 	}
 }
 
+/* Remove a user from a group */
 function deleteUserGroup(groupURI, groupName, userURI) {
 	if (confirm("<?php echo Localization::getJSString("user.deleteGroup.confirm")?> " + groupName + "?")) {
 		$.ajax({
@@ -84,6 +86,7 @@ function deleteUserGroup(groupURI, groupName, userURI) {
 
 }
 
+/* Add user to selected groups */
 function addGroupToUser(userURI) {
 	grps = document.getElementById('availableGroupsList');
 	selectedCount = 0;
@@ -115,6 +118,8 @@ function addGroupToUser(userURI) {
 	startDisplayUserGroups(userURI);
 }
 
+
+/* Load add user template and display */
 function addUser() {
 	$.get( "resources/templates/userAdd.php", function( data ) {
 		currentService=null;
@@ -136,14 +141,18 @@ function addUser() {
 		setUserModified(false);
 	});
 }
+
+/* Save (create) a new user */
 function saveNewUser() {
 	saveOrUpdateUser('POST');
 }
 
+/* Update a user */
 function updateUser(userURI) {
 	saveOrUpdateUser('PUT');
 }
 
+/* Save (create) or update a user */
 function saveOrUpdateUser(method) {
 	currentUserUri = "users/"
 			+ encodeURIComponent(document.getElementById("userName").value);
@@ -177,9 +186,7 @@ function saveOrUpdateUser(method) {
 		uri = "users/" + encodeURIComponent(document.getElementById("userName").value);
 	}
 	$.ajax({
-		url : uri, // "users/" +
-					// encodeURIComponent(document.getElementById("userName").value) ,
-					// //+ "?" + postData,
+		url : uri,
 		dataType : 'json',
 		type : method,
 		data : postData,
@@ -188,41 +195,54 @@ function saveOrUpdateUser(method) {
 	});
 
 }
+
+/* Start user edit for a user */
 function startEditUser(userURI) {
 	currentUserUri = userURI;
 	$.getJSON(userURI, editUser).error(displayErrorV2);
 }
+
+/* Restart edit for current user */
 function startEditCurrentUser() {
 	startEditUser(currentUserUri);
 }
 
+/* Load available groups for a user and populate list */
 function startDisplayAvailableGroups(userURI) {
 	currentUserURI = userURI;
 	$.getJSON(userURI + "/groups/available/", displayAvailableGroups).error(
 			displayErrorV2);
 }
 
+/* Load groups membership for current user and populate list */
 function startDisplayUserGroupsForCurrentUser(group) {
 	startDisplayUserGroups(currentUserURI);
 }
+
+/* Load groups membership for a user and populate list */
 function startDisplayUserGroups(userURI) {
 	currentUserURI = userURI;
 	$.getJSON(userURI + "/groups/", displayUserGroups).error(displayErrorV2);
 }
+
+/* Loads quotas for a user and display */
 function startDisplayUserQuotas(userURI) {
 	currentUserURI = userURI;
 	$.getJSON(userURI + "/quotas/", displayUserQuotas).error(displayErrorV2);
 }
+
+/* Start diplay quatas for current user */
 function startDisplayUserQuotasForCurrentUser() {
 	startDisplayUserQuotas(currentUserUri);
 }
 
+/* Poplulate list of available groups (for membership) */
 function displayAvailableGroups(groupList) {
 		if (groupList.length>0){
 			$.each(groupList, function (i, item) {
-				$('#availableGroupsList').append($('<option>', { 
+				$('#availableGroupsList').append($('<option>', {
 					value: "groups/" + item.groupName,
-					text : item.groupName 
+					text : item.groupName
 				}));
 			});
 		}else{
@@ -230,12 +250,12 @@ function displayAvailableGroups(groupList) {
 		}
 }
 
-
+/* Load edit user template and display */
 function editUser(user) {
 	$.get( "resources/templates/userEdit.php", function( data ) {
 		userDate = new Date(user.endDate);
 		dateFormated = userDate.format("<?php echo Localization::getJSString("date.format.parseexact")?>");
-		
+
 		if (user.lastTokenLogin != null){
 			loginDate = new Date(user.lastTokenLogin);
 			lastTokenLogin = loginDate.format("<?php echo Localization::getJSString("date.format.parseexact.long")?>");
@@ -262,12 +282,13 @@ function editUser(user) {
 
 }
 
+/* Load user's group membership template and display */
 function displayUserGroups(groupList) {
 	$.get( "resources/templates/userGroups.php", function( data ) {
-						
+
 		$( "#content" ).html( data.replaceAll("{currentUser.userName}", currentUser.userName )
 								  .replaceAll("{currentUser.uri}", currentUser.uri )
-							);	
+							);
 		table=document.getElementById("data");
 		rowPattern=document.getElementById("rowTpl");
 		table.removeChild(rowPattern);
@@ -275,7 +296,7 @@ function displayUserGroups(groupList) {
 		if (groupList.length>0){
 			for (i=0;i<groupList.length;i++){
 
-				
+
 				newRow=rowPattern.cloneNode(true);
 				newRow.removeAttribute('id');
 				newRow.removeAttribute('style');
@@ -301,11 +322,12 @@ function displayUserGroups(groupList) {
 	});
 }
 
+/* Load user's quota template and dispaly */
 function displayUserQuotas(quotasList) {
 	$.get( "resources/templates/userQuotas.php", function( data ) {
-						
+
 		$( "#content" ).html( data.replaceAll("{currentUser.userName}", currentUser.userName )
-							);	
+							);
 		table=document.getElementById("data");
 		rowPattern=document.getElementById("rowTpl");
 		table.removeChild(rowPattern);
@@ -313,7 +335,7 @@ function displayUserQuotas(quotasList) {
 		if (quotasList.length>0){
 			for (i=0;i<quotasList.length;i++){
 
-				
+
 				newRow=rowPattern.cloneNode(true);
 				newRow.removeAttribute('id');
 				newRow.removeAttribute('style');
@@ -336,29 +358,32 @@ function displayUserQuotas(quotasList) {
 	});
 
 }
+
+/* Handle key press on services filter form to apply filter when "enter" key
+* is pressed */
 function handelUserFilterFormKeypress(e) {
 	if (e.keyCode == 13) {
 		showUsers();
 		return false;
 	}
 }
-function displayUserList(userList) {
 
-	
+/* Load users list template and dispaly */
+function displayUserList(userList) {
 	$.get("resources/templates/userList.php", function( data ) {
-						
+
 		$( "#content" ).html( data.replaceAll("{userList.length}", userList.length )
-								  .replaceAll("{userNameFilterPrevVal}", userNameFilterPrevVal )	
+								  .replaceAll("{userNameFilterPrevVal}", userNameFilterPrevVal )
 								  .replaceAll("{emailAddressFilterPrevVal}", emailAddressFilterPrevVal )
 								  .replaceAll("{entityFilterPrevVal}", entityFilterPrevVal )
 								  .replaceAll("{firstNameFilterPrevVal}", firstNameFilterPrevVal )
 								  .replaceAll("{lastNameFilterPrevVal}", lastNameFilterPrevVal )
-							);	
+							);
 		table=document.getElementById("data");
 		rowPattern=document.getElementById("rowTpl");
 		table.removeChild(rowPattern);
 
-						
+
 		var usersListAutoComplete=new Array();
 		var emailsListAutoComplete=new Array();
 		var entitiesListAutoComplete=new Array();
@@ -375,7 +400,7 @@ function displayUserList(userList) {
 			addItem(entitiesListAutoComplete, userList[i].entity, true);
 			addItem(firtNameListAutoComplete, userList[i].firstName, true);
 			addItem(lastNameListAutoComplete, userList[i].lastName, true);
-			
+
 			newRow=rowPattern.cloneNode(true);
 			newRow.removeAttribute('id');
 			newRow.removeAttribute('style');
@@ -423,8 +448,8 @@ function displayUserList(userList) {
 
 }
 
+/* Delete a user */
 function deleteUser(userURI, userName) {
-
 	if (confirm("<?php echo Localization::getJSString("user.delete.confirm")?> " + userName + "?")) {
 		$.ajax({
 			url : userURI,
@@ -438,8 +463,7 @@ function deleteUser(userURI, userName) {
 
 }
 
-
-
+/* REset user search filter form fields and apply search */
 function  resetUserFilter(){
 	$('#userNameFilter').val("");
 	$('#firstNameFilter').val("")
@@ -448,15 +472,17 @@ function  resetUserFilter(){
 	$('#entityFilter').val("");
 	showUsers();
 }
+
+/* Load (search) users and display */
 function showUsers() {
 	prms="order=userName";
-	
+
 	prms=prms + "&userNameFilter=" + encodeURIComponent(getFilterValue('userNameFilter'));
 	prms=prms + "&firstNameFilter=" + encodeURIComponent(getFilterValue('firstNameFilter'));
 	prms=prms + "&lastNameFilter=" + encodeURIComponent(getFilterValue('lastNameFilter'));
 	prms=prms + "&emailAddressFilter=" + encodeURIComponent(getFilterValue('emailAddressFilter'));
 	prms=prms + "&entityFilter=" + encodeURIComponent(getFilterValue('entityFilter'));
-	
+
 	$.ajax({
 		url : './users/',
 		dataType : 'json',
@@ -467,7 +493,7 @@ function showUsers() {
 	});
 }
 
-// Event
+/* Attach Event to UI main menu controls */
 $(function() {
 	$('#listUser').click(resetUserFilter);
 	$('#addUser').click(addUser);

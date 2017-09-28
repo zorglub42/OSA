@@ -28,16 +28,20 @@ var quotaModified;
 var userServiceQuotaToolTip="Available service on which user quotas are defined";
 
 
-
+/* Create a new quota in DB */
 function saveNewQuota(){
 	saveOrUpdateQuota('POST');
 }
 
-
+/* Update a quota in DB */
 function updateQuota(){
 	saveOrUpdateQuota('PUT');
 }
 
+/* Save (create) or update a quota in DB
+   once done, display
+	 method: PUT=update, POST=create
+*/
 function saveOrUpdateQuota(method){
 	currentQuotaUri=document.getElementById("quotaUri").value;
 	reqSec = "reqSec=" + encodeURIComponent(document.getElementById("reqSec").value);
@@ -45,18 +49,16 @@ function saveOrUpdateQuota(method){
 	reqMonth = "reqMonth=" + encodeURIComponent(document.getElementById("reqMonth").value);
 	postData=reqSec + "&" + reqDay + "&" + reqMonth;
 	$.ajax({
-		  url: currentQuotaUri + "?" + postData, 
+		  url: currentQuotaUri + "?" + postData,
 		  dataType: 'json',
 		  type:method,
 		  data: postData,
 		  success: startDisplayUserQuotasForCurrentUser,
 		  error: displayError
 		});
-	
-	
-
 }
 
+/* Enable or disable UI control according to node properties updates */
 function setQuotaModified(isModified){
 	quotaModified=isModified;
 	if (isModified){
@@ -66,37 +68,40 @@ function setQuotaModified(isModified){
 	}
 }
 
+/* Load and display quotas for current user */
 function startEditUserQuotasForCurrentQuota(){
 	startEditUserQuotas(currentQuotaUri);
 }
 
 
+/* Load and display quotas */
 function startEditUserQuotas(quotaURI){
 	currentQuotaUri=quotaURI;
 	$.getJSON(quotaURI, editUserQuotas).error(displayError);
 }
 
-
+/* Load and and populate autocomplet unset service quotas for a user */
 function startPopulateUnsetQuotas(userURI){
 	$.getJSON(userURI + "/quotas/unset/", populateUnsetQuotas).error(displayError);
 }
 
-
+/* Populate autocomplet quotas service list for service name field */
 function populateUnsetQuotas(quotaList){
 	if (quotaList.length>0){
 		$.each(quotaList, function (i, item) {
-			$('#quotaUri').append($('<option>', { 
+			$('#quotaUri').append($('<option>', {
 				value: item.uri,
-				text : item.serviceName 
+				text : item.serviceName
 			}));
 		});
 	}else{
 		$('#quotaUri').hide();
 		$("#saveEditQuotas").hide();
 	}
-	
+
 }
 
+/* Load add user quota template and display */
 function addUserQuotas(){
 	$.get( "resources/templates/userQuotaAdd.php", function( data ) {
 		$("#content").html(data.replaceAll("{currentUser.userName}", currentUser.userName)
@@ -106,7 +111,7 @@ function addUserQuotas(){
 	});
 }
 
-
+/* Load edit quota template and display */
 function editUserQuotas(quota){
 
 		$.get("resources/templates/userQuotaEdit.php", function (data){
@@ -121,4 +126,3 @@ function editUserQuotas(quota){
 			setQuotaModified(false);
 		});
 }
-	

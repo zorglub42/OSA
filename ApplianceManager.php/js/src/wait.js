@@ -23,10 +23,12 @@
 */
 
 var largePictureBackgroundOpacity=70;
+
+/* Define alpha coef (transparency) of an HTML Element */
 function setAlpha(element,alpha)
 {
 	op=alpha / 100;
-	
+
 	element.style.opacity = alpha / 100;
 	/** Test pour notre cher IE */
 	if (document.body.filters != undefined)
@@ -35,6 +37,7 @@ function setAlpha(element,alpha)
 	}
 }
 
+/* Determine if current browser is msie */
 function isIE()
 {
 	if (window.ActiveXObject){
@@ -43,6 +46,8 @@ function isIE()
 		return(false);
 	}
 }
+
+/* Return HTML code for "wait screen" */
 function setHtmlWait(){
 strHTML="";
 strHTML+="<center>";
@@ -51,7 +56,8 @@ strHTML+="</center>";
 return( strHTML);
 }
 
-
+/* Display wait screen
+	 assume that an HTML Element with id "waitScreen" exists in the current document */
 function showWait(){
 		if (isIE()){
 			MaxW=screen.width; //-50;
@@ -62,7 +68,7 @@ function showWait(){
 		}
 		waitHeight=50;
 		waitWidth=90;
-		
+
 		document.getElementById('waitScreen').innerHTML=setHtmlWait();
 		document.getElementById('waitScreen').style.top=((MaxH-waitHeight)/2) + "px";//"0px";
 		document.getElementById('waitPic').style.top= ((waitHeight-32)/2) + "px";
@@ -74,6 +80,8 @@ function showWait(){
 		setAlpha(document.getElementById('waitScreen'),bkgAlpha);
 		document.getElementById('waitScreen').style.visibility='visible';
 }
+
+/* Hide wait screen */
 function hideWait(){
 		document.getElementById('waitScreen').style.visibility='hidden';
 }

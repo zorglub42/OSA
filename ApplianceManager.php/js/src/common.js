@@ -20,9 +20,16 @@
  *--------------------------------------------------------
  * History     :
  * 1.0.0 - 2017-03-01 : Release of the file
-*/function addItem(list, item){
+*/
+
+// Add an item to a list
+function addItem(list, item){
 	addItem(list, item, false);
 }
+
+//Add an item to a list
+// if distinct is true add item only if it does not already exists in the list
+// if distinct is false add item even if it aleady exists in the list
 function addItem(list, item, distinct){
 	if (list.indexOf(item)<0 || !distinct){
 		list.push(item);

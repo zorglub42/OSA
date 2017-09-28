@@ -20,10 +20,11 @@
  *--------------------------------------------------------
  * History     :
  * 1.0.0 - 2017-03-01 : Release of the file
-*/			function loadDoc(uri){
-				$.get( "resources/templates/apidoc.php", function( data ) {
-					$("#content").html(data);
-					$("#apidocframe").attr("src", uri);
-					console.log($("#apidocframe").attr("src"));
-				});
-			}
+*/
+// Load doc template and display */
+function loadDoc(uri){
+	$.get( "resources/templates/apidoc.php", function( data ) {
+		$("#content").html(data);
+		$("#apidocframe").attr("src", uri);
+	});
+}

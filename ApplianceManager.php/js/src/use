@@ -1,5 +1,29 @@
 #!/bin/bash
+##--------------------------------------------------------
+ # Module Name : ApplianceManager
+ # Version : 1.0.0
+ #
+ # Software Name : OpenServicesAccess
+ # Version : 1.0
+ #
+ # Copyright (c) 2011 – 2017 Orange
+ # This software is distributed under the Apache 2 license
+ # <http://www.apache.org/licenses/LICENSE-2.0.html>
+ #
+ #--------------------------------------------------------
+ # File Name   : ApplianceManager/ApplianceManager.php/js/use
+ #
+ # Created     : 2017-09
+ # Authors     : Benoit HERARD <benoit.herard(at)orange.com>
+ #
+ # Description :
+ #      Use minimised ou source version of js scripts
+ #--------------------------------------------------------
+ # History     :
+ # 1.0.0 - 2017-09-26 : Release of the file
+##
 
+#Generating endpoints entry for HTTP Host
 if [ "$1" != "src" -a "$1" != "min" ] ; then
 	echo "usage:"
 	echo "       use src|min"

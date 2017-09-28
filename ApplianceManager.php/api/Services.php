@@ -62,17 +62,23 @@ class Services{
 	 *
 	 * @param string sertiveName Service identifier
 	 * @param array mapping {@type HeaderMappingCreation} Headers to map
+	 * @param int noApply [Optional] {@choice 0,1} Don't apply apache configuration? (O: no 1: yes, default 0)
 	 *
 	 * @url POST :serviceName/headers-mapping/
 	 *
 	 * @return array {@type HeaderMapping} Created headers
 	 */
-	 function setHeadersMappings($serviceName, $mapping){
+	 function setHeadersMappings($serviceName, $mapping, $noApply=0){
 		try{
 			$this->deleteHeadersMapping($serviceName);
 			foreach ($mapping as $header){
 				if (!empty($header->userProperty)  && !empty($header->headerName)){
 					$this->createHeadersMapping($serviceName, $header->userProperty, $header->headerName);
+				}
+			}
+			if ($noApply==0){
+				if (!applyApacheConfiguration()){
+					throw new RestException("Invalide apache configuration", 500);
 				}
 			}
 			return $this->getHeadersMapping($serviceName);
@@ -304,15 +310,18 @@ class Services{
 	 * @param int reqDay [Optional] Maximun number of request alloed per second (Required if isGlobalQuotasEnabled=1)
 	 * @param int reqMonth [Optional] Maximun number of request alloed per second (Required if isGlobalQuotasEnabled=1)
 	 * @param int isUserQuotasEnabled [Optional] {@choice 0,1} Are quotas enabled at user level? (O: no 1: yes, default 0)
+	 * @param int noApply [Optional] {@choice 0,1} Don't apply apache configuration? (O: no 1: yes, default 0)
 	 *
 	 * @return Service Updated service
 	 */
 	 function update($serviceName, $frontEndEndPoint=null, $backEndEndPoint=null,
 							$isPublished=null,  $additionalConfiguration=null,
 							$isHitLoggingEnabled=null, $onAllNodes=null,
-							$isUserAuthenticationEnabled=null, $groupName=null, $isIdentityForwardingEnabled=null,  $isAnonymousAllowed=null,
+							$isUserAuthenticationEnabled=null, $groupName=null,
+							$isIdentityForwardingEnabled=null, $isAnonymousAllowed=null,
 							$backEndUsername=null, $backEndPassword=null, $loginFormUri=null,
-							$isGlobalQuotasEnabled=null, $reqSec=null, $reqDay=null, $reqMonth=null, $isUserQuotasEnabled=null){
+							$isGlobalQuotasEnabled=null, $reqSec=null, $reqDay=null,
+							$reqMonth=null, $isUserQuotasEnabled=null, $noApply=0){
 		try{
 			#Array param is legacy from previous (initial) version of Restler
 			$params=array(	"isPublished" => $isPublished,
@@ -333,6 +342,7 @@ class Services{
 							"isUserQuotasEnabled" => $isUserQuotasEnabled,
 							"loginFormUri" => $loginFormUri,
 							"groupName" =>$groupName,
+							"noApply" => $noApply
 			);
 			return updateService($serviceName, $params);
 		}catch (Exception $e){
@@ -522,7 +532,7 @@ class Services{
 	  *
 	  * @param string servieName Service identifier
 	  * @param array {@type string} nodes Nodes identifiers list
-	  * @param int noApply {@choice 0,1} Apply configuration immediatly? (0: no, 1: yes, default 1)
+	  * @param int noApply {@choice 0,1} Don't apply configuration immediatly? (0: no, 1: yes, default 0)
 	  *
 	  * @return array {@type ServiceNode} Node on which servie is available
 	  */

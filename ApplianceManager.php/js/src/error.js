@@ -22,35 +22,40 @@
  * 1.0.0 - 2012-10-01 : Release of the file
 */
 
+/* Basic display of jqXHR response text */
+function displayError(jqXHR, textStatus, errorThrown){
+	eval("err =" + jqXHR.responseText);
+	alert("An error as occursed: " + err.label + " (HTTP_STATUS=" + jqXHR.status + ")");
+	hideWait();
+}
 
-			function displayError(jqXHR, textStatus, errorThrown){
-				eval("err =" + jqXHR.responseText);
-				alert("An error as occursed: " + err.label + " (HTTP_STATUS=" + jqXHR.status + ")");
-				hideWait();
-			}
+/* Error display from jqXHR by try to parse JSON error structure in response text
+	(used as AJAX JQuery error callback) */
+function displayErrorV2(jqXHR, textStatus, errorThrown){
+	errorText=jqXHR.responseText;
+	//eval("err =" + errorText);
+	hideWait();
+	var err;
+	try{
+		err=JSON.parse(errorText);
+	}catch (e){
+		alert("An error as occursed: " + errorText + " (HTTP_STATUS=" + jqXHR.status + ")");
+		return;
+	}
 
-			function displayErrorV2(jqXHR){
-				displayErrorV2(jqXHR, null, null);
-			}
-			function displayErrorV2(jqXHR, textStatus, errorThrown){
-				errorText=jqXHR.responseText;
-				//eval("err =" + errorText);
-				hideWait();
-				var err;
-				try{
-					err=JSON.parse(errorText);
-				}catch (e){
-					alert("An error as occursed: " + errorText + " (HTTP_STATUS=" + jqXHR.status + ")");
-					return;
-				}
+	try{
+		alert("An error as occursed: " + err.error.message + " (HTTP_STATUS=" + jqXHR.status + ")");
+	}catch (e){
+		try{
+			alert("An error as occursed: " + err.label + " (HTTP_STATUS=" + jqXHR.status + ")");
+		}catch (e2){
+			alert("An error as occursed: " + errorText + " (HTTP_STATUS=" + jqXHR.status + ")");
+		}
+	}
+}
 
-				try{
-					alert("An error as occursed: " + err.error.message + " (HTTP_STATUS=" + jqXHR.status + ")");
-				}catch (e){
-					try{
-						alert("An error as occursed: " + err.label + " (HTTP_STATUS=" + jqXHR.status + ")");
-					}catch (e2){
-						alert("An error as occursed: " + errorText + " (HTTP_STATUS=" + jqXHR.status + ")");
-					}
-				}
-			}
+/* Over loading of displayErrorV2
+	 used as rejact callback for Promise
+function displayErrorV2(jqXHR){
+	displayErrorV2(jqXHR, null, null);
+}*/

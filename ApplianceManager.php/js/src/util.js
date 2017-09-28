@@ -21,6 +21,7 @@
  * History     :
  * 1.0.0 - 2012-10-01 : Release of the file
 */
+/* Add a "browser" prperty to JQuery to know if current broswer is msie */
 jQuery.browser = {};
 (function () {
     jQuery.browser.msie = false;
@@ -30,13 +31,20 @@ jQuery.browser = {};
         jQuery.browser.version = RegExp.$1;
     }
 })();
+
+/* Add a replaceAll method to String object to replace all occurences of
+   a partern in a sting */
 String.prototype.replaceAll = function (find, replace) {
     var str = this;
     return str.replace(new RegExp(find.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g'), replace);
 };
+
+/* Add a remove method to DOM Element to remove it from DOM Tree */
 Element.prototype.remove = function() {
     this.parentElement.removeChild(this);
 }
+
+/* Add a remove methode to DOM Node List to remove it from DOM tree */
 NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
     for(var i = this.length - 1; i >= 0; i--) {
         if(this[i] && this[i].parentElement) {
@@ -45,7 +53,8 @@ NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
     }
 }
 
-
+/* Add a startWith method to String object to know if a string starts
+  with a particular string */
 if (typeof String.prototype.startsWith != 'function') {
   // see below for better implementation!
   String.prototype.startsWith = function (str){
@@ -53,24 +62,13 @@ if (typeof String.prototype.startsWith != 'function') {
   };
 }
 
-/*Enable/Disable an action button*/
+/* Enable/Disable HTML element */
 function setActionButtonEnabled(itemId, enabled){
-	/*it=document.getElementById(itemId);
-	if (it != null){
-		if (enabled){
-			$('#' + itemId).removeClass('button_orange_disabled');
-			$('#' + itemId).addClass('button_orange');
-			it.disabled=false;
-		}else{
-			$('#' + itemId).removeClass('button_orange');
-			$('#' + itemId).addClass('button_orange_disabled');
-			it.disabled=true;
-		}
-	}*/
 	$("#" + itemId).prop('disabled', !enabled);
 }
 
-
+/* Return a filter field value
+   if filed exists as HTML element, return its value, else return value previously stored */
 function getFilterValue(fieldName){
 	rc='';
 	if ($('#' + fieldName ).val()!= undefined || window[fieldName + 'PrevVal']!='' ){

@@ -36,6 +36,7 @@ var nextFetch="";
 var previousFetch="";
 var fetchingMore=0;
 
+/* Reset search filter and apply */
 function resetSearchLogs(){
 	logSearch_userName="";
 	logSearch_serviceName="";
@@ -44,10 +45,11 @@ function resetSearchLogs(){
 	logSearch_from="";
 	logSearch_until="";
 	logSearch_frontEndEndPoint="";
-	
+
 	searchLogs();
 }
 
+/* Add rows in display table from template row */
 function generateLogsTableRows(logsList){
 
 		table=document.getElementById("data");
@@ -60,7 +62,7 @@ function generateLogsTableRows(logsList){
 			D.setISO8601(logsList[i].timeStamp);
 			timeStamp= D.format("mm/dd/yyyy HH:MM:ss");
 
-			
+
 			newRow=logRowPattern.cloneNode(true);
 			newRow.removeAttribute('id');
 			newRow.removeAttribute('style');
@@ -75,10 +77,12 @@ function generateLogsTableRows(logsList){
 		}
 }
 
+
+/* load Log list template and display */
 function displayLogsList(logsList){
-	
+
 	$.get("resources/templates/logList.php", function (data){
-		
+
 		$("#content").html(data.replaceAll("{logsList.length}",logsList.length));
 		logRowPattern=null;
 		if (logsList.logs.length>0){
@@ -111,12 +115,13 @@ function displayLogsList(logsList){
 					});
 
 				}
-					
+
 		});
-		touchScroll("data");
 	});
 }
 
+
+/* Add fetched log list to existing table */
 function addFetch(logsList){
 		hideWait();
 		fetchingMore=0;
@@ -126,12 +131,17 @@ function addFetch(logsList){
 		generateLogsTableRows(logsList.logs);
 }
 
+/* Load services (with logs) and populate autocomplete */
 function startPopulateAutoCompleteServices(){
 	$.getJSON("services/?withLog=1&order=serviceName", populatePopulateAutoCompleteServices).error(displayError);
 }
+
+/* Load users (with logs) and populate autocomplete */
 function startPopulateAutoCompleteUsers(){
 	$.getJSON("users/?withLog=1&order=userName", populatePopulateAutoCompleteUsers).error(displayError);
 }
+
+/* Populate autocomplete list for service name (search form) */
 function populatePopulateAutoCompleteServices(servicesList){
 	var serviceListAutoComplete=new Array();
 	var autoCompIdx=0;
@@ -146,6 +156,8 @@ function populatePopulateAutoCompleteServices(servicesList){
 					minLength: 0
 	});
 }
+
+/* Populate autocomplet liste for username (searchr form) */
 function populatePopulateAutoCompleteUsers(usersList){
 	var userListAutoComplete=new Array();
 	userListAutoComplete[0]="None"
@@ -159,7 +171,7 @@ function populatePopulateAutoCompleteUsers(usersList){
 	});
 }
 
-
+/* Appli seach filter (search) */
 function startSearchLogs(){
 	logSearch_userName=document.getElementById("userName").value;
 	logSearch_serviceName=document.getElementById("serviceName").value;
@@ -172,12 +184,13 @@ function startSearchLogs(){
 	executeSearchLog();
 }
 
+/* Load logs and display */
 function executeSearchLog(){
 	queryString="";
 	if (logSearch_serviceName != ""){
 		queryString+="serviceName=" + encodeURIComponent(logSearch_serviceName) + "&";
 	}
-	
+
 	if (logSearch_userName != ""){
 		if (queryString != ""){
 			queryString +="&";
@@ -242,9 +255,10 @@ function executeSearchLog(){
 	}
 }
 
+/* Load search form template and display */
 function searchLogs(){
 	$.get("resources/templates/logSearch.php", function(data){
-	
+
 		$("#content").html(data.replaceAll("{logSearch_serviceName}", logSearch_serviceName)
 							   .replaceAll("{logSearch_userName}", logSearch_userName)
 							   .replaceAll("{logSearch_frontEndEndPoint}", logSearch_frontEndEndPoint)
@@ -262,8 +276,8 @@ function searchLogs(){
 
 }
 
-	
-//Event 			
+
+/* Attach Event to UI main menu controls */
 $(
 	function (){
 		$('#searchLogs').click(searchLogs);

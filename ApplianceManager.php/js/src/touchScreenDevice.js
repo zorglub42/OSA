@@ -22,6 +22,8 @@
  * History     :
  * 1.0.0 - 2012-10-01 : Release of the file
  */
+
+/* Return true is connected client is a Touch device (Tablet, Smarphone...) */
 function isTouchDevice(){
 	try{
 		document.createEvent("TouchEvent");
@@ -29,20 +31,4 @@ function isTouchDevice(){
 	}catch(e){
 		return false;
 	}
-}
-function touchScroll(id){
-/*	if(isTouchDevice()){ //if touch events exist...
-		var el=document.getElementById(id);
-		var scrollStartPos=0;
-
-		document.getElementById(id).addEventListener("touchstart", function(event) {
-			scrollStartPos=this.scrollTop+event.touches[0].pageY;
-			event.preventDefault();
-		},false);
-
-		document.getElementById(id).addEventListener("touchmove", function(event) {
-			this.scrollTop=scrollStartPos-event.touches[0].pageY;
-			event.preventDefault();
-		},false);
-	}*/
 }

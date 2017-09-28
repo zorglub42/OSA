@@ -42,7 +42,7 @@ function getServiceHeadersMapping($serviceName , $userProperty=NULL){
 	GLOBAL $BDPwd;
 	GLOBAL $userProperties;
 	GLOBAL $defaultHeadersName;
-	
+
 	$serviceName=normalizeName($serviceName);
 
 	$error = new OSAError();
@@ -78,7 +78,7 @@ function getServiceHeadersMapping($serviceName , $userProperty=NULL){
 
 						$mapping = new HeaderMapping($row);
 						array_push($rc,$mapping->toArray());
-						
+
 					}
 				}else{
 					$error->setFunctionalCode(4);
@@ -94,7 +94,7 @@ function getServiceHeadersMapping($serviceName , $userProperty=NULL){
 		}
 		$error->setFunctionalCode(3);
 		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());;
-		
+
 	}
 	if ($error->getHttpStatus() == 200){
 		return $rc;
@@ -145,7 +145,7 @@ function createServiceHeadersMapping($serviceName , $userProperty, $headerName){
 				$error->setFunctionalLabel($e->getMessage());
 			}
 			throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());;
-			
+
 		}
 		$rc =  getServiceHeadersMapping($serviceName, $userProperty);
 		return $rc;
@@ -179,7 +179,7 @@ function deleteServiceHeadersMapping($serviceName){
 		}
 		$error->setFunctionalCode(3);
 		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());;
-		
+
 	}
 	return $rc;
 }
@@ -202,7 +202,7 @@ function getService($serviceName = NULL, $request_data=NULL){
 			$strSQL = "SELECT * FROM services WHERE serviceName=?";
 			$stmt=$db->prepare($strSQL);
 			$stmt->execute(array(cut($serviceName, SERVICENAME_LENGTH)));
-			
+
 			if ($row=$stmt->fetch(PDO::FETCH_ASSOC)){
 				$service = new Service($row);
 				$rc=$service->toArray();
@@ -274,7 +274,7 @@ function getService($serviceName = NULL, $request_data=NULL){
 				$strSQLComp = addSQLFilter("additionalConfiguration like ?", $strSQLComp);
 				array_push($bindPrms, "%" . $request_data["additionalConfigurationFilter"] . "%");
 			}
-			
+
 			$strSQL="SELECT * FROM services s" . $strSQLComp;
 			if (isset($request_data["order"]) && $request_data["order"] != ""){
 				$strSQL=$strSQL . " ORDER BY " . EscapeOrder($request_data["order"]);
@@ -294,7 +294,7 @@ function getService($serviceName = NULL, $request_data=NULL){
 		}
 		$error->setFunctionalCode(3);
 		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());;
-		
+
 	}
 	return $rc;
 
@@ -371,9 +371,9 @@ function createService($serviceName = NULL, $request_data=NULL){
 			$error->setFunctionalLabel($error->getFunctionalLabel() . " allowed value for isUserAuthenticationEnabled is 0 or 1\n");
 		}
 	}
-		
 
-		
+
+
 
 
 	if ($serviceName == NULL || $serviceName=="" ){
@@ -432,7 +432,7 @@ function createService($serviceName = NULL, $request_data=NULL){
 		}else{
 			$mySQLReqMonth=$request_data["reqMonth"];
 		}
-		
+
 	}
 
 
@@ -450,7 +450,7 @@ function createService($serviceName = NULL, $request_data=NULL){
 			$error->setFunctionalCode(1);
 			$error->setFunctionalLabel($error->getFunctionalLabel() . " allowed values for isIdentityForwardingEnabled is 0 or 1\n");
 		}
-			
+
 	}else{
 		$mySQLIdentityForwarding=0;
 	}
@@ -538,9 +538,9 @@ function createService($serviceName = NULL, $request_data=NULL){
 	}else{
 		try {
 
-		
+
 			$db=openDB($BDName, $BDUser, $BDPwd );
-			
+
 			$strSQL = "";
 			$strSQL = $strSQL . "INSERT INTO services (";
 			$strSQL = $strSQL . "	serviceName, ";
@@ -646,10 +646,10 @@ function deleteService($serviceName){
 
 	if ($serviceName != NULL && $serviceName != ""){
 		$db=openDB($BDName, $BDUser, $BDPwd);
-		
+
 		$stmt=$db->prepare("SELECT * FROM services WHERE serviceName=?");
 		$stmt->execute(array(cut($serviceName, SERVICENAME_LENGTH)));
-		
+
 		if (!$row=$stmt->fetch(PDO::FETCH_ASSOC)){
 			$error->setHttpStatus(404);
 			$error->setHttpLabel("Unknown service");
@@ -676,14 +676,14 @@ function deleteService($serviceName){
 					$error->setFunctionalLabel("The service " . $serviceName . " is used by some users. Please remove subscribtions to it first");
 				}
 				throw new RestException($error->getHttpStatus(), $error->GetFunctionalLabel());
-				
+
 			}
 			$strSQL="DELETE FROM counters WHERE  counterName like ?";
 			$stmt=$db->prepare($strSQL);
-			
+
 			$stmt->execute(array("R=" . cut($serviceName, SERVICENAME_LENGTH) . "%"));
 			if (applyApacheConfiguration()){
-				
+
 				$rc = $service->toArray();
 			}else{
 				$error->setHttpStatus(500);
@@ -691,7 +691,7 @@ function deleteService($serviceName){
 				$error->setFunctionalLabel("Service successfully saved but unable to apply configuration on runtime appliance");
 				throw new RestException($error->getHttpStatus(), $error->GetFunctionalLabel());
 			}
-			
+
 		}
 	}else{
 		$error->setHttpLabel("Bad request for method \"" . $_SERVER["REQUEST_METHOD"] . "\" for resource \"service\"");
@@ -774,9 +774,9 @@ function updateService($serviceName = NULL, $request_data=NULL){
 			$error->setFunctionalLabel($error->getFunctionalLabel() . " allowed value for isUserAuthenticationEnabled is 0 or 1\n");
 		}
 	}
-		
 
-		
+
+
 
 
 	if (isset($request_data["isPublished"])){
@@ -843,13 +843,11 @@ function updateService($serviceName = NULL, $request_data=NULL){
 			$error->setFunctionalCode(1);
 			$error->setFunctionalLabel($error->getFunctionalLabel() . "reqMonth should be an integer >=1\n");
 		}
-		
+
 	}
 
-
-
-	if (isset($request_data["isIdentityForwardingEnabled"]) && $request_data["isIdentityForwardingEnabled"]!="" ){
-		if ($request_data["isIdentityForwardingEnabled"]=="0" || $request_data["isIdentityForwardingEnabled"]=="1"){
+	if (isset($request_data["isIdentityForwardingEnabled"])){
+		if ((int)$request_data["isIdentityForwardingEnabled"]==0 || (int)$request_data["isIdentityForwardingEnabled"]==1){
 			$service["isIdentityForwardingEnabled"]=$request_data["isIdentityForwardingEnabled"];
 			if ($service["isUserAuthenticationEnabled"]==0 && $request_data["isIdentityForwardingEnabled"]==1){
 				$error->setHttpStatus(400);
@@ -861,7 +859,7 @@ function updateService($serviceName = NULL, $request_data=NULL){
 			$error->setFunctionalCode(1);
 			$error->setFunctionalLabel($error->getFunctionalLabel() . " allowed values for isIdentityForwardingEnabled is 0 or 1\n");
 		}
-			
+
 	}
 	if (isset($request_data["backEndUsername"])){
 			$service["backEndUsername"]=$request_data["backEndUsername"];
@@ -919,7 +917,7 @@ function updateService($serviceName = NULL, $request_data=NULL){
 		$service["isUserQuotasEnabled"]=0;
 		$service["isIdentityForwardingEnabled"]=0;
 	}
-	
+
 	if ($service["isAnonymousAllowed"]==1){
 		$service["isIdentityForwardingEnabled"]=1;
 	}
@@ -953,6 +951,7 @@ function updateService($serviceName = NULL, $request_data=NULL){
 		$strSQL = $strSQL . "	 loginFormUri=?" ;
 		$strSQL = $strSQL . " WHERE serviceName=?";
 
+
 		$bindPrms=array($service["reqSec"],
 						$service["reqDay"],
 						$service["reqMonth"],
@@ -973,26 +972,25 @@ function updateService($serviceName = NULL, $request_data=NULL){
 						$service["loginFormUri"],
 						$mySQLServiceName);
 
-
 		try{
 			$db=openDB($BDName, $BDUser, $BDPwd);
 			$stmt=$db->prepare($strSQL);
 			$stmt->execute($bindPrms);
 			if ($service["onAllNodes"]==1){
-				//Remove potential nodes association 
+				//Remove potential nodes association
 				//on future nodes list application, an empty existing list means that service was previously deployed on all node
 				$strSQL="DELETE FROM servicesnodes WHERE serviceName=:serviceName";
 				$stmt=$db->prepare($strSQL);
 				$stmt->execute(array("serviceName" => $mySQLServiceName));
 			}
-				
-			
+
+
 		}catch (Exception $e){
 			if (strpos($e->getMessage(),"Duplicate entry")){
 				$error->setHttpStatus(409);
 				$error->setFunctionalCode(5);
 				$error->setFunctionalLabel("Service " . $serviceName . " already exists");
-				
+
 			}else if (strpos($e->getMessage(),"a foreign key constraint fails")){
 				$error->setHttpStatus(404);
 				$error->setFunctionalLabel("The group " . $request_data["groupName"] . " does not exists");
@@ -1000,19 +998,19 @@ function updateService($serviceName = NULL, $request_data=NULL){
 				$error->setHttpStatus(500);
 				$error->setFunctionalCode(3);
 				$error->setFunctionalLabel($e->getMessage());
-				
-				
+
+
 			}
-			
+
 		}
-		
+
 		if ($error->getHttpStatus() != 200){
 			throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
 		}
-		if (isset($request_data["noApply"])){
+		if ($request_data["noApply"] == 1){
 			return getService($serviceName);
 		}else if (applyApacheConfiguration()){
-			return getService($serviceName);
+				return getService($serviceName);
 		}else{
 			$serviceBkg["noApply"]=1;
 			updateService($serviceName, $serviceBkg);
@@ -1076,8 +1074,8 @@ function getUserQuotas($serviceName = NULL, $userName=NULL, $request_data=NULL){
 				$quota = new Quota($row);
 				array_push($rc, $quota->toArray());
 			}
-				
-			
+
+
 		}
 		return $rc;
 }
@@ -1105,8 +1103,8 @@ function getUnsetQuotas($serviceName){
 	$strSQL.="AND	s.groupName=ug.groupName ";
 	$strSQL.="AND	ug.userName=u.userName ";
 	$strSQL.="AND	s.serviceName=? ";
-	$strSQL.="AND	u.userName not in (SELECT uq.userName FROM usersquotas uq WHERE uq.serviceName=?)";  
-	
+	$strSQL.="AND	u.userName not in (SELECT uq.userName FROM usersquotas uq WHERE uq.serviceName=?)";
+
 	$bindPrms=array(cut($serviceName, SERVICENAME_LENGTH),cut($serviceName, SERVICENAME_LENGTH));
 	$stmt=$db->prepare($strSQL);
 	$stmt->execute($bindPrms);
@@ -1172,7 +1170,7 @@ function setNodesListForService($serviceName, $nodesList, $noApply){
 
 
 	$db=openDB($BDName, $BDUser, $BDPwd);
-	
+
 	//Get nodes previously using this service
 	$nodes=nodesListForService($serviceName);
 	$fromAllNodes=True;
@@ -1204,5 +1202,5 @@ function setNodesListForService($serviceName, $nodesList, $noApply){
 		$error->setFunctionalLabel("Service successfully saved but unable to apply configuration on runtime appliance");
 		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
 	}
-	
+
 }

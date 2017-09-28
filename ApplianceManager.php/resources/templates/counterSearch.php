@@ -32,7 +32,7 @@ require_once "../../include/Localization.php";
 				<div class="row">
 					<div class="col-md-2 col-md-offset-5 col-xs-2 col-xs-offset-5">
 						<button type="button" class="btn btn-info" id="search" title="<?php echo Localization::getString("button.search.tooltip")?>" onclick="startSearchCounters()">
-						  <span class="glyphicon glyphicon-search" aria-hidden="true" ></span> <?php echo Localization::getString("button.search")?></span>
+						  <span class="glyphicon glyphicon-search" aria-hidden="true"></span> <?php echo Localization::getString("button.search")?></span>
 						</button>
 					</div>
 				</div>

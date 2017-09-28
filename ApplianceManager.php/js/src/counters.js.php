@@ -36,6 +36,7 @@ var currentCounterList;
 
 var backList;
 
+/* Enable or disable UI control according to counter properties updates */
 function setCounterModified(isModified){
 	counterModified=isModified;
 	if (isModified){
@@ -45,40 +46,39 @@ function setCounterModified(isModified){
 	}
 }
 
-
-
+/* Update a counter in DB */
 function updateCounter(counterURI) {
 	saveOrUpdateCounter('PUT');
 }
 
+/* Save (create) or update a counter
+	 method: PUT=update, POST=create */
 function saveOrUpdateCounter(method){
-	//currentCounterUri="counters/" + encodeURIComponent(currentCounterURI);
 	value = "value=" + encodeURIComponent(document.getElementById("counterValue").value);
 	$.ajax({
-		  url: currentCounterUri,  
+		  url: currentCounterUri,
 		  dataType: 'json',
 		  type:method,
 		  data: value,
 		  success: editCurrentCounter,
 		  error: displayErrorV2
 		});
-	
-	
-
 }
 
-
+/* start counter edit */
 function startEditCounter(counterNum){
-	
 	currentCounterUri=currentCounterList[counterNum].uri;
 	editCurrentCounter();
 }
+
+/* Load counter properties and display */
 function editCurrentCounter(){
 	$.getJSON(currentCounterUri, editCounter).error(displayErrorV2);
 }
 
+/* Load counter template and display */
 function editCounter(counter){
-	
+
 	$.get("resources/templates/counterEdit.php", function(data){
 		$("#content").html(data.replaceAll("{counter.resourceName}", counter.resourceName)
 							   .replaceAll("{counter.userName}", counter.userName)
@@ -93,22 +93,22 @@ function editCounter(counter){
 	});
 }
 
-			
-			
+
+/* Load counters list template and display */
 function displayCounterList(counterList){
-				
-				
+
+
 	$.get( "resources/templates/counterList.php", function( data ) {
-						
+
 		$( "#content" ).html( data.replaceAll("{counterList.length}", counterList.length )
-							);	
+							);
 		table=document.getElementById("data");
 		rowPattern=document.getElementById("rowTpl");
 		table.removeChild(rowPattern);
 
 		for (i=0;i<counterList.length;i++){
 
-			
+
 			newRow=rowPattern.cloneNode(true);
 			newRow.removeAttribute('id');
 			newRow.removeAttribute('style');
@@ -133,33 +133,35 @@ function displayCounterList(counterList){
 			$('#countersList').hide();
 		}
 	});
-				
+
 
 }
 
+/* Reset counter filter form and apply */
 function resetExceededCountersFilter(){
 	$('#serviceNameFilter').val("");
 	$('#userNameFilter').val("");
 	searchExcedeedCounters();
-	
+
 }
 
+/* Load excedeed counters templates and display */
 function displayExcedeedCounterList(counterList){
-	
-	
+
+
 	$.get( "resources/templates/counterExceededList.php", function( data ) {
-						
+
 		$( "#content" ).html( data.replaceAll("{counterList.length}", counterList.length )
 								  .replaceAll("{serviceNameFilterPrevVal}", serviceNameFilterPrevVal )
 								  .replaceAll("{userNameFilterPrevVal}", userNameFilterPrevVal )
-							);	
+							);
 		table=document.getElementById("data");
 		rowPattern=document.getElementById("rowTpl");
 		table.removeChild(rowPattern);
 
 		for (i=0;i<counterList.length;i++){
 
-			
+
 			newRow=rowPattern.cloneNode(true);
 			newRow.removeAttribute('id');
 			newRow.removeAttribute('style');
@@ -188,9 +190,8 @@ function displayExcedeedCounterList(counterList){
 }
 
 
+/* Delete a counter */
 function deleteCounter(counterNum){
-	
-	
 	if (confirm("<?php echo Localization::getJSString("counter.delete.confirm")?>")){
 		$.ajax({
 			  url: currentCounterList[counterNum].uri,
@@ -201,33 +202,30 @@ function deleteCounter(counterNum){
 			  error: displayErrorV2
 			});
 	}
-	
+
 }
 
-
+/* Load counters and display */
 function showCounters(){
-	/*$.ajax({
-		  url: './counter/',
-		  dataType: 'json',
-		  //data: data,
-		  success: displayCounterList,
-		  error: displayErrorV2
-		});*/
-
 	$.getJSON("./counters/?order=counterName", displayCounterList).error(displayErrorV2);
 }
 
+/* Load services with counter list and populate autocomplete */
 function startPopulateServices(){
 	$.getJSON("services/?withQuotas=1&order=serviceName", populateServices).error(displayErrorV2);
 }
+
+/* Load users list and populate autocomplete */
 function startPopulateUsers(){
 	$.getJSON("users/?order=userName", populateUsers).error(displayErrorV2);
 }
+
+/* Populate autocomplete list for service field */
 function populateServices(servicesList){
 	if (servicesList.length>0){
 		var serviceListAutoComplete=new Array();
 		var autoCompIdx=0;
-		
+
 		for (i=0;i<servicesList.length;i++){
 			if (servicesList[i].isHitLoggingEnabled==1){
 				serviceListAutoComplete[autoCompIdx++]=servicesList[i].serviceName;
@@ -239,14 +237,16 @@ function populateServices(servicesList){
 						minLength: 0
 		});
 	}
-	
+
 }
+
+/* Populate autocomplete list for user field */
 function populateUsers(usersList){
-	
+
 	if (usersList.length>0){
 		var usersListAutoComplete=new Array();
 		var autoCompIdx=0;
-		
+
 		usersListAutoComplete[autoCompIdx++]="*** Any ***"
 		for (i=0;i<usersList.length;i++){
 			usersListAutoComplete[autoCompIdx++]=usersList[i].userName;
@@ -257,10 +257,10 @@ function populateUsers(usersList){
 						minLength: 0
 		});
 	}
-	
+
 }
 
-
+/* Initialize search parameters and start seach */
 function startSearchCounters(){
 	counterSearch_userName=document.getElementById("userName").value;
 	counterSearch_resourceName=document.getElementById("resourceName").value;
@@ -269,12 +269,7 @@ function startSearchCounters(){
 	executeSearch();
 }
 
-function handelExcedeedCountersFilterFormKeypress(e) {
-	if (e.keyCode == 13) {
-		searchExcedeedCounters();
-		return false;
-	}
-}					
+/* Load excedeed counters and display */
 function searchExcedeedCounters(){
 	prms="";
 	prms=prms + "userNameFilter=" + encodeURIComponent(getFilterValue('userNameFilter'));
@@ -289,18 +284,19 @@ function searchExcedeedCounters(){
 		});
 }
 
+/* Search and load counters and display */
 function executeSearch(){
 	queryString="";
 	if (counterSearch_resourceName != "All"){
 		queryString+="resourceName=" + encodeURIComponent(counterSearch_resourceName) + "&";
 	}
-	
+
 	if (counterSearch_userName == "None"){
 		queryString+="userName=" ;
 	}else if (counterSearch_userName != "All"){
 		queryString+="userName=" + encodeURIComponent(counterSearch_userName) ;
 	}
-	
+
 	if (counterSearch_timeUnit != "All"){
 		if (queryString != ""){
 			queryString+="&";
@@ -314,26 +310,21 @@ function executeSearch(){
 		  success: displayCounterList,
 		  error: displayErrorV2
 		});
-	
+
 }
 
+/* Load search counters templates and display */
 function searchCounters(){
-	
 	$.get("resources/templates/counterSearch.php", function(data){
 		$("#content").html(data);
-
-
-
-
-	
 		startPopulateServices();
 		startPopulateUsers();
 	});
-	
-	
+
+
 }
 
-//Event 			
+/* Attach Event to UI main menu controls */
 $(
 	function (){
 		$('#searchCounter').click(searchCounters);
