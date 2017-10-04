@@ -346,7 +346,7 @@ do
 		else
 			if [ "$isHTTPS" == "1" ] ; then
 				curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$nodeName/cert>/etc/ssl/certs/osa-node-$nodeName.pem
-				curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$nodeName/chain>>/etc/ssl/certs/osa-node-$nodeName.pem
+				curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$nodeName/chain>/etc/ssl/certs/osa-node-$nodeName-chain.pem
 				curl -s --user "$APPLIANCE_LOCAL_USER:$APPLIANCE_LOCAL_PWD" $APPLIANCE_LOCAL_SERVER/ApplianceManager/nodes/$nodeName/privateKey>/etc/ssl/private/osa-node-$nodeName.key
 				if [ -s  /etc/ssl/certs/osa-node-$nodeName.pem -a -s /etc/ssl/private/osa-node-$nodeName.key  ] ; then
 					chmod 600 /etc/ssl/certs/osa-node-$nodeName.pem

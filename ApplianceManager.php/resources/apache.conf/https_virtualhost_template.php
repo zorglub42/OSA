@@ -51,7 +51,7 @@
 	#SSLCaCertificateFile /etc/ssl/certs/osa-node-<?php echo $NODE_NAME?>-ca.pem
 <?php }?>
 <?php if ($HTTPS_HAVE_CHAIN_CERT){?>
-	#SSLCertificateChainFile /etc/ssl/certs/osa-node-<?php echo $NODE_NAME?>-chain.pem
+	SSLCertificateChainFile /etc/ssl/certs/osa-node-<?php echo $NODE_NAME?>-chain.pem
 <?php }?>
 
 	SSLCertificateFile /etc/ssl/certs/osa-node-<?php echo $NODE_NAME?>.pem
