@@ -304,7 +304,7 @@ function updateUserPassword($userName, $newPassword){
 	$error = new OSAError();
 
 
-	$userName=normalizeName($userName);
+	$userName=normalizeName($userName, ".");
 	$mySQLuserName=  cut($userName, USERNAME_LENGTH) ;
 	$mySQLPassword= encrypt($newPassword);
 	$mySQLmd5Password= md5($newPassword) ;
@@ -341,7 +341,7 @@ function updateUser($userName = NULL, $request_data = NULL){
 	$error = new OSAError();
 
 
-	$userName=normalizeName($userName);
+	$userName=normalizeName($userName, ".");
 	$bindPrms=array();
 
 	
@@ -458,7 +458,7 @@ function getDAOUserGroup($userName, $groupName= NULL){
 
 
 
-	$userName=normalizeName($userName);
+	$userName=normalizeName($userName, ".");
 	$groupName=normalizeName($groupName);
 
 
@@ -519,7 +519,7 @@ function getAvailableGroup($userName){
 	GLOBAL $BDUser;
 	GLOBAL $BDPwd;
 
-	$userName=normalizeName($userName);
+	$userName=normalizeName($userName, ".");
 
 	$error = new OSAError();
 	
@@ -555,7 +555,7 @@ function addUserToGroup($userName, $groupName){
 	GLOBAL $BDPwd;
 
 
-	$userName=normalizeName($userName);
+	$userName=normalizeName($userName, ".");
 	$groupName=normalizeName($groupName);
 
 	$error = new OSAError();
@@ -613,7 +613,7 @@ function removeUserFromGroup($userName, $groupName){
 	GLOBAL $BDPwd;
 
 
-	$userName=normalizeName($userName);
+	$userName=normalizeName($userName, ".");
 	$groupName=normalizeName($groupName);
 
 	$error = new OSAError();
@@ -677,7 +677,7 @@ function getUserQuota($userName, $serviceName=NULL){
 	GLOBAL $BDPwd;
 
 
-	$userName=normalizeName($userName);
+	$userName=normalizeName($userName, ".");
 	$serviceName=normalizeName($serviceName);
 
 
@@ -744,7 +744,7 @@ function addUserQuota($userName, $serviceName, $request_data=NULL){
 	GLOBAL $BDUser;
 	GLOBAL $BDPwd;
 
-	$userName=normalizeName($userName);
+	$userName=normalizeName($userName, ".");
 	$serviceName=normalizeName($serviceName);
 	
 
@@ -839,7 +839,7 @@ function getUnsetQuota($userName){
 	GLOBAL $BDUser;
 	GLOBAL $BDPwd;
 
-	$userName=normalizeName($userName);
+	$userName=normalizeName($userName, ".");
 
 
 	$error = new OSAError();
@@ -874,7 +874,7 @@ function updateUserQuotas($userName, $serviceName, $request_data){
 	GLOBAL $BDUser;
 	GLOBAL $BDPwd;
 
-	$userName=normalizeName($userName);
+	$userName=normalizeName($userName, ".");
 	$serviceName=normalizeName($serviceName);
 
 	$error = new OSAError();
@@ -958,7 +958,7 @@ function deleteUserQuotas($userName, $serviceName){
 	GLOBAL $BDUser;
 	GLOBAL $BDPwd;
 
-	$userName=normalizeName($userName);
+	$userName=normalizeName($userName, ".");
 	$serviceName=normalizeName($serviceName);
 
 	$error = new OSAError();
