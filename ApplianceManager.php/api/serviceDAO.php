@@ -350,7 +350,7 @@ function createService($serviceName = NULL, $request_data=NULL){
 			$error->setFunctionalLabel($error->getFunctionalLabel() . " allowed value for isHitLoggingEnabled is 0 or 1\n");
 		}
 	}
-	if (!isset($request_data["onAllNodes"]) or empty($request_data["onAllNodes"])){
+	if (!isset($request_data["onAllNodes"]) or $request_data["onAllNodes"]===""){
 		$request_data["onAllNodes"]=1;
 	}
 	if (isset($request_data["onAllNodes"])){

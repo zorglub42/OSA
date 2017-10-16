@@ -47,7 +47,8 @@ function getUser($userName = NULL, $request_data = NULL){
 	$error = new OSAError();
 			
 
-	$userName=normalizeName($userName);
+	$userName=normalizeName($userName, ".");
+
 		
 	if ($userName==="me"){
 		$hdrs=getallheaders();
@@ -146,7 +147,7 @@ function addUser($userName = NULL, $request_data = NULL){
 	GLOBAL $BDUser;
 	GLOBAL $BDPwd;
 
-	$userName=normalizeName($userName);
+	$userName=normalizeName($userName, ".");
 	
 	$error = new OSAError();
 			
@@ -258,7 +259,7 @@ function deleteUser($userName){
 	GLOBAL $BDUser;
 	GLOBAL $BDPwd;
 
-	$userName=normalizeName($userName);
+	$userName=normalizeName($userName, ".");
 	$error= new OSAError() ;
 	if (isset($userName) && isset($userName) != ""){
 		if ($userName == ADMIN_USER){
