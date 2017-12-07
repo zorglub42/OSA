@@ -27,6 +27,10 @@ First of all, install required packages and clone OSA repository
 	**Until Ubuntu 16.04 (not included) OR Debian/Raspbian Jessie**
 
     		apt-get install mysql-server apache2 php5 php5-mysql php5-curl openssl curl zip autoconf libmysqlclient-dev apache2-prefork-dev git build-essential
+    
+	**Debian/Raspbian Stretch**
+
+    		apt-get install mysql-server apache2 php5 php5-mysql php5-curl openssl curl zip autoconf default-libmysqlclient-dev apache2-prefork-dev git build-essential
 
     
 	**Since Ubuntu 16.04 (included)**
