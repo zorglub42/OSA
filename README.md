@@ -8,12 +8,18 @@ In addition, it offers some extra functionalities like dual mode authentication 
 
 OSA is distributed under Apache2 licence
 
-##Install
+In addition of standard Apache reverse proxying capabilities, OSA us an additional apache module.
+It comes with 2 versions of this module:
+ * using MySQL as backend
+ * using SQLite3 as backend
+**NOTE** Only one version may be used at the salme time by apache
+
+## Install
 Install and configuration scripts are developped for debian, but, with few changes, should be compliant with RedHat too...
 
 To install some prerequisite are needed
 
-**IMPORTANT NOTE:** Apply following MySQL instrustruction on if you plan to connect database on a remote server.
+**IMPORTANT NOTE:** Apply following MySQL instrustruction on if you plan to use MySQL version of OSA apache module and need to connect the database on a remote server.
   - root mysql user on target server should be able to create/delete users and databases, with a connection from the server where OSA is installed If it's not the case, run on target MySQL server:
       - to add this privileges: GRANT all on *.* to 'root'@'%' identified by 'password' WITH GRANT OPTION;
       - to remove priovileges: DELETE from mysql.user WHERE user='root' AND host='%'; flush privileges;
@@ -26,16 +32,16 @@ First of all, install required packages and clone OSA repository
     
 	**Until Ubuntu 16.04 (not included) OR Debian/Raspbian Jessie**
 
-    		apt-get install mysql-server apache2 php5 php5-mysql php5-curl openssl curl zip autoconf libmysqlclient-dev apache2-prefork-dev git build-essential
+    		apt-get install apache2 php5 php5-curl php5-mysql  mysql-server libmysqlclient-dev openssl curl zip autoconf apache2-prefork-dev git build-essential
     
 	**Debian/Raspbian Stretch**
 
-    		apt-get install mysql-server apache2 php5 php5-mysql php5-curl openssl curl zip autoconf default-libmysqlclient-dev apache2-prefork-dev git build-essential
+    		apt-get install apache2 php5 php5-curl php5-mysql mysql-server default-libmysqlclient-dev openssl curl zip autoconf apache2-prefork-dev git build-essential
 
     
 	**Since Ubuntu 16.04 (included)**
 
-    		apt-get install mysql-server apache2 php php-mysql php-curl libapache2-mod-php openssl curl zip autoconf libmysqlclient-dev apache2-dev git build-essential	
+    		apt-get install apache2 libapache2-mod-php php php-curl php-mysql mysql-server libmysqlclient-dev openssl curl zip autoconf apache2-dev git build-essential	
   - clone git repo
 
 		git clone https://github.com/zorglub42/OSA
