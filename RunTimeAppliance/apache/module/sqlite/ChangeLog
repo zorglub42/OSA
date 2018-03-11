@@ -1,0 +1,5 @@
+2018-03: creation from mod_auth_mysql to use SQLite3 instead of MySQL
+	- add quotas (pers alias and per alias and user management
+	- add identity forwarding
+	- add REST content management for error return
+	- basic auth + auth by cookie
