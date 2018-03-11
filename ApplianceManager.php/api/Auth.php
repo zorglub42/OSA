@@ -50,16 +50,12 @@ class Auth{
 	 * @return string previously connected userName 
 	 */
 	function deleteTokensOfUserFromToken(){
-		GLOBAL $BDName;
-		GLOBAL $BDUser;
-		GLOBAL $BDPwd;
-		
-		
+
 		$error = new OSAError();
 		$error->setHttpStatus(200);
 		if (isset($_COOKIE[authTokenCookieName])){
 			try {
-				$db=openDB($BDName, $BDUser, $BDPwd );
+				$db=openDBConnection();
 				$strSQL="";
 				$strSQL=$strSQL . "SELECT * FROM authtoken WHERE token=?";
 				
@@ -109,8 +105,7 @@ class Auth{
 			$headers=Array("Accept: application/json");
 			$httpResponse=$httpClient->Post(osaAdminUri . "/auth/token", "", $headers, $userName,$password);
 			if ($httpResponse->getStatusCode() != 200){
-				
-				throw new RestException($httpResponse->getStatusCode(), $httpResponse->getStatusLabel() . "(backend=" . osaAdminUri . "/auth/token" . ")");
+				throw new RestException($httpResponse->getStatusCode(), $httpResponse->getStatusLabel() . "(backend=" . osaAdminUri . "/auth/token" . ")" .$httpResponse->getBody());
 			}
 			/*foreach ($httpResponse->getHeaders() as $key => $value){
 					header($key . ": " . $value);
@@ -123,14 +118,11 @@ class Auth{
 			}
 
 
-			GLOBAL $BDName;
-			GLOBAL $BDUser;
-			GLOBAL $BDPwd;
-			$db=openDB($BDName, $BDUser, $BDPwd );
+			$db=openDBConnection();
 			
 
 			$strSQL="";
-			$strSQL=$strSQL . "UPDATE users SET lastTokenLogin=now() WHERE userName=? ";
+			$strSQL=$strSQL . "UPDATE users SET lastTokenLogin=" . getSQlKeyword("now") . " WHERE userName=? ";
 			
 			$stmt=$db->prepare($strSQL);
 			$stmt->execute(array($userName));
@@ -150,32 +142,34 @@ class Auth{
 	 * @return AuthToken Token
 	 */
 	function generate(){
-		GLOBAL $BDName;
-		GLOBAL $BDUser;
-		GLOBAL $BDPwd;
-		
+
 		$requestor=getRequestor($_REQUEST);
 		$token=time() . $this->getAleat() . $this->getAleat() . $this->getAleat() . $this->getAleat() ;
 		
 
 	
 		try {
-			$db=openDB($BDName, $BDUser, $BDPwd );
+			$db=openDBConnection();
 			
-			$db->exec("DELETE FROM authtoken WHERE validUntil<now()");
+			$db->exec("DELETE FROM authtoken WHERE validUntil<" . getSQLKeyword("now"));
 
 			$strSQL="";
 			$strSQL=$strSQL . "INSERT INTO authtoken (token, validUntil, userName) ";
 			$strSQL=$strSQL . "VALUES (";
 			$strSQL=$strSQL . 		"?,"; 
-			$strSQL=$strSQL . 		" date_add(now() ,interval ? minute) , ";
+			$strSQL=$strSQL . 		" " . getSQlKeyword("add_minute") . " , ";
 			$strSQL=$strSQL . 		"?";
 			$strSQL=$strSQL . ")";
-			
+
 			$stmt=$db->prepare($strSQL);
-			$stmt->execute(array($token, authTokenTTL, $requestor));
+			if (RDBMS == "mysql"){
+				$timeInterval = authTokenTTL;
+			}else{
+				$timeInterval = "+" . authTokenTTL . " minute";
+			}
+			$stmt->execute(array($token, $timeInterval, $requestor));
 		}catch (Exception $e){
-			throw new RestException(500,$e->getMessage);
+			throw new RestException(500,$e->getMessage());
 		}
 		return Array("token" => $token);
 	

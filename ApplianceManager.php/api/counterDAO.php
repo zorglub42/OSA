@@ -34,9 +34,6 @@ require_once '../include/PDOFunc.php';
 
 
 function getCounter($counterName= NULL, $request_data=NULL){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
 	$error = new OSAError();
 
 
@@ -80,7 +77,7 @@ function getCounter($counterName= NULL, $request_data=NULL){
 
 
 	try{
-		$db=openDB($BDName, $BDUser, $BDPwd);
+		$db=openDBConnection();
 		if ($counterName != NULL ){
 			if ($counterName != ""){
 				$strSQL = "SELECT * FROM counters WHERE counterName =?";
@@ -136,10 +133,6 @@ function getCounter($counterName= NULL, $request_data=NULL){
 
 
 function deleteCounter($counterName){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
-
 
 	$error = new OSAError();
 	$error->setHttpStatus(200);
@@ -147,7 +140,7 @@ function deleteCounter($counterName){
 	if ($counterName != NULL && $counterName != ""){
 
 		try {
-			$db=openDB($BDName, $BDUser, $BDPwd);
+			$db=openDBConnection();
 			$strSQL = "SELECT * FROM counters WHERE counterName=?";
 			
 			$stmt=$db->prepare($strSQL);
@@ -198,9 +191,6 @@ function deleteCounter($counterName){
 
 
 function updateCounter($counterName, $value){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
 	$error = new OSAError();
 	$error->setHttpStatus(200);
 
@@ -216,7 +206,7 @@ function updateCounter($counterName, $value){
 	
 	$counter=getCounter($counterName);
 	try {
-		$db=openDB($BDName, $BDUser, $BDPwd);
+		$db=openDBConnection();
 		$strSQL="UPDATE counters SET value=? WHERE  counterName=?";
 		
 		$stmt=$db->prepare($strSQL);
@@ -237,9 +227,6 @@ function updateCounter($counterName, $value){
 
 
 function getExceededCounter($request_data){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
 	$error = new OSAError();
 
 
@@ -248,7 +235,7 @@ function getExceededCounter($request_data){
 
 
 	try {
-		$db=openDB($BDName, $BDUser, $BDPwd);
+		$db=openDBConnection();
 		$strSQL = "";
 		$strSQL = $strSQL . 'Select * from (';
 		$strSQL = $strSQL . '	SELECT c.* , s.serviceName, NULL userName, s.reqSec, s.reqDay, s.reqMonth';

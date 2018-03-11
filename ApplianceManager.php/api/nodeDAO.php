@@ -34,16 +34,13 @@ require_once '../include/PDOFunc.php';
 require_once '../api/groupDAO.php';
 
 function getServices($nodeName){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
 	$error = new OSAError();
 	$error->setHttpStatus(200);
 	
 	$nodeName=normalizeName($nodeName);
 	
 	try{
-		$db=openDB($BDName, $BDUser, $BDPwd);
+		$db=openDBConnection();
 		$strSQL = "SELECT * FROM services s WHERE (onAllNodes=1 or exists (SELECT 'x' FROM servicesnodes sn WHERE sn.serviceName = s.serviceName AND sn.nodeName=?)) and isPublished=1";
 		$stmt=$db->prepare($strSQL);
 		$stmt->execute(array(cut($nodeName, NODENAME_LENGTH)));
@@ -66,16 +63,13 @@ function getServices($nodeName){
 
 
 function getDAONode($nodeName = NULL, $request_data = NULL){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
 	$error = new OSAError();
 	$error->setHttpStatus(200);
 	
 	$nodeName=normalizeName($nodeName);
 	
 	try {
-		$db=openDB($BDName, $BDUser, $BDPwd);
+		$db=openDBConnection();
 		if ($nodeName != NULL && $nodeName != ""){
 			$strSQL = "SELECT * FROM nodes WHERE nodeName=?";
 			$stmt=$db->prepare($strSQL);
@@ -145,9 +139,6 @@ function getDAONode($nodeName = NULL, $request_data = NULL){
 
 
 function addNode($nodeName = NULL, $request_data = NULL){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
 	$error = new OSAError();
 			
 	$nodeName=normalizeName($nodeName);		
@@ -246,7 +237,7 @@ function addNode($nodeName = NULL, $request_data = NULL){
 		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
 	}else{
 		try{
-			$db=openDB($BDName, $BDUser, $BDPwd );
+			$db=openDBConnection();
 			$strSQL = "INSERT INTO nodes (nodeName, nodeDescription, serverFQDN, localIP, port, isBasicAuthEnabled, isCookieAuthEnabled, isHTTPS, additionalConfiguration, isPublished) values (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)";
 			$bindPrms=array($mySQLnodeName,$mySQLnodeDescription,$mySQLserverFQDN,$mySQLlocalIP,$mySQLport,$mySQLisBasicAuthEnabled,$mySQLisCookieAuthEnabled,$mySQLisHTTPS,$mySQLadditionalConfiguration);
 			
@@ -275,9 +266,6 @@ function addNode($nodeName = NULL, $request_data = NULL){
 
 
 function deleteNode($nodeName = NULL){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
 	$error = new OSAError();
 	
 	if (isset($nodeName) && isset($nodeName) != ""){
@@ -287,7 +275,7 @@ function deleteNode($nodeName = NULL){
 		$node=getDAONode($nodeName);
 		
 		try{
-			$db=openDB($BDName, $BDUser, $BDPwd);
+			$db=openDBConnection();
 			$strSQL="DELETE FROM nodes WHERE  nodeName=?";
 			$stmt=$db->prepare($strSQL);
 			$stmt->execute(array(cut($nodeName, USERNAME_LENGTH)));
@@ -310,15 +298,11 @@ function deleteNode($nodeName = NULL){
 }
 
 function setPublicationStatus($nodeName, $published){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
-
 	$nodeName=normalizeName($nodeName);
 
 	getDAONode($nodeName);
 	try{
-		$db=openDB($BDName, $BDUser, $BDPwd );
+		$db=openDBConnection();
 
 		$strSQL = "";
 		$strSQL = $strSQL  . "UPDATE nodes SET ";
@@ -433,7 +417,7 @@ function updateNode($nodeName = NULL, $request_data = NULL){
 	}else{
 		getDAONode($nodeName);
 		try{
-			$db=openDB($BDName, $BDUser, $BDPwd );
+			$db=openDBConnection();
 
 			$strSQL = "";
 			$strSQL = $strSQL  . "UPDATE nodes SET ";
@@ -487,7 +471,7 @@ function updateCert($nodeName, $cert){
 		$node=getDAONode($nodeName);
 		
 		try{
-			$db=openDB($BDName, $BDUser, $BDPwd );
+			$db=openDBConnection();
 			
 			$strSQL = "";
 
@@ -536,7 +520,7 @@ function updateCaCert($nodeName, $ca){
 
 		
 		try{
-			$db=openDB($BDName, $BDUser, $BDPwd );
+			$db=openDBConnection();
 
 			$strSQL = "";
 			$strSQL = $strSQL  . "UPDATE nodes SET ";
@@ -585,7 +569,7 @@ function updateCaChain($nodeName, $caChain){
 
 		
 		try{
-			$db=openDB($BDName, $BDUser, $BDPwd );
+			$db=openDBConnection();
 
 			$strSQL = "";
 			$strSQL = $strSQL  . "UPDATE nodes SET ";
@@ -637,7 +621,7 @@ function updatePrivateKey($nodeName, $key){
 
 		
 		try{
-			$db=openDB($BDName, $BDUser, $BDPwd );
+			$db=openDBConnection();
 
 			$strSQL = "";
 			$strSQL = $strSQL  . "UPDATE nodes SET ";

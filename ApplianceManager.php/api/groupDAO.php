@@ -36,10 +36,6 @@ require_once '../include/PDOFunc.php';
 
 
 function getGroup($groupName = NULL, $request_data = NULL){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
-
 
 	$groupName=normalizeName($groupName);
 
@@ -48,7 +44,7 @@ function getGroup($groupName = NULL, $request_data = NULL){
 	$error->setHttpStatus(200);
 	
 	try {
-		$db=openDB($BDName, $BDUser, $BDPwd);
+		$db=openDBConnection();
 
 		if ($groupName != NULL){
 			$strSQL = "SELECT * FROM groups WHERE groupName=?";
@@ -105,10 +101,6 @@ function getGroup($groupName = NULL, $request_data = NULL){
 return $rc;
 }
 function getGroupMembers($groupName, $request_data = NULL){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
-	
 	
 	$groupName=normalizeName($groupName);
 	
@@ -118,7 +110,7 @@ function getGroupMembers($groupName, $request_data = NULL){
 	$error->setHttpStatus(200);
 	
 	try{
-		$db=openDB($BDName, $BDUser, $BDPwd);
+		$db=openDBConnection();
 		$bindPrms=array();
 		if ($groupName != VALID_USER_GROUP){
 			$strSQL="SELECT u.* FROM users u, usersgroups ug WHERE (ug.userName = u.userName AND ug.groupName=?) ";
@@ -180,10 +172,6 @@ function getGroupMembers($groupName, $request_data = NULL){
 
 
 function addGroup($groupName = NULL, $description = NULL){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
-
 
 	$groupName=normalizeName($groupName);
 
@@ -209,7 +197,7 @@ function addGroup($groupName = NULL, $description = NULL){
 
 	
 	try {
-		$db=openDB($BDName, $BDUser, $BDPwd );
+		$db=openDBConnection();
 		
 		$strSQL = "INSERT INTO groups (groupName, description) values (?,?)";
 		$stmt=$db->prepare($strSQL);
@@ -237,9 +225,6 @@ function addGroup($groupName = NULL, $description = NULL){
 
 
 function deleteGroup($groupName){
-GLOBAL $BDName;
-GLOBAL $BDUser;
-GLOBAL $BDPwd;
 
 $groupName=normalizeName($groupName);
 
@@ -265,7 +250,7 @@ if ($groupName== NULL || $groupName == ""){
 $rc=getGroup($groupName);
 
 try{
-	$db=openDB($BDName, $BDUser, $BDPwd);
+	$db=openDBConnection();
 
 	$strSQL="DELETE FROM groups WHERE  groupName=?";
 	$stmt=$db->prepare($strSQL);
@@ -297,9 +282,6 @@ return $rc;
 
 
 function updateGroup($groupName = NULL, $description = NULL){
-GLOBAL $BDName;
-GLOBAL $BDUser;
-GLOBAL $BDPwd;
 
 	$groupName=normalizeName($groupName);
 
@@ -315,7 +297,7 @@ GLOBAL $BDPwd;
 	}else{
 		$group=getGroup($groupName);
 		try{
-			$db=openDB($BDName, $BDUser, $BDPwd );
+			$db=openDBConnection();
 
 			$strSQL = "";
 			$strSQL = $strSQL  . "UPDATE groups SET ";

@@ -39,9 +39,6 @@ require_once 'groupDAO.php';
 
 
 function getUser($userName = NULL, $request_data = NULL){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
 	GLOBAL $defaultHeadersName;
 
 	$error = new OSAError();
@@ -59,7 +56,7 @@ function getUser($userName = NULL, $request_data = NULL){
 		}
 
 	}
-	$db=openDB($BDName, $BDUser, $BDPwd);
+	$db=openDBConnection();
 	if ($userName != NULL && $userName != ""){
 		$stmt = $db->prepare("SELECT * FROM users WHERE userName=?");
 		try{
@@ -143,10 +140,6 @@ function getUser($userName = NULL, $request_data = NULL){
 
 
 function addUser($userName = NULL, $request_data = NULL){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
-
 	$userName=normalizeName($userName, ".");
 	
 	$error = new OSAError();
@@ -226,7 +219,7 @@ function addUser($userName = NULL, $request_data = NULL){
 		$strSQL = "INSERT INTO users (userName, password, md5Password, endDate, emailAddress, firstName, lastName, entity, extra) values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		try{
 			
-			$db = openDB($BDName, $BDUser, $BDPwd );
+			$db=openDBConnection();
 			$stmt=$db->prepare($strSQL);
 			$stmt->execute(array($mySQLuserName,$mySQLPassword,$mySQLmd5Password,$mySQLEndDate,$mySQLEmail,$mySQLFirstname,$mySQLLastname,$mySQLEntity,$mySQLExtra));
 		}catch (Exception $e){
@@ -255,10 +248,6 @@ function addUser($userName = NULL, $request_data = NULL){
 
 
 function deleteUser($userName){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
-
 	$userName=normalizeName($userName, ".");
 	$error= new OSAError() ;
 	if (isset($userName) && isset($userName) != ""){
@@ -279,7 +268,7 @@ function deleteUser($userName){
 	$usr=getUser($userName);
 	
 	try{
-		$db=openDB($BDName, $BDUser, $BDPwd);
+		$db=openDBConnection();
 		$strSQL="DELETE FROM users WHERE userName=?";
 		$stmt=$db->prepare($strSQL);
 		$stmt->execute(array(cut($userName, USERNAME_LENGTH)));
@@ -298,9 +287,6 @@ function deleteUser($userName){
 }
 
 function updateUserPassword($userName, $newPassword){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
 	$error = new OSAError();
 
 
@@ -317,7 +303,7 @@ function updateUserPassword($userName, $newPassword){
 	$bindPrms=array($mySQLPassword, $mySQLmd5Password, $userName);
 
 	try{
-		$db=openDB($BDName, $BDUser, $BDPwd);
+		$db=openDBConnection();
 		$stmt=$db->prepare($strSQL);
 		$stmt->execute($bindPrms);
 	}catch (Exception $e){
@@ -335,9 +321,6 @@ function updateUserPassword($userName, $newPassword){
 }
 
 function updateUser($userName = NULL, $request_data = NULL){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
 	$error = new OSAError();
 
 
@@ -434,7 +417,7 @@ function updateUser($userName = NULL, $request_data = NULL){
 		$strSQL = $strSQL  . "WHERE userName=?";
 
 		try {
-			$db=openDB($BDName, $BDUser, $BDPwd);
+			$db=openDBConnection();
 			$stmt=$db->prepare($strSQL);
 			$stmt->execute($bindPrms);
 		}catch (Exception $e){
@@ -452,10 +435,6 @@ function updateUser($userName = NULL, $request_data = NULL){
 
 
 function getDAOUserGroup($userName, $groupName= NULL){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
-
 
 
 	$userName=normalizeName($userName, ".");
@@ -466,7 +445,7 @@ function getDAOUserGroup($userName, $groupName= NULL){
 	$error->setHttpStatus(200);
 	
 	try{
-		$db = openDB($BDName, $BDUser, $BDPwd);
+		$db=openDBConnection();
 		$bindPrms=array();
 
 		$strSQL="SELECT g.* FROM groups g, usersgroups ug where g.groupName = ug.groupName and ug.userName=?";
@@ -515,10 +494,6 @@ function getDAOUserGroup($userName, $groupName= NULL){
 
 
 function getAvailableGroup($userName){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
-
 	$userName=normalizeName($userName, ".");
 
 	$error = new OSAError();
@@ -527,7 +502,7 @@ function getAvailableGroup($userName){
 	try {
 		$strSQL="SELECT g.* FROM groups g where g.groupName not in (SELECT ug.groupName FROM  usersgroups ug WHERE  ug.userName=?)";
 		
-		$db=openDB($BDName, $BDUser, $BDPwd);
+		$db=openDBConnection();
 		$stmt=$db->prepare($strSQL);
 		$stmt->execute(array(cut($userName, USERNAME_LENGTH) ));
 		$rc = Array();
@@ -550,10 +525,6 @@ function getAvailableGroup($userName){
 
 
 function addUserToGroup($userName, $groupName){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
-
 
 	$userName=normalizeName($userName, ".");
 	$groupName=normalizeName($groupName);
@@ -583,7 +554,7 @@ function addUserToGroup($userName, $groupName){
 		$mySQLuserName=cut($userName, USERNAME_LENGTH);
 		$strSQL = "INSERT INTO usersgroups (groupName, userName) values (?, ?)";
 		try{
-			$db=openDB($BDName, $BDUser, $BDPwd );
+			$db=openDBConnection();
 			$stmt=$db->prepare($strSQL);
 			$stmt->execute(array($mySQLGroupName,$mySQLuserName));
 		}catch (Exception $e){
@@ -608,10 +579,6 @@ function addUserToGroup($userName, $groupName){
 
 
 function removeUserFromGroup($userName, $groupName){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
-
 
 	$userName=normalizeName($userName, ".");
 	$groupName=normalizeName($groupName);
@@ -626,7 +593,7 @@ function removeUserFromGroup($userName, $groupName){
 			throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
 		}
 		try{
-			$db= openDB($BDName, $BDUser, $BDPwd);
+			$db=openDBConnection();
 			
 			$strSQL="SELECT g.* FROM groups g, usersgroups ug WHERE ug.groupName=? AND ug.userName=? AND g.groupName = ug.groupName";
 			$stmt=$db->prepare($strSQL);
@@ -672,10 +639,6 @@ function removeUserFromGroup($userName, $groupName){
 
 
 function getUserQuota($userName, $serviceName=NULL){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
-
 
 	$userName=normalizeName($userName, ".");
 	$serviceName=normalizeName($serviceName);
@@ -690,7 +653,7 @@ function getUserQuota($userName, $serviceName=NULL){
 	$error=new OSAError();
 	$error->setHttpStatus(404);
 	try{
-		$db=openDB($BDName, $BDUser, $BDPwd);
+		$db=openDBConnection();
 		$bindPrms=array();
 		$strSQL="SELECT * FROM usersquotas WHERE userName=?";// . cut($userName, USERNAME_LENGTH ) . "'";
 		array_push($bindPrms, cut($userName, USERNAME_LENGTH ));
@@ -740,10 +703,6 @@ function getUserQuota($userName, $serviceName=NULL){
 
 
 function addUserQuota($userName, $serviceName, $request_data=NULL){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
-
 	$userName=normalizeName($userName, ".");
 	$serviceName=normalizeName($serviceName);
 	
@@ -802,7 +761,7 @@ function addUserQuota($userName, $serviceName, $request_data=NULL){
 		$strSQL .= "?)";
 		
 		try{
-			$db = openDB($BDName, $BDUser, $BDPwd );
+			$db=openDBConnection();
 			$stmt=$db->prepare($strSQL);
 			$stmt->execute(array(cut($serviceName, SERVICENAME_LENGTH),
 								 cut($userName, USERNAME_LENGTH),
@@ -835,10 +794,6 @@ function addUserQuota($userName, $serviceName, $request_data=NULL){
 
 
 function getUnsetQuota($userName){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
-
 	$userName=normalizeName($userName, ".");
 
 
@@ -846,7 +801,7 @@ function getUnsetQuota($userName){
 	$error->setHttpStatus(200);
 
 	try{
-		$db = openDB($BDName, $BDUser, $BDPwd);
+		$db=openDBConnection();
 		$strSQL="SELECT *, ? userName FROM services WHERE isUserQuotasEnabled=1 AND serviceName not in (SELECT serviceName FROM  usersquotas WHERE  userName=?)";
 		$stmt=$db->prepare($strSQL);
 		$stmt->execute(array(cut($userName, USERNAME_LENGTH), cut($userName, USERNAME_LENGTH)));
@@ -870,10 +825,6 @@ function getUnsetQuota($userName){
 
 
 function updateUserQuotas($userName, $serviceName, $request_data){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
-
 	$userName=normalizeName($userName, ".");
 	$serviceName=normalizeName($serviceName);
 
@@ -923,7 +874,7 @@ function updateUserQuotas($userName, $serviceName, $request_data){
 		$strSQL .="AND	userName=?";
 		
 		try{
-			$db=openDB($BDName, $BDUser, $BDPwd );
+			$db=openDBConnection();
 			$stmt=$db->prepare($strSQL);
 			$stmt->execute(array($request_data["reqSec"], 
 								 $request_data["reqDay"], 
@@ -954,10 +905,6 @@ function updateUserQuotas($userName, $serviceName, $request_data){
 
 
 function deleteUserQuotas($userName, $serviceName){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
-
 	$userName=normalizeName($userName, ".");
 	$serviceName=normalizeName($serviceName);
 
@@ -984,7 +931,7 @@ function deleteUserQuotas($userName, $serviceName){
 	}else{
 		
 		try{
-			$db=openDB($BDName, $BDUser, $BDPwd);
+			$db=openDBConnection();
 			
 			$strSQL = "SELECT * FROM  usersquotas WHERE serviceName=? AND userName=?"; 
 			$stmt=$db->prepare($strSQL);

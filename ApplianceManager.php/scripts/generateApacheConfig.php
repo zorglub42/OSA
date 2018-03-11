@@ -33,7 +33,7 @@ require_once '../api/serviceDAO.php';
 
 
 
-	$db=openDB($BDName, $BDUser, $BDPwd );
+	$db=openDBConnection();
 	
 	
 	$strSQLBase="";

@@ -23,6 +23,9 @@
  * 1.0.0 - 2012-10-01 : Release of the file
 */
 	#Database connection parameter
+	define("RDBMS","sqlite");
+	define("SQLITE_DATABASE_PATH", "/home/jmjb0521/Dev/workspace/ApplianceManager/sql/sqlite/osa.db");
+
 	$BDName="appliance@localhost:3306";
 	$BDUser="appliance";
 	$BDPwd="mysql";

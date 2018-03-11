@@ -37,9 +37,6 @@ require_once '../include/PaginationFunc.inc.php';
 
 
 function getLogs($id = NULL, $request_data = NULL){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
 
 	$error = new OSAError();
 
@@ -103,7 +100,7 @@ function getLogs($id = NULL, $request_data = NULL){
 
 
 	try {
-		$db=openDB($BDName, $BDUser, $BDPwd);
+		$db=openDBConnection();
 
 			if ($id != NULL){
 				$strSQL = "SELECT * FROM hits WHERE id=?";

@@ -37,9 +37,6 @@ require_once '../include/Settings.ini.php';
 require_once '../include/Constants.php';
 
 function getServiceHeadersMapping($serviceName , $userProperty=NULL){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
 	GLOBAL $userProperties;
 	GLOBAL $defaultHeadersName;
 
@@ -61,7 +58,7 @@ function getServiceHeadersMapping($serviceName , $userProperty=NULL){
 			$qryPrms["userProperty"]=$userProperty;
 		}
 		if ($error->getHttpStatus() ==200){
-			$db=openDB($BDName, $BDUser, $BDPwd);
+			$db=openDBConnection();
 			$stmt=$db->prepare($strSQL);
 			$stmt->execute($qryPrms);
 			$rc =  Array();
@@ -104,9 +101,6 @@ function getServiceHeadersMapping($serviceName , $userProperty=NULL){
 }
 
 function createServiceHeadersMapping($serviceName , $userProperty, $headerName){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
 	GLOBAL $userProperties;
 	GLOBAL $defaultHeadersName;
 
@@ -129,12 +123,12 @@ function createServiceHeadersMapping($serviceName , $userProperty, $headerName){
 		try{
 			$qryPrms=array("serviceName" => $serviceName, "userProperty"=>$userProperty, "headerName"=>$headerName);
 
-			$strSQL="INSERT headersmapping(serviceName, columnName, headerName) values (:serviceName, :userProperty, :headerName)";
-			$db=openDB($BDName, $BDUser, $BDPwd);
+			$strSQL="INSERT INTO headersmapping(serviceName, columnName, headerName) values (:serviceName, :userProperty, :headerName)";
+			$db=openDBConnection();
 			$stmt=$db->prepare($strSQL);
 			$stmt->execute($qryPrms);
 		}catch (Exception $e){
-			if (strpos($e->getMessage,"Duplicate entry")){
+			if (strpos($e->getMessage(),"Duplicate entry")){
 				$error->setHttpStatus(409);
 				$error->setFunctionalCode(5);
 				$error->setFunctionalLabel("Header mapping for user property " . $userProperty . " and Service " . $serviceName . " already exists " );
@@ -155,9 +149,6 @@ function createServiceHeadersMapping($serviceName , $userProperty, $headerName){
 
 
 function deleteServiceHeadersMapping($serviceName){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
 
 	$serviceName=normalizeName($serviceName);
 
@@ -168,7 +159,7 @@ function deleteServiceHeadersMapping($serviceName){
 		$qryPrms=array("serviceName" => $serviceName);
 		$strSQL="DELETE FROM headersmapping WHERE serviceName=:serviceName";
 
-		$db=openDB($BDName, $BDUser, $BDPwd);
+		$db=openDBConnection();
 		$stmt=$db->prepare($strSQL);
 		$stmt->execute($qryPrms);
 		$rc =  Array();
@@ -187,17 +178,13 @@ function deleteServiceHeadersMapping($serviceName){
 
 
 function getService($serviceName = NULL, $request_data=NULL){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
-
 	$serviceName=normalizeName($serviceName);
 
 	$error = new OSAError();
 	$error->setHttpStatus(200);
 
 	try{
-		$db=openDB($BDName, $BDUser, $BDPwd);
+		$db=openDBConnection();
 		if ($serviceName != NULL && $serviceName != ""){
 			$strSQL = "SELECT * FROM services WHERE serviceName=?";
 			$stmt=$db->prepare($strSQL);
@@ -306,9 +293,6 @@ function getService($serviceName = NULL, $request_data=NULL){
 
 
 function createService($serviceName = NULL, $request_data=NULL){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
 
 	$serviceName=normalizeName($serviceName);
 
@@ -539,7 +523,7 @@ function createService($serviceName = NULL, $request_data=NULL){
 		try {
 
 
-			$db=openDB($BDName, $BDUser, $BDPwd );
+			$db=openDBConnection();
 
 			$strSQL = "";
 			$strSQL = $strSQL . "INSERT INTO services (";
@@ -636,16 +620,13 @@ function createService($serviceName = NULL, $request_data=NULL){
 
 
 function deleteService($serviceName){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
 	$error = new OSAError();
 
 	$serviceName=normalizeName($serviceName);
 
 
 	if ($serviceName != NULL && $serviceName != ""){
-		$db=openDB($BDName, $BDUser, $BDPwd);
+		$db=openDBConnection();
 
 		$stmt=$db->prepare("SELECT * FROM services WHERE serviceName=?");
 		$stmt->execute(array(cut($serviceName, SERVICENAME_LENGTH)));
@@ -710,9 +691,6 @@ function deleteService($serviceName){
 
 
 function updateService($serviceName = NULL, $request_data=NULL){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
 
 	$serviceName=normalizeName($serviceName);
 
@@ -973,7 +951,7 @@ function updateService($serviceName = NULL, $request_data=NULL){
 						$mySQLServiceName);
 
 		try{
-			$db=openDB($BDName, $BDUser, $BDPwd);
+			$db=openDBConnection();
 			$stmt=$db->prepare($strSQL);
 			$stmt->execute($bindPrms);
 			if ($service["onAllNodes"]==1){
@@ -1025,10 +1003,6 @@ function updateService($serviceName = NULL, $request_data=NULL){
 
 
 function getUserQuotas($serviceName = NULL, $userName=NULL, $request_data=NULL){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
-
 	$serviceName=normalizeName($serviceName);
 	$userName=normalizeName($userName);
 
@@ -1041,7 +1015,7 @@ function getUserQuotas($serviceName = NULL, $userName=NULL, $request_data=NULL){
 		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
 	}
 
-	$db=openDB($BDName, $BDUser, $BDPwd);
+	$db=openDBConnection();
 	$strSQL="SELECT * FROM usersquotas WHERE serviceName=?";
 
 	$bindPrms=array(cut($serviceName, SERVICENAME_LENGTH ));
@@ -1083,16 +1057,12 @@ function getUserQuotas($serviceName = NULL, $userName=NULL, $request_data=NULL){
 
 
 function getUnsetQuotas($serviceName){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
-
 	$serviceName=normalizeName($serviceName);
 
 	$error = new OSAError();
 
 
-	$db=openDB($BDName, $BDUser, $BDPwd);
+	$db=openDBConnection();
 
 	$strSQL="";
 	$strSQL.="SELECT u.* ";
@@ -1118,15 +1088,11 @@ function getUnsetQuotas($serviceName){
 
 
 function nodesListForService($serviceName){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
-
 	$serviceName=normalizeName($serviceName);
 	$error = new OSAError();
 
 
-	$db=openDB($BDName, $BDUser, $BDPwd);
+	$db=openDBConnection();
 	$bindPrms=array();
 	if ($serviceName==NULL){
 		$strSQL= "SELECT n.*, 0 as onNode FROM nodes n";
@@ -1155,10 +1121,6 @@ function nodesListForService($serviceName){
 
 
 function setNodesListForService($serviceName, $nodesList, $noApply){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
-
 	$impactedNodes=array();
 
 	$serviceName=normalizeName($serviceName);
@@ -1169,7 +1131,7 @@ function setNodesListForService($serviceName, $nodesList, $noApply){
 	}
 
 
-	$db=openDB($BDName, $BDUser, $BDPwd);
+	$db=openDBConnection();
 
 	//Get nodes previously using this service
 	$nodes=nodesListForService($serviceName);
