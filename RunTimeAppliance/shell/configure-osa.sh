@@ -446,11 +446,11 @@ function configurePathAndSettings(){
 	
 	
 	
-	cat $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc \
+	cat $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc.$RDBMS \
 		| sed "s/\(OSAPassword \).*/\1$APPLIANCE_MYSQL_PW/g" \
 		> /tmp/$$.osa-endpoints-settings.inc
 	
-	:>$INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc
+	:>$INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc.$RDBMS
 	cat /tmp/$$.osa-endpoints-settings.inc >> $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc
 	
 	
