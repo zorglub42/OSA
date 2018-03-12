@@ -57,7 +57,7 @@ define ("VALID_USER_GROUP", "valid-user");
 define ("ADMIN_USER", "Admin");
 define ("ADMIN_SERVICE", "ApplianceManagerAdmin");
 
-define ("version", "3.2");
+define ("version", "4.0");
 
 
 $userProperties = array("userName", 

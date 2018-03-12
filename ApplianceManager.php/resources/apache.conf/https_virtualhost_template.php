@@ -99,7 +99,7 @@
 	   DocumentRoot /var/www/local/empty
        Include <?php echo runtimeApplianceConfigLocation?>/applianceManagerServices-node-<?php echo $NODE_NAME?>.endpoints
 	   <?php echo $ADDITIONAL_CONFIGURATION . "\n"?>
-	   Header set Server OSA-3.0
+	   Header set Server OSA-<?php echo version?>   
 </VirtualHost>
 ServerTokens Prod
 ServerSignature Off
