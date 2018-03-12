@@ -41,7 +41,7 @@ First of all, install required packages and clone OSA repository
     
 	**Since Ubuntu 16.04 (included)**
 
-    		apt-get install apache2 libapache2-mod-php php php-curl php-mysql mysql-server libmysqlclient-dev openssl curl zip autoconf apache2-dev git build-essential	
+    		apt-get install apache2 libapache2-mod-php php php-curl php-mysql mysql-server libmysqlclient-dev openssl curl zip autoconf apache2-dev git build-essential zlib1g-dev zlib1g
   - clone git repo
 
 		git clone https://github.com/zorglub42/OSA
