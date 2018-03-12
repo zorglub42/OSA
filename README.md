@@ -12,7 +12,8 @@ In addition of standard Apache reverse proxying capabilities, OSA us an addition
 It comes with 2 versions of this module:
  * using MySQL as backend
  * using SQLite3 as backend
-**NOTE** Only one version may be used at the salme time by apache
+ 
+**NOTE** Only one version (sqlite or mysql) may be used at the same time by apache
 
 ## Install
 Install and configuration scripts are developped for debian, but, with few changes, should be compliant with RedHat too...
