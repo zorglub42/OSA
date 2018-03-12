@@ -621,8 +621,6 @@ function createBasicNodes(){
 			echo "                 *****************************************"
 			echo ""
 			echo ""
-echo curl -i -X POST -k -H  "Content-Type: application/x-www-form-urlencoded; charset=UTF-8"  -d @"/tmp/$$.postdata" --user "$OSA_USAGE_USER:$OSA_ADMIN_PWD"  http://127.0.0.1:$PRIVATE_VHOST_PORT/ApplianceManager/nodes/
-exit 42
 			shellExit 1
 		fi
 	fi
