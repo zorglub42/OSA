@@ -562,9 +562,9 @@ function displayNodeList(nodeList){
 						minLength: 0
 		});
 
-		if (nodeList.length == 0 ){
-			$("#nodesList").hide();
-		}
+		//if (nodeList.length == 0 ){
+		//	$("#nodesList").hide();
+		//}
 
 	});
 }
