@@ -413,11 +413,12 @@ function configureSqliteSettings(){
 ######################################################################
 function configureMySQLCreds(){
 	sed -i 's|.*"RDBMS".*|	define("RDBMS", "$RDBMS");|' $INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php
-	changeProperty $INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php
 	changeProperty $INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php BDPwd '"'$APPLIANCE_MYSQL_PW'";'
 	changeProperty $INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php BDUser '"'$APPLIANCE_MYSQL_USER'";'
 	changeProperty $INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php BDName '"'$APPLIANCE_MYSQL_SCHEMA'@'$APPLIANCE_MYSQL_HOST':'$APPLIANCE_MYSQL_PORT'";'
 	
+	cat $INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php
+	exit 42
 
 	cat $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc.$RDBMS | sed "s/\(OSAPort \).*/\1$APPLIANCE_MYSQL_PORT/g"| sed "s/\(OSAHost \).*/\1$APPLIANCE_MYSQL_HOST/g" | sed "s/\(OSAPassword \).*/\1$APPLIANCE_MYSQL_PW/g"| sed "s/\(OSADB \).*/\1$APPLIANCE_MYSQL_SCHEMA/g"| sed "s/\(OSAUser \).*/\1$APPLIANCE_MYSQL_USER/g" > /tmp/$$.osa-endpoints-settings.inc
 	:>$INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc.$RDBMS
