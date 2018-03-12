@@ -43,12 +43,15 @@
 #   - APPLIANCE_ADMIN_PW  OSA Admin user passord to set (password initialized by script)
 #   - USE_HTTP if set to 1 API publishing via regular HTTP will be enabled
 #   - USE_HTTPS if set to 1 API publishing via  HTTPS will be enabled
-
 BOX_DOMAIN="" #This variable is a configuration commodity. It's just used in the folloing config (see APACHE_ADMIN_MAIL, HTTP_VHOST_NAME, HTTPS_VHOST_NAME and HTTPS_ADMIN_VHOST_NAME)
 APACHE_ADMIN_MAIL="webmaster@localhost"
+APPLIANCE_ADMIN_PW="choose-your-admin-password"
+
+#ROOT_MYSQL_PW and APPLIANCE_ADMIN_PW only make sens when MySQL is used a RDBMS
 ROOT_MYSQL_PW="your-root-mysql-password"
 APPLIANCE_MYSQL_PW="choose-a-mysql-password"
-APPLIANCE_ADMIN_PW="choose-your-admin-password"
+
+#Default nodes creation
 USE_HTTP=1 #Set it to 1 if you want to create a default HTTP node 
 USE_HTTPS=1 #Set it to 1 if you want to create a default HTTPS node 
 
@@ -112,12 +115,13 @@ PRIVATE_VHOST_PORT=82
 #			APPLIANCE_MYSQL_SCHEMA schema name in DB
 #			APPLIANCE_MYSQL_USER user used by application to connect DB
 KEEP_DB=0
+RDBMS=mysql
 APPLIANCE_MYSQL_SCHEMA=appliance
 APPLIANCE_MYSQL_USER=appliance
 MYSQL_BIND_ADDRESS='*'
 APPLIANCE_MYSQL_HOST=localhost
 APPLIANCE_MYSQL_PORT=3306
-
+APPLIANCE_SQLITE_FILENAME=/var/lib/ApplianceManager/osa.db
 
 
 

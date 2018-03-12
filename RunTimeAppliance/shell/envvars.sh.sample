@@ -47,10 +47,14 @@
 BOX_DOMAIN=".yourDomain.com"
 APACHE_ADMIN_MAIL="admin@"`echo $BOX_DOMAIN | sed 's/^\.//'`
 ROOT_MYSQL_PW=""
+
+#ROOT_MYSQL_PW and APPLIANCE_ADMIN_PW only make sens when MySQL is used a RDBMS
+ROOT_MYSQL_PW=""
 APPLIANCE_MYSQL_PW=""
-APPLIANCE_ADMIN_PW=""
-USE_HTTP=1
-USE_HTTPS=1
+
+#Default nodes creation
+USE_HTTP=1 #Set it to 1 if you want to create a default HTTP node 
+USE_HTTPS=1 #Set it to 1 if you want to create a default HTTPS node 
 
 
 

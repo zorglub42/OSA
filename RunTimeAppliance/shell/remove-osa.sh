@@ -152,6 +152,18 @@ function removeApacheConf(){
 
 
 
+######################################################################
+# removeSqliteSchema
+######################################################################
+# remove Sqlite object (DB File)
+######################################################################
+function removeSqliteSchema(){
+	if [ $PURGE_ALL -ne 1 ] ; then
+		echo "-purge is not set: don't remove anything in DB"
+	else
+		rm $INSTALL_DIR/sql/sqlite/osa.db
+	fi	
+}
 
 
 ######################################################################
@@ -205,7 +217,7 @@ echo $0 OPTIONS
 echo '	-h : this list....'
 echo ''
 echo '	-purge:  also remove all files and DB objects created by configuer-osa.sh'
-echo '	-mysql-root-password pwd : mysql root password (if -purge is set)'
+echo '	-mysql-root-password pwd : mysql root password (if -purge is set and RDBMS is MySQL)'
 echo ''
 echo 'Ex.:'
 echo "$0"'  -mysql-root-password mySqlRootPwd  '
@@ -221,15 +233,17 @@ function verifyParameters(){
 
 RC=0;
 if [ $PURGE_ALL -eq 1 ] ; then
-	if [ -z "$ROOT_MYSQL_PW"  ] ; then
-		echo "mysql root password is missing"
-		RC=21
-	else
-		mysql -u root -p"$ROOT_MYSQL_PW"  -h $APPLIANCE_MYSQL_HOST  -P $APPLIANCE_MYSQL_PORT<<EOF >/dev/null
+	if [ "$RDBMS" == "mysql" ] ; then
+		if [ -z "$ROOT_MYSQL_PW"  ] ; then
+			echo "mysql root password is missing"
+			RC=21
+		else
+			mysql -u root -p"$ROOT_MYSQL_PW"  -h $APPLIANCE_MYSQL_HOST  -P $APPLIANCE_MYSQL_PORT<<EOF >/dev/null
 EOF
-		if [ $? -ne 0 ] ; then
-			echo "mysql root password is invalid"
-			RC=22
+			if [ $? -ne 0 ] ; then
+				echo "mysql root password is invalid"
+				RC=22
+			fi
 		fi
 	fi
 fi
@@ -464,14 +478,18 @@ done
 loadFromConfig
 
 verifyParameters
-removeMysqlSchema
-removeMySQLSettings
+if [ "$RDBMS" == "mysql" ] ; then
+	removeMysqlSchema
+	removeMySQLSettings
+else
+	removeSqliteSchema
+fi
 removeApacheConf
 removeSudoers
 removeCron
 removeEtc
 
-if [ $DB_IS_LOCAL -eq 1 ] ; then
+if [ $DB_IS_LOCAL -eq 1 -a "$RDBMS" == "mysql" ] ; then
 	/etc/init.d/mysql restart
 fi
 $APACHE_INITD_FILE restart

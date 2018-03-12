@@ -24,17 +24,19 @@
 
 	
 	OSAUser appliance
-	OSAPassword osapwd
+	OSAPassword mysql
 	OSADB appliance
 	OSAHost localhost
 	OSAPort 3306
+
 	OSAUserTable users
 	OSANameField userName
 	OSAPasswordField md5Password
 	OSAPwEncryption md5
 	OSAGroupTable usersgroups
 	OSAGroupField groupName
-	OSAUserCondition endDate>now()
+#	OSAUserCondition endDate>now()
+#	OSAUserCondition endDate>DateTime('now')
 	
 	
 	OSAResourceNameField serviceName

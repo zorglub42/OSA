@@ -300,7 +300,7 @@ echo "" >>/tmp/$$.nodes
 
 grep '"error"' /tmp/$$.nodes>/dev/null
 if [ $? -eq 0 ] ; then
-	echo "An error occursed while downloding node list"; 
+	echo "An error occursed while downloading node list"; 
 	cat /tmp/$$.nodes
 	shellExit 1
 fi
@@ -372,7 +372,6 @@ do
 	
 done < /tmp/$$.nodes
 configureApacheListening
-
 
 
 $EXEC_DIR/doAppliance.sh $* -nobackup

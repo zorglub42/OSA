@@ -10,6 +10,41 @@
 
 
 
+<Location  /ApplianceManagerAdmin>
+
+	Include /usr/local/OSA/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc	
+	AuthBasicAuthoritative Off
+	OSAAuthoritative On
+	OSAEnable on
+	OSABasicAuthEnable On
+	OSACookieAuthEnable On
+	OSACookieAuthName OSAAuthToken
+	OSACookieAuthTTL 60
+	OSAServerName http://r-lnx-jmjb0521
+	OSACookieAuthLoginForm /ApplianceManagerAdmin/auth/loginForm/
+	OSARequire group  Admin
+	OSAIdentityHeadersMapping userName,X_REMOTE_USER;firstName,X_OSA_FIRSTNAME;lastName,X_OSA_LASTNAME;entity,X_OSA_ENTITY;emailAddress,X_OSA_EMAIL;extra,X_OSA_EXTRA
+	
+	
+	
+	OSAResourceName ApplianceManagerAdmin
+
+	OSACheckGlobalQuotas Off
+	OSACheckUserQuotas Off
+
+
+	OSALogHit Off
+	
+	ProxyPassReverseCookieDomain localhost r-lnx-jmjb0521
+	ProxyPassReverseCookiePath /  /
+RequestHeader set Public-Root-URI "%{publicServerProtocol}e%{publicServerName}e/ApplianceManagerAdmin"
+
+
+
+
+	ProxyPassReverse http://localhost:82/ApplianceManager
+	
+</Location>
 <Location  /ApplianceManagerAdmin/auth/>
 
 	Include /usr/local/OSA/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc	
@@ -25,14 +60,14 @@
 
 	OSALogHit Off
 	
-	ProxyPassReverseCookieDomain 127.0.0.1 r-lnx-jmjb0521
+	ProxyPassReverseCookieDomain localhost r-lnx-jmjb0521
 	ProxyPassReverseCookiePath /  /
 
 
 
 
 
-	ProxyPassReverse http://127.0.0.1:81/ApplianceManager/auth/
+	ProxyPassReverse http://localhost:82/ApplianceManager/auth/
 	
 </Location>
 <Location  /ApplianceManagerAdmin/auth/token>
@@ -59,14 +94,14 @@
 
 	OSALogHit Off
 	
-	ProxyPassReverseCookieDomain 127.0.0.1 r-lnx-jmjb0521
+	ProxyPassReverseCookieDomain localhost r-lnx-jmjb0521
 	ProxyPassReverseCookiePath /  /
 
 
 
 
 
-	ProxyPassReverse http://127.0.0.1:81/ApplianceManager/auth/token
+	ProxyPassReverse http://localhost:82/ApplianceManager/auth/token
 	
 </Location>
 <Location  /ApplianceManagerAdmin/users/me>
@@ -93,14 +128,62 @@
 
 	OSALogHit Off
 	
-	ProxyPassReverseCookieDomain 127.0.0.1 r-lnx-jmjb0521
+	ProxyPassReverseCookieDomain localhost r-lnx-jmjb0521
 	ProxyPassReverseCookiePath /  /
 
 
 
 
 
-	ProxyPassReverse http://127.0.0.1:81/ApplianceManager/users/me
+	ProxyPassReverse http://localhost:82/ApplianceManager/users/me
+	
+</Location>
+<Location  /energyrecorder>
+
+	Include /usr/local/OSA/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc	
+	OSAEnable Off
+	
+	
+	
+	OSAResourceName energyrecorder
+
+	OSACheckGlobalQuotas Off
+	OSACheckUserQuotas Off
+
+
+	OSALogHit Off
+	
+	ProxyPassReverseCookieDomain 127.0.0.1 r-lnx-jmjb0521
+
+
+
+
+
+	ProxyPassReverse http://127.0.0.1:83/energyrecorder
+	
+</Location>
+<Location  /resources>
+
+	Include /usr/local/OSA/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc	
+	OSAEnable Off
+	
+	
+	
+	OSAResourceName FlaskEnergyRecorder
+
+	OSACheckGlobalQuotas Off
+	OSACheckUserQuotas Off
+
+
+	OSALogHit Off
+	
+	ProxyPassReverseCookieDomain 10.0.2.5 r-lnx-jmjb0521
+
+
+
+
+
+	ProxyPassReverse http://10.0.2.5:8888/resources
 	
 </Location>
 <Location  /sensonet>
@@ -120,7 +203,7 @@
 	
 	
 	
-	OSAResourceName sensonet
+	OSAResourceName Sensonet
 
 	OSACheckGlobalQuotas Off
 	OSACheckUserQuotas Off
@@ -129,7 +212,7 @@
 	OSALogHit On
 	
 	ProxyPassReverseCookieDomain localhost r-lnx-jmjb0521
-RequestHeader set X_PUBLIC_URI_ROOT "%{publicServerProtocol}e%{publicServerName}e:%{publicServerPort}e/sensonet"
+RequestHeader set X_PUBLIC_URI_ROOT "%{publicServerProtocol}e%{publicServerName}e/sensonet"
 
 
 
@@ -137,7 +220,7 @@ RequestHeader set X_PUBLIC_URI_ROOT "%{publicServerProtocol}e%{publicServerName}
 	ProxyPassReverse http://localhost:83/sensonet
 	
 </Location>
-<Location  /testpp>
+<Location  /sensonet/resources/connectors>
 
 	Include /usr/local/OSA/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc	
 	AuthBasicAuthoritative Off
@@ -148,12 +231,12 @@ RequestHeader set X_PUBLIC_URI_ROOT "%{publicServerProtocol}e%{publicServerName}
 	OSACookieAuthName OSAAuthToken
 	OSACookieAuthTTL 60
 	OSAServerName http://r-lnx-jmjb0521
-	OSARequire group  test-pp
-	RequestHeader unset X_REMOTE_USER
+	OSARequire group  SensonetAdmin
+	OSAIdentityHeadersMapping userName,X_REMOTE_USER;firstName,X_OSA_FIRSTNAME;lastName,X_OSA_LASTNAME;entity,X_OSA_ENTITY;emailAddress,X_OSA_EMAIL;extra,X_OSA_EXTRA
 	
 	
 	
-	OSAResourceName testPP
+	OSAResourceName SensonetConnectors
 
 	OSACheckGlobalQuotas Off
 	OSACheckUserQuotas Off
@@ -162,56 +245,27 @@ RequestHeader set X_PUBLIC_URI_ROOT "%{publicServerProtocol}e%{publicServerName}
 	OSALogHit Off
 	
 	ProxyPassReverseCookieDomain localhost r-lnx-jmjb0521
+#Require ip 127.0.0.1
 
 
 
 
-
-	ProxyPassReverse http://localhost:83/testpp
+	ProxyPassReverse http://localhost:83/sensonet/resources/connectors
 	
 </Location>
-<Location  /testpp/sub>
-
-	Include /usr/local/OSA/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc	
-	AuthBasicAuthoritative Off
-	OSAAuthoritative On
-	OSAEnable on
-	OSABasicAuthEnable On
-	OSACookieAuthEnable On
-	OSACookieAuthName OSAAuthToken
-	OSACookieAuthTTL 60
-	OSAServerName http://r-lnx-jmjb0521
-	OSARequire group  test-pp-sub
-	RequestHeader unset X_REMOTE_USER
-	
-	
-	
-	OSAResourceName testPPSub
-
-	OSACheckGlobalQuotas Off
-	OSACheckUserQuotas Off
-
-
-	OSALogHit Off
-	
-	ProxyPassReverseCookieDomain localhost r-lnx-jmjb0521
-
-
-
-
-
-	ProxyPassReverse http://localhost:83/testpp/sub/
-	
-</Location>
-ProxyPass /testpp/sub http://localhost:83/testpp/sub/ nocanon
-
-ProxyPass /testpp http://localhost:83/testpp nocanon
+ProxyPass /sensonet/resources/connectors http://localhost:83/sensonet/resources/connectors nocanon
 
 ProxyPass /sensonet http://localhost:83/sensonet nocanon
 
-ProxyPass /ApplianceManagerAdmin/users/me http://127.0.0.1:81/ApplianceManager/users/me nocanon
+ProxyPass /resources http://10.0.2.5:8888/resources nocanon
 
-ProxyPass /ApplianceManagerAdmin/auth/token http://127.0.0.1:81/ApplianceManager/auth/token nocanon
+ProxyPass /energyrecorder http://127.0.0.1:83/energyrecorder nocanon
 
-ProxyPass /ApplianceManagerAdmin/auth/ http://127.0.0.1:81/ApplianceManager/auth/ nocanon
+ProxyPass /ApplianceManagerAdmin/users/me http://localhost:82/ApplianceManager/users/me nocanon
+
+ProxyPass /ApplianceManagerAdmin/auth/token http://localhost:82/ApplianceManager/auth/token nocanon
+
+ProxyPass /ApplianceManagerAdmin/auth/ http://localhost:82/ApplianceManager/auth/ nocanon
+
+ProxyPass /ApplianceManagerAdmin http://localhost:82/ApplianceManager nocanon
 

@@ -141,7 +141,7 @@ function configureEtc(){
 	ln -s $INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php Settings.ini.php
 	#Apache Module Settings
 	[ -f osa-endpoints-settings.inc ] && rm osa-endpoints-settings.inc
-	ln -s $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc osa-endpoints-settings.inc
+	ln -s $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc.$RDBMS osa-endpoints-settings.inc
 	
 	#Template for apache config generation (virtualHosts/node, Location/endpoints)
 	[ -f https_virtualhost_template.php ] &&  rm https_virtualhost_template.php
@@ -397,18 +397,31 @@ function configureMySQLSettings(){
 	
 }
 ######################################################################
+# configureSqliteSettings
+######################################################################
+# configure SqLite settings (DB file)
+######################################################################
+function configureSqliteSettings(){
+	sed -i "s|\(OSASqliteFilename \).*|\1$INSTALL_DIR/sql/sqlite/osa.db|" $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc.$RDBMS
+	sed -i 's|.*"RDBMS".*|	define("RDBMS", "'$RDBMS'");|' $INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php
+	sed -i 's|.*"SQLITE_DATABASE_PATH".*|	define("SQLITE_DATABASE_PATH", "'$INSTALL_DIR'/sql/sqlite/osa.db");|' $INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php
+}
+######################################################################
 # configureMySQLCreds
 ######################################################################
 # configure application (module, web app) with proper mysql creds
 ######################################################################
 function configureMySQLCreds(){
+	sed -i 's|.*"RDBMS".*|	define("RDBMS", "$RDBMS");|' $INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php
+	changeProperty $INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php
 	changeProperty $INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php BDPwd '"'$APPLIANCE_MYSQL_PW'";'
 	changeProperty $INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php BDUser '"'$APPLIANCE_MYSQL_USER'";'
 	changeProperty $INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php BDName '"'$APPLIANCE_MYSQL_SCHEMA'@'$APPLIANCE_MYSQL_HOST':'$APPLIANCE_MYSQL_PORT'";'
 	
-	cat $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc | sed "s/\(OSAPort \).*/\1$APPLIANCE_MYSQL_PORT/g"| sed "s/\(OSAHost \).*/\1$APPLIANCE_MYSQL_HOST/g" | sed "s/\(OSAPassword \).*/\1$APPLIANCE_MYSQL_PW/g"| sed "s/\(OSADB \).*/\1$APPLIANCE_MYSQL_SCHEMA/g"| sed "s/\(OSAUser \).*/\1$APPLIANCE_MYSQL_USER/g" > /tmp/$$.osa-endpoints-settings.inc
-	:>$INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc
-	cat /tmp/$$.osa-endpoints-settings.inc >> $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc
+
+	cat $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc.$RDBMS | sed "s/\(OSAPort \).*/\1$APPLIANCE_MYSQL_PORT/g"| sed "s/\(OSAHost \).*/\1$APPLIANCE_MYSQL_HOST/g" | sed "s/\(OSAPassword \).*/\1$APPLIANCE_MYSQL_PW/g"| sed "s/\(OSADB \).*/\1$APPLIANCE_MYSQL_SCHEMA/g"| sed "s/\(OSAUser \).*/\1$APPLIANCE_MYSQL_USER/g" > /tmp/$$.osa-endpoints-settings.inc
+	:>$INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc.$RDBMS
+	cat /tmp/$$.osa-endpoints-settings.inc >> $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc.$RDBMS
 }
 ######################################################################
 # configurePathAndSettings
@@ -549,7 +562,7 @@ function createApacheConf(){
 	mkdir -p $LOG_DIR/local/
 	[ -h  /var/www/local/main/ApplianceManager ] && rm  /var/www/local/main/ApplianceManager
 	ln -s $INSTALL_DIR/ApplianceManager.php /var/www/local/main/ApplianceManager
-	[ -d $INSTALL_DIR/ApplianceManager.php/api/cache ] && $INSTALL_DIR/ApplianceManager.php/api/cache
+	[ -d $INSTALL_DIR/ApplianceManager.php/api/cache ] && rm -rf $INSTALL_DIR/ApplianceManager.php/api/cache
 	mkdir -p $INSTALL_DIR/ApplianceManager.php/api/cache
 	chown -R $APACHE_USER:$APACHE_GROUP $INSTALL_DIR/ApplianceManager.php/api/cache
 	sed -i -e "s/\$r = new Restler.*/\$r = new Restler(True);/" $INSTALL_DIR/ApplianceManager.php/api/restler-gateway.php
@@ -602,12 +615,14 @@ function createBasicNodes(){
 			echo ""
 			echo "                 *****************************************"
 			echo ""
-			echo "Something has failed in this configuration.... check ouput for details...."
+			echo "HTTPS Node: Something has failed in this configuration.... check ouput for details...."
 			echo "OSA Configuration IS NOT done, exiting..."
 			echo ""
 			echo "                 *****************************************"
 			echo ""
 			echo ""
+echo curl -i -X POST -k -H  "Content-Type: application/x-www-form-urlencoded; charset=UTF-8"  -d @"/tmp/$$.postdata" --user "$OSA_USAGE_USER:$OSA_ADMIN_PWD"  http://127.0.0.1:$PRIVATE_VHOST_PORT/ApplianceManager/nodes/
+exit 42
 			shellExit 1
 		fi
 	fi
@@ -626,7 +641,7 @@ function createBasicNodes(){
 			echo ""
 			echo "                 *****************************************"
 			echo ""
-			echo "Something has failed in this configuration.... check ouput for details...."
+			echo "HTTP Node: Something has failed in this configuration.... check ouput for details...."
 			echo "OSA Configuration IS NOT done, exiting..."
 			echo ""
 			echo "                 *****************************************"
@@ -740,6 +755,25 @@ function upgradeDB(){
 		fi
 	fi
 			
+}
+######################################################################
+# createMysqlSchema
+######################################################################
+# Create (or replace) required MySQL object (schema, tables user)
+######################################################################
+function createSqliteSchema(){
+	if [ -f $INSTALL_DIR/sql/sqlite/osa.db -a $KEEP_DB -eq 0 ] ; then
+		rm $INSTALL_DIR/sql/sqlite/osa.db
+	fi
+	if [ $KEEP_DB -ne 1 ]; then
+		echo "Creating SQLite schema"
+		cat  ../../sql/sqlite/creation.sql|  sed "s/PRIVATE_VHOST_PORT/$PRIVATE_VHOST_PORT/g">/tmp/$$.sql
+		echo "sqlite3 ../../sql/sqlite/osa.db </tmp/$$.sql" >db_schema.log
+		sqlite3 ../../sql/sqlite/osa.db </tmp/$$.sql >>db_schema.log
+	fi
+	chown $APACHE_USER:$APACHE_GROUP ../../sql/sqlite/osa.db
+	chown $APACHE_USER:$APACHE_GROUP ../../sql/sqlite/
+	chmod 600 ../../sql/sqlite/osa.db
 }
 
 ######################################################################
@@ -897,19 +931,26 @@ echo '	 	 -admin-new-password myNewPassword '
 function verifyParameters(){
 
 RC=0;
-if [ -z "$APPLIANCE_MYSQL_PW" ] ; then
-	echo "mysql appliance password is missing"
+if [ "$RDBMS" != "mysql" -a "$RDBMS" != "sqlite" ] ; then
+	echo "Invalid rdbms system: $RDBMS"
 	RC=21
+	return $RC
 fi
-if [ -z "$ROOT_MYSQL_PW" ] ; then
-	echo "mysql root password is missing"
-	RC=21
-else
-	mysql -u root -p"$ROOT_MYSQL_PW"  -h $APPLIANCE_MYSQL_HOST  -P $APPLIANCE_MYSQL_PORT<<EOF >/dev/null
+if [ "$RDBMS" == "mysql" ] ; then
+	if [ -z "$APPLIANCE_MYSQL_PW" ] ; then
+		echo "mysql appliance password is missing"
+		RC=21
+	fi
+	if [ -z "$ROOT_MYSQL_PW" ] ; then
+		echo "mysql root password is missing"
+		RC=21
+	else
+		mysql -u root -p"$ROOT_MYSQL_PW"  -h "$APPLIANCE_MYSQL_HOST"  -P "$APPLIANCE_MYSQL_PORT"<<EOF >/dev/null
 EOF
-	if [ $? -ne 0 ] ; then
-		echo "mysql root password is invalid"
-		RC=22
+		if [ $? -ne 0 ] ; then
+			echo "mysql root password is invalid"
+			RC=22
+		fi
 	fi
 fi
 if [ -z $APPLIANCE_ADMIN_PW ]  ; then
@@ -1077,7 +1118,6 @@ else
 fi
 	
 #set default values for parameters a second time to have  parameters computed from OS parameters (ex: LOG_DIR)
-. envvars.sh
 if [  "$APPLIANCE_MYSQL_HOST" == "" ] ; then
 	APPLIANCE_MYSQL_HOST=localhost
 fi
@@ -1150,6 +1190,9 @@ while [ "$1" != "" ] ; do
 	if [ "$1" == "-enable-absolute-uri" ] ; then
 		ABSOLUTE_URI=1
 	fi
+	if [ "$1" == "-rdbms" ] ; then
+		RDBMS=$2
+	fi
 	if [ "$1" == "-h" ] ; then
 		usage
 		shellExit 1
@@ -1191,9 +1234,14 @@ configureCryptoKey
 mkdir -p /var/www/local/main
 mkdir -p $LOG_DIR
 
-configureMySQLSettings
-createMysqlSchema
-configureMySQLCreds
+if [ "$RDBMS" == "mysql" ] ; then
+	configureMySQLSettings
+	createMysqlSchema
+	configureMySQLCreds
+else
+	createSqliteSchema
+	configureSqliteSettings
+fi
 createApacheConf
 configurePathAndSettings
 configureShellScripts
@@ -1215,3 +1263,5 @@ deleteTempFiles
 echo "OSA Configuration done, exiting..."
 echo "You can now connect https://$HTTPS_ADMIN_VHOST_NAME:$HTTPS_ADMIN_VHOST_PORT/ (with admin as user and $APPLIANCE_ADMIN_PW as password for credentials) to manage OSA."
 exit 0
+
+
