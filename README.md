@@ -45,7 +45,7 @@ First of all, install required packages and clone OSA repository
 		#RDBMS=mysql && RDBMS_PACKAGE="php-mysql mysql-server default-libmysqlclient-dev"
 		#RDBMS=sqlite && RDBMS_PACKAGE="sqlite3 php-sqlite3 libsqlite3-dev"
 
-    		apt-get install apache2 php php-curl  openssl curl zip autoconf apache2-dev git build-essential  zlib1g-dev zlib1g $RDBMS_PACKAGE
+		apt-get install apache2 php php-curl  openssl curl zip autoconf apache2-dev git build-essential  zlib1g-dev zlib1g $RDBMS_PACKAGE
 
     
 	**Since Ubuntu 16.04 (included)**
@@ -116,7 +116,7 @@ It's probably because my sql server didn't restart properly after install. In su
 
 		service mysql restart
 
-## Docker
+## Docker (Unbuntu 16.04)
 Instead of installaling on a box, you can also run OSA as a docker container.
 ### Build an OSA Image
 
