@@ -414,7 +414,7 @@ function configureSqliteSettings(){
 # configure application (module, web app) with proper mysql creds
 ######################################################################
 function configureMySQLCreds(){
-	sed -i 's|.*"RDBMS".*|	define("RDBMS", "$RDBMS");|' $INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php
+	sed -i 's|.*"RDBMS".*|	define("RDBMS", "'$RDBMS'");|' $INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php
 	changeProperty $INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php BDPwd '"'$APPLIANCE_MYSQL_PW'";'
 	changeProperty $INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php BDUser '"'$APPLIANCE_MYSQL_USER'";'
 	changeProperty $INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php BDName '"'$APPLIANCE_MYSQL_SCHEMA'@'$APPLIANCE_MYSQL_HOST':'$APPLIANCE_MYSQL_PORT'";'
