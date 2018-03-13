@@ -142,6 +142,8 @@ function configureEtc(){
 	#Apache Module Settings
 	[ -f osa-endpoints-settings.inc ] && rm osa-endpoints-settings.inc
 	ln -s $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc.$RDBMS osa-endpoints-settings.inc
+	[ -f $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc ] && rm $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc
+	ln -s $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc.$RDBMS $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc
 	
 	#Template for apache config generation (virtualHosts/node, Location/endpoints)
 	[ -f https_virtualhost_template.php ] &&  rm https_virtualhost_template.php
@@ -441,15 +443,6 @@ function configurePathAndSettings(){
 	
 	:>$INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php
 	cat /tmp/$$.Settings.ini.php >> $INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php
-	
-	
-	
-	cat $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc.$RDBMS \
-		| sed "s/\(OSAPassword \).*/\1$APPLIANCE_MYSQL_PW/g" \
-		> /tmp/$$.osa-endpoints-settings.inc
-	
-	:>$INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc.$RDBMS
-	cat /tmp/$$.osa-endpoints-settings.inc >> $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc
 	
 	
 	curPath=`cat $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/applianceManagerRewriting.conf | grep "<Directory" | awk -F\" '{print $2}' | sed 's|\(.*\)/ApplianceManager.php|\1|'`
