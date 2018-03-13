@@ -244,7 +244,7 @@ function addNode($nodeName = NULL, $request_data = NULL){
 			$stmt=$db->prepare($strSQL);
 			$stmt->execute($bindPrms);
 		}catch(Exception $e){
-			if (strpos($e->getMessage(),"Duplicate entry")>0){
+			if (strpos($e->getMessage(),"Duplicate entry")>=0 ||strpos($e->getMessage(),"UNIQUE constraint failed")>=0 ){
 				$error->setHttpStatus(409);
 				$error->setFunctionalLabel("Node " . $nodeName . " already exists");
 			}else{

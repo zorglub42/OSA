@@ -128,7 +128,7 @@ function createServiceHeadersMapping($serviceName , $userProperty, $headerName){
 			$stmt=$db->prepare($strSQL);
 			$stmt->execute($qryPrms);
 		}catch (Exception $e){
-			if (strpos($e->getMessage(),"Duplicate entry")){
+			if (strpos($e->getMessage(),"Duplicate entry")>=0 ||strpos($e->getMessage(),"UNIQUE constraint failed")>=0 ){
 				$error->setHttpStatus(409);
 				$error->setFunctionalCode(5);
 				$error->setFunctionalLabel("Header mapping for user property " . $userProperty . " and Service " . $serviceName . " already exists " );
@@ -597,11 +597,12 @@ function createService($serviceName = NULL, $request_data=NULL){
 				throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());;
 			}
 		}catch (Exception $e){
-			if (strpos($e->getMessage(),"Duplicate entry")){
+			if (strpos($e->getMessage(),"Duplicate entry")>=0 ||strpos($e->getMessage(),"UNIQUE constraint failed")>=0 ){
 				$error->setHttpStatus(409);
 				$error->setFunctionalCode(5);
 				$error->setFunctionalLabel("Service " . $serviceName . " already exists or a sevice with " . $request_data["frontEndEndPoint"] . " as front end URI already exists" );
-			}elseif (strpos($e->getMessage(),"a foreign key constraint fails")){
+			}elseif (strpos(strtolower($e->getMessage()), "foreign key constraint fail")>=0){
+
 				$error->setHttpStatus(404);
 				$error->setFunctionalCode(5);
 				$error->setFunctionalLabel("The group " . $request_data["groupName"] . " does not exists");
@@ -652,7 +653,7 @@ function deleteService($serviceName){
 				$error->setHttpStatus(500);
 				$error->setFunctionalCode(3);
 				$error->setFunctionalLabel($e->getMessage());
-				if (strpos($e->getMessage(),"a foreign key constraint fails")){
+				if (strpos(strtolower($e->getMessage()), "foreign key constraint fail")>=0){
 					$error->setHttpStatus(400);
 					$error->setFunctionalLabel("The service " . $serviceName . " is used by some users. Please remove subscribtions to it first");
 				}
@@ -964,12 +965,12 @@ function updateService($serviceName = NULL, $request_data=NULL){
 
 
 		}catch (Exception $e){
-			if (strpos($e->getMessage(),"Duplicate entry")){
+			if (strpos($e->getMessage(),"Duplicate entry")>=0 ||strpos($e->getMessage(),"UNIQUE constraint failed")>=0 ){
 				$error->setHttpStatus(409);
 				$error->setFunctionalCode(5);
 				$error->setFunctionalLabel("Service " . $serviceName . " already exists");
 
-			}else if (strpos($e->getMessage(),"a foreign key constraint fails")){
+			}elseif (strpos(strtolower($e->getMessage()), "foreign key constraint fail")>=0){
 				$error->setHttpStatus(404);
 				$error->setFunctionalLabel("The group " . $request_data["groupName"] . " does not exists");
 			}else{

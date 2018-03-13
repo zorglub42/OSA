@@ -224,7 +224,7 @@ function addUser($userName = NULL, $request_data = NULL){
 			$stmt->execute(array($mySQLuserName,$mySQLPassword,$mySQLmd5Password,$mySQLEndDate,$mySQLEmail,$mySQLFirstname,$mySQLLastname,$mySQLEntity,$mySQLExtra));
 		}catch (Exception $e){
 				$error->setFunctionalCode(5);
-				if (strpos($e->getMessage(),"Duplicate entry")>0){
+				if (strpos($e->getMessage(),"Duplicate entry")>=0 ||strpos($e->getMessage(),"UNIQUE constraint failed")>=0 ){
 					$error->setHttpStatus(409);
 					$error->setFunctionalLabel("User " . $userName . " already exists");
 				}else{
@@ -558,7 +558,7 @@ function addUserToGroup($userName, $groupName){
 			$stmt=$db->prepare($strSQL);
 			$stmt->execute(array($mySQLGroupName,$mySQLuserName));
 		}catch (Exception $e){
-			if (strpos($e->getMessage(),"Duplicate entry")){
+			if (strpos($e->getMessage(),"Duplicate entry")>=0 ||strpos($e->getMessage(),"UNIQUE constraint failed")>=0 ){
 				$error->setHttpStatus(409);
 				$error->setFunctionalCode(5);
 				$error->setFunctionalLabel("Group " . $groupName . " already exists for user " . $userName);
@@ -769,12 +769,12 @@ function addUserQuota($userName, $serviceName, $request_data=NULL){
 								 $request_data["reqDay"],
 								 $request_data["reqMonth"]));
 		}catch (Exception $e){
-				if (strpos($e->getMessage(),"Duplicate entry")){
+				if (strpos($e->getMessage(),"Duplicate entry")>=0 ||strpos($e->getMessage(),"UNIQUE constraint failed")>=0 ){
 					$error->setHttpStatus(409);
 					$error->setFunctionalCode(5);
 					$error->setFunctionalLabel("Quota for service " . $serviceName . " and user " . $userName . " already exists");
 					
-				}elseif (strpos($e->getMessage,"foreign key constraint fails")){
+				}elseif (strpos(strtolower($e->getMessage()), "foreign key constraint fail")>=0){
 					$error->setHttpStatus(404);
 					$error->setFunctionalCode(6);
 					$error->setFunctionalLabel("Service " . $serviceName . " or user " . $userName . " does not exists");
@@ -882,12 +882,12 @@ function updateUserQuotas($userName, $serviceName, $request_data){
 								 cut($serviceName, SERVICENAME_LENGTH),
 								 cut($userName, USERNAME_LENGTH)));
 		}catch (Exception $e){
-			if (strpos($e->getMessage(),"Duplicate entry")){
+			if (strpos($e->getMessage(),"Duplicate entry")>=0 ||strpos($e->getMessage(),"UNIQUE constraint failed")>=0 ){
 				$error->setHttpStatus(409);
 				$error->setFunctionalCode(5);
 				$error->setFunctionalLabel("Quota for service " . $serviceName . " and user " . $userName . " already exists");
 				
-			}elseif (strpos($e->geMessage(),"foreign key constraint fails")){
+			}elseif (strpos(strtolower($e->getMessage()), "foreign key constraint fail")>=0){
 				$error->setHttpStatus(404);
 				$error->setFunctionalCode(6);
 				$error->setFunctionalLabel("Service " . $serviceName . " or user " . $userName . " does not exists");

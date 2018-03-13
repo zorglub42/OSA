@@ -203,7 +203,7 @@ function addGroup($groupName = NULL, $description = NULL){
 		$stmt=$db->prepare($strSQL);
 		$stmt->execute(array(cut($groupName, GROUPNAME_LENGTH), cut($description, DESCRIPTION_LENGTH)));
 	}catch (Exception $e){
-		if (strpos($e->getMessage(),"Duplicate entry")){
+		if (strpos($e->getMessage(),"Duplicate entry")>=0 ||strpos($e->getMessage(),"UNIQUE constraint failed")>=0 ){
 			$error->setHttpStatus(500);
 			$error->setHttpStatus(409);
 			$error->setFunctionalCode(5);
@@ -262,7 +262,7 @@ try{
 	$stmt->execute(array("%U=" . cut($groupName, GROUPNAME_LENGTH) . "%"));
 
 }catch(Exception $e){
-	if (strpos($e->getMessage(),"a foreign key constraint fails")){
+	if (strpos(strtolower($e->getMessage()), "foreign key constraint fail")>=0){
 		$error->setFunctionalLabel("The group " . $groupName . " is used by some services. Please remove subscribtions/user's quotas and services referencing it first");
 		$error->setHttpStatus(403);
 	}else{

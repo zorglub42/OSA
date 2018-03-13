@@ -163,7 +163,7 @@ function deleteCounter($counterName){
 			}
 		}catch (Exception $e){
 			if($error->getHttpStatus() != 200){
-				if (strpos($e->getMessage(),"a foreign key constraint fails")){
+				if (strpos(strtolower($e->getMessage()), "foreign key constraint fail")>=0){
 					$error->setFunctionalLabel("The counter " . $counterName. " is used by some services. Please remove subscribtions and services referencing it first");
 					$error->setHttpStatus(400);
 				}else{
