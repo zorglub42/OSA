@@ -33,16 +33,28 @@ First of all, install required packages and clone OSA repository
     
 	**Until Ubuntu 16.04 (not included) OR Debian/Raspbian Jessie**
 
-    		apt-get install apache2 php5 php5-curl php5-mysql  mysql-server libmysqlclient-dev openssl curl zip autoconf apache2-prefork-dev git build-essential
+		#Choose your database manegement system (uncomment the proper line)
+		#RDBMS=mysql && RDBMS_PACKAGE="php5-mysql mysql-server libmysqlclient-dev"
+		#RDBMS=sqlite && RDBMS_PACKAGE="sqlite3 php5-sqlite libsqlite3-dev"
+
+		apt-get install apache2 php5 php5-curl openssl curl zip autoconf apache2-prefork-dev git build-essential $RDBMS_PACKAGE
     
 	**Debian/Raspbian Stretch**
 
-    		apt-get install apache2 php5 php5-curl php5-mysql mysql-server default-libmysqlclient-dev openssl curl zip autoconf apache2-prefork-dev git build-essential
+		#Choose your database manegement system (uncomment the proper line)
+		#RDBMS=mysql && RDBMS_PACKAGE="php-mysql mysql-server default-libmysqlclient-dev"
+		#RDBMS=sqlite && RDBMS_PACKAGE="sqlite3 php-sqlite3 libsqlite3-dev"
+
+    		apt-get install apache2 php php-curl  openssl curl zip autoconf apache2-dev git build-essential  zlib1g-dev zlib1g $RDBMS_PACKAGE
 
     
 	**Since Ubuntu 16.04 (included)**
-
-    		apt-get install apache2 libapache2-mod-php php php-curl php-mysql mysql-server libmysqlclient-dev openssl curl zip autoconf apache2-dev git build-essential zlib1g-dev zlib1g
+	
+		#Choose your database manegement system (uncomment the proper line)
+		#RDBMS=mysql && RDBMS_PACKAGE="mysql-server php-mysql libmysqlclient-dev"
+		#RDBMS=sqlite && RDBMS_PACKAGE="sqlite3 php-sqlite3 libsqlite3-dev"
+		
+		apt-get install apache2 libapache2-mod-php php php-curl openssl curl zip autoconf apache2-dev git build-essential zlib1g-dev zlib1g $RDBMS_PACKAGE
   - clone git repo
 
 		git clone https://github.com/zorglub42/OSA
@@ -50,14 +62,14 @@ First of all, install required packages and clone OSA repository
   
 		cd OSA
 
-Then run install.sh with "-m /path/to/your/local/installation" as argument 
+Then run install.sh with "-rdbms $RDBMS -m /path/to/your/local/installation" as argument 
 
 Note: 
 - Your local installation folder will be created by install.sh if it does not exists
 
 
 		Ex:
-			./install.sh -m /usr/local/OSA
+			./install.sh -rdbms $RDBMS -m /usr/local/OSA
 			
 		
 - Go to $INSTALL_DIR/RunTimeAppliance/shell
@@ -67,10 +79,10 @@ Note:
 		
 - Edit envvars.sh file and set configuration variables according to your system. 
 
-		By default just following are required:
+		By default just following changes are required:
 			APACHE_ADMIN_MAIL: system administor mail (for information, no email send)
-			ROOT_MYSQL_PW: password for mysql "roor" user
-			APPLIANCE_MYSQL_PW: whished password for mysql user created to allow application to connect mysql on application database
+			ROOT_MYSQL_PW: password for mysql "roor" user (if using mysql)
+			APPLIANCE_MYSQL_PW: whished password for mysql user created to allow application to connect mysql on application database  (if using mysql)
 			APPLIANCE_ADMIN_PW: "admin" appliaction user whished password
 			USE_HTTP: publish (or not) service with HTTP
 			USE_HTTPS: publish (or not) service with HTTPS
