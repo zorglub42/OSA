@@ -236,23 +236,6 @@ function getExceededCounter($request_data){
 
 	try {
 		$db=openDBConnection();
-		/*$strSQL = "";
-		$strSQL = $strSQL . 'Select * from (';
-		$strSQL = $strSQL . '	SELECT c.* , s.serviceName, NULL userName, s.reqSec, s.reqDay, s.reqMonth';
-		$strSQL = $strSQL . '	FROM counters c,';
-		$strSQL = $strSQL . '		 services s';
-		$strSQL = $strSQL . '	WHERE   (counterName like concat(\'R=\',s.serviceName,\'$$$S=%\') and c.value>=s.reqSec)';
-		$strSQL = $strSQL . '	OR      (counterName like concat(\'R=\',s.serviceName,\'$$$D=%\') and c.value>=s.reqDay)';
-		$strSQL = $strSQL . '	OR      (counterName like concat(\'R=\',s.serviceName,\'$$$M=%\') and c.value>=s.reqMonth)';
-		$strSQL = $strSQL . '	UNION';
-		$strSQL = $strSQL . '	SELECT c2.* , uq.serviceName, uq.userName, uq.reqSec, uq.reqDay, uq.reqMonth';
-		$strSQL = $strSQL . '	FROM counters c2,';
-		$strSQL = $strSQL . '		 usersquotas uq';
-		$strSQL = $strSQL . '	WHERE   (counterName like concat(\'R=\',uq.serviceName,\'$$$U=\', uq.userName, \'$$$S=%\') and c2.value>=uq.reqSec) ';
-		$strSQL = $strSQL . '	OR      (counterName like concat(\'R=\',uq.serviceName, \'$$$U=\', uq.userName, \'$$$D=%\') and c2.value>=uq.reqDay)';
-		$strSQL = $strSQL . '	OR      (counterName like concat(\'R=\',uq.serviceName,\'$$$U=\', uq.userName, \'$$$M=%\') and c2.value>=uq.reqMonth)';
-		$strSQL = $strSQL . ') excedeed ';
-		$strSQL = $strSQL . 'order by serviceName, userName';*/
 
 		$strSQL = "SELECT * from excedeedcounters";
 		$strSQL = $strSQL . ' order by serviceName, userName';
