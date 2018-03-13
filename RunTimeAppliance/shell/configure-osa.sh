@@ -1125,7 +1125,7 @@ function migrateApacheConfig(){
 ######################################################################
 id | grep "uid=0(root)" > /dev/null
 if [ $? -ne 0 ] ; then
-	echo "This scrips must run as root!"
+	echo "This scrips must run as root"
 	shellExit 1
 fi
 
