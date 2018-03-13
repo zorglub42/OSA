@@ -2549,7 +2549,6 @@ static int mysql_authenticate_cookie_user(request_rec *r){
 int Rc=OK;
 const char *sent_pw;
 
-apr_table_set(r->headers_out, "Server", "");
 if (sec->cookieAuthEnable){
 		char token[255];
 
@@ -2692,6 +2691,9 @@ int get_basic_auth_creds(request_rec *r, char **pwd){
 
 int send_request_basic_auth(request_rec *r){
 	char realm[255];
+
+  apr_table_set(r->err_headers_out, "Server", "OSA");
+
 	osa_config_rec *sec = (osa_config_rec *)ap_get_module_config(r->per_dir_config, &osa_module);
   
 	sprintf(realm,"Basic realm=\"%s\"", sec->authName);
