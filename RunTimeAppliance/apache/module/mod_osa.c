@@ -3058,9 +3058,11 @@ static int mysql_forward_identity(request_rec *r)
 		
 		if (r->user != NULL){
 			//We found a user in request (i.e successfull authentication ), search the user in DB
-			sprintf(query,"SELECT %s FROM %s WHERE %s='%s' AND %s",
-						fields,  sec->mysqlpwtable, sec->mysqlNameField, r->user, str_format(r, sec->mysqlUserCondition));
-			
+      sprintf(query,"SELECT %s FROM %s WHERE %s='%s'", fields,  sec->mysqlpwtable, sec->mysqlNameField, r->user);
+      if (sec->mysqlUserCondition && strlen(sec->mysqlUserCondition)){
+              sprintf(query, "%s AND %s", query, sec->mysqlUserCondition);
+      }
+
 			if (mysql_query(connection.handle, query) != 0) {
 					LOG_ERROR_1(APLOG_ERR, 0, r, "mysql_forward_identity: MySQL ERROR: %s: ", mysql_error(connection.handle));
 					return osa_error(r,"DB query error",500);
