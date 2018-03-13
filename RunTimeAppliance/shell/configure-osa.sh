@@ -573,7 +573,14 @@ function createApacheConf(){
 	mkdir -p $LOG_DIR/admin/
 	[ -f $APACHE_SITES_DEFINITION_DIR/osa-admin.conf ] && rm $APACHE_SITES_DEFINITION_DIR/osa-admin.conf
 	echo "Listen $HTTPS_ADMIN_VHOST_ADDR:$HTTPS_ADMIN_VHOST_PORT" >> $APACHE_LISTEN_PORTS 
-	cat   $INSTALL_DIR/RunTimeAppliance/apache/conf/samples/standard/osa-admin.conf  | sed "s/HTTPS_ADMIN_VHOST_ADDR/$HTTPS_ADMIN_VHOST_ADDR/g" | sed "s/HTTPS_ADMIN_VHOST_PORT/$HTTPS_ADMIN_VHOST_PORT/g"  | sed "s/HTTPS_ADMIN_VHOST_NAME/$HTTPS_ADMIN_VHOST_NAME/g"  | sed "s/PRIVATE_VHOST_PORT/$PRIVATE_VHOST_PORT/g" | sed "s/APACHE_ADMIN_MAIL/$APACHE_ADMIN_MAIL/g" | sed "s|LOG_DIR|$LOG_DIR|g" > $APACHE_SITES_DEFINITION_DIR/osa-admin.conf
+		cat	$INSTALL_DIR/RunTimeAppliance/apache/conf/samples/standard/osa-admin  |\
+		sed "s/HTTPS_ADMIN_VHOST_ADDR/$HTTPS_ADMIN_VHOST_ADDR/g" |\
+		sed "s/HTTPS_ADMIN_VHOST_PORT/$HTTPS_ADMIN_VHOST_PORT/g"  |\
+		sed "s/HTTPS_ADMIN_VHOST_NAME/$HTTPS_ADMIN_VHOST_NAME/g"  |\
+		sed "s/PRIVATE_VHOST_PORT/$PRIVATE_VHOST_PORT/g" |\
+		sed "s/APACHE_ADMIN_MAIL/$APACHE_ADMIN_MAIL/g" |\
+		sed "s|LOG_DIR|$LOG_DIR|g"|\
+		sed "s|OSA_VERSION|$VERSION|" > $APACHE_SITES_DEFINITION_DIR/osa-admin.conf
 
 	if [ $ABSOLUTE_URI -eq 0 ] ; then
 		cat $APACHE_SITES_DEFINITION_DIR/osa-admin.conf | grep -v "RequestHeader set Public-Root-URI" > /tmp/$$.osa-admin
