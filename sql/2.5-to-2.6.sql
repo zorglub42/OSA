@@ -10,7 +10,7 @@
 * <http://www.apache.org/licenses/LICENSE-2.0.html>
 *
 *--------------------------------------------------------
-* File Name   : ApplianceManager/RunTimeAppliance/sql/2.4-to-2.5.sql
+* File Name   : ApplianceManager/RunTimeAppliance/sql/2.5-to-2.6.sql
 *
 * Created     : 2014-09-23
 * Authors     : Benoit HERARD <benoit.herard(at)orange.com>

@@ -236,7 +236,7 @@ function getExceededCounter($request_data){
 
 	try {
 		$db=openDBConnection();
-		$strSQL = "";
+		/*$strSQL = "";
 		$strSQL = $strSQL . 'Select * from (';
 		$strSQL = $strSQL . '	SELECT c.* , s.serviceName, NULL userName, s.reqSec, s.reqDay, s.reqMonth';
 		$strSQL = $strSQL . '	FROM counters c,';
@@ -252,8 +252,10 @@ function getExceededCounter($request_data){
 		$strSQL = $strSQL . '	OR      (counterName like concat(\'R=\',uq.serviceName, \'$$$U=\', uq.userName, \'$$$D=%\') and c2.value>=uq.reqDay)';
 		$strSQL = $strSQL . '	OR      (counterName like concat(\'R=\',uq.serviceName,\'$$$U=\', uq.userName, \'$$$M=%\') and c2.value>=uq.reqMonth)';
 		$strSQL = $strSQL . ') excedeed ';
-		$strSQL = $strSQL . 'order by serviceName, userName';
+		$strSQL = $strSQL . 'order by serviceName, userName';*/
 
+		$strSQL = "SELECT * from excedeedcounters";
+		$strSQL = $strSQL . ' order by serviceName, userName';
 		$stmt=$db->prepare($strSQL);
 		$stmt->execute(array());
 		

@@ -26,7 +26,7 @@
 * 1.0.0 - 2012-10-01 : Release of the file
 **/
 
--- Version: 2.7
+-- Version: 2.8
 
 
 
@@ -211,6 +211,27 @@ ON UPDATE NO ACTION) ;
 CREATE INDEX fk_headersmapping_1_idx on headersmapping (serviceName ASC);
 
 
+
+CREATE VIEW excedeedcounters as
+	SELECT c.* , s.serviceName, NULL userName, s.reqSec, s.reqDay, s.reqMonth
+	FROM counters c,
+		 services s	
+	WHERE   (counterName like 'R='||s.serviceName||'$$$S=%' and c.value>=s.reqSec)
+				OR
+		    (counterName like 'R='||s.serviceName||'$$$D=%' and c.value>=s.reqDay)
+				OR
+		    (counterName like 'R='||s.serviceName||'$$$M=%' and c.value>=s.reqMonth)
+	UNION
+	SELECT c2.* , uq.serviceName, uq.userName, uq.reqSec, uq.reqDay, uq.reqMonth	
+	FROM 	counters c2,		 
+			usersquotas uq	
+	WHERE   (counterName like 'R='||uq.serviceName||'$$$U='||uq.userName||'$$$S=%' and c2.value>=uq.reqSec)
+			 	OR      
+			(counterName like 'R='||uq.serviceName||'$$$U='||uq.userName||'$$$D=%' and c2.value>=uq.reqDay)
+				OR      
+			(counterName like 'R='||uq.serviceName||'$$$U='||uq.userName||'$$$M=%' and c2.value>=uq.reqMonth);
+
+
 INSERT INTO `groups` (`groupName`,`description`) VALUES
 ('Admin','Appliance Manager Admin group');
 INSERT INTO `groups` (`groupName`,`description`) VALUES
@@ -234,3 +255,4 @@ INSERT INTO `users` (`userName`,`password`,`endDate`,`emailAddress`,`md5Password
 
 INSERT INTO `usersgroups` (`userName`,`groupName`) VALUES
 ('Admin','Admin');
+

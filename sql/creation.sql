@@ -26,7 +26,7 @@
 * 1.0.0 - 2012-10-01 : Release of the file
 **/
 
--- Version: 2.7
+-- Version: 2.8
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -273,7 +273,22 @@ ON UPDATE NO ACTION) CHARSET=LATIN1  ENGINE=InnoDB;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 
-
+CREATE VIEW  excedeedcounters AS
+	SELECT 	c.* , s.serviceName, NULL userName, s.reqSec, s.reqDay, s.reqMonth	
+	FROM 	counters c,	services s	
+	WHERE 	(counterName like concat('R=',s.serviceName,'$$$S=%') and c.value>=s.reqSec)
+			OR
+			(counterName like concat('R=',s.serviceName,'$$$D=%') and c.value>=s.reqDay)	
+			OR 
+			(counterName like concat('R=',s.serviceName,'$$$M=%') and c.value>=s.reqMonth)	
+	UNION	
+	SELECT	c2.* , uq.serviceName, uq.userName, uq.reqSec, uq.reqDay, uq.reqMonth	
+	FROM 	counters c2,	usersquotas uq	
+	WHERE	(counterName like concat('R=',uq.serviceName,'$$$U=', uq.userName, '$$$S=%') and c2.value>=uq.reqSec) 
+			OR 
+			(counterName like concat('R=',uq.serviceName, '$$$U=', uq.userName, '$$$D=%') and c2.value>=uq.reqDay)	
+			OR 
+			(counterName like concat('R=',uq.serviceName,'$$$U=', uq.userName, '$$$M=%') and c2.value>=uq.reqMonth);
 
 
 /*!40000 ALTER TABLE `groups` DISABLE KEYS */;

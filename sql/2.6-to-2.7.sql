@@ -10,7 +10,7 @@
 * <http://www.apache.org/licenses/LICENSE-2.0.html>
 *
 *--------------------------------------------------------
-* File Name   : ApplianceManager/RunTimeAppliance/sql/2.4-to-2.5.sql
+* File Name   : ApplianceManager/RunTimeAppliance/sql/2.6-to-2.7.sql
 *
 * Created     : 2017-08-09
 * Authors     : zorglub42 <contact@zorglub42.fr>
