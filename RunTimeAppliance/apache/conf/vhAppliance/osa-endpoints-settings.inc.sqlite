@@ -23,7 +23,7 @@
 
 
 	
-	OSASqliteFilename /usr/local/OSA/sql/sqlite/osa.db
+	OSASqliteFilename /home/jmjb0521/Dev/workspace/ApplianceManager/sql/sqlite/osa.db
 
 	OSAUserTable users
 	OSANameField userName
@@ -31,8 +31,7 @@
 	OSAPwEncryption md5
 	OSAGroupTable usersgroups
 	OSAGroupField groupName
-#	OSAUserCondition endDate>now()
-#	OSAUserCondition endDate>DateTime('now')
+	OSAUserCondition endDate>DateTime('now')
 	
 	
 	OSAResourceNameField serviceName
