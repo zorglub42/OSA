@@ -21,7 +21,9 @@
  #--------------------------------------------------------
  # History     :
  # 1.0.0 - 2017-01-19 : Release of the file
+ # 2.0.0 - 2018-03-13 : Default value for RDBMS
 ##
+RDBMS=mysql #compatibility to version before 4.0 (sqlite)
 
 ######################################################################
 # getApacheUserDebian
