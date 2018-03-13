@@ -120,8 +120,9 @@ It's probably because my sql server didn't restart properly after install. In su
 Instead of installaling on a box, you can also run OSA as a docker container.
 ### Build an OSA Image
 
-	wget https://raw.githubusercontent.com/zorglub42/OSA/master/osa.dockerfile.sh -O osa.dockerfile.sh; bash ./osa.dockerfile.sh admin-passwd domain
+	wget https://raw.githubusercontent.com/zorglub42/OSA/master/osa.dockerfile.sh -O osa.dockerfile.sh; bash ./osa.dockerfile.sh [-rdbms mysql|sqlite] admin-passwd domain
 Where parameters are:
+- -rdbms (optional): when set, must be followed by either mysql or sqlite
 - admin-password: OSA admin passwed to set
 - domain (optional): your FQDN (Ex: zorglub42.fr)
 
@@ -130,7 +131,9 @@ Due to the fact that OSA can create Listening port (nodes), it's better to bind 
 Using port mapping will limit the accessibility of created node in the container.
 (refer to docker documentation if you want to use it anyway)
 
-	docker run --name OSA --net=host -d zorglub42:osa
+	docker run --name OSA --net=host -d osa:mysql-VERSION
+	docker run --name OSA --net=host -d osa:sqlite-VERSION
+
 
 **IMPORTANT NOTE:** With --net=host option, container assume that ports 3306, 80, 443 and 6443 are not used on host running it.th
 
