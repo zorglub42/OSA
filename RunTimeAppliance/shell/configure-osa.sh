@@ -563,6 +563,8 @@ function createApacheConf(){
 	$APACHE_ENABLE_SITE osa-local.conf
 
 #Create vitual host for admin usage (publishing of core app protected by osa module)
+	VERSION=$(cat $INSTALL_DIR/ApplianceManager.php/include/Constants.php| grep version|awk -F '"' '{print $4}')
+
 	echo "Creating apache conf for HTTPS ADMIN site"
 	cat $INSTALL_DIR/RunTimeAppliance/apache/conf/samples/standard/ssleay.cnf | sed "s/@HostName@/$HTTPS_ADMIN_VHOST_NAME/g" >  $INSTALL_DIR/RunTimeAppliance/apache/conf/samples/standard/osa-admin.cnf
 	openssl req -config $INSTALL_DIR/RunTimeAppliance/apache/conf/samples/standard/osa-admin.cnf  -new -x509  -days 3650 -nodes  -out  /etc/ssl/certs/osa-admin.pem  -keyout  /etc/ssl/private/osa-admin.key
@@ -571,7 +573,7 @@ function createApacheConf(){
 	mkdir -p $LOG_DIR/admin/
 	[ -f $APACHE_SITES_DEFINITION_DIR/osa-admin.conf ] && rm $APACHE_SITES_DEFINITION_DIR/osa-admin.conf
 	echo "Listen $HTTPS_ADMIN_VHOST_ADDR:$HTTPS_ADMIN_VHOST_PORT" >> $APACHE_LISTEN_PORTS 
-	cat   $INSTALL_DIR/RunTimeAppliance/apache/conf/samples/standard/osa-admin  | sed "s/HTTPS_ADMIN_VHOST_ADDR/$HTTPS_ADMIN_VHOST_ADDR/g" | sed "s/HTTPS_ADMIN_VHOST_PORT/$HTTPS_ADMIN_VHOST_PORT/g"  | sed "s/HTTPS_ADMIN_VHOST_NAME/$HTTPS_ADMIN_VHOST_NAME/g"  | sed "s/PRIVATE_VHOST_PORT/$PRIVATE_VHOST_PORT/g" | sed "s/APACHE_ADMIN_MAIL/$APACHE_ADMIN_MAIL/g" | sed "s|LOG_DIR|$LOG_DIR|g" > $APACHE_SITES_DEFINITION_DIR/osa-admin.conf
+	cat   $INSTALL_DIR/RunTimeAppliance/apache/conf/samples/standard/osa-admin.conf  | sed "s/HTTPS_ADMIN_VHOST_ADDR/$HTTPS_ADMIN_VHOST_ADDR/g" | sed "s/HTTPS_ADMIN_VHOST_PORT/$HTTPS_ADMIN_VHOST_PORT/g"  | sed "s/HTTPS_ADMIN_VHOST_NAME/$HTTPS_ADMIN_VHOST_NAME/g"  | sed "s/PRIVATE_VHOST_PORT/$PRIVATE_VHOST_PORT/g" | sed "s/APACHE_ADMIN_MAIL/$APACHE_ADMIN_MAIL/g" | sed "s|LOG_DIR|$LOG_DIR|g" > $APACHE_SITES_DEFINITION_DIR/osa-admin.conf
 
 	if [ $ABSOLUTE_URI -eq 0 ] ; then
 		cat $APACHE_SITES_DEFINITION_DIR/osa-admin.conf | grep -v "RequestHeader set Public-Root-URI" > /tmp/$$.osa-admin
@@ -702,7 +704,7 @@ EOF
 
 
 ######################################################################
-# upgradeDBFrom
+# upgradeDB
 ######################################################################
 # Upgrade DB from currentVersion to last "foundable" upgrade
 ######################################################################
@@ -746,9 +748,54 @@ function upgradeDB(){
 			
 }
 ######################################################################
-# createMysqlSchema
+# upgradeSqliteDB
 ######################################################################
-# Create (or replace) required MySQL object (schema, tables user)
+# Upgrade DB from currentVersion to last "foundable" upgrade
+######################################################################
+function upgradeSqliteDB(){
+	curVer=`cat $INSTALL_DIR/RunTimeAppliance/shell/dbversion`
+	echo "finding upgrade scripts"
+	
+	ls $INSTALL_DIR/sql/sqlite/$curVer-to-* >/dev/null 2>&1
+	if [ $? -ne 0 ] ; then
+			echo "Can not find the script any to upgrade your existing database from $curVer version..... I hope it's in the proper version to contiunue........ "
+	else
+		echo "Found at least one script to upgrade from $curVer"
+		upgradeFileCount=`ls $INSTALL_DIR/sql/sqlite/$curVer-to-* | wc -l` 
+		echo "I found $upgradeFileCount files to upgrade from $curVer"
+		if [ $upgradeFileCount -gt 1 ] ; then
+			echo "Found more than 1 script to upgrade DB from $curVer.... WTF?....."
+			shellExit 201
+		else
+		
+			targetVer=`ls $INSTALL_DIR/sql/sqlite/$curVer-to-*|sed 's/.*-to-\(.*\).sql/\1/'`
+			SQL_UPDATE=`echo $INSTALL_DIR/sql/sqlite/$curVer-to-$targetVer.sql`;
+
+
+				
+			cat  $SQL_UPDATE|  sed "s/PRIVATE_VHOST_PORT/$PRIVATE_VHOST_PORT/g">/tmp/$$.sql
+			sqlite3 ../../sql/sqlite/osa.db</tmp/$$.sql 2>&1 >db_schema.log
+			if [ $? -ne 0 ] ; then
+				echo "****************** DB Schema management errors!!!! ******************"
+				echo "*		See "`pwd`"/db_schema.log for details"
+				echo "*********************************************************************"
+				if [ $KEEP_DB -eq 1 ] ; then
+					echo "Try to upgrade to $curDBVersion but DB was already updated?"
+				fi
+				shellExit 200
+			else
+				echo $targetVer > $INSTALL_DIR/RunTimeAppliance/shell/dbversion
+			fi
+			upgradeSqliteDB
+		fi
+	fi
+			
+}
+
+######################################################################
+# createSqliteSchema
+######################################################################
+# Create (or replace) required SQLite3 object (schema, tables user)
 ######################################################################
 function createSqliteSchema(){
 	if [ -f $INSTALL_DIR/sql/sqlite/osa.db -a $KEEP_DB -eq 0 ] ; then
@@ -756,9 +803,47 @@ function createSqliteSchema(){
 	fi
 	if [ $KEEP_DB -ne 1 ]; then
 		echo "Creating SQLite schema"
+		curDBVersion=`cat ../../sql/sqlite/creation.sql | grep " Version:" | awk -F: '{print $2}'`
 		cat  ../../sql/sqlite/creation.sql|  sed "s/PRIVATE_VHOST_PORT/$PRIVATE_VHOST_PORT/g">/tmp/$$.sql
 		echo "sqlite3 ../../sql/sqlite/osa.db </tmp/$$.sql" >db_schema.log
+
 		sqlite3 ../../sql/sqlite/osa.db </tmp/$$.sql >>db_schema.log
+	else
+		#Have a look to see if DB needs upgrade
+		if [ -f $INSTALL_DIR/RunTimeAppliance/shell/dbversion ] ; then
+			curDBVersion=`cat $INSTALL_DIR/RunTimeAppliance/shell/dbversion`;
+			newDBVersion=`cat ../../sql/sqlite/creation.sql | grep " Version:" | awk -F: '{print $2}'|sed 's/ //g'`
+			if [ "$curDBVersion" == "$newDBVersion" ] ;then
+				curDBVersion=$newDBVersion;
+				echo  "Current DB version is already in $newDBVersion: nothing to do!";
+			else
+				upgradeSqliteDB
+				newDBVersionAfterUpgrade=`cat $INSTALL_DIR/RunTimeAppliance/shell/dbversion`;
+				if [ "$newDBVersionAfterUpgrade" != "$newDBVersion" ] ; then
+					echo "Database should be in $newDBVersion version but it is in $newDBVersionAfterUpgrade version after upgrade"
+					echo "I didn't succeed to find proper upgrade scripts......."
+					shellExit 202
+				else
+					curDBVersion=$newDBVersion;
+					echo "Database have been upgraded to $newDBVersion version. Good!"
+				fi
+					
+			fi
+		else
+			echo "Unable to determine current DB version (dbversion file from previous install not found)";
+			shellExit 202
+		fi
+	fi
+	if [ $? -ne 0 ] ; then
+		echo "****************** DB Schema management errors!!!! ******************"
+		echo "*		See "`pwd`"/db_schema.log for details"
+		echo "*********************************************************************"
+		if [ $KEEP_DB -eq 1 ] ; then
+			echo "Try to upgrade to $curDBVersion but DB was already updated?"
+		fi
+		shellExit 200
+	else
+		echo $curDBVersion > $INSTALL_DIR/RunTimeAppliance/shell/dbversion
 	fi
 	chown $APACHE_USER:$APACHE_GROUP ../../sql/sqlite/osa.db
 	chown $APACHE_USER:$APACHE_GROUP ../../sql/sqlite/
