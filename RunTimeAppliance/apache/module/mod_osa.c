@@ -3062,7 +3062,8 @@ static int mysql_forward_identity(request_rec *r)
 			//We found a user in request (i.e successfull authentication ), search the user in DB
       sprintf(query,"SELECT %s FROM %s WHERE %s='%s'", fields,  sec->mysqlpwtable, sec->mysqlNameField, r->user);
       if (sec->mysqlUserCondition && strlen(sec->mysqlUserCondition)){
-              sprintf(query, "%s AND %s", query, sec->mysqlUserCondition);
+        strcat(query," AND ");
+        strcat(query, str_format(r, sec->sqlite3UserCondition));
       }
 
 			if (mysql_query(connection.handle, query) != 0) {

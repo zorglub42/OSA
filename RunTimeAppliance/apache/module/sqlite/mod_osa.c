@@ -2915,7 +2915,8 @@ static int sqlite3_forward_identity(request_rec *r)
 			sprintf(query,"SELECT %s FROM %s WHERE upper(%s)=upper(?)",
 						fields,  sec->sqlite3pwtable, sec->sqlite3NameField);
       if (sec->sqlite3UserCondition && strlen(sec->sqlite3UserCondition)){
-        sprintf(query,"%s AND %s",query, str_format(r, sec->sqlite3UserCondition));
+        strcat(query," AND ");
+        strcat(query, str_format(r, sec->sqlite3UserCondition));
       }
       sqlite3_stmt *stmt;
       int sqlite3_rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);    
