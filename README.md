@@ -37,7 +37,7 @@ First of all, install required packages and clone OSA repository
 		#RDBMS=mysql && RDBMS_PACKAGE="php5-mysql mysql-server libmysqlclient-dev"
 		#RDBMS=sqlite && RDBMS_PACKAGE="sqlite3 php5-sqlite libsqlite3-dev"
 
-		apt-get install apache2 php5 php5-curl openssl curl zip autoconf apache2-prefork-dev git build-essential $RDBMS_PACKAGE
+		apt-get install apache2 php5 php5-curl openssl curl zip autoconf apache2-prefork-dev git build-essential zlib1g-dev zlib1g $RDBMS_PACKAGE
     
 	**Debian/Raspbian Stretch**
 
