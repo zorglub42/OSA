@@ -3063,7 +3063,7 @@ static int mysql_forward_identity(request_rec *r)
       sprintf(query,"SELECT %s FROM %s WHERE %s='%s'", fields,  sec->mysqlpwtable, sec->mysqlNameField, r->user);
       if (sec->mysqlUserCondition && strlen(sec->mysqlUserCondition)){
         strcat(query," AND ");
-        strcat(query, str_format(r, sec->sqlite3UserCondition));
+        strcat(query, str_format(r, sec->mysqlUserCondition));
       }
 
 			if (mysql_query(connection.handle, query) != 0) {
