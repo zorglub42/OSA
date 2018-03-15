@@ -273,9 +273,13 @@ function saveOrUpdateService(method){
 			reqSec="reqSec=" + document.getElementById("reqSec").value;
 			reqDay="reqDay=" + document.getElementById("reqDay").value;
 			reqMonth="reqMonth=" + document.getElementById("reqMonth").value;
+		}else{
+			isGlobalQuotasEnabled="isGlobalQuotasEnabled=0"
 		}
 		if (document.getElementById("isUserQuotasEnabled").checked){
 			isUserQuotasEnabled="isUserQuotasEnabled=1";
+		}else{
+			isUserQuotasEnabled="isUserQuotasEnabled=0";
 		}
 		if (!document.getElementById("isPublished").checked){
 			isPublished="isPublished=0";
