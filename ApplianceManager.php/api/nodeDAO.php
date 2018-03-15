@@ -90,23 +90,23 @@ function getDAONode($nodeName = NULL, $request_data = NULL){
 			$strSQLComp="";
 			$bindPrms=array();
 			
-			if (isset($request_data["nodeNameFilter"]) && $request_data["nodeNameFilter"]!=""){
+			if (isset($request_data["nodeNameFilter"]) && $request_data["nodeNameFilter"]!==""){
 				$strSQLComp = addSQLFilter("nodeName like ?", $strSQLComp);
 				array_push($bindPrms, "%" . $request_data["nodeNameFilter"] . "%");
 			}
-			if (isset($request_data["nodeDescriptionFilter"]) && $request_data["nodeDescriptionFilter"]!=""){
+			if (isset($request_data["nodeDescriptionFilter"]) && $request_data["nodeDescriptionFilter"]!==""){
 				$strSQLComp = addSQLFilter("nodeDescription like ?", $strSQLComp);
 				array_push($bindPrms, "%" . $request_data["nodeDescriptionFilter"] . "%");
 			}
-			if (isset($request_data["localIPFilter"]) && $request_data["localIPFilter"]!=""){
+			if (isset($request_data["localIPFilter"]) && $request_data["localIPFilter"]!==""){
 				$strSQLComp = addSQLFilter("localIP like ?", $strSQLComp);
 				array_push($bindPrms,"%" . $request_data["localIPFilter"] . "%");
 			}
-			if (isset($request_data["portFilter"]) && $request_data["portFilter"]!=""){
+			if (isset($request_data["portFilter"]) && $request_data["portFilter"]!==""){
 				$strSQLComp = addSQLFilter("port=?"  , $strSQLComp);
 				array_push($bindPrms,  $request_data["portFilter"]);
 			}
-			if (isset($request_data["serverFQDNFilter"]) && $request_data["serverFQDNFilter"]!=""){
+			if (isset($request_data["serverFQDNFilter"]) && $request_data["serverFQDNFilter"]!==""){
 				$strSQLComp = addSQLFilter("serverFQDN like ?" , $strSQLComp);
 				array_push($bindPrms,"%" . $request_data["serverFQDNFilter"] . "%");
 			}

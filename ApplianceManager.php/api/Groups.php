@@ -34,14 +34,7 @@ require_once '../api/userDAO.php';
 class Groups{
 	
 	
-	//~ private function getParameterValue($paramName, $request_data){
-		//~ if (isset($request_data[$paramName]) && $request_data[$paramName]!="" ){
-			//~ return $request_data[$paramName];
-		//~ }else{
-			//~ return NULL;
-		//~ }
-	//~ }
-	
+
 	/**
 	 * Get groups list
 	 * 

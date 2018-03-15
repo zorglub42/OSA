@@ -216,7 +216,7 @@ function getService($serviceName = NULL, $request_data=NULL){
 				$strSQLComp=addSQLFilter("(onAllNodes=1 or exists (SELECT 'x' FROM servicesnodes sn WHERE sn.serviceName=s.serviceName AND sn.nodeName = ?))", $strSQLComp);
 				array_push($bindPrms,  cut($request_data["nodeNameFilter"], NODENAME_LENGTH));
 			}
-			if (isset($request_data["groupNameFilter"]) && $request_data["groupNameFilter"]!=""){
+			if (isset($request_data["groupNameFilter"]) && $request_data["groupNameFilter"]!==""){
 				$strSQLComp = addSQLFilter("groupName like ?", $strSQLComp);
 				array_push($bindPrms, "%" . cut($request_data["groupNameFilter"], GROUPNAME_LENGTH) . "%");
 			}
@@ -225,39 +225,39 @@ function getService($serviceName = NULL, $request_data=NULL){
 			}elseif (isset($request_data["withQuotas"]) && $request_data["withQuotas"]=0){
 				$strSQLComp=addSQLFilter("(isGlobalQuotasEnabled=0 AND isUserQuotasenabled=0)",$strSQLComp);
 			}
-			if (isset($request_data["isIdentityForwardingEnabledFilter"]) && $request_data["isIdentityForwardingEnabledFilter"]!=""){
+			if (isset($request_data["isIdentityForwardingEnabledFilter"]) && $request_data["isIdentityForwardingEnabledFilter"]!==""){
 				$strSQLComp = addSQLFilter("isIdentityForwardingEnabled =?" , $strSQLComp);
 				array_push($bindPrms, $request_data["isIdentityForwardingEnabledFilter"]);
 			}
-			if (isset($request_data["isGlobalQuotasEnabledFilter"]) && $request_data["isGlobalQuotasEnabledFilter"]!=""){
+			if (isset($request_data["isGlobalQuotasEnabledFilter"]) && $request_data["isGlobalQuotasEnabledFilter"]!==""){
 				$strSQLComp = addSQLFilter("isGlobalQuotasEnabled =?"  , $strSQLComp);
 				array_push($bindPrms, $request_data["isGlobalQuotasEnabledEnabledFilter"]);
 			}
-			if (isset($request_data["isUserQuotasEnabledFilter"]) && $request_data["isUserQuotasEnabledFilter"]!=""){
+			if (isset($request_data["isUserQuotasEnabledFilter"]) && $request_data["isUserQuotasEnabledFilter"]!==""){
 				$strSQLComp = addSQLFilter("isUserQuotasEnabled =?"   , $strSQLComp);
 				array_push($bindPrms, $request_data["isUserQuotasEnabledFilter"]);
 			}
-			if (isset($request_data["isPublishedFilter"]) && $request_data["isPublishedFilter"]!=""){
+			if (isset($request_data["isPublishedFilter"]) && $request_data["isPublishedFilter"]!==""){
 				$strSQLComp = addSQLFilter("isPublished =?"  , $strSQLComp);
 				array_push($bindPrms, $request_data["isPublishedFilter"]);
 			}
-			if (isset($request_data["isHitLoggingEnabledFilter"]) && $request_data["isHitLoggingEnabledFilter"]!=""){
+			if (isset($request_data["isHitLoggingEnabledFilter"]) && $request_data["isHitLoggingEnabledFilter"]!==""){
 				$strSQLComp = addSQLFilter("isHitLoggingEnabled =?"  , $strSQLComp);
 				array_push($bindPrms, $request_data["isHitLoggingEnabledFilter"]);
 			}
-			if (isset($request_data["isUserAuthenticationEnabledFilter"]) && $request_data["isUserAuthenticationEnabledFilter"]!=""){
+			if (isset($request_data["isUserAuthenticationEnabledFilter"]) && $request_data["isUserAuthenticationEnabledFilter"]!==""){
 				$strSQLComp = addSQLFilter("isUserAuthenticationEnabled =?"   , $strSQLComp);
 				array_push($bindPrms, $request_data["isUserAuthenticationEnabledFilter"]);
 			}
-			if (isset($request_data["frontEndEndPointFilter"]) && $request_data["frontEndEndPointFilter"]!=""){
+			if (isset($request_data["frontEndEndPointFilter"]) && $request_data["frontEndEndPointFilter"]!==""){
 				$strSQLComp = addSQLFilter("frontEndEndPoint like ?", $strSQLComp);
 				array_push($bindPrms, "%" . cut($request_data["frontEndEndPointFilter"], FRONTENDENDPOINT_LENGTH) . "%");
 			}
-			if (isset($request_data["backEndEndPointFilter"]) && $request_data["backEndEndPointFilter"]!=""){
+			if (isset($request_data["backEndEndPointFilter"]) && $request_data["backEndEndPointFilter"]!==""){
 				$strSQLComp = addSQLFilter("backEndEndPoint like ?", $strSQLComp);
 				array_push($bindPrms, "%" . cut($request_data["backEndEndPointFilter"], BACKENDENDPOINT_LENGTH) . "%");
 			}
-			if (isset($request_data["additionalConfigurationFilter"]) && $request_data["additionalConfigurationFilter"]!=""){
+			if (isset($request_data["additionalConfigurationFilter"]) && $request_data["additionalConfigurationFilter"]!==""){
 				$strSQLComp = addSQLFilter("additionalConfiguration like ?", $strSQLComp);
 				array_push($bindPrms, "%" . $request_data["additionalConfigurationFilter"] . "%");
 			}
@@ -421,7 +421,7 @@ function createService($serviceName = NULL, $request_data=NULL){
 
 
 
-	if (isset($request_data["isIdentityForwardingEnabled"]) && $request_data["isIdentityForwardingEnabled"]!="" ){
+	if (isset($request_data["isIdentityForwardingEnabled"]) && $request_data["isIdentityForwardingEnabled"]!=="" ){
 		if ($request_data["isIdentityForwardingEnabled"]=="0" || $request_data["isIdentityForwardingEnabled"]=="1"){
 			$mySQLIdentityForwarding=$request_data["isIdentityForwardingEnabled"];
 			if ($mySQLIsUserAuthenticationEnabled==0 && $request_data["isIdentityForwardingEnabled"]==1){
@@ -488,12 +488,12 @@ function createService($serviceName = NULL, $request_data=NULL){
 		$error->setFunctionalCode(1);
 		$error->setFunctionalLabel($error->getFunctionalLabel() . $request_data["backEndEndPoint"] . " is not a valid URL for backend service\n");
 	}
-	if (isset($request_data["loginFormUri"]) && $request_data["loginFormUri"]!="" ){
+	if (isset($request_data["loginFormUri"]) && $request_data["loginFormUri"]!=="" ){
 		$mySQLLoginFormUri=$request_data["loginFormUri"] ;
 	}
 
 	if (isset($request_data["groupName"])){
-		if ($request_data["groupName"]!="" ){
+		if ($request_data["groupName"]!=="" ){
 				$mySQLGroupName=cut($request_data["groupName"], GROUPNAME_LENGTH) ;
 		}else if ($mySQLIsUserAuthenticationEnabled==1){
 			$error->setHttpStatus(400);
@@ -777,8 +777,7 @@ function updateService($serviceName = NULL, $request_data=NULL){
 		}
 	}
 
-
-	if (isset($request_data["isGlobalQuotasEnabled"]) && $request_data["isGlobalQuotasEnabled"]!="" ){
+	if (isset($request_data["isGlobalQuotasEnabled"]) && $request_data["isGlobalQuotasEnabled"]!==""){
 		if ($request_data["isGlobalQuotasEnabled"]=="1" || $request_data["isGlobalQuotasEnabled"]=="0"  ){
 			$service["isGlobalQuotasEnabled"]=$request_data["isGlobalQuotasEnabled"];
 		}else{
@@ -861,7 +860,7 @@ function updateService($serviceName = NULL, $request_data=NULL){
 			$error->setFunctionalLabel($error->getFunctionalLabel() . " allowed value for isUSerquotasEnabled is 0 or 1\n");
 		}
 	}
-	if (isset($request_data["frontEndEndPoint"]) && $request_data["frontEndEndPoint"]!="" ){
+	if (isset($request_data["frontEndEndPoint"]) && $request_data["frontEndEndPoint"]!=="" ){
 		$frontEndEndPoint=$request_data["frontEndEndPoint"];
 		if (substr($frontEndEndPoint, 0, 1) != "/"){
 			$frontEndEndPoint="/" . $frontEndEndPoint;
@@ -870,7 +869,7 @@ function updateService($serviceName = NULL, $request_data=NULL){
 
 		$service["frontEndEndPoint"]=$frontEndEndPoint;
 	}
-	if (isset($request_data["backEndEndPoint"]) && $request_data["backEndEndPoint"]!="" ){
+	if (isset($request_data["backEndEndPoint"]) && $request_data["backEndEndPoint"]!=="" ){
 		if (preg_match("}^(http|https|ws|wss)://[\w\d:#@%/;$()~_?\+-=\\\.&]*}", $request_data["backEndEndPoint"])){
 			$service["backEndEndPoint"]=$request_data["backEndEndPoint"];
 		}else{
@@ -879,7 +878,7 @@ function updateService($serviceName = NULL, $request_data=NULL){
 			$error->setFunctionalLabel($error->getFunctionalLabel() . $request_data["backEndEndPoint"] . " is not a valid URL\n");
 		}
 	}
-	if (isset($request_data["backEndEndPoint"]) && $request_data["backEndEndPoint"]!="" ){
+	if (isset($request_data["backEndEndPoint"]) && $request_data["backEndEndPoint"]!=="" ){
 		if (preg_match("}^(http|https|ws|wss)://[\w\d:#@%/;$()~_?\+-=\\\.&]*}", $request_data["backEndEndPoint"])){
 			$service["backEndEndPoint"]=$request_data["backEndEndPoint"];
 		}else{
@@ -888,7 +887,7 @@ function updateService($serviceName = NULL, $request_data=NULL){
 			$error->setFunctionalLabel($error->getFunctionalLabel() . $request_data["backEndEndPoint"] . " is not a valid URL\n");
 		}
 	}
-	if (isset($request_data["groupName"]) && $request_data["groupName"]!="" ){
+	if (isset($request_data["groupName"]) && $request_data["groupName"]!=="" ){
 		$service["groupName"]=$request_data["groupName"];
 	}
 	if ($service["isUserAuthenticationEnabled"]==0){
@@ -950,7 +949,6 @@ function updateService($serviceName = NULL, $request_data=NULL){
 						$service["additionalConfiguration"],
 						$service["loginFormUri"],
 						$mySQLServiceName);
-
 		try{
 			$db=openDBConnection();
 			$stmt=$db->prepare($strSQL);

@@ -86,7 +86,7 @@ class Users{
 	 }
 	
 	private function getParameterValue($paramName, $request_data){
-		if (isset($request_data[$paramName]) && $request_data[$paramName]!="" ){
+		if (isset($request_data[$paramName]) && $request_data[$paramName]!=="" ){
 			return $request_data[$paramName];
 		}else{
 			return NULL;

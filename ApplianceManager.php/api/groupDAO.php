@@ -68,11 +68,11 @@ function getGroup($groupName = NULL, $request_data = NULL){
 		}else{
 			$strSQLComp="";
 			$bindPrms=array();
-			if (isset($request_data["groupDescritpionFilter"]) && $request_data["groupDescritpionFilter"]!=""){
+			if (isset($request_data["groupDescritpionFilter"]) && $request_data["groupDescritpionFilter"]!==""){
 				$strSQLComp = addSQLFilter("description like ?", $strSQLComp);
 				array_push($bindPrms,"%" . $request_data["groupDescritpionFilter"] . "%");
 			}
-			if (isset($request_data["groupNameFilter"]) && $request_data["groupNameFilter"]!=""){
+			if (isset($request_data["groupNameFilter"]) && $request_data["groupNameFilter"]!==""){
 				$strSQLComp = addSQLFilter("groupName like ?", $strSQLComp);
 				array_push($bindPrms,"%" . $request_data["groupNameFilter"] . "%");
 			}
@@ -123,27 +123,27 @@ function getGroupMembers($groupName, $request_data = NULL){
 		}elseif  (isset($request_data["withLog"]) && $request_data["withLog"]==0 ){
 			$strSQL=$strSQL . " AND not exists(SELECT 'x' FROM hits h WHERE h.userName=u.userName)";
 		}
-		if (isset($request_data["userNameFilter"]) && $request_data["userNameFilter"]!=""){
+		if (isset($request_data["userNameFilter"]) && $request_data["userNameFilter"]!==""){
 			$strSQL = addSQLFilter("u.userName like ?", $strSQL);
 			array_push($bindPrms, "%" . $request_data["userNameFilter"] . "%");
 		}
-		if (isset($request_data["firstNameFilter"]) && $request_data["firstNameFilter"]!=""){
+		if (isset($request_data["firstNameFilter"]) && $request_data["firstNameFilter"]!==""){
 			$strSQL = addSQLFilter("u.firstName like ?", $strSQL);
 			array_push($bindPrms, "%" . $request_data["firstNameFilter"] . "%");
 		}
-		if (isset($request_data["lastNameFilter"]) && $request_data["lastNameFilter"]!=""){
+		if (isset($request_data["lastNameFilter"]) && $request_data["lastNameFilter"]!==""){
 			$strSQL = addSQLFilter("u.lastName like ?", $strSQL);
 			array_push($bindPrms, "%" . $request_data["lastNameFilter"] . "%");
 		}
-		if (isset($request_data["emailAddressFilter"]) && $request_data["emailAddressFilter"]!=""){
+		if (isset($request_data["emailAddressFilter"]) && $request_data["emailAddressFilter"]!==""){
 			$strSQL = addSQLFilter("u.emailAddress like ?", $strSQL);
 			array_push($bindPrms, "%" . $request_data["emailAddressFilter"] . "%");
 		}
-		if (isset($request_data["entityFilter"]) && $request_data["entityFilter"]!=""){
+		if (isset($request_data["entityFilter"]) && $request_data["entityFilter"]!==""){
 			$strSQL = addSQLFilter("u.entity like ?", $strSQL);
 			array_push($bindPrms, "%" . $request_data["entityFilter"] . "%");
 		}
-		if (isset($request_data["extraFilter"]) && $request_data["extraFilter"]!=""){
+		if (isset($request_data["extraFilter"]) && $request_data["extraFilter"]!==""){
 			$strSQL = addSQLFilter("u.extra like ?", $strSQL);
 			array_push($bindPrms, "%" . $request_data["extraFilter"] . "%");
 		}
