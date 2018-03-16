@@ -326,26 +326,22 @@ static char encoding_table[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
 char decoding_table [255];
 int mod_table[] = {0, 2, 1};
 
-//void base64_cleanup() {
-//    free(decoding_table);
-//}
 void build_decoding_table() {
 
-    //decoding_table = malloc(256);
 
 	int i;
-    for ( i = 0; i < 64; i++)
-        decoding_table[(unsigned char) encoding_table[i]] = i;
+  for ( i = 0; i < 64; i++)
+      decoding_table[(unsigned char) encoding_table[i]] = i;
 }
 
-char *base64_encode(const unsigned char *data,
+char *base64_encode(POOL *p, const unsigned char *data,
                     size_t *output_length) {
 
      size_t input_length=strlen(data);
 
     *output_length = 4 * ((input_length + 2) / 3);
 
-    char *encoded_data = malloc(*output_length+1);
+    char *encoded_data = PCALLOC(p, *output_length+1);
     //memset(encoded_data, 0, *output_length+1);
     if (encoded_data == NULL) return NULL;
 
@@ -383,7 +379,6 @@ unsigned char *base64_decode(const char *data,
     if (data[input_length - 1] == '=') (*output_length)--;
     if (data[input_length - 2] == '=') (*output_length)--;
 
-    //unsigned char *decoded_data = malloc(*output_length);
     if (decoded_data == NULL) return NULL;
 
 	int i,j;
@@ -2121,16 +2116,16 @@ int redirectToLoginForm(request_rec *r, char *cause){
 	r->status=303;
 	char *curUrl;
 	if (r->args==NULL){
-		curUrl=(char *)malloc(strlen(r->uri)+1+strlen(sec->serverName));
+		curUrl=(char *)PCALLOC(r->pool, strlen(r->uri)+1+strlen(sec->serverName));
 
 		sprintf(curUrl,"%s%s", sec->serverName, r->uri);
 	}else{
-		curUrl=(char *)malloc(strlen(r->uri)+strlen(r->args)+2+strlen(sec->serverName));
+		curUrl=(char *)PCALLOC(r->pool, strlen(r->uri)+strlen(r->args)+2+strlen(sec->serverName));
 		sprintf(curUrl,"%s%s?%s", sec->serverName, r->uri, r->args);
 	}
 	
 	size_t encodedSize;
-	char *b64EncodedCurUrl=base64_encode(curUrl, &encodedSize);
+	char *b64EncodedCurUrl=base64_encode(r->pool, curUrl, &encodedSize);
 	char *location;
 	char urlPrm;
 	if (strstr(sec->cookieAuthLoginForm,"?") != NULL){
@@ -2142,10 +2137,10 @@ int redirectToLoginForm(request_rec *r, char *cause){
 		
 	if (cause==NULL){
 	
-		location=(char *)malloc(encodedSize+strlen(sec->cookieAuthLoginForm)+4+(sec->cookieAuthDomain!=NULL?strlen(sec->cookieAuthDomain)+4:0));
+		location=(char *)PCALLOC(r->pool, encodedSize+strlen(sec->cookieAuthLoginForm)+4+(sec->cookieAuthDomain!=NULL?strlen(sec->cookieAuthDomain)+4:0));
 		sprintf(location,"%s%cl=%s", sec->cookieAuthLoginForm, urlPrm, b64EncodedCurUrl);
 	}else{
-		location=(char *)malloc(encodedSize+strlen(sec->cookieAuthLoginForm)+4+strlen(cause)+7+(sec->cookieAuthDomain!=NULL?strlen(sec->cookieAuthDomain)+4:0));
+		location=(char *)PCALLOC(r->pool, encodedSize+strlen(sec->cookieAuthLoginForm)+4+strlen(cause)+7+(sec->cookieAuthDomain!=NULL?strlen(sec->cookieAuthDomain)+4:0));
 		sprintf(location,"%s%cl=%s&cause=%s", sec->cookieAuthLoginForm, urlPrm,  b64EncodedCurUrl, cause);
 	}
 	if (sec->cookieAuthDomain != NULL){
@@ -2160,9 +2155,6 @@ int redirectToLoginForm(request_rec *r, char *cause){
 	apr_table_set(r->headers_out, "Cache-Control", "post-check=0, pre-check=0");
 	apr_table_set(r->headers_out, "Pragma", "no-cache" );
 
-	free(location);
-	free(b64EncodedCurUrl);
-	free(curUrl);
 	return DONE;
 }
 
@@ -2303,7 +2295,7 @@ int validateToken(request_rec *r , char *token, int *stillValidFor){
 		}
 		
 		if (sqlite3_step(stmt) == SQLITE_ROW) {
-			r->user=(char*)malloc(strlen(sqlite3_column_text(stmt, 0)));
+			r->user=(char*)PCALLOC(r->pool, strlen(sqlite3_column_text(stmt, 0)));
 			strcpy(r->user, sqlite3_column_text(stmt, 0));
 			*stillValidFor=atoi(sqlite3_column_text(stmt, 1)); 
 			rc= OK;
@@ -2522,30 +2514,29 @@ int get_basic_auth_creds(request_rec *r, char **pwd){
   spliting authHeaderWords;
   split(authorizationHeader, ' ', &authHeaderWords);
   if (authHeaderWords.tokensCount == 2 && strcmp(authHeaderWords.tokens[0],"Basic")==0){
-	unsigned char decoded[255];
-	size_t len;
-	base64_decode(authHeaderWords.tokens[1],&len, decoded);
-	
+    unsigned char decoded[255];
+    size_t len;
+    base64_decode(authHeaderWords.tokens[1],&len, decoded);
+    
 
-	int i;
-	for (i=0;i<len && decoded[i] != ':';i++);
+    int i;
+    for (i=0;i<len && decoded[i] != ':';i++);
 
-	if (decoded[i]==':'){
-		decoded[i]=0;
+    if (decoded[i]==':'){
+      decoded[i]=0;
 
 
-		r->user=(char*)malloc(strlen(decoded)+5);
-		strcpy(r->user,decoded);
+      r->user=(char*)PCALLOC(r->pool, strlen(decoded)+5);
+      strcpy(r->user,decoded);
 
-		(*pwd)=(char*)malloc(strlen(decoded+i+1)+5);
-		strcpy(*pwd,decoded+i+1);
-		(*pwd)[len-(strlen(r->user)+1)]=0;
+      (*pwd)=(char*)PCALLOC(r->pool, strlen(decoded+i+1)+5);
+      strcpy(*pwd,decoded+i+1);
+      (*pwd)[len-(strlen(r->user)+1)]=0;
 
-	}else{
-		rc=0;
-	}
-	//free(decoded);
-	return rc;
+    }else{
+      rc=0;
+    }
+    return rc;
   }else{
 	  return 0;
   }
