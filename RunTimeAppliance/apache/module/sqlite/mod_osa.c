@@ -594,6 +594,7 @@ int sqlite3_query_execute(sqlite3 *db, char *query){
     
     if (rc != SQLITE_OK) {
         
+        sqlite3_finalize(res);
         fprintf(stderr, "Failed to prepare statement: %s\n", sqlite3_errmsg(db));
         
         return rc;
@@ -603,9 +604,8 @@ int sqlite3_query_execute(sqlite3 *db, char *query){
     
     if (rc == SQLITE_ROW || rc == SQLITE_DONE) {
         rc =0;
-    }else{
-        sqlite3_finalize(res);
     }
+    sqlite3_finalize(res);
     return rc;
 }
 
@@ -1666,6 +1666,7 @@ static char * get_sqlite3_pw(request_rec *r, char *user, osa_config_rec *m, cons
   int rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);    
 
   if (rc != SQLITE_OK) {
+      sqlite3_finalize(stmt);
       LOG_ERROR_2(APLOG_ERR, 0, r, "get_sqlite3_pw.sqlite3_query SQLite ERROR: %s: %s", sqlite3_errmsg(connection.handle), r->uri);
       return NULL;
   }
@@ -1736,6 +1737,7 @@ static char ** get_sqlite3_groups(request_rec *r, char *user, osa_config_rec *m)
   int rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);    
 
   if (rc != SQLITE_OK) {
+      sqlite3_finalize(stmt);
       LOG_ERROR_2(APLOG_ERR, 0, r, "get_sqlite3_pw.sqlite3_query SQLite ERROR: %s: %s", sqlite3_errmsg(connection.handle), r->uri);
       return NULL;
   }    
@@ -1836,6 +1838,7 @@ int checkQuotas( osa_config_rec *sec, request_rec *r,char *counterPrefix, char *
   sqlite3_rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);    
 
   if (sqlite3_rc != SQLITE_OK) {
+    sqlite3_finalize(stmt);
     LOG_ERROR_2(APLOG_ERR, 0, r, "get_sqlite3_pw.sqlite3_query SQLite ERROR: %s: %s", sqlite3_errmsg(connection.handle), r->uri);
     return osa_error(r,"DB query error", 500);;
   }    
@@ -1847,6 +1850,7 @@ int checkQuotas( osa_config_rec *sec, request_rec *r,char *counterPrefix, char *
     reqSec=0;
     sprintf(query, "INSERT INTO %s (%s,%s) VALUES ('%s',0)", sec->countersTable, sec->counterNameField, sec->counterValueField, counterSecName);
     if (sqlite3_query_execute(connection.handle, query) != 0) {
+      sqlite3_finalize(stmt);
       LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.insert.per.second SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
       return osa_error(r,"DB query error", 500);
     }
@@ -1889,6 +1893,7 @@ int checkQuotas( osa_config_rec *sec, request_rec *r,char *counterPrefix, char *
   sqlite3_rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);    
 
   if (sqlite3_rc != SQLITE_OK) {
+    sqlite3_finalize(stmt);
     LOG_ERROR_2(APLOG_ERR, 0, r, "get_sqlite3_pw.sqlite3_query SQLite ERROR: %s: %s", sqlite3_errmsg(connection.handle), r->uri);
     return osa_error(r,"DB query error", 500);;
   }    
@@ -1900,6 +1905,7 @@ int checkQuotas( osa_config_rec *sec, request_rec *r,char *counterPrefix, char *
     reqDay=0;
     sprintf(query, "INSERT INTO %s (%s,%s) VALUES ('%s',0)", sec->countersTable, sec->counterNameField, sec->counterValueField, counterDayName);
     if (sqlite3_query_execute(connection.handle, query) != 0) {
+            sqlite3_finalize(stmt);
             LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.insert.per.day SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
             return osa_error(r,"DB query error", 500);
     }
@@ -1936,6 +1942,7 @@ int checkQuotas( osa_config_rec *sec, request_rec *r,char *counterPrefix, char *
   sqlite3_rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);    
 
   if (sqlite3_rc != SQLITE_OK) {
+    sqlite3_finalize(stmt);
     LOG_ERROR_2(APLOG_ERR, 0, r, "get_sqlite3_pw.sqlite3_query SQLite ERROR: %s: %s", sqlite3_errmsg(connection.handle), r->uri);
     return osa_error(r,"DB query error", 500);;
   }    
@@ -1946,6 +1953,7 @@ int checkQuotas( osa_config_rec *sec, request_rec *r,char *counterPrefix, char *
     reqMon=0;
     sprintf(query, "INSERT INTO %s (%s,%s) VALUES ('%s',0)", sec->countersTable, sec->counterNameField, sec->counterValueField, counterMonName);
     if (sqlite3_query_execute(connection.handle, query) != 0) {
+      sqlite3_finalize(stmt);
       LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.insert.per.month SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
       return osa_error(r,"DB query error", 500);
     }
@@ -2009,6 +2017,7 @@ int checkGlobalQuotas( osa_config_rec *sec, request_rec *r){
 
   if (sqlite3_rc != SQLITE_OK) {
     /*    2.2 No quota definition was found in DB ==> ERROR */
+    sqlite3_finalize(stmt);
     LOG_ERROR_1(APLOG_ERR, 0, r, "checkGlobalQuotas: SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
     return osa_error(r,"checkGlobalQuotas: DB query error", 500);
   }    
@@ -2078,6 +2087,7 @@ int checkUserQuotas( osa_config_rec *sec, request_rec *r){
 
   if (sqlite3_rc != SQLITE_OK) {
     /*    2.2 No quota definition was found in DB ==> ERROR */
+    sqlite3_finalize(stmt);
     LOG_ERROR_1(APLOG_ERR, 0, r, "checkUserQuotas: SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
     return osa_error(r,"checkUserQuotas: DB query error", 500);
   }
@@ -2091,6 +2101,7 @@ int checkUserQuotas( osa_config_rec *sec, request_rec *r){
   }else{
     char err[100];
     sprintf(err,"No quota defined for user %s with user quotas control is activated on resource %s",r->user, sec->resourceName); 
+    sqlite3_finalize(stmt);
     return osa_error(r,err, 500);
   }
   sqlite3_finalize(stmt);
@@ -2290,6 +2301,7 @@ int validateToken(request_rec *r , char *token, int *stillValidFor){
     int sqlite3_rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);    
 
     if (rc != SQLITE_OK) {
+      sqlite3_finalize(stmt);
 			LOG_ERROR_1(APLOG_ERR, 0, r, "sqlite3_check_auth_cookie: SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
 			return osa_error(r,"DB query error",500);
 		}
@@ -2408,17 +2420,14 @@ static int sqlite3_authenticate_cookie_user(request_rec *r){
           return osa_error(r,"Unable to connect database", 500);
         }
       }
-      P_db(sec, r, "token");
       Rc=getTokenFromCookie(r, token);
       if (Rc != OK){
-        V_db(sec, r, "token");
         return Rc;
       }
 
       int stillValidFor;
       Rc=validateToken(r, token, &stillValidFor);
       if (Rc != OK){
-        V_db(sec, r, "token");
         return Rc;
       }
       if ( ((sec->cookieAuthTTL*60)-stillValidFor) >COOKIE_BURN_SURVIVAL_TIME){
@@ -2427,11 +2436,9 @@ static int sqlite3_authenticate_cookie_user(request_rec *r){
 
         Rc=generateToken(r, token);
         if (Rc != OK){
-          V_db(sec, r, "token");
           return Rc;
         }
       }
-      V_db(sec, r, "token");
 
         
   }else{
@@ -2798,6 +2805,11 @@ static int sqlite3_check_auth(request_rec *r)
   return DECLINED;
 }
 
+static int sqlite3_clean_module(request_rec *r){
+  close_connection();
+
+}
+
 static int sqlite3_register_hit(request_rec *r)
 {
  
@@ -2913,6 +2925,7 @@ static int sqlite3_forward_identity(request_rec *r)
       int sqlite3_rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);    
 		
       if (sqlite3_rc != SQLITE_OK) {
+          sqlite3_finalize(stmt);
 					LOG_ERROR_1(APLOG_ERR, 0, r, "sqlite3_forward_identity: SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
 					return osa_error(r,"DB query error",500);
 			}
@@ -2965,6 +2978,7 @@ static void register_hooks(POOL *p)
 	ap_hook_fixups(sqlite3_check_quotas, NULL, NULL, APR_HOOK_FIRST);
 	ap_hook_fixups(sqlite3_forward_identity, NULL, NULL, APR_HOOK_LAST);
 	ap_hook_log_transaction( sqlite3_register_hit, NULL, NULL, APR_HOOK_FIRST);
+	ap_hook_log_transaction( sqlite3_clean_module, NULL, NULL, APR_HOOK_LAST);
 	
 	
 }
