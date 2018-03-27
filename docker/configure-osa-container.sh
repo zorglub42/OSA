@@ -29,7 +29,7 @@ if [ ! -f /usr/local/OSA/RunTimeAppliance/shell/container-build ] ; then
 		APPLIANCE_ADMIN_PW=$1
 	
 		cd /usr/local/OSA/RunTimeAppliance/shell/
-		cat envvars.sh| sed "s/BOX_DOMAIN=.*/BOX_DOMAIN=\"$BOX_DOMAIN\"/" | sed "s/APPLIANCE_ADMIN_PW=.*/APPLIANCE_ADMIN_PW=\"$APPLIANCE_ADMIN_PW\"/" >vars && mv vars1 envvars.sh && chmod u+x envvars.sh		./configure-osa.sh
+		cat envvars.sh| sed "s/BOX_DOMAIN=.*/BOX_DOMAIN=\"$BOX_DOMAIN\"/" | sed "s/APPLIANCE_ADMIN_PW=.*/APPLIANCE_ADMIN_PW=\"$APPLIANCE_ADMIN_PW\"/" >vars && mv vars envvars.sh && chmod u+x envvars.sh
 		./configure-osa.sh
 		cat envvars.sh| sed "s/KEEP_DB=.*/KEEP_DB=1/" >vars && mv vars envvars.sh && chmod u+x envvars.sh
 		touch /usr/local/OSA/RunTimeAppliance/shell/container-build
