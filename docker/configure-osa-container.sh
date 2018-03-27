@@ -34,7 +34,7 @@ if [ ! -f /usr/local/OSA/RunTimeAppliance/shell/container-build ] ; then
 		cat envvars.sh| sed "s/KEEP_DB=.*/KEEP_DB=1/" >vars && mv vars envvars.sh && chmod u+x envvars.sh
 		touch /usr/local/OSA/RunTimeAppliance/shell/container-build
 	else
-		echo "Container must be lauch with parameters:"
+		echo "Container must be launched with parameters:"
 		echo '	$1: admin-password'
 		echo '	$2: box-domain (optional)'
 		echo "ex:"
