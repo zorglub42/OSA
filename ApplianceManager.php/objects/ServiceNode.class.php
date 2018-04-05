@@ -1,4 +1,15 @@
 <?php
+/**
+ * Reverse Proxy as a service
+ * 
+ * PHP Version 7.0
+ * 
+ * @category ReverseProxy
+ * @package  OSA
+ * @author   Benoit HERARD <benoit.herard@orange.com>
+ * @license  http://www.apache.org/licenses/LICENSE-2.0.htm Apache 2 license
+ * @link     https://github.com/zorglub42/OSA/
+*/
 /*--------------------------------------------------------
  * Module Name : ApplianceManager
  * Version : 1.0.0
@@ -23,14 +34,30 @@
  * 1.0.0 - 2017-03-03 : Release of the file
 */
 
-class ServiceNode {
-	/**
-	 * @var int published Is this service published on that node ?
-	 */
-	public $published;
-	/**
-	 * @var Node node relative Node
-	 */
-	public $node;
-	
+/**
+ * ServiceNode Class
+ * 
+ * PHP Version 7.0
+ * 
+ * @category ReverseProxy
+ * @package  OSA
+ * @author   Benoit HERARD <benoit.herard@orange.com>
+ * @license  http://www.apache.org/licenses/LICENSE-2.0.htm Apache 2 license
+ * @link     https://github.com/zorglub42/OSA/
+*/
+class ServiceNode
+{
+    /**
+     * Is this service published on that node?
+     * 
+     * @var int published Is this service published on that node ?
+     */
+    public $published;
+    /**
+     * Relative node
+     * 
+     * @var Node node relative Node
+     */
+    public $node;
+    
 }

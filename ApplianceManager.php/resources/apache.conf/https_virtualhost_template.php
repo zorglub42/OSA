@@ -1,3 +1,18 @@
+<?php
+/**
+ * Reverse Proxy as a service
+ * 
+ * PHP Version 7.0
+ * 
+ * @category ReverseProxy
+ * @package  OSA
+ * @author   Benoit HERARD <benoit.herard@orange.com>
+ * @license  http://www.apache.org/licenses/LICENSE-2.0.htm Apache 2 license
+ * @link     https://github.com/zorglub42/OSA/
+ * 
+ * @codingStandardsIgnoreStart
+*/
+?>
 ############ HTTPS Configuration
 #
 #
@@ -47,10 +62,10 @@
        #   If both key and certificate are stored in the same file, only the
        #   SSLCertificateFile directive is needed.
     
-<?php if ($HTTPS_HAVE_CA_CERT){?>
+<?php if ($HTTPS_HAVE_CA_CERT) {?>
 	#SSLCaCertificateFile /etc/ssl/certs/osa-node-<?php echo $NODE_NAME?>-ca.pem
 <?php }?>
-<?php if ($HTTPS_HAVE_CHAIN_CERT){?>
+<?php if ($HTTPS_HAVE_CHAIN_CERT) {?>
 	SSLCertificateChainFile /etc/ssl/certs/osa-node-<?php echo $NODE_NAME?>-chain.pem
 <?php }?>
 

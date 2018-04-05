@@ -59,9 +59,9 @@ $( document ).ready(function() {
 	osaAddonsObserver.observe(document.getElementById("content"), { childList: true });
 
 	//Add items to API documentation menu
-	apiDocListHtml = $("#apiDocList").html()
+	apiDocListHtml = $("#apiDocList").html();
 	apiDocsURI.forEach(function(item){
-			apiDocListHtml = apiDocListHtml + '<li><a id="apiDocMenu' + item.addon + '" href="#"  onclick="loadDoc(\'addons/'+ item.addon + '/' + item.uri + '\')">' + item.addon + '</a></li>'
+			apiDocListHtml = apiDocListHtml + '<li><a id="apiDocMenu' + item.addon + '" href="#"  onclick="loadDoc(\'addons/'+ item.addon + '/' + item.uri + '\')">' + item.addon + '</a></li>';
 	});
 	$("#apiDocList").html(apiDocListHtml);
 });

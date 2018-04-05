@@ -1,4 +1,15 @@
 <?php
+/**
+ * Reverse Proxy as a service
+ * 
+ * PHP Version 7.0
+ * 
+ * @category ReverseProxy
+ * @package  OSA
+ * @author   Benoit HERARD <benoit.herard@orange.com>
+ * @license  http://www.apache.org/licenses/LICENSE-2.0.htm Apache 2 license
+ * @link     https://github.com/zorglub42/OSA/
+*/
 /*--------------------------------------------------------
  * Module Name : ApplianceManager
  * Version : 1.0.0
@@ -24,48 +35,101 @@
 */
 require_once '../objects/ApplianceObject.class.php';
 
-class Group extends ApplianceObject{
-	
-	/**
-	 * @var string groupName group identifier
-	 */ 
-	public $groupName;
-	
-	/**
-	 * @var string description group description
-	*/
-	public $description;
-	
-    public function __construct($rqt=NULL)
+/**
+ * Group class
+ * 
+ * PHP Version 7.0
+ * 
+ * @category ReverseProxy
+ * @package  OSA
+ * @author   Benoit HERARD <benoit.herard@orange.com>
+ * @license  http://www.apache.org/licenses/LICENSE-2.0.htm Apache 2 license
+ * @link     https://github.com/zorglub42/OSA/
+*/
+class Group extends ApplianceObject
+{
+    
+    /**
+     * Group identifier
+     * 
+     * @var string groupName group identifier
+     */ 
+    public $groupName;
+    
+    /**
+     * Group description
+     * 
+     * @var string description group description
+    */
+    public $description;
+    
+    /**
+     * Constructor
+     * 
+     * @param object $rqt PDO row
+     */
+    public function __construct($rqt=null)
     {
-		if ($rqt != NULL ){
-			$this->setGroupName($rqt["groupName"]);		
-			$this->setDescription($rqt["description"]);		
-			$this->setUri("groups/" . urlencode($rqt["groupName"]));
-		}
-	}
+        if ($rqt != null) {
+            $this->setGroupName($rqt["groupName"]);
+            $this->setDescription($rqt["description"]);
+            $this->setUri("groups/" . urlencode($rqt["groupName"]));
+        }
+    }
 
 
-		
-	function getGroupName(){
-		return $this->groupName;
-	}
-	function setGroupName($groupName){
-		$this->groupName=$groupName;
-	}
-		
-	function getDescription(){
-		return $this->description;
-	}
-	function setDescription($description){
-		$this->description=$description;
-	}
+    /** 
+     * Group name getter
+     * 
+     * @return string group name
+     */
+    function getGroupName()
+    {
+        return $this->groupName;
+    }
+    /**
+     * Group name setter
+     * 
+     * @param string $groupName group name
+     * 
+     * @return void
+     */
+    function setGroupName($groupName)
+    {
+        $this->groupName=$groupName;
+    }
+    /** 
+     * Group description getter
+     * 
+     * @return string group description
+     */
+    function getDescription()
+    {
+        return $this->description;
+    }
+    /**
+     * Group description setter
+     * 
+     * @param string $description group description
+     * 
+     * @return void
+     */
+    function setDescription($description)
+    {
+        $this->description=$description;
+    }
 
-	function toArray(){
-		return 	Array("uri"  => $this->getUri(),
-					  "groupName" => $this->getGroupName(),
-					  "description"  => $this->getDescription()
-				);
-	}
+    /**
+     * Convert object to associative array
+     * 
+     * @return array Object in a array
+     */
+    function toArray()
+    {
+        return Array("uri"  => $this->getUri(),
+                      "groupName" => $this->getGroupName(),
+                      "description"  => $this->getDescription()
+               );
+    }
 
 }

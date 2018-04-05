@@ -1,4 +1,15 @@
 <?php
+/**
+ * Reverse Proxy as a service
+ * 
+ * PHP Version 7.0
+ * 
+ * @category ReverseProxy
+ * @package  OSA
+ * @author   Benoit HERARD <benoit.herard@orange.com>
+ * @license  http://www.apache.org/licenses/LICENSE-2.0.htm Apache 2 license
+ * @link     https://github.com/zorglub42/OSA/
+*/
 /*--------------------------------------------------------
  * Module Name : ApplianceManager
  * Version : 1.0.0
@@ -22,17 +33,19 @@
  * History     :
  * 1.0.0 - 2012-10-01 : Release of the file
 */
-header( 'Expires: Sat, 26 Jul 1997 05:00:00 GMT' );
-header( 'Last-Modified: ' . gmdate( 'D, d M Y H:i:s' ) . ' GMT' );
-header( 'Cache-Control: no-store, no-cache, must-revalidate, max-age=0' );
-header( 'Cache-Control: post-check=0, pre-check=0', false );
-header( 'Pragma: no-cache' );
+header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
+header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Cache-Control: post-check=0, pre-check=0', false);
+header('Pragma: no-cache');
 
 
 //CORS Compliancy
 header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Headers: X-Requested-With, Depth, Authorization");
-header("Access-Control-Allow-Methods: OPTIONS, GET, HEAD, DELETE, PROPFIND, PUT, PROPPATCH, COPY, MOVE, REPORT, LOCK, UNLOCK");
 header("Access-Control-Allow-Origin: *");
-
-?>
+header(
+    "Access-Control-Allow-Methods: " .
+    "OPTIONS, GET, HEAD, DELETE, PROPFIND, " .
+    "PUT, PROPPATCH, COPY, MOVE, REPORT, LOCK, UNLOCK"
+);

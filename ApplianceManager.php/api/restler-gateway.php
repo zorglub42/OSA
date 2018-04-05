@@ -1,4 +1,16 @@
 <?php
+/**
+ *  Reverse Proxy as a service
+ * 
+ * PHP Version 7.0
+ * 
+ * @category ReverseProxy
+ * @package  OSA
+ * @author   Benoit HERARD <benoit.herard@orange.com>
+ * @license  http://www.apache.org/licenses/LICENSE-2.0.htm Apache 2 license
+ * @link     https://github.com/zorglub42/OSA/
+*/
+
 /*--------------------------------------------------------
  * Module Name : ApplianceManager
  * Version : 1.0.0
@@ -26,8 +38,8 @@
 
 
 
-require_once('../include/commonHeaders.php');
-require_once('../include/Settings.ini.php');
+require_once '../include/commonHeaders.php';
+require_once '../include/Settings.ini.php';
 require_once 'Users.php';
 require_once 'Groups.php';
 require_once 'Logs.php';
@@ -40,16 +52,16 @@ use Luracast\Restler\Restler;
 
 
 Resources::$useFormatAsExtension = false;
-JsonFormat::$prettyPrint=True;
+JsonFormat::$prettyPrint=true;
 
 $r = new Restler();
 
-if (isset(getallheaders()[uriPrefixHeader])){
-	$r->setBaseUrl(getallheaders()[uriPrefixHeader]);
+if (isset(getallheaders()[uriPrefixHeader])) {
+    $r->setBaseUrl(getallheaders()[uriPrefixHeader]);
 }
-$r->setSupportedFormats('JsonFormat' ,'UrlEncodedFormat','UploadFormat');
+$r->setSupportedFormats('JsonFormat', 'UrlEncodedFormat', 'UploadFormat');
 
-$r->addAPIClass('Luracast\\Restler\\Resources');  //this creates resources.json at API root 
+$r->addAPIClass('Luracast\\Restler\\Resources');
 
 $r->addAPIClass('Auth');
 $r->addAPIClass('Counters');

@@ -115,7 +115,7 @@ function getUser($userName = NULL, $request_data = NULL){
 		}
 		$strSQL="SELECT * FROM users u" . $strSQLComp	;
 		if (isset($request_data["order"]) && $request_data["order"] != ""){
-			$strSQL=$strSQL . " ORDER BY " . EscapeOrder($request_data["order"]);
+			$strSQL=$strSQL . " ORDER BY " . escapeOrder($request_data["order"]);
 		}
 		$stmt = $db->prepare($strSQL);
 		try{

@@ -1,3 +1,19 @@
+<?php
+/**
+ * Reverse Proxy as a service
+ * 
+ * PHP Version 7.0
+ * 
+ * @category ReverseProxy
+ * @package  OSA
+ * @author   Benoit HERARD <benoit.herard@orange.com>
+ * @license  http://www.apache.org/licenses/LICENSE-2.0.htm Apache 2 license
+ * @link     https://github.com/zorglub42/OSA/
+ * 
+ * @codingStandardsIgnoreStart
+*/
+?>
+
 ServerTokens Prod
 ServerSignature Off
 
@@ -33,12 +49,12 @@ ServerSignature Off
 
 
 	SetEnvIf Authorization "(.*)" ORGAUTH=$1
-       RequestHeader unset Authorization
+    RequestHeader unset Authorization
 
-	   ProxyTimeout 120 
-	   DocumentRoot /var/www/local/empty	
-       Include <?php echo runtimeApplianceConfigLocation?>/applianceManagerServices-node-<?php echo $NODE_NAME?>.endpoints
-       <?php echo $ADDITIONAL_CONFIGURATION . "\n"?>
-	   Header set Server OSA-<?php echo version?>
+    ProxyTimeout 120 
+    DocumentRoot /var/www/local/empty	
+    Include <?php echo runtimeApplianceConfigLocation?>/applianceManagerServices-node-<?php echo $NODE_NAME?>.endpoints
+    <?php echo $ADDITIONAL_CONFIGURATION . "\n"?>
+    Header set Server OSA-<?php echo version?>
 
 </VirtualHost>

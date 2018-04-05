@@ -1,4 +1,39 @@
 <?php
+/**
+ *  Reverse Proxy as a service
+ * 
+ * PHP Version 7.0
+ * 
+ * @category ReverseProxy
+ * @package  OSA
+ * @author   Benoit HERARD <benoit.herard@orange.com>
+ * @license  http://www.apache.org/licenses/LICENSE-2.0.htm Apache 2 license
+ * @link     https://github.com/zorglub42/OSA/
+*/
+
+/*--------------------------------------------------------
+ * Module Name : ApplianceManager
+ * Version : 1.0.0
+ *
+ * Software Name : OpenServicesAccess
+ * Version : 1.0
+ *
+ * Copyright (c) 2011 – 2014 Orange
+ * This software is distributed under the Apache 2 license
+ * <http://www.apache.org/licenses/LICENSE-2.0.html>
+ *
+ *--------------------------------------------------------
+ * File Name   : ApplianceManager/ApplianceManager.php/include/localization/en.php
+ *
+ * Created     : 2012-02
+ * Authors     : Benoit HERARD <benoit.herard(at)orange.com>
+ *
+ * Description :
+ *      FR Labels translation
+ *--------------------------------------------------------
+ * History     :
+ * 1.0.0 - 2012-10-01 : Release of the file
+*/
 $strings["date.format"]="dd/MM/yyyy";
 $strings["date.format.parseexact"]="dd/mm/yyyy";
 $strings["date.format.parseexact.long"]="dd/mm/yyyy hh:MM:ss";
@@ -58,8 +93,15 @@ $strings["group.delete.confirm"]="Etes vous sur de vouloir supprimer le groupe";
 $strings["group.edit.tooltip"]="Editer ce groupe";
 $strings["group.delete.tooltip"]="Supprimer ce groupe";
 $strings["group.add.tooltip"]="Ajouter un groupe au système";
-$strings["group.name.tooltip"]="Saisissez ici le nom du groupe\nATTENTION: ne pas utiliser de caractères spéciaux\nLe nom de groupe est utilisé pour gérer l'authentification d'accès aux services.\nLe nom de groupe est un identifiant qui ne peut pas être modifié.";
-$strings["group.description.tooltip"]="Saisissez ici la description du groupe\nCette donnée est a vocation informative et n'est pas exploitée par le système";
+$strings["group.name.tooltip"]
+    ="Saisissez ici le nom du groupe\n".
+     "ATTENTION: ne pas utiliser de caractères spéciaux\n".
+     "Le nom de groupe est utilisé pour gérer l'authentification d'accès ".
+     "aux services.\n".
+     "Le nom de groupe est un identifiant qui ne peut pas être modifié.";
+$strings["group.description.tooltip"]
+    ="Saisissez ici la description du groupe\nCette donnée est a vocation ".
+     "informative et n'est pas exploitée par le système";
 $strings["group.properties.new"]="Proriétés du nouveau groupe";
 $strings["group.properties"]="Proriétés du groupe {group.groupName}";
 
@@ -83,8 +125,10 @@ $strings["user.lastName.placeholder"]="Nom de famille de l'utilisateur";
 $strings["user.password.placeholder"]="Mot de passe";
 $strings["user.entity.placeholder"]="Organisation de l'utilisateur (optionnelle)";
 $strings["user.emailAddress.placeholder"]="Adresse mail de l'utilisateur";
-$strings["user.endDate.placeholder"]="Date de fin après laquelle il sera impossible de se connecter";
-$strings["user.additionalData.placeholder"]="Données aditionnelles à votre libre choix";
+$strings["user.endDate.placeholder"]
+    ="Date de fin après laquelle il sera impossible de se connecter";
+$strings["user.additionalData.placeholder"]
+    ="Données aditionnelles à votre libre choix";
 $strings["user.quotas.reqSec.placeholder"]="";
 $strings["user.quotas.reqDay.placeholder"]="";
 $strings["user.quotas.reqMonth.placeholder"]="";
@@ -92,34 +136,61 @@ $strings["user.quotas.reqMonth.placeholder"]="";
 /*tooltips*/
 $strings["user.edit.tooltip"]="Editer cet utilisateur";
 $strings["user.delete.tooltip"]="Supprimer cet utilisateur";
-$strings["user.userName.tooltip"]="Saisissez ici le nom d'utilisateur se connecter au système\nLe nom d'utilisateur est un identifiant qui ne peut pas être changé ultérieurement";
+$strings["user.userName.tooltip"]
+    ="Saisissez ici le nom d'utilisateur se connecter au système\n".
+     "Le nom d'utilisateur est un identifiant qui ne peut pas être changé ".
+     "ultérieurement";
 $strings["user.password.tooltip"]="Saisissez ici son mot de passe";
 $strings["user.firstName.tooltip"]="Saisissez ici le prénom de l'utilisateur";
 $strings["user.lastName.tooltip"]="Saisissez ici son nom de famille";
 $strings["user.entity.tooltip"]="Organisation de l'utilisateur (optionnelle)";
 $strings["user.emailAddress.tooltip"]="Adresse mail de l'utilisateur";
-$strings["user.endDate.tooltip"]="Date de fin après laquelle il sera impossible de se connecter";
+$strings["user.endDate.tooltip"]
+    ="Date de fin après laquelle il sera impossible de se connecter";
 $strings["user.additionalData.tooltip"]="Données aditionnelles à votre libre choix";
-$strings["user.membership.tooltip"]="Liste des groupes dont l'utilisateur {currentUser.userName} fait partie";
-$strings["user.availableGroups.tooltip"]="Seléctionnez (avec CTRL+Click) les groupes dans lesquels l'utilisateur {currentUser.userName} doit être ajouté";
-$strings["user.deleteGroup.tooltip"]="Retirer l'utilisateur {currentUser.userName} du groupe {groupList[i].groupName}";
-$strings["user.deleteQuota.tooltip"]="Supprimer les quotas sur le service {quotasList[i].serviceName} pour l'utilisateur {currentUser.userName}";
-$strings["user.editQuota.tooltip"]="Modifier les quotas sur le service {quotasList[i].serviceName} pour l'utilisateur {currentUser.userName}";
-$strings["user.quotas.serviceName.tooltip"]="Selectionner le service pour lequel les quotas utilisateurs doivent être définis";
-$strings["user.quotas.reqSec.tooltip"]="Saisissez ici le nombre maximal de requête par secondes qu'un utilisateur peut passer sur le service";
-$strings["user.quotas.reqDay.tooltip"]="Saisissez ici le nombre maximal de requête par jours qu'un utilisateur peut passer sur le service";
-$strings["user.quotas.reqMonth.tooltip"]="Saisissez ici le nombre maximal de requête par mois qu'un utilisateur peut passer sur le service";
-$strings["user.lastTokenLogin.tooltip"]="Dernière fois que l'utilisateur s'est connecté en utilisant un cookie/token";
+$strings["user.membership.tooltip"]
+    ="Liste des groupes dont l'utilisateur {currentUser.userName} fait partie";
+$strings["user.availableGroups.tooltip"]
+    ="Seléctionnez (avec CTRL+Click) les groupes dans lesquels l'utilisateur ".
+     "{currentUser.userName} doit être ajouté";
+$strings["user.deleteGroup.tooltip"]
+    ="Retirer l'utilisateur {currentUser.userName} du groupe ".
+     "{groupList[i].groupName}";
+$strings["user.deleteQuota.tooltip"]
+    ="Supprimer les quotas sur le service {quotasList[i].serviceName} pour ".
+     "l'utilisateur {currentUser.userName}";
+$strings["user.editQuota.tooltip"]
+    ="Modifier les quotas sur le service {quotasList[i].serviceName} pour ".
+     "l'utilisateur {currentUser.userName}";
+$strings["user.quotas.serviceName.tooltip"]
+    ="Selectionner le service pour lequel les quotas utilisateurs doivent être ".
+     "définis";
+$strings["user.quotas.reqSec.tooltip"]
+    ="Saisissez ici le nombre maximal de requête par secondes qu'un utilisateur ".
+     "peut passer sur le service";
+$strings["user.quotas.reqDay.tooltip"]
+    ="Saisissez ici le nombre maximal de requête par jours qu'un utilisateur peut ".
+     "passer sur le service";
+$strings["user.quotas.reqMonth.tooltip"]
+    ="Saisissez ici le nombre maximal de requête par mois qu'un utilisateur peut ".
+     "passer sur le service";
+$strings["user.lastTokenLogin.tooltip"]
+    ="Dernière fois que l'utilisateur s'est connecté en utilisant un cookie/token";
 
 /* Details*/
 $strings["user.properties.new"]="Proriétés du nouvel utilisateur";
 $strings["user.delete.confirm"]="Etes vous sûr de vouloir supprimer l'utilisateur";
-$strings["user.deleteGroup.confirm"]="Etes vous sûr de vouloir supprimer l'utilisateur du groupe";
-$strings["user.deleteQuota.confirm"]="Etes vous sûr de vouloir supprimer le quota sur le service";
+$strings["user.deleteGroup.confirm"]
+    ="Etes vous sûr de vouloir supprimer l'utilisateur du groupe";
+$strings["user.deleteQuota.confirm"]
+    ="Etes vous sûr de vouloir supprimer le quota sur le service";
 $strings["user.groups"]="Groupes de l'utilisateur {currentUser.userName}";
 $strings["user.quotas"]="Quotas de l'utilisateur {currentUser.userName}";
-$strings["user.quotas.add"]="Ajouter des quotas de service pour l'utilisateur {currentUser.userName}";
-$strings["user.quotas.edit"]="Modifier les quotas du service {quota.serviceName} pour l'utilisateur {quota.userName} ";
+$strings["user.quotas.add"]
+    ="Ajouter des quotas de service pour l'utilisateur {currentUser.userName}";
+$strings["user.quotas.edit"]
+    ="Modifier les quotas du service {quota.serviceName} pour l'utilisateur ".
+     "{quota.userName} ";
 $strings["user.properties"]="Proriétés de l'utilisateur {userName}";
 $strings["user.label.userName"]="Nom d'utilisateur";
 $strings["user.label.password"]="Mot de passe";
@@ -148,13 +219,15 @@ $strings["service.list.quotas.reqDay"]="Max/jour";
 $strings["service.list.quotas.reqMonth"]="Max/mois";
 /* Details */
 $strings["service.delete.confirm"]="Etes vous sûr de vouloir supprimer le service";
-$strings["service.submit.alert.nodeList"]="Au moins un noeud d'exposition doit être selectionné";
+$strings["service.submit.alert.nodeList"]
+    ="Au moins un noeud d'exposition doit être selectionné";
 /*Placeholders*/
 $strings["service.name.placeholder"]="Nom du service";
 $strings["service.groupName.placeholder"]="Nom du groupe autorisant l'accès";
 $strings["service.frontendEndpoint.placeholder"]="Alias sur le noeud d'exposition";
 $strings["service.backendEndpoint.placeholder"]="URL du backend exposé";
-$strings["service.loginForm.placeholder"]="Ex.: /ApplianceManagerAdmin/auth/loginFom";
+$strings["service.loginForm.placeholder"]
+    ="Ex.: /ApplianceManagerAdmin/auth/loginFom";
 $strings["service.baUsername.placeholder"]="Nom d'utilisateur";
 $strings["service.baPassword.placeholder"]="Mot de passe";
 $strings["service.reqSec.placeholder"]="";
@@ -162,29 +235,68 @@ $strings["service.reqDay.placeholder"]="";
 $strings["service.reqMonth.placeholder"]="";
 
 /*Tooltips*/
-$strings["service.name.tooltip"]="Saisissez ici le nom du service\nATTENTION: Ne pas utilisez de caractères spéciaux\nLe nom du service est un identifiant qui ne peut pas être changé ultérieurement";
-$strings["service.frontendEndpoint.tooltip"]="Saisissez ici l'alias public du service\nEx: /monservice";
-$strings["service.backendEndpoint.tooltip"]="Saisissez ici l'URL du service sur le backend\nEx: http://serveur.backend/monservice\nOSA supporte http, https et si apache2.4 ou plus, ws et wss";
+$strings["service.name.tooltip"]
+    ="Saisissez ici le nom du service\n".
+     "ATTENTION: Ne pas utilisez de caractères spéciaux\n".
+     "Le nom du service est un identifiant qui ne peut pas être changé ".
+     "ultérieurement";
+$strings["service.frontendEndpoint.tooltip"]
+    ="Saisissez ici l'alias public du service\nEx: /monservice";
+$strings["service.backendEndpoint.tooltip"]
+    ="Saisissez ici l'URL du service sur le backend\n".
+     "Ex: http://serveur.backend/monservice\n".
+     "OSA supporte http, https et si apache2.4 ou plus, ws et wss";
 $strings["service.edit.tooltip"]="Editer ce service";
 $strings["service.delete.tooltip"]="Supprimer ce service";
 $strings["service.add.tooltip"]="Ajouter un service au système";
-$strings["service.isPublished.tooltip"]="Si cette case est cochée, le service est publié sur les noeuds d'exposition\nsinon, il n'est pas accéssible"; 
-$strings["service.group.tooltip"]="Pour utiliser ce service, les utilisateurs devront faire partie du groupe séléctionné";
-$strings["service.loginForm.tooltip"]="Si le noeud de publication supporte l'autorisation par cookie, les accés non authentifiés seront redirigés vers cette URL";
-$strings["service.isAnonymousAllowed.tooltip"]="Les utilisateurs non authentifiés peuvent tout de même accéder à ce service.\nCharge au backend determiner si un utilisateur est connecté ou non via la propagation d'identité";
-$strings["service.forwardIdentity.tooltip"]="Si cette case est cochée, l'identité de l'utilisateur connecté sera transmise sous forme d'ente HTTP au serveur backend";
-$strings["service.baUsername.tooltip"]="Nom d'utilisateur à utiliser pour s'authenfier sur le serveur backend\nUtiliser %auto% utiliser les mêmes credentials que ceux recu par OSA";
-$strings["service.baPassword.tooltip"]="Mot de passe à utiliser pour s'authenfier sur le serveur backend";
-$strings["service.isGlobalQuotasEnabled.tooltip"]="Si cette case est cochée, l'accès au serveur backend sera limité par des quotas tout utilisateurs confondus";
+$strings["service.isPublished.tooltip"]
+    ="Si cette case est cochée, le service est publié sur les noeuds ".
+     "d'exposition\n".
+     "sinon, il n'est pas accéssible"; 
+$strings["service.group.tooltip"]
+    ="Pour utiliser ce service, les utilisateurs devront faire partie du groupe ".
+     "séléctionné";
+$strings["service.loginForm.tooltip"]
+    ="Si le noeud de publication supporte l'autorisation par cookie, les ".
+     "accés non authentifiés seront redirigés vers cette URL";
+$strings["service.isAnonymousAllowed.tooltip"]
+    ="Les utilisateurs non authentifiés peuvent tout de même accéder ".
+     "à ce service.\n".
+     "Charge au backend determiner si un utilisateur est connecté ou non via la ".
+     "propagation d'identité";
+$strings["service.forwardIdentity.tooltip"]
+    ="Si cette case est cochée, l'identité de l'utilisateur connecté sera ".
+     "transmise sous forme d'ente HTTP au serveur backend";
+$strings["service.baUsername.tooltip"]
+    ="Nom d'utilisateur à utiliser pour s'authenfier sur le serveur backend\n".
+     "Utiliser %auto% utiliser les mêmes credentials que ceux recu par OSA";
+$strings["service.baPassword.tooltip"]
+    ="Mot de passe à utiliser pour s'authenfier sur le serveur backend";
+$strings["service.isGlobalQuotasEnabled.tooltip"]
+    ="Si cette case est cochée, l'accès au serveur backend sera limité par des ".
+     "quotas tout utilisateurs confondus";
 $strings["service.reqSec.tooltip"]="Nombre maximum de requêtes par seconde";
 $strings["service.reqDay.tooltip"]="Nombre maximum de requêtes par jour";
 $strings["service.reqMonth.tooltip"]="Nombre maximum de requêtes par mois";
-$strings["service.isUserQuotasEnabled.tooltip"]="Si cette case est cochée, l'accès au serveur backend sera limité par des quotas par utilisateur";
-$strings["service.onAllNodes.tooltip"]="Si cette case est cochée, le service sera publié sur tous les noeuds disponibles";
-$strings["service.publishedOnNodes.tooltip"]="Seléctionnez (avec CTRL+Click) les noeuds sur lesquels le service {serviceName} sera publié";
-$strings["service.logHits.tooltip"]="Si cette case est cochée, les appels au service seront enregistrés dans les logs\nATTENTION: Cela peut altérer considérablement les performances";
-$strings["service.additionalConfiguration.tooltip"]="Vous pouvez ici rajouter des directives apache applicables au tag apache </Location>";
-$strings["service.isUserAuthenticationEnabled.tooltip"]="Si cette case est cochée OSA vérifiera l'identité des utlisateurs se connectant au service";
+$strings["service.isUserQuotasEnabled.tooltip"]
+    ="Si cette case est cochée, l'accès au serveur backend sera limité par ".
+     "des quotas par utilisateur";
+$strings["service.onAllNodes.tooltip"]
+    ="Si cette case est cochée, le service sera publié sur tous les noeuds ".
+     "disponibles";
+$strings["service.publishedOnNodes.tooltip"]
+    ="Seléctionnez (avec CTRL+Click) les noeuds sur lesquels le service ".
+     "{serviceName} sera publié";
+$strings["service.logHits.tooltip"]
+    ="Si cette case est cochée, les appels au service seront enregistrés ".
+     "dans les logs\n".
+     "ATTENTION: Cela peut altérer considérablement les performances";
+$strings["service.additionalConfiguration.tooltip"]
+    ="Vous pouvez ici rajouter des directives apache applicables au tag apache ".
+     "</Location>";
+$strings["service.isUserAuthenticationEnabled.tooltip"]
+    ="Si cette case est cochée OSA vérifiera l'identité des utlisateurs se ".
+     "connectant au service";
 $strings["service.publish.tooltip"]="Publier ce service";
 $strings["service.unpublish.tooltip"]="Stopper la publication de ce service";
 
@@ -198,42 +310,56 @@ $strings["service.label.chooseNode"]="-- Exposé(s) sur n'importe quel noeud --"
 $strings["service.label.isPublished"]="Publié";
 $strings["service.label.frontendEndpoint"]="Alias publique";
 $strings["service.label.backendEndpoint"]="Serveur backend";
-$strings["service.label.isUserAuthenticationEnabled"]="Activer l'authentification utilisateur";
+$strings["service.label.isUserAuthenticationEnabled"]
+    ="Activer l'authentification utilisateur";
 $strings["service.label.group"]="Autoriser les utilisateurs appartenant à";
 $strings["service.label.loginForm"]="URL de la page de login";
 $strings["service.label.isAnonymousAllowed"]="Permettre également l'accès anonyme";
 $strings["service.label.forwardIdentity"]="Transmettre l'identité";
 $strings["service.label.baUsername"]="Nom d'utilisateur (basic authentication)";
 $strings["service.label.baPassword"]="Mot de passe (basic authentication)";
-$strings["service.label.isGlobalQuotasEnabled"]="Activer le contrôle de quotas globaux";
+$strings["service.label.isGlobalQuotasEnabled"]
+    ="Activer le contrôle de quotas globaux";
 $strings["service.label.reqSec"]="Maximum par seconde";
 $strings["service.label.reqDay"]="Maximum par jour";
 $strings["service.label.reqMonth"]="Maximum par mois";
-$strings["service.label.isUserQuotasEnabled"]="Activer le contrôle de quotas par utilisateur";
+$strings["service.label.isUserQuotasEnabled"]
+    ="Activer le contrôle de quotas par utilisateur";
 $strings["service.label.onAllNodes"]="Disponible sur tous les noeuds";
-$strings["service.label.publishedOnNodes"]="Service disponible sur les noeuds suivants";
+$strings["service.label.publishedOnNodes"]
+    ="Service disponible sur les noeuds suivants";
 $strings["service.label.logHits"]="Enregistrer les traces";
-$strings["service.label.warning.additionalConfiguration"]="ATTENTION: Utiliser des directives de configuration appache aditionnelles peut corompre la configuration globale du système. A utiliser à vos risque et périls";
-$strings["service.label.additionalConfiguration"]="Directives de configuration apache aditionnelles";
-$strings["service.label.additionalConfiguration.helpText"]="En plus des variables standard d'apache, en rapport avec la façon dont le noeud expose le service, vous pouvez utiliser ici:\n" .
-						"<ul>\n" .
-						"	<li>\n" .
-						"		%{publicServerProtocol}e pour le protocole utilisé (i.e http:// ou https://)\n" .
-						"	</li>\n" .
-						"	<li>\n" .
-						"		%{publicServerName}e nom public du serveur\n" .
-						"	</li>\n" .
-						"	<li>\n" .
-						"		%{publicServerPort}e port du serveur\n" .
-						"	</li>\n" .
-						"	<li>\n" .
-						"		%{frontEndEndPoint}e alias public (préfix)\n" .
-						"	</li>\n" .
-						"	<li>\n" .
-						"		%{publicServerPrefix}e concatenation des variables précédents (ex: https//noeud.publique.com:8443/monservice)\n" .
-						"	</li>\n" .
-						"	<br>Ex:<br><code>RequestHeader set Public-Root-URI \"%{publicServerProtocol}e%{publicServerName}e:%{publicServerPort}e/%{frontEndEndPoint}e\"</code>\n" .
-						"</ul>\n";
+$strings["service.label.warning.additionalConfiguration"]
+    ="ATTENTION: Utiliser des directives de configuration appache aditionnelles ".
+     "peut corompre la configuration globale du système. A utiliser à vos risques ".
+     "et périls";
+$strings["service.label.additionalConfiguration"]
+    ="Directives de configuration apache aditionnelles";
+$strings["service.label.additionalConfiguration.helpText"]
+    ="En plus des variables standard d'apache, en rapport avec la façon dont le ".
+     "noeud expose le service, vous pouvez utiliser ici:\n" .
+        "<ul>\n" .
+        "	<li>\n" .
+        "		%{publicServerProtocol}e pour le protocole utilisé ".
+                "(i.e http:// ou https://)\n" .
+        "	</li>\n" .
+        "	<li>\n" .
+        "		%{publicServerName}e nom public du serveur\n" .
+        "	</li>\n" .
+        "	<li>\n" .
+        "		%{publicServerPort}e port du serveur\n" .
+        "	</li>\n" .
+        "	<li>\n" .
+        "		%{frontEndEndPoint}e alias public (préfix)\n" .
+        "	</li>\n" .
+        "	<li>\n" .
+        "		%{publicServerPrefix}e concatenation des variables précédents ".
+        "(ex: https//noeud.publique.com:8443/monservice)\n" .
+        "	</li>\n" .
+        "	<br>Ex:<br><code>RequestHeader set Public-Root-URI \"".
+     "%{publicServerProtocol}e%{publicServerName}e:%{publicServerPort}e/".
+     "%{frontEndEndPoint}e\"</code>\n" .
+        "</ul>\n";
 $strings["service.label.headers"]="Headers HTTP à transmettre";
 $strings["service.label.headers.userName"]=$strings["user.label.userName"];
 $strings["service.label.headers.firstName"]=$strings["user.label.firstName"];
@@ -254,7 +380,8 @@ $strings["service.tab.advanced"]="Avancées";
 
 
 /* Counters */
-$strings["counter.delete.confirm"]="Etes vous sûr de vouloir supprimer ce compteur ?";
+$strings["counter.delete.confirm"]
+    ="Etes vous sûr de vouloir supprimer ce compteur ?";
 $strings["counter.search.title"]="Rechercher des compteurs";
 $strings["counter.edit.title"]="Modifier les valeurs du compteur";
 /* List */
@@ -275,11 +402,18 @@ $strings["counter.label.user"]="Utilisateur";
 $strings["counter.label.user.any"]="*** N'importe lequel ***";
 
 /* Tooltips */
-$strings["counter.timeunit.tooltip"]="Selectionnez l'unité de temps sur laquelle portent les compteurs rechechés";
-$strings["counter.service.tooltip"]="Tapez les premières lettres du service sur lequel portent les compteurs rechechés";
-$strings["counter.user.tooltip"]="Tapez les premières lettres du  nom d'utilisateur lequel portent les compteurs rechechés";
-$strings["counter.edit.tooltip"]="Changer les valeurs de ce compteur";
-$strings["counter.delete.tooltip"]="Supprimer ce compteur (ré-initialiser)";
+$strings["counter.timeunit.tooltip"]
+    ="Selectionnez l'unité de temps sur laquelle portent les compteurs rechechés";
+$strings["counter.service.tooltip"]
+    ="Tapez les premières lettres du service sur lequel portent les compteurs ".
+     "rechechés";
+$strings["counter.user.tooltip"]
+    ="Tapez les premières lettres du  nom d'utilisateur lequel portent les ".
+     "compteurs rechechés";
+$strings["counter.edit.tooltip"]
+    ="Changer les valeurs de ce compteur";
+$strings["counter.delete.tooltip"]
+    ="Supprimer ce compteur (ré-initialiser)";
 
 
 
@@ -287,8 +421,11 @@ $strings["counter.delete.tooltip"]="Supprimer ce compteur (ré-initialiser)";
 $strings["node.delete.confirm"]="Etes vous sur de vouloir supprimer le noeud";
 $strings["node.properties.new"]="Propriétés du nouveau noeud de publication";
 $strings["node.properties"]="Propriétés du noeud de publication {node.nodeName}";
-$strings["node.deleteCASSL.confirm"]="Etes vous sûr de vouloir supprimer les informations de la chaîne de certification ?";
-$strings["node.deleteSSL.confirm"]="Etes vous sûr de vouloir supprimer les paramètres de certificat ?";
+$strings["node.deleteCASSL.confirm"]
+    ="Etes vous sûr de vouloir supprimer les informations de la chaîne de ".
+     "certification ?";
+$strings["node.deleteSSL.confirm"]
+    ="Etes vous sûr de vouloir supprimer les paramètres de certificat ?";
 /* List */
 $strings["node.list.found"]="noeuds trouvés";
 $strings["node.list.nodeName"]="Nom";
@@ -310,25 +447,58 @@ $strings["node.nodeDescription.placeholder"]="";
 $strings["node.add.tooltip"]="Ajouter un noeud de publication au système";
 $strings["node.edit.tooltip"]="Editer ce noeud";
 $strings["node.delete.tooltip"]="Supprimer ce noeud";
-$strings["node.nodeName.tooltip"]="Saisissez ici le nom du noeud de publication\nATTENTION : ne pas utiliser de caractères spéciaux\nLe nom du noeud est un identifiant qui ne peut pas être changé ultérieurement";
-$strings["node.isHTTPS.tooltip"]="Si cette case est cochée, le noeud sera disponnible en https, sinon en http";
-$strings["node.localIP.tooltip"]="Saisissez ici l'adresse IP (ou le nom correspondant) sur laquelle le noeud doit écouter (ou * pour toutes)";
-$strings["node.port.tooltip"]="Saissisez ici le port TCP sur lequel le noeud doit écouter";
-$strings["node.serverFQDN.tooltip"]="Saisissez ici le FQDN auquel le serveur doit répondre (VirtualHost ServerName)";
-$strings["node.nodeDescription.tooltip"]="(optionnelle) Description informative du noeud";
-$strings["node.isBasicAuthEnabled.tooltip"]="Si cette case est cochée, les services publiés sur ce noeud pourront être protégés par le mode d'authentification \"basic authentication\"";
-$strings["node.isCookieAuthEnabled.tooltip"]="Si cette case est cochée, les services publiés sur ce noeud pourront être protégés par le mode d'authentification par cookie";
-$strings["node.privateKey.tooltip"]="Selectionnez le fichier contenant la clef privée. Si aucun fichier n'est selectionné, le système en générera une";
-$strings["node.cert.tooltip"]="Selectionnez le fichier contenant le certificat. Si aucun fichier n'est selectionné, le système en générera un";
-$strings["node.manageCA.tooltip"]="Cocher cette case pour renseigner les certification amont";
-$strings["node.ca.tooltip"]="Selectionnez le fichier contenant le certificat de l'authorité de certification.";
-$strings["node.chain.tootip"]="Selectionnez le fichier contenant les certificats de la chaîne de certification.";
-$strings["node.additionalConfiguration.tooltip"]="Vous pouvez ici rajouter des directives apache applicables au tag apache </VirtualHost>";
+$strings["node.nodeName.tooltip"]
+    ="Saisissez ici le nom du noeud de publication\n".
+     "ATTENTION : ne pas utiliser de caractères spéciaux\n".
+     "Le nom du noeud est un identifiant qui ne peut pas être changé ultérieurement";
+$strings["node.isHTTPS.tooltip"]
+    ="Si cette case est cochée, le noeud sera disponnible en https, sinon en http";
+$strings["node.localIP.tooltip"]
+    ="Saisissez ici l'adresse IP (ou le nom correspondant) sur laquelle le noeud ".
+     "doit écouter (ou * pour toutes)";
+$strings["node.port.tooltip"]
+    ="Saissisez ici le port TCP sur lequel le noeud doit écouter";
+$strings["node.serverFQDN.tooltip"]
+    ="Saisissez ici le FQDN auquel le serveur doit répondre ".
+     "(VirtualHost ServerName)";
+$strings["node.nodeDescription.tooltip"]
+    ="(optionnelle) Description informative du noeud";
+$strings["node.isBasicAuthEnabled.tooltip"]
+    ="Si cette case est cochée, les services publiés sur ce noeud pourront être ".
+     "protégés par le mode d'authentification \"basic authentication\"";
+$strings["node.isCookieAuthEnabled.tooltip"]
+    ="Si cette case est cochée, les services publiés sur ce noeud pourront être ".
+     "protégés par le mode d'authentification par cookie";
+$strings["node.privateKey.tooltip"]
+    ="Selectionnez le fichier contenant la clef privée. Si aucun fichier n'est ".
+     "selectionné, le système en générera une";
+$strings["node.cert.tooltip"]
+    ="Selectionnez le fichier contenant le certificat. Si aucun fichier n'est ".
+     "selectionné, le système en générera un";
+$strings["node.manageCA.tooltip"]
+    ="Cocher cette case pour renseigner les certification amont";
+$strings["node.ca.tooltip"]
+    ="Selectionnez le fichier contenant le certificat de l'authorité de ".
+     "certification.";
+$strings["node.chain.tootip"]
+    ="Selectionnez le fichier contenant les certificats de la chaîne de ".
+     "certification.";
+$strings["node.additionalConfiguration.tooltip"]
+    ="Vous pouvez ici rajouter des directives apache applicables au tag apache ".
+     "</VirtualHost>";
 $strings["node.publish.tooltip"]="Demarrer le noeud";
 $strings["node.unpublish.tooltip"]="Arrêter le noeud";
-$strings["node.https-on-80-warning"]="ATTENTION : Utiliser HTTPS (et non HTTP) sur le port 80 peut poser des problemes...\nEtes vous sur de vouloir faire ça ?";
-$strings["node.http-on-443-warning"]="ATTENTION : Utiliser HTTP (et non HTTPS) sur le port 443 peut poser des problemes...\nEtes vous sur de vouloir faire ça ?";
-$strings["node.no-authent-warning"]="Au moins un mode d'authentification doit être activé (basic authentication ou authentification par cookie)";
+$strings["node.https-on-80-warning"]
+    ="ATTENTION : Utiliser HTTPS (et non HTTP) sur le port 80 peut poser des ".
+     "problemes...\n".
+     "Etes vous sur de vouloir faire ça ?";
+$strings["node.http-on-443-warning"]
+    ="ATTENTION : Utiliser HTTP (et non HTTPS) sur le port 443 peut poser des ".
+     "problemes...\n" .
+     "Etes vous sur de vouloir faire ça ?";
+$strings["node.no-authent-warning"]
+    ="Au moins un mode d'authentification doit être activé (basic authentication ".
+     "ou authentification par cookie)";
 
 /*Labels */
 $strings["node.label.nodeName"]="Nom du noeud";
@@ -337,15 +507,20 @@ $strings["node.label.localIP"]="IP locale";
 $strings["node.label.port"]="Port";
 $strings["node.label.serverFQDN"]="FQDN du serveur";
 $strings["node.label.nodeDescription"]="Description";
-$strings["node.label.isBasicAuthEnabled"]="Utiliser l'authentification \"Basic authentication\"";
-$strings["node.label.isCookieAuthEnabled"]="Utiliser l'authentification par cookie";
+$strings["node.label.isBasicAuthEnabled"]
+    ="Utiliser l'authentification \"Basic authentication\"";
+$strings["node.label.isCookieAuthEnabled"]
+    ="Utiliser l'authentification par cookie";
 $strings["node.label.privateKey"]="Clé privée";
 $strings["node.label.cert"]="Certificat";
 $strings["node.label.manageCA"]="Gérer la chaine de certification";
 $strings["node.label.ca"]="Certificat \"CA\"";
 $strings["node.label.chain"]="Certificats \"chain\"";
 $strings["node.label.additionalConfiguration"]="Configuration apache additionnelle";
-$strings["node.label.additionalConfiguration.warning"]="ATTENTION: Utiliser des directive de configuration appache aditionnelles peut corompre la configuration globale du système. A utiliser à vos risque et périls";
+$strings["node.label.additionalConfiguration.warning"]
+    ="ATTENTION: Utiliser des directive de configuration appache aditionnelles ".
+     "peut corompre la configuration globale du système. A utiliser à vos risques ".
+     "et périls";
 
 
 /* Tabs */
@@ -357,8 +532,10 @@ $strings["node.tab.advance"]="Avancé";
 
 /* Logs */
 $strings["log.search.title"]="Rechercher dans les logs";
-$strings["log.execute.confirm"]="Effectuer une recherche sans critères peut être long et affecter les performances de la gateway\nEffectuer tout de même ?";
-	/*Labels*/
+$strings["log.execute.confirm"]
+    ="Effectuer une recherche sans critères peut être long et affecter les ".
+     "performances de la gateway\nEffectuer tout de même ?";
+    /*Labels*/
 $strings["log.label.serviceName"]="Service";
 $strings["log.label.userName"]="Utilisateur";
 $strings["log.label.frontEndEndPoint"]="Alias publique";

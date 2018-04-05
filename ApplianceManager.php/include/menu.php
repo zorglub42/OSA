@@ -1,4 +1,15 @@
 <?php
+/**
+ *  Reverse Proxy as a service
+ * 
+ * PHP Version 7.0
+ * 
+ * @category ReverseProxy
+ * @package  OSA
+ * @author   Benoit HERARD <benoit.herard@orange.com>
+ * @license  http://www.apache.org/licenses/LICENSE-2.0.htm Apache 2 license
+ * @link     https://github.com/zorglub42/OSA/
+*/
 /*--------------------------------------------------------
  * Module Name : ApplianceManager
  * Version : 1.0.0
@@ -28,7 +39,8 @@
 	<h2>Groups</h2>
 	<ul>
 		<li>
-			<a href="#" id="listGroup"  title="List, modify and delete existing groups">List</a>
+			<a href="#" id="listGroup"
+			   title="List, modify and delete existing groups">List</a>
 		</li>
 		<li>
 			<a href="#" id="addGroup"  title="Add a new group to the system">Add</a>
@@ -39,7 +51,8 @@
 	<h2>Services</h2>
 	<ul>
 		<li>
-			<a href="#" id="listService"  title="List, modify and delete existing services">List</a>
+			<a href="#" id="listService"
+			   title="List, modify and delete existing services">List</a>
 		</li>
 		<li>
 			<a href="#" id="addService"  title="Add a new service to the system">Add</a>
@@ -61,10 +74,12 @@
 	<h2>Counters</h2>
 	<ul>
 		<li>
-			<a href="#" id="searchCounter"  title="Search for current counters values for quotas">Search</a>
+			<a href="#" id="searchCounter"
+			   title="Search for current counters values for quotas">Search</a>
 		</li>
 		<li>
-			<a href="#" id="searchExcedeedCounters"  title="Search for current counters  where value exceed quotas">Excedeed</a>
+			<a href="#" id="searchExcedeedCounters"
+			   title="Search for current counters  where value exceed quotas">Excedeed</a>
 		</li>
 	</ul>
 </div>
@@ -72,7 +87,8 @@
 	<h2>Nodes</h2>
 	<ul>
 		<li>
-			<a href="#" id="listNode"  title="List, modify and delete existing access nodes">List</a>
+			<a href="#" id="listNode"
+			   title="List, modify and delete existing access nodes">List</a>
 		</li>
 		<li>
 			<a href="#" id="addNode"  title="Add a new node to the system">Add</a>
@@ -83,7 +99,8 @@
 	<h2>Logs</h2>
 	<ul>
 		<li>
-			<a href="#" id="searchLogs" title="Search hits accross realtime traffic logs">Search</a>
+			<a href="#" id="searchLogs"
+			   title="Search hits accross realtime traffic logs">Search</a>
 		</li>
 	</ul>
 </div>

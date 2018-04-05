@@ -1,3 +1,41 @@
+<?php
+/**
+ *  Reverse Proxy as a service
+ * 
+ * PHP Version 7.0
+ * 
+ * @category ReverseProxy
+ * @package  OSA
+ * @author   Benoit HERARD <benoit.herard@orange.com>
+ * @license  http://www.apache.org/licenses/LICENSE-2.0.htm Apache 2 license
+ * @link     https://github.com/zorglub42/OSA/
+*/
+
+/*--------------------------------------------------------
+ * Module Name : ApplianceManager
+ * Version : 1.0.0
+ *
+ * Software Name : OpenServicesAccess
+ * Version : 1.0
+ *
+ * Copyright (c) 2011 – 2014 Orange
+ * This software is distributed under the Apache 2 license
+ * <http://www.apache.org/licenses/LICENSE-2.0.html>
+ *
+ *--------------------------------------------------------
+ * File Name   : ApplianceManager/ApplianceManager.php/api/doc/index.php
+ *
+ * Created     : 2012-02
+ * Authors     : Benoit HERARD <benoit.herard(at)orange.com>
+ *
+ * Description :
+ *      API Documentation (Swaggetr UI)
+ *--------------------------------------------------------
+ * History     :
+ * 1.0.0 - 2012-10-01 : Release of the file
+*/
+
+?>
 <html>
 <head>
     <title>Restler API Explorer</title>
@@ -71,7 +109,8 @@
 <body>
 <div id='header'>
     <div class="swagger-ui-wrap">
-        <a id="logo" href="https://github.com/Luracast/Restler-API-Explorer" target="_blank">API Explorer</a>
+        <a id="logo" href="https://github.com/Luracast/Restler-API-Explorer"
+           target="_blank">API Explorer</a>
     </div>
 </div>
 

@@ -1,4 +1,15 @@
 <?php
+/**
+ * Reverse Proxy as a service
+ * 
+ * PHP Version 7.0
+ * 
+ * @category ReverseProxy
+ * @package  OSA
+ * @author   Benoit HERARD <benoit.herard@orange.com>
+ * @license  http://www.apache.org/licenses/LICENSE-2.0.htm Apache 2 license
+ * @link     https://github.com/zorglub42/OSA/
+*/
 /*--------------------------------------------------------
  * Module Name : ApplianceManager
  * Version : 1.0.0
@@ -23,46 +34,116 @@
  * 1.0.0 - 2012-10-01 : Release of the file
 */
 
-class OSAError{
-	private $httpStatus;
-	private $httpLabel;
-	private $functionalCode;
-	private $functionalLabel;
-	
+/**
+ * Error object class
+ * 
+ * PHP Version 7.0
+ * 
+ * @category ReverseProxy
+ * @package  OSA
+ * @author   Benoit HERARD <benoit.herard@orange.com>
+ * @license  http://www.apache.org/licenses/LICENSE-2.0.htm Apache 2 license
+ * @link     https://github.com/zorglub42/OSA/
+ */
+class OSAError
+{
+    private $_httpStatus;
+    private $_httpLabel;
+    private $_functionalCode;
+    private $_functionalLabel;
+    
+    /**
+     * Constructor
+     */
     public function __construct()
     {
-		$this->setHttpStatus(200);
-	}
-	
-	function getHttpStatus(){
-		return $this->httpStatus;
-	}
-	function setHttpStatus($httpStatus){
-		$this->httpStatus=$httpStatus;
-	}
-		
-	function getHttpLabel(){
-		return $this->httpLabel;
-	}
-	function setHttpLabel($httpLabel){
-		$this->httpLabel=$httpLabel;
-	}
+        $this->setHttpStatus(200);
+    }
 
-	
-	function getFunctionalCode(){
-		return $this->functionalCode;
-	}
-	function setFunctionalCode($functionalCode){
-		$this->functionalCode=$functionalCode;
-	}
+    /**
+     * HTTP Status getter
+     * 
+     * @return int HTTP Status
+     */
+    function getHttpStatus()
+    {
+        return $this->_httpStatus;
+    }
+    /**
+     * HTTP Status setter
+     * 
+     * @param int $httpStatus HTTP STatus
+     * 
+     * @return void
+     */
+    function setHttpStatus($httpStatus)
+    {
+        $this->_httpStatus=$httpStatus;
+    }
+        
+    /**
+     * HTTP label getter
+     * 
+     * @return string HTTP label
+     */
+    function getHttpLabel()
+    {
+        return $this->_httpLabel;
+    }
+    /**
+     * HTTP Status setter
+     * 
+     * @param string $httpLabel HTTP Label
+     * 
+     * @return void
+     */
+    function setHttpLabel($httpLabel)
+    {
+        $this->_httpLabel=$httpLabel;
+    }
 
-	
-	function getFunctionalLabel(){
-		return $this->functionalLabel;
-	}
-	function setFunctionalLabel($functionalLabel){
-		$this->functionalLabel=$functionalLabel;
-	}
-	
+    
+    /**
+     * Functional error code getter
+     * 
+     * @return int Error code
+     */
+    function getFunctionalCode()
+    {
+        return $this->_functionalCode;
+    }
+    /**
+     * Functional error code setter
+     * 
+     * @param int $functionalCode Error code
+     * 
+     * @return void
+     */
+    function setFunctionalCode($functionalCode)
+    {
+        $this->_functionalCode=$functionalCode;
+    }
+
+    /**
+     * Functional error text getter
+     * 
+     * @return string Error text
+     */
+    function getFunctionalLabel()
+    {
+        return $this->_functionalLabel;
+    }
+    /**
+     * Functional error text setter
+     * 
+     * @param string $functionalLabel Error text
+     * 
+     * @return void
+     */
+    function setFunctionalLabel($functionalLabel)
+    {
+        $this->_functionalLabel=$functionalLabel;
+    }
+    
 
 }

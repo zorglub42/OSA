@@ -1,4 +1,15 @@
 <?php
+/**
+ * Reverse Proxy as a service
+ * 
+ * PHP Version 7.0
+ * 
+ * @category ReverseProxy
+ * @package  OSA
+ * @author   Benoit HERARD <benoit.herard@orange.com>
+ * @license  http://www.apache.org/licenses/LICENSE-2.0.htm Apache 2 license
+ * @link     https://github.com/zorglub42/OSA/
+*/
 /*--------------------------------------------------------
  * Module Name : ApplianceManager
  * Version : 1.0.0
@@ -33,7 +44,7 @@ define("EMAIL_LENGTH", 200);
 define("GROUPNAME_LENGTH", 45);
 define("DESCRIPTION_LENGTH", 2000);
 
-define ("SERVICENAME_LENGTH",45 );
+define("SERVICENAME_LENGTH", 45);
 
 
 define("NODENAME_LENGTH", 45);
@@ -42,29 +53,29 @@ define("SERVERFQDN_LENGTH", 255);
 define("LOCALIP_LENGTH", 45);
 
 
-define ("FRONTENDENDPOINT_LENGTH",200 );
-define ("BACKENDENDPOINT_LENGTH",200 );
+define("FRONTENDENDPOINT_LENGTH", 200);
+define("BACKENDENDPOINT_LENGTH", 200);
 
 
-define ("BACKENDUSERNAME_LENGTH",45 );
-define ("BACKENDPASSWORD_LENGTH",45 );
+define("BACKENDUSERNAME_LENGTH", 45);
+define("BACKENDPASSWORD_LENGTH", 45);
 
 
 
 
-define ("ADMIN_GROUP", "Admin");
-define ("VALID_USER_GROUP", "valid-user");
-define ("ADMIN_USER", "Admin");
-define ("ADMIN_SERVICE", "ApplianceManagerAdmin");
+define("ADMIN_GROUP", "Admin");
+define("VALID_USER_GROUP", "valid-user");
+define("ADMIN_USER", "Admin");
+define("ADMIN_SERVICE", "ApplianceManagerAdmin");
 
-define ("version", "4.0");
+define("version", "4.0");
 
 
 $userProperties = array("userName", 
-			"firstName", 
-			"lastName", 
-			"entity", 
-			"emailAddress", 
-			"extra"
+            "firstName", 
+            "lastName", 
+            "entity", 
+            "emailAddress", 
+            "extra"
 );
 ?>

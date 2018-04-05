@@ -1,4 +1,16 @@
 <?php
+/**
+ *  Reverse Proxy as a service
+ * 
+ * PHP Version 7.0
+ * 
+ * @category ReverseProxy
+ * @package  OSA
+ * @author   Benoit HERARD <benoit.herard@orange.com>
+ * @license  http://www.apache.org/licenses/LICENSE-2.0.htm Apache 2 license
+ * @link     https://github.com/zorglub42/OSA/
+*/
+
 /*--------------------------------------------------------
  * Module Name : ApplianceManager
  * Version : 1.0.0
@@ -23,7 +35,7 @@
  * History     :
  * 1.0.0 - 2017-03-06 : Release of the file
 */
-require_once('../include/commonHeaders.php');
+require_once '../include/commonHeaders.php';
 
 require_once '../objects/Error.class.php';
 require_once '../objects/AuthToken.class.php';
@@ -37,142 +49,190 @@ require_once '../include/Settings.ini.php';
  * Authentication management
  * 
  * Services to login, logout and generate authentication token
+ * 
+ * PHP Version 7.0
+ * 
+ * @category ReverseProxy
+ * @package  OSA
+ * @author   Benoit HERARD <benoit.herard@orange.com>
+ * @license  http://www.apache.org/licenses/LICENSE-2.0.htm Apache 2 license
+ * @link     https://github.com/zorglub42/OSA/
  */
-class Auth{
-	/**
-	 * Logout from system 
-	 * 
-	 * Logout and unset authentication cookie
-	 * 
-	 * @url DELETE /logout  
-	 * @url GET /logout
-	 * 
-	 * @return string previously connected userName 
-	 */
-	function deleteTokensOfUserFromToken(){
+class Auth
+{
+    /**
+     * Logout from system 
+     * 
+     * Logout and unset authentication cookie
+     * 
+     * @url DELETE /logout  
+     * @url GET /logout
+     * 
+     * @return string previously connected userName 
+     */
+    function deleteTokensOfUserFromToken()
+    {
 
-		$error = new OSAError();
-		$error->setHttpStatus(200);
-		if (isset($_COOKIE[authTokenCookieName])){
-			try {
-				$db=openDBConnection();
-				$strSQL="";
-				$strSQL=$strSQL . "SELECT * FROM authtoken WHERE token=?";
-				
-				$stmt=$db->prepare($strSQL);
-				$stmt->execute(array($_COOKIE[authTokenCookieName]));
-				
-				$row = $stmt->fetch(PDO::FETCH_ASSOC);
-				if (!$row){
-					$error->setHttpStatus(404);
-					$error->setFunctionalLabel("Session not found");
+        $error = new OSAError();
+        $error->setHttpStatus(200);
+        if (isset($_COOKIE[authTokenCookieName])) {
+            try {
+                $db=openDBConnection();
+                $strSQL="";
+                $strSQL=$strSQL . "SELECT * FROM authtoken WHERE token=?";
+                
+                $stmt=$db->prepare($strSQL);
+                $stmt->execute(array($_COOKIE[authTokenCookieName]));
+                
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                if (!$row) {
+                    $error->setHttpStatus(404);
+                    $error->setFunctionalLabel("Session not found");
 
-				}else{
-					$stmt=$db->prepare("DELETE FROM authtoken WHERE userName=?");
-					$stmt->execute(array($row["userName"]));
-					setcookie(authTokenCookieName, rand(1,1000000000), time()-3600,"/");
-					return $row["userName"];
-				}
-			}catch (Exception $e){
-				if ($error->getHttpStatus() != 200){
-					throw new RestException($error->getHttpStatus(),$error->getFunctionalLabel());
-				}else{
-					throw new RestException(500,$e->getMessage());
-				}
-			}
-		}else{
-			throw new RestException(400,"Session cookie not found");
-		}
-	}
-	
-	/**
-	 * Login
-	 * 
-	 * Login with user/passord and set authentication cookie
-	 * 
-	 * @param string userName User namme to log in
-	 * @param string password Password to authenticate
-	 * @param string d domain to set cookie
-	 * 
-	 * @url POST /login
-	 * 
-	 * @return AuthToken Authentication token 
-	 */
-	function generateTokenFormUserAndPass($userName, $password, $d=null){
+                } else {
+                    $stmt=$db->prepare("DELETE FROM authtoken WHERE userName=?");
+                    $stmt->execute(array($row["userName"]));
+                    setcookie(
+                        authTokenCookieName,
+                        rand(1, 1000000000),
+                        time()-3600, "/"
+                    );
+                    return $row["userName"];
+                }
+            }catch (Exception $e){
+                if ($error->getHttpStatus() != 200) {
+                    throw new RestException(
+                        $error->getHttpStatus(),
+                        $error->getFunctionalLabel()
+                    );
+                } else {
+                    throw new RestException(500, $e->getMessage());
+                }
+            }
+        } else {
+            throw new RestException(400, "Session cookie not found");
+        }
+    }
+    
+    /**
+     * Login
+     * 
+     * Login with user/passord and set authentication cookie
+     * 
+     * @param string $userName User namme to log in
+     * @param string $password Password to authenticate
+     * @param string $d        domain to set cookie
+     * 
+     * @url POST /login
+     * 
+     * @return AuthToken Authentication token 
+     */
+    function generateTokenFormUserAndPass($userName, $password, $d=null)
+    {
 
-			$httpClient = new HttpClient("","","","",true);
-			
-			$headers=Array("Accept: application/json");
-			$httpResponse=$httpClient->Post(osaAdminUri . "/auth/token", "", $headers, $userName,$password);
-			if ($httpResponse->getStatusCode() != 200){
-				throw new RestException($httpResponse->getStatusCode(), $httpResponse->getStatusLabel() . "(backend=" . osaAdminUri . "/auth/token" . ")" .$httpResponse->getBody());
-			}
-			/*foreach ($httpResponse->getHeaders() as $key => $value){
-					header($key . ": " . $value);
-			}*/
-			$tokenObj=json_decode($httpResponse->getBody(), true);
-			if (!empty($d)){
-				setcookie(authTokenCookieName, $tokenObj["token"],NULL,"/",$d);
-			}else{
-				setcookie(authTokenCookieName, $tokenObj["token"],NULL,"/");
-			}
+            $httpClient = new HttpClient("", "", "", "", true);
+            
+            $headers=Array("Accept: application/json");
+            $httpResponse=$httpClient->post(
+                osaAdminUri . "/auth/token",
+                "",
+                $headers,
+                $userName,
+                $password
+            );
+            if ($httpResponse->getStatusCode() != 200) {
+                throw new RestException(
+                    $httpResponse->getStatusCode(),
+                    $httpResponse->getStatusLabel() . "(backend=" . 
+                                                      osaAdminUri . 
+                                                      "/auth/token" . ")".
+                                                      $httpResponse->getBody()
+                );
+            }
+            /*foreach ($httpResponse->getHeaders() as $key => $value){
+                    header($key . ": " . $value);
+            }*/
+            $tokenObj=json_decode($httpResponse->getBody(), true);
+            if (!empty($d)) {
+                setcookie(authTokenCookieName, $tokenObj["token"], null, "/", $d);
+            } else {
+                setcookie(authTokenCookieName, $tokenObj["token"], null, "/");
+            }
 
 
-			$db=openDBConnection();
-			
+            $db=openDBConnection();
+            
 
-			$strSQL="";
-			$strSQL=$strSQL . "UPDATE users SET lastTokenLogin=" . getSQlKeyword("now") . " WHERE userName=? ";
-			
-			$stmt=$db->prepare($strSQL);
-			$stmt->execute(array($userName));
-			
+            $strSQL="";
+            $strSQL=$strSQL . "UPDATE users SET lastTokenLogin=" . 
+                              getSQlKeyword("now") . 
+                              " WHERE userName=? ";
+            
+            $stmt=$db->prepare($strSQL);
+            $stmt->execute(array($userName));
+            
 
-			return $tokenObj;
-	}
-	private function getAleat(){
-		return sprintf("-%010d", rand(1,1000000000)); 
-	}
+            return $tokenObj;
+    }
 
-	/**
-	 * Generate authentication token for authenticated user
-	 * 
-	 * @url POST /token 
-	 * 
-	 * @return AuthToken Token
-	 */
-	function generate(){
+    /**
+     * _getAleat
+     * 
+     * Return formated random number as string
+     * 
+     * @return string Random number as string
+     */
+    private function _getAleat()
+    {
+        return sprintf("-%010d", rand(1, 1000000000)); 
+    }
 
-		$requestor=getRequestor($_REQUEST);
-		$token=time() . $this->getAleat() . $this->getAleat() . $this->getAleat() . $this->getAleat() ;
-		
+    /**
+     * Generate authentication token for authenticated user
+     * 
+     * @url POST /token 
+     * 
+     * @return AuthToken Token
+     */
+    function generate()
+    {
 
-	
-		try {
-			$db=openDBConnection();
-			
-			$db->exec("DELETE FROM authtoken WHERE validUntil<" . getSQLKeyword("now"));
+        $requestor=getRequestor();
+        $token=time() . $this->_getAleat() . 
+                        $this->_getAleat() .
+                        $this->_getAleat() .
+                        $this->_getAleat();
+        
 
-			$strSQL="";
-			$strSQL=$strSQL . "INSERT INTO authtoken (token, validUntil, userName) ";
-			$strSQL=$strSQL . "VALUES (";
-			$strSQL=$strSQL . 		"?,"; 
-			$strSQL=$strSQL . 		" " . getSQlKeyword("add_minute") . " , ";
-			$strSQL=$strSQL . 		"?";
-			$strSQL=$strSQL . ")";
+    
+        try {
+            $db=openDBConnection();
+            
+            $db->exec(
+                "DELETE FROM authtoken ".
+                "WHERE validUntil<" . getSQLKeyword("now")
+            );
 
-			$stmt=$db->prepare($strSQL);
-			if (RDBMS == "mysql"){
-				$timeInterval = authTokenTTL;
-			}else{
-				$timeInterval = "+" . authTokenTTL . " minute";
-			}
-			$stmt->execute(array($token, $timeInterval, $requestor));
-		}catch (Exception $e){
-			throw new RestException(500,$e->getMessage());
-		}
-		return Array("token" => $token);
-	
-	}
+            $strSQL="";
+            $strSQL=$strSQL . "INSERT INTO authtoken (token, validUntil, userName) ";
+            $strSQL=$strSQL . "VALUES (";
+            $strSQL=$strSQL . "        ?,"; 
+            $strSQL=$strSQL . "        " . getSQlKeyword("add_minute") . " , ";
+            $strSQL=$strSQL . "        ?";
+            $strSQL=$strSQL . ")";
+
+            $stmt=$db->prepare($strSQL);
+            if (RDBMS == "mysql") {
+                $timeInterval = authTokenTTL;
+            } else {
+                $timeInterval = "+" . authTokenTTL . " minute";
+            }
+            $stmt->execute(array($token, $timeInterval, $requestor));
+        }catch (Exception $e){
+            throw new RestException(500, $e->getMessage());
+        }
+        return Array("token" => $token);
+    
+    }
 }
 ?>

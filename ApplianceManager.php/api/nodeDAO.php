@@ -1,4 +1,16 @@
 <?php
+/**
+ *  Reverse Proxy as a service
+ * 
+ * PHP Version 7.0
+ * 
+ * @category ReverseProxy
+ * @package  OSA
+ * @author   Benoit HERARD <benoit.herard@orange.com>
+ * @license  http://www.apache.org/licenses/LICENSE-2.0.htm Apache 2 license
+ * @link     https://github.com/zorglub42/OSA/
+*/
+
 /*--------------------------------------------------------
  * Module Name : ApplianceManager
  * Version : 2.0.0
@@ -33,610 +45,846 @@ require_once '../include/Settings.ini.php';
 require_once '../include/PDOFunc.php';
 require_once '../api/groupDAO.php';
 
-function getServices($nodeName){
-	$error = new OSAError();
-	$error->setHttpStatus(200);
-	
-	$nodeName=normalizeName($nodeName);
-	
-	try{
-		$db=openDBConnection();
-		$strSQL = "SELECT * FROM services s WHERE (onAllNodes=1 or exists (SELECT 'x' FROM servicesnodes sn WHERE sn.serviceName = s.serviceName AND sn.nodeName=?)) and isPublished=1";
-		$stmt=$db->prepare($strSQL);
-		$stmt->execute(array(cut($nodeName, NODENAME_LENGTH)));
-		$rc = Array();
-		while ($row=$stmt->fetch(PDO::FETCH_ASSOC)){
-			$service = new Service($row);
-			array_push ($rc, $service);
-		}
-		
-	}catch (Exception $e){
-			$error->setHttpStatus(500);
-			$error->setFunctionalCode(3);
-			$error->setFunctionalLabel($e->getMessage());
-			throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
-	}
+/**
+ * Get services published on a node from database
+ * 
+ * @param string $nodeName Node ID
+ * 
+ * @return array List of servies {@type Service}
+ */
+function getServices($nodeName)
+{
+    $error = new OSAError();
+    $error->setHttpStatus(200);
+    
+    $nodeName=normalizeName($nodeName);
+    
+    try{
+        $db=openDBConnection();
+        $strSQL = "SELECT * ".
+                  "FROM services s ".
+                  "WHERE (onAllNodes=1 ".
+                        " or ".
+                        "exists (SELECT 'x' ".
+                                "FROM servicesnodes sn ".
+                                "WHERE sn.serviceName = s.serviceName ".
+                                "AND sn.nodeName=?)) ".
+                  "AND isPublished=1";
+        $stmt=$db->prepare($strSQL);
+        $stmt->execute(array(cut($nodeName, NODENAME_LENGTH)));
+        $rc = Array();
+        while ($row=$stmt->fetch(PDO::FETCH_ASSOC)) {
+            $service = new Service($row);
+            array_push($rc, $service);
+        }
+        
+    }catch (Exception $e) {
+            $error->setHttpStatus(500);
+            $error->setFunctionalCode(3);
+            $error->setFunctionalLabel($e->getMessage());
+            throw new Exception(
+                $error->GetFunctionalLabel(), $error->getHttpStatus()
+            );
+    }
 
-	
-	return $rc;
-}	
+    
+    return $rc;
+}
 
+/**
+ * Get one or more node from database
+ * 
+ * @param string $nodeName     Node ID (if 1)
+ * @param array  $request_data Filter
+ *                             $request_data["nodeNameFilter"]
+ *                             $request_data["nodeDescriptionFilter"]
+ *                             $request_data["localIPFilter"]
+ *                             $request_data["portFilter"]
+ *                             $request_data["serverFQDNFilter"]
+ *                             $request_data["order"] => order clause
+ * 
+ * @return array Matching nodes {@type Node}
+ */
+function getDAONode($nodeName=null, $request_data=null)
+{
+    $error = new OSAError();
+    $error->setHttpStatus(200);
+    
+    $nodeName=normalizeName($nodeName);
+    
+    try {
+        $db=openDBConnection();
+        if ($nodeName != null && $nodeName != "") {
+            $strSQL = "SELECT * FROM nodes WHERE nodeName=?";
+            $stmt=$db->prepare($strSQL);
+            $stmt->execute(array(cut($nodeName, NODENAME_LENGTH)));
+            
+            
+            if ($row=$stmt->fetch(PDO::FETCH_ASSOC)) {
+                $node = new Node($row);
+                $rc= $node;
+            } else {
+                $error->setHttpStatus(404);
+                $error->setHttpLabel("Unknown node");
+                $error->setFunctionalCode(4);
+                $error->setFunctionalLabel("Node ". $nodeName . " does not exists");
+                throw new Exception(
+                    $error->GetFunctionalLabel(), $error->getHttpStatus()
+                );
+            }
+        } else {
+            $strSQLComp="";
+            $bindPrms=array();
+            
+            if (isset($request_data["nodeNameFilter"]) 
+                && $request_data["nodeNameFilter"]!==""
+            ) {
+                $strSQLComp = addSQLFilter("nodeName like ?", $strSQLComp);
+                array_push($bindPrms, "%" . $request_data["nodeNameFilter"] . "%");
+            }
+            if (isset($request_data["nodeDescriptionFilter"]) 
+                && $request_data["nodeDescriptionFilter"]!==""
+            ) {
+                $strSQLComp = addSQLFilter("nodeDescription like ?", $strSQLComp);
+                array_push(
+                    $bindPrms, "%" . $request_data["nodeDescriptionFilter"] . "%"
+                );
+            }
+            if (isset($request_data["localIPFilter"]) 
+                && $request_data["localIPFilter"]!==""
+            ) {
+                $strSQLComp = addSQLFilter("localIP like ?", $strSQLComp);
+                array_push($bindPrms, "%" . $request_data["localIPFilter"] . "%");
+            }
+            if (isset($request_data["portFilter"])
+                && $request_data["portFilter"]!==""
+            ) {
+                $strSQLComp = addSQLFilter("port=?", $strSQLComp);
+                array_push($bindPrms,  $request_data["portFilter"]);
+            }
+            if (isset($request_data["serverFQDNFilter"]) 
+                && $request_data["serverFQDNFilter"]!==""
+            ) {
+                $strSQLComp = addSQLFilter("serverFQDN like ?", $strSQLComp);
+                array_push($bindPrms, "%" . $request_data["serverFQDNFilter"] . "%");
+            }
+            $strSQL="SELECT * FROM nodes n" . $strSQLComp;
+            if (isset($request_data["order"]) && $request_data["order"] != "") {
+                $strSQL=$strSQL . " ORDER BY " . escapeOrder($request_data["order"]);
+            }
+            
+            $stmt=$db->prepare($strSQL);
+            $stmt->execute($bindPrms);
 
-function getDAONode($nodeName = NULL, $request_data = NULL){
-	$error = new OSAError();
-	$error->setHttpStatus(200);
-	
-	$nodeName=normalizeName($nodeName);
-	
-	try {
-		$db=openDBConnection();
-		if ($nodeName != NULL && $nodeName != ""){
-			$strSQL = "SELECT * FROM nodes WHERE nodeName=?";
-			$stmt=$db->prepare($strSQL);
-			$stmt->execute(array(cut($nodeName, NODENAME_LENGTH)));
-			
-			
-			if ($row=$stmt->fetch(PDO::FETCH_ASSOC)){
-				$node = new Node($row);
-				$rc= $node;
-			}else{
-				$error->setHttpStatus(404);
-				$error->setHttpLabel("Unknown node");
-				$error->setFunctionalCode(4);
-				$error->setFunctionalLabel("Node ". $nodeName . " does not exists");
-				throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
-			}
-		}else{
-			$strSQLComp="";
-			$bindPrms=array();
-			
-			if (isset($request_data["nodeNameFilter"]) && $request_data["nodeNameFilter"]!==""){
-				$strSQLComp = addSQLFilter("nodeName like ?", $strSQLComp);
-				array_push($bindPrms, "%" . $request_data["nodeNameFilter"] . "%");
-			}
-			if (isset($request_data["nodeDescriptionFilter"]) && $request_data["nodeDescriptionFilter"]!==""){
-				$strSQLComp = addSQLFilter("nodeDescription like ?", $strSQLComp);
-				array_push($bindPrms, "%" . $request_data["nodeDescriptionFilter"] . "%");
-			}
-			if (isset($request_data["localIPFilter"]) && $request_data["localIPFilter"]!==""){
-				$strSQLComp = addSQLFilter("localIP like ?", $strSQLComp);
-				array_push($bindPrms,"%" . $request_data["localIPFilter"] . "%");
-			}
-			if (isset($request_data["portFilter"]) && $request_data["portFilter"]!==""){
-				$strSQLComp = addSQLFilter("port=?"  , $strSQLComp);
-				array_push($bindPrms,  $request_data["portFilter"]);
-			}
-			if (isset($request_data["serverFQDNFilter"]) && $request_data["serverFQDNFilter"]!==""){
-				$strSQLComp = addSQLFilter("serverFQDN like ?" , $strSQLComp);
-				array_push($bindPrms,"%" . $request_data["serverFQDNFilter"] . "%");
-			}
-			$strSQL="SELECT * FROM nodes n" . $strSQLComp	;
-			if (isset($request_data["order"]) && $request_data["order"] != ""){
-				$strSQL=$strSQL . " ORDER BY " . EscapeOrder($request_data["order"]);
-			}
-			
-			$stmt=$db->prepare($strSQL);
-			$stmt->execute($bindPrms);
+            $rc = Array();
+            while ($row=$stmt->fetch(PDO::FETCH_ASSOC)) {
+                $node = new Node($row);
+                array_push($rc, $node);
+            }
+        }
+    }catch  (Exception $e) {
+        if ($error->getHttpStatus()==200) {
+                $error->setHttpStatus(500);
+                $error->setFunctionalCode(3);
+                $error->setFunctionalLabel($e->getMessage());
+        }
+        throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
+    }
 
-			$rc = Array();
-			while ($row=$stmt->fetch(PDO::FETCH_ASSOC)){
-				$node = new Node($row);
-				array_push ($rc, $node);
-			}
-		}
-	}catch  (Exception $e){
-		if ($error->getHttpStatus()==200){
-				$error->setHttpStatus(500);
-				$error->setFunctionalCode(3);
-				$error->setFunctionalLabel($e->getMessage());
-		}
-		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
-	}
-
-	return $rc;
+    return $rc;
 }
 
 
-
-function addNode($nodeName = NULL, $request_data = NULL){
-	$error = new OSAError();
-			
-	$nodeName=normalizeName($nodeName);		
-
-
-	$error->setHttpStatus(200);
-	$error->setHttpLabel("Bad request for method \"" . $_SERVER["REQUEST_METHOD"] . "\" for resource \"nodes\"");
-
-
-	$error->setFunctionalLabel("Bad request for method \"" . $_SERVER["REQUEST_METHOD"] . "\" for resource \"nodes\"\n");
-	$error->setFunctionalCode(0);
-
-	if ($nodeName == NULL || $nodeName=="" ){
-		$error->setHttpStatus(400);
-		$error->setFunctionalCode(1);
-		$error->setFunctionalLabel($error->getFunctionalLabel() . "nodeName is required\n");
-	}else{
-		$mySQLnodeName=cut($nodeName, NODENAME_LENGTH);
-	}
-
-	if (isset($request_data["nodeDescription"])){
-		$mySQLnodeDescription=cut($request_data["nodeDescription"], NODEDESCRIPTION_LENGTH);
-	}else{
-		$mySQLnodeDescription=""; 
-	}
-	if ($request_data["serverFQDN"] == NULL || $request_data["serverFQDN"]=="" ){
-		$error->setHttpStatus(400);
-		$error->setFunctionalCode(1);
-		$error->setFunctionalLabel($error->getFunctionalLabel() . "serverFQDN is required\n");
-	}else{
-		$mySQLserverFQDN=cut($request_data["serverFQDN"], SERVERFQDN_LENGTH);
-	}
-	if ($request_data["localIP"] == NULL || $request_data["localIP"]=="" ){
-		$error->setHttpStatus(400);
-		$error->setFunctionalCode(1);
-		$error->setFunctionalLabel($error->getFunctionalLabel() . "localIP is required\n");
-	}else{
-		$mySQLlocalIP=cut($request_data["localIP"], LOCALIP_LENGTH);
-	}
-	if ($request_data["port"] == NULL || $request_data["port"]=="" ){
-		$error->setHttpStatus(400);
-		$error->setFunctionalCode(1);
-		$error->setFunctionalLabel($error->getFunctionalLabel() . "listening port is required\n");
-	}else if (is_numeric($request_data["port"]) && $request_data["port"]>0){
-		$mySQLport=$request_data["port"];
-	}else{
-			$error->setHttpStatus(400);
-			$error->setFunctionalCode(1);
-			$error->setFunctionalLabel($error->getFunctionalLabel() . " allowed value for port is a positive integer\n");
-	}
-	if (isset($request_data["isHTTPS"])){
-		if ($request_data["isHTTPS"]=="1" ||  $request_data["isHTTPS"]=="0"){
-			$mySQLisHTTPS=$request_data["isHTTPS"];
-		}else{
-			$error->setHttpStatus(400);
-			$error->setFunctionalCode(1);
-			$error->setFunctionalLabel($error->getFunctionalLabel() . " allowed value for isHTTPS is 0 or 1\n");
-		}
-	}else{
-		$error->setHttpStatus(400);
-		$error->setFunctionalCode(1);
-		$error->setFunctionalLabel($error->getFunctionalLabel() . "isHTTPS is required\n");
-	}
-	if (isset($request_data["isBasicAuthEnabled"])){
-		if ($request_data["isBasicAuthEnabled"]=="1" ||  $request_data["isBasicAuthEnabled"]=="0"){
-			$mySQLisBasicAuthEnabled=$request_data["isBasicAuthEnabled"];
-		}else{
-			$error->setHttpStatus(400);
-			$error->setFunctionalCode(1);
-			$error->setFunctionalLabel($error->getFunctionalLabel() . " allowed value for isBasicAuthEnabled is 0 or 1\n");
-		}
-	}else{
-			$mySQLisBasicAuthEnabled=1;
-	}
-	if (isset($request_data["isCookieAuthEnabled"])){
-		if ($request_data["isCookieAuthEnabled"]=="1" ||  $request_data["isCookieAuthEnabled"]=="0"){
-			$mySQLisCookieAuthEnabled=$request_data["isCookieAuthEnabled"];
-		}else{
-			$error->setHttpStatus(400);
-			$error->setFunctionalCode(1);
-			$error->setFunctionalLabel($error->getFunctionalLabel() . " allowed value for isCookieAuthEnabled is 0 or 1\n");
-		}
-	}else{
-			$mySQLisCookieAuthEnabled=1;
-	}
-	if (isset($request_data["additionalConfiguration"])){
-			$mySQLadditionalConfiguration=$request_data["additionalConfiguration"];
-	}else{
-			$mySQLadditionalConfiguration="";
-	}
+/**
+ * Add a new Node in database
+ * 
+ * @param string $nodeName     Node identifier
+ * @param array  $request_data Node properties
+ *                             $request_data["nodeDescription"]
+ *                             $request_data["serverFQDN"]
+ *                             $request_data["localIP"]
+ *                             $request_data["port"]
+ *                             $request_data["isHTTPS"]
+ *                             $request_data["isBasicAuthEnabled"]
+ *                             $request_data["isCookieAuthEnabled"]
+ *                             $request_data["additionalConfiguration"]
+ * 
+ * @return Node Added Node
+ */
+function addNode($nodeName, $request_data=null)
+{
+    $error = new OSAError();
+            
+    $nodeName=normalizeName($nodeName);
 
 
+    $error->setHttpStatus(200);
+    $error->setHttpLabel(
+        "Bad request for method \"" . 
+        $_SERVER["REQUEST_METHOD"] . 
+        "\" for resource \"nodes\""
+    );
 
 
-	if ($error->getHttpStatus() != 200){
-		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
-	}else{
-		try{
-			$db=openDBConnection();
-			$strSQL = "INSERT INTO nodes (nodeName, nodeDescription, serverFQDN, localIP, port, isBasicAuthEnabled, isCookieAuthEnabled, isHTTPS, additionalConfiguration, isPublished) values (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)";
-			$bindPrms=array($mySQLnodeName,$mySQLnodeDescription,$mySQLserverFQDN,$mySQLlocalIP,$mySQLport,$mySQLisBasicAuthEnabled,$mySQLisCookieAuthEnabled,$mySQLisHTTPS,$mySQLadditionalConfiguration);
-			
-			$stmt=$db->prepare($strSQL);
-			$stmt->execute($bindPrms);
-		}catch(Exception $e){
-			if (strpos($e->getMessage(),"Duplicate entry")>=0 ||strpos($e->getMessage(),"UNIQUE constraint failed")>=0 ){
-				$error->setHttpStatus(409);
-				$error->setFunctionalLabel("Node " . $nodeName . " already exists");
-			}else{
-				$error->setHttpStatus(500);
-				$error->setFunctionalLabel($e->getMessage());
-			}
-			$error->setFunctionalCode(3);
-			throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
-		}
-		$RC=getDAONode($nodeName);
-		return $RC;
-	}
-	
+    $error->setFunctionalLabel(
+        "Bad request for method \"" .
+        $_SERVER["REQUEST_METHOD"] .
+        "\" for resource \"nodes\"\n"
+    );
+    $error->setFunctionalCode(0);
+
+    if ($nodeName == null || $nodeName=="" ) {
+        $error->setHttpStatus(400);
+        $error->setFunctionalCode(1);
+        $error->setFunctionalLabel(
+            $error->getFunctionalLabel() . "nodeName is required\n"
+        );
+    } else {
+        $mySQLnodeName=cut($nodeName, NODENAME_LENGTH);
+    }
+
+    if (isset($request_data["nodeDescription"])) {
+        $mySQLnodeDescription=cut(
+            $request_data["nodeDescription"], NODEDESCRIPTION_LENGTH
+        );
+    } else {
+        $mySQLnodeDescription=""; 
+    }
+    if ($request_data["serverFQDN"] == null || $request_data["serverFQDN"]=="" ) {
+        $error->setHttpStatus(400);
+        $error->setFunctionalCode(1);
+        $error->setFunctionalLabel(
+            $error->getFunctionalLabel() . "serverFQDN is required\n"
+        );
+    } else {
+        $mySQLserverFQDN=cut($request_data["serverFQDN"], SERVERFQDN_LENGTH);
+    }
+    if ($request_data["localIP"] == null || $request_data["localIP"]=="" ) {
+        $error->setHttpStatus(400);
+        $error->setFunctionalCode(1);
+        $error->setFunctionalLabel(
+            $error->getFunctionalLabel() . "localIP is required\n"
+        );
+    } else {
+        $mySQLlocalIP=cut($request_data["localIP"], LOCALIP_LENGTH);
+    }
+    if ($request_data["port"] == null || $request_data["port"]=="" ) {
+        $error->setHttpStatus(400);
+        $error->setFunctionalCode(1);
+        $error->setFunctionalLabel(
+            $error->getFunctionalLabel() . "listening port is required\n"
+        );
+    } else if (is_numeric($request_data["port"]) && $request_data["port"]>0) {
+        $mySQLport=$request_data["port"];
+    } else {
+            $error->setHttpStatus(400);
+            $error->setFunctionalCode(1);
+            $error->setFunctionalLabel(
+                $error->getFunctionalLabel() .
+                " allowed value for port is a positive integer\n"
+            );
+    }
+    if (isset($request_data["isHTTPS"])) {
+        if ($request_data["isHTTPS"]=="1" ||  $request_data["isHTTPS"]=="0") {
+            $mySQLisHTTPS=$request_data["isHTTPS"];
+        } else {
+            $error->setHttpStatus(400);
+            $error->setFunctionalCode(1);
+            $error->setFunctionalLabel(
+                $error->getFunctionalLabel() .
+                " allowed value for isHTTPS is 0 or 1\n"
+            );
+        }
+    } else {
+        $error->setHttpStatus(400);
+        $error->setFunctionalCode(1);
+        $error->setFunctionalLabel(
+            $error->getFunctionalLabel() . "isHTTPS is required\n"
+        );
+    }
+    if (isset($request_data["isBasicAuthEnabled"])) {
+        if ($request_data["isBasicAuthEnabled"]=="1" 
+            ||  $request_data["isBasicAuthEnabled"]=="0"
+        ) {
+            $mySQLisBasicAuthEnabled=$request_data["isBasicAuthEnabled"];
+        } else {
+            $error->setHttpStatus(400);
+            $error->setFunctionalCode(1);
+            $error->setFunctionalLabel(
+                $error->getFunctionalLabel() .
+                " allowed value for isBasicAuthEnabled is 0 or 1\n"
+            );
+        }
+    } else {
+            $mySQLisBasicAuthEnabled=1;
+    }
+    if (isset($request_data["isCookieAuthEnabled"])) {
+        if ($request_data["isCookieAuthEnabled"]=="1"
+            ||  $request_data["isCookieAuthEnabled"]=="0"
+        ) {
+            $mySQLisCookieAuthEnabled=$request_data["isCookieAuthEnabled"];
+        } else {
+            $error->setHttpStatus(400);
+            $error->setFunctionalCode(1);
+            $error->setFunctionalLabel(
+                $error->getFunctionalLabel() .
+                " allowed value for isCookieAuthEnabled is 0 or 1\n"
+            );
+        }
+    } else {
+            $mySQLisCookieAuthEnabled=1;
+    }
+    if (isset($request_data["additionalConfiguration"])) {
+            $mySQLadditionalConfiguration=$request_data["additionalConfiguration"];
+    } else {
+            $mySQLadditionalConfiguration="";
+    }
+
+    if ($error->getHttpStatus() != 200) {
+        throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
+    } else {
+        try{
+            $db=openDBConnection();
+            $strSQL = "INSERT INTO nodes (nodeName, ".
+                                         "nodeDescription, ".
+                                         "serverFQDN,". 
+                                         "localIP, ".
+                                         "port, ".
+                                         "isBasicAuthEnabled, ".
+                                         "isCookieAuthEnabled, ".
+                                         "isHTTPS, ".
+                                         "additionalConfiguration, ".
+                                         "isPublished".
+                      ") values (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)";
+            $bindPrms=array(
+                $mySQLnodeName,
+                $mySQLnodeDescription,
+                $mySQLserverFQDN,
+                $mySQLlocalIP,
+                $mySQLport,
+                $mySQLisBasicAuthEnabled,
+                $mySQLisCookieAuthEnabled,
+                $mySQLisHTTPS,
+                $mySQLadditionalConfiguration
+            );
+            
+            $stmt=$db->prepare($strSQL);
+            $stmt->execute($bindPrms);
+        }catch(Exception $e) {
+            if (strpos($e->getMessage(), "Duplicate entry")>=0 
+                ||strpos($e->getMessage(), "UNIQUE constraint failed")>=0
+            ) {
+                $error->setHttpStatus(409);
+                $error->setFunctionalLabel("Node " . $nodeName . " already exists");
+            } else {
+                $error->setHttpStatus(500);
+                $error->setFunctionalLabel($e->getMessage());
+            }
+            $error->setFunctionalCode(3);
+            throw new Exception(
+                $error->GetFunctionalLabel(), $error->getHttpStatus()
+            );
+        }
+        $RC=getDAONode($nodeName);
+        return $RC;
+    }
+    
+}
+
+/**
+ * Delete a node from database
+ * 
+ * @param string $nodeName Identifier of node to delete
+ * 
+ * @return Node Deleted Node
+ */
+function deleteNode($nodeName)
+{
+    $error = new OSAError();
+    
+    if (isset($nodeName) && isset($nodeName) != "") {
+        $nodeName=normalizeName($nodeName);
+        
+        
+        $node=getDAONode($nodeName);
+        
+        try{
+            $db=openDBConnection();
+            $strSQL="DELETE FROM nodes WHERE  nodeName=?";
+            $stmt=$db->prepare($strSQL);
+            $stmt->execute(array(cut($nodeName, USERNAME_LENGTH)));
+            $rc = $node->toArray();
+        }catch (Exception $e) {
+                $error->setHttpStatus(500);
+                $error->setFunctionalCode(3);
+                $error->setFunctionalLabel($e->getMessage());
+                throw new Exception(
+                    $error->GetFunctionalLabel(), $error->getHttpStatus()
+                );
+        }
+    } else {
+        $error->setHttpLabel(
+            "Bad request for method \"" .
+            $_SERVER["REQUEST_METHOD"] .
+            "\" for resource \"node\""
+        );
+        $error->setHttpStatus(400);
+        $error->setFunctionalCode(1);
+        $error->setFunctionalLabel(
+            $error->getFunctionalLabel() . "nodeName is required\n"
+        );
+        throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
+    }
+
+    return $rc;
+}
+
+/**
+ * Set publishing status for a Node in database
+ * 
+ * @param string $nodeName  Concerned Node
+ * @param bool   $published Node publishing status
+ * 
+ * @return void
+ */
+function setPublicationStatus($nodeName, $published)
+{
+    $nodeName=normalizeName($nodeName);
+
+    getDAONode($nodeName);
+    try{
+        $db=openDBConnection();
+
+        $strSQL = "";
+        $strSQL = $strSQL  . "UPDATE nodes SET ";
+        $strSQL = $strSQL  . "      isPublished=? ";
+        $strSQL = $strSQL  . "WHERE nodeName=?";
+
+        $stmt=$db->prepare($strSQL);
+        $stmt->execute(array($published,$nodeName));
+    }catch (Exception $e) {
+    
+        $error->setHttpStatus(500);
+        $error->setFunctionalCode(3);
+        $error->setFunctionalLabel($e->getMessage());
+        throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
+    }
+}
+
+/** 
+ * Update a node in database
+ * 
+ * @param string $nodeName     Identifier of node to update
+ * @param array  $request_data Node properties
+  *                            $request_data["nodeDescription"]
+ *                             $request_data["serverFQDN"]
+ *                             $request_data["localIP"]
+ *                             $request_data["port"]
+ *                             $request_data["isHTTPS"]
+ *                             $request_data["isBasicAuthEnabled"]
+ *                             $request_data["isCookieAuthEnabled"]
+ *                             $request_data["additionalConfiguration"]
+ * 
+ * @return Node Updated Node
+*/
+function updateNode($nodeName=null, $request_data=null)
+{
+    GLOBAL $BDName;
+    GLOBAL $BDUser;
+    GLOBAL $BDPwd;
+
+    $nodeName=normalizeName($nodeName);
+
+
+    $error = new OSAError();
+    $error->setHttpStatus(200);
+
+    if ($nodeName == null || $nodeName=="" ) {
+        $error->setHttpStatus(400);
+        $error->setFunctionalCode(1);
+        $error->setFunctionalLabel(
+            $error->getFunctionalLabel() . "nodeName is required\n"
+        );
+    } else {
+        $mySQLnodeName=cut($nodeName, USERNAME_LENGTH);
+    }
+
+    if (isset($request_data["nodeDescription"])) {
+        $mySQLnodeDescription=cut(
+            $request_data["nodeDescription"], NODEDESCRIPTION_LENGTH
+        );
+    } else {
+        $mySQLnodeDescription=""; 
+    }
+    if ($request_data["serverFQDN"] == null || $request_data["serverFQDN"]=="" ) {
+        $error->setHttpStatus(400);
+        $error->setFunctionalCode(1);
+        $error->setFunctionalLabel(
+            $error->getFunctionalLabel() . "serverFQDN is required\n"
+        );
+    } else {
+        $mySQLserverFQDN=cut($request_data["serverFQDN"], SERVERFQDN_LENGTH);
+    }
+    if ($request_data["localIP"] == null || $request_data["localIP"]=="" ) {
+        $error->setHttpStatus(400);
+        $error->setFunctionalCode(1);
+        $error->setFunctionalLabel(
+            $error->getFunctionalLabel() . "localIP is required\n"
+        );
+    } else {
+        $mySQLlocalIP=cut($request_data["localIP"], LOCALIP_LENGTH);
+    }
+    if ($request_data["port"] == null || $request_data["port"]=="" ) {
+        $error->setHttpStatus(400);
+        $error->setFunctionalCode(1);
+        $error->setFunctionalLabel(
+            $error->getFunctionalLabel() . "listening port is required\n"
+        );
+    } else if (is_numeric($request_data["port"]) && $request_data["port"]>0) {
+        $mySQLport=$request_data["port"];
+    } else {
+            $error->setHttpStatus(400);
+            $error->setFunctionalCode(1);
+            $error->setFunctionalLabel(
+                $error->getFunctionalLabel() .
+                " allowed value for port is a positive integer\n"
+            );
+    }
+    if (isset($request_data["isHTTPS"])) {
+        if ($request_data["isHTTPS"]=="1" ||  $request_data["isHTTPS"]=="0") {
+            $mySQLisHTTPS=$request_data["isHTTPS"];
+        } else {
+            $error->setHttpStatus(400);
+            $error->setFunctionalCode(1);
+            $error->setFunctionalLabel(
+                $error->getFunctionalLabel() .
+                " allowed value for isHTTPS is 0 or 1\n"
+            );
+        }
+    } else {
+        $error->setHttpStatus(400);
+        $error->setFunctionalCode(1);
+        $error->setFunctionalLabel(
+            $error->getFunctionalLabel() . "isHTTPS is required\n"
+        );
+    }
+    if (isset($request_data["isBasicAuthEnabled"])) {
+        if ($request_data["isBasicAuthEnabled"]=="1" 
+            || $request_data["isBasicAuthEnabled"]=="0"
+        ) {
+            $mySQLisBasicAuthEnabled=$request_data["isBasicAuthEnabled"];
+        } else {
+            $error->setHttpStatus(400);
+            $error->setFunctionalCode(1);
+            $error->setFunctionalLabel(
+                $error->getFunctionalLabel() . 
+                " allowed value for isBasicAuthEnabled is 0 or 1\n"
+            );
+        }
+    } else {
+            $mySQLisBasicAuthEnabled=1;
+    }
+    if (isset($request_data["isCookieAuthEnabled"])) {
+        if ($request_data["isCookieAuthEnabled"]=="1" 
+            ||  $request_data["isCookieAuthEnabled"]=="0"
+        ) {
+            $mySQLisCookieAuthEnabled=$request_data["isCookieAuthEnabled"];
+        } else {
+            $error->setHttpStatus(400);
+            $error->setFunctionalCode(1);
+            $error->setFunctionalLabel(
+                $error->getFunctionalLabel() . 
+                " allowed value for isCookieAuthEnabled is 0 or 1, not " .
+                $request_data["isCookieAuthEnabled"] . "\n"
+            );
+        }
+    } else {
+            $mySQLisCookieAuthEnabled=1;
+    }
+    if (isset($request_data["additionalConfiguration"])) {
+            $mySQLadditionalConfiguration=$request_data["additionalConfiguration"];
+    } else {
+            $mySQLadditionalConfiguration="";
+    }
+
+
+    if ($error->getHttpStatus() != 200) {
+        throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
+    } else {
+        getDAONode($nodeName);
+        try{
+            $db=openDBConnection();
+
+            $strSQL = "";
+            $strSQL = $strSQL  . "UPDATE nodes SET ";
+            $strSQL = $strSQL  . "      nodeDescription=?, ";
+            $strSQL = $strSQL  . "      isHTTPS=?, ";
+            $strSQL = $strSQL  . "      isCookieAuthEnabled=?, ";
+            $strSQL = $strSQL  . "      isBasicAuthEnabled=?, ";
+            $strSQL = $strSQL  . "      localIP=?, ";
+            $strSQL = $strSQL  . "      port=?, ";
+            $strSQL = $strSQL  . "      serverFQDN=?, ";
+            $strSQL = $strSQL  . "      additionalConfiguration=? ";
+            $strSQL = $strSQL  . "WHERE nodeName=?";
+
+            $stmt=$db->prepare($strSQL);
+            $stmt->execute(
+                array(
+                    $mySQLnodeDescription,
+                    $mySQLisHTTPS,
+                    $mySQLisCookieAuthEnabled,
+                    $mySQLisBasicAuthEnabled,
+                    $mySQLlocalIP,
+                    $mySQLport,
+                    $mySQLserverFQDN,
+                    $mySQLadditionalConfiguration,
+                    $mySQLnodeName
+                )
+            );
+        }catch (Exception $e) {
+        
+            $error->setHttpStatus(500);
+            $error->setFunctionalCode(3);
+            $error->setFunctionalLabel($e->getMessage());
+            throw new Exception(
+                $error->GetFunctionalLabel(), $error->getHttpStatus()
+            );
+        }
+    }
+    return getDAONode($nodeName);
 }
 
 
+/** 
+ * Update Node certificate in database
+ * 
+ * @param string $nodeName Identifier of node to update
+ * @param string $cert     Certificate
+ * 
+ * @return void
+ */
+function updateCert($nodeName, $cert)
+{
+    GLOBAL $BDName;
+    GLOBAL $BDUser;
+    GLOBAL $BDPwd;
+
+    $nodeName=normalizeName($nodeName);
+
+    $error = new OSAError();
+    $error->setHttpStatus(200);
+
+    if ($nodeName == null || $nodeName=="" ) {
+        $error->setHttpStatus(400);
+        $error->setFunctionalCode(1);
+        $error->setFunctionalLabel(
+            $error->getFunctionalLabel() . "nodeName is required\n"
+        );
+    } else {
+        $mySQLnodeName=cut($nodeName, USERNAME_LENGTH);
+    }
 
 
 
 
-function deleteNode($nodeName = NULL){
-	$error = new OSAError();
-	
-	if (isset($nodeName) && isset($nodeName) != ""){
-		$nodeName=normalizeName($nodeName);
-		
-		
-		$node=getDAONode($nodeName);
-		
-		try{
-			$db=openDBConnection();
-			$strSQL="DELETE FROM nodes WHERE  nodeName=?";
-			$stmt=$db->prepare($strSQL);
-			$stmt->execute(array(cut($nodeName, USERNAME_LENGTH)));
-			$rc = $node->toArray();
-		}catch (Exception $e){
-				$error->setHttpStatus(500);
-				$error->setFunctionalCode(3);
-				$error->setFunctionalLabel($e->getMessage());
-				throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
-		}
-	}else{
-		$error->setHttpLabel("Bad request for method \"" . $_SERVER["REQUEST_METHOD"] . "\" for resource \"node\"");
-		$error->setHttpStatus(400);
-		$error->setFunctionalCode(1);
-		$error->setFunctionalLabel($error->getFunctionalLabel() . "nodeName is required\n");
-		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
-	}
+    if ($error->getHttpStatus() != 200) {
+        throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
+    } else {
+        $node=getDAONode($nodeName);
+        
+        try{
+            $db=openDBConnection();
+            
+            $strSQL = "";
 
-	return $rc;
+            $strSQL = $strSQL  . "UPDATE nodes SET ";
+            $strSQL = $strSQL  . "      cert=? ";
+            $strSQL = $strSQL  . "WHERE nodeName=?";
+            
+            $stmt=$db->prepare($strSQL);
+            $stmt->execute(array($cert, $mySQLnodeName));
+        }catch (Exceptiob $e) {
+            $error->setHttpStatus(500);
+            $error->setFunctionalCode(3);
+            $error->setFunctionalLabel($e->getMessaqge());
+            throw new Exception(
+                $error->GetFunctionalLabel(), $error->getHttpStatus()
+            );
+        }
+    }
 }
 
-function setPublicationStatus($nodeName, $published){
-	$nodeName=normalizeName($nodeName);
+/**
+ * Update Certification Authority certificate for a Node in database
+ * 
+ * @param string $nodeName Identifier of node to update
+ * @param string $ca       certificate
+ * 
+ * @return void
+ */
+function updateCaCert($nodeName, $ca)
+{
+    GLOBAL $BDName;
+    GLOBAL $BDUser;
+    GLOBAL $BDPwd;
 
-	getDAONode($nodeName);
-	try{
-		$db=openDBConnection();
+    $nodeName=normalizeName($nodeName);
 
-		$strSQL = "";
-		$strSQL = $strSQL  . "UPDATE nodes SET ";
-		$strSQL = $strSQL  . "      isPublished=? ";
-		$strSQL = $strSQL  . "WHERE nodeName=?";
+    $error = new OSAError();
+    $error->setHttpStatus(200);
 
-		$stmt=$db->prepare($strSQL);
-		$stmt->execute(array($published,$nodeName));
-	}catch (Exception $e){
-	
-		$error->setHttpStatus(500);
-		$error->setFunctionalCode(3);
-		$error->setFunctionalLabel($e->getMessage());
-		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
-	}
+    if ($nodeName == null || $nodeName=="" ) {
+        $error->setHttpStatus(400);
+        $error->setFunctionalCode(1);
+        $error->setFunctionalLabel(
+            $error->getFunctionalLabel() . "nodeName is required\n"
+        );
+    } else {
+        $mySQLnodeName=cut($nodeName, USERNAME_LENGTH);
+    }
+
+    if ($error->getHttpStatus() != 200) {
+        throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
+    } else {
+
+        $node=getDAONode($nodeName);
+        
+        
+
+        
+        try{
+            $db=openDBConnection();
+
+            $strSQL = "";
+            $strSQL = $strSQL  . "UPDATE nodes SET ";
+            $strSQL = $strSQL  . "       ca=? ";
+            $strSQL = $strSQL  . "WHERE nodeName=?";
+            
+            $stmt=$db->prepare($strSQL);
+            $stmt->execute(array($ca, $mySQLnodeName));
+        }catch (Exception $e) {
+            $error->setHttpStatus(500);
+            $error->setFunctionalCode(3);
+            $error->setFunctionalLabel($e->getMessage());
+            throw new Exception(
+                $error->GetFunctionalLabel(), $error->getHttpStatus()
+            );
+        }
+        
+    }
 }
 
+/**
+ * Update Certification Authority chain certificates for a Node in database
+ * 
+ * @param string $nodeName Identifier of node to update
+ * @param string $caChain  certificate
+ * 
+ * @return void
+ */
+function updateCaChain($nodeName, $caChain)
+{
+    GLOBAL $BDName;
+    GLOBAL $BDUser;
+    GLOBAL $BDPwd;
 
-function updateNode($nodeName = NULL, $request_data = NULL){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
+    $nodeName=normalizeName($nodeName);
 
-	$nodeName=normalizeName($nodeName);
+    $error = new OSAError();
+    $error->setHttpStatus(200);
 
+    if ($nodeName == null || $nodeName=="" ) {
+        $error->setHttpStatus(400);
+        $error->setFunctionalCode(1);
+        $error->setFunctionalLabel(
+            $error->getFunctionalLabel() . "nodeName is required\n"
+        );
+    } else {
+        $mySQLnodeName=cut($nodeName, USERNAME_LENGTH);
+    }
 
-	$error = new OSAError();
-	$error->setHttpStatus(200);
+    if ($error->getHttpStatus() != 200) {
+        throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
+    } else {
 
-	if ($nodeName == NULL || $nodeName=="" ){
-		$error->setHttpStatus(400);
-		$error->setFunctionalCode(1);
-		$error->setFunctionalLabel($error->getFunctionalLabel() . "nodeName is required\n");
-	}else{
-		$mySQLnodeName=cut($nodeName, USERNAME_LENGTH);
-	}
+        $node=getDAONode($nodeName);
 
-	if (isset($request_data["nodeDescription"])){
-		$mySQLnodeDescription=cut($request_data["nodeDescription"], NODEDESCRIPTION_LENGTH);
-	}else{
-		$mySQLnodeDescription=""; 
-	}
-	if ($request_data["serverFQDN"] == NULL || $request_data["serverFQDN"]=="" ){
-		$error->setHttpStatus(400);
-		$error->setFunctionalCode(1);
-		$error->setFunctionalLabel($error->getFunctionalLabel() . "serverFQDN is required\n");
-	}else{
-		$mySQLserverFQDN=cut($request_data["serverFQDN"], SERVERFQDN_LENGTH);
-	}
-	if ($request_data["localIP"] == NULL || $request_data["localIP"]=="" ){
-		$error->setHttpStatus(400);
-		$error->setFunctionalCode(1);
-		$error->setFunctionalLabel($error->getFunctionalLabel() . "localIP is required\n");
-	}else{
-		$mySQLlocalIP=cut($request_data["localIP"], LOCALIP_LENGTH) ;
-	}
-	if ($request_data["port"] == NULL || $request_data["port"]=="" ){
-		$error->setHttpStatus(400);
-		$error->setFunctionalCode(1);
-		$error->setFunctionalLabel($error->getFunctionalLabel() . "listening port is required\n");
-	}else if (is_numeric($request_data["port"]) && $request_data["port"]>0){
-		$mySQLport=$request_data["port"];
-	}else{
-			$error->setHttpStatus(400);
-			$error->setFunctionalCode(1);
-			$error->setFunctionalLabel($error->getFunctionalLabel() . " allowed value for port is a positive integer\n");
-	}
-	if (isset($request_data["isHTTPS"])){
-		if ($request_data["isHTTPS"]=="1" ||  $request_data["isHTTPS"]=="0"){
-			$mySQLisHTTPS=$request_data["isHTTPS"];
-		}else{
-			$error->setHttpStatus(400);
-			$error->setFunctionalCode(1);
-			$error->setFunctionalLabel($error->getFunctionalLabel() . " allowed value for isHTTPS is 0 or 1\n");
-		}
-	}else{
-		$error->setHttpStatus(400);
-		$error->setFunctionalCode(1);
-		$error->setFunctionalLabel($error->getFunctionalLabel() . "isHTTPS is required\n");
-	}
-	if (isset($request_data["isBasicAuthEnabled"])){
-		if ($request_data["isBasicAuthEnabled"]=="1" ||  $request_data["isBasicAuthEnabled"]=="0"){
-			$mySQLisBasicAuthEnabled=$request_data["isBasicAuthEnabled"];
-		}else{
-			$error->setHttpStatus(400);
-			$error->setFunctionalCode(1);
-			$error->setFunctionalLabel($error->getFunctionalLabel() . " allowed value for isBasicAuthEnabled is 0 or 1\n");
-		}
-	}else{
-			$mySQLisBasicAuthEnabled=1;
-	}
-	if (isset($request_data["isCookieAuthEnabled"])){
-		if ($request_data["isCookieAuthEnabled"]=="1" ||  $request_data["isCookieAuthEnabled"]=="0"){
-			$mySQLisCookieAuthEnabled=$request_data["isCookieAuthEnabled"];
-		}else{
-			$error->setHttpStatus(400);
-			$error->setFunctionalCode(1);
-			$error->setFunctionalLabel($error->getFunctionalLabel() . " allowed value for isCookieAuthEnabled is 0 or 1, not " . $request_data["isCookieAuthEnabled"] ."\n");
-		}
-	}else{
-			$mySQLisCookieAuthEnabled=1;
-	}
-	if (isset($request_data["additionalConfiguration"])){
-			$mySQLadditionalConfiguration=$request_data["additionalConfiguration"];
-	}else{
-			$mySQLadditionalConfiguration="";
-	}
+        try{
+            $db=openDBConnection();
 
-
-	if ($error->getHttpStatus() != 200){
-		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
-	}else{
-		getDAONode($nodeName);
-		try{
-			$db=openDBConnection();
-
-			$strSQL = "";
-			$strSQL = $strSQL  . "UPDATE nodes SET ";
-			$strSQL = $strSQL  . "      nodeDescription=?, ";
-			$strSQL = $strSQL  . "      isHTTPS=?, ";
-			$strSQL = $strSQL  . "      isCookieAuthEnabled=?, ";
-			$strSQL = $strSQL  . "      isBasicAuthEnabled=?, ";
-			$strSQL = $strSQL  . "      localIP=?, ";
-			$strSQL = $strSQL  . "      port=?, ";
-			$strSQL = $strSQL  . "      serverFQDN=?, ";
-			$strSQL = $strSQL  . "      additionalConfiguration=? ";
-			$strSQL = $strSQL  . "WHERE nodeName=?";
-
-			$stmt=$db->prepare($strSQL);
-			$stmt->execute(array($mySQLnodeDescription,$mySQLisHTTPS,$mySQLisCookieAuthEnabled,$mySQLisBasicAuthEnabled,$mySQLlocalIP,$mySQLport,$mySQLserverFQDN,$mySQLadditionalConfiguration,$mySQLnodeName));
-		}catch (Exception $e){
-		
-			$error->setHttpStatus(500);
-			$error->setFunctionalCode(3);
-			$error->setFunctionalLabel($e->getMessage());
-			throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
-		}
-	}
-	return getDAONode($nodeName);
+            $strSQL = "";
+            $strSQL = $strSQL  . "UPDATE nodes SET ";
+            $strSQL = $strSQL  . "       caChain=? ";
+            $strSQL = $strSQL  . "WHERE nodeName=?";
+            
+            $stmt=$db->prepare($strSQL);
+            $stmt->execute(array($caChain, $mySQLnodeName));
+        }catch (Exception $e) {
+            $error->setHttpStatus(500);
+            $error->setFunctionalCode(3);
+            $error->setFunctionalLabel($e->getMessage());
+            throw new Exception(
+                $error->GetFunctionalLabel(), $error->getHttpStatus()
+            );
+        }
+        
+    }
 }
 
-function updateCert($nodeName, $cert){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
+/**
+ * Update private key certificate for a Node in database
+ * 
+ * @param string $nodeName Identifier of node to update
+ * @param string $key      key
+ * 
+ * @return void
+ */
+function updatePrivateKey($nodeName, $key)
+{
+    GLOBAL $BDName;
+    GLOBAL $BDUser;
+    GLOBAL $BDPwd;
 
-	$nodeName=normalizeName($nodeName);
+    $nodeName=normalizeName($nodeName);
 
-	$error = new OSAError();
-	$error->setHttpStatus(200);
+    $error = new OSAError();
+    $error->setHttpStatus(200);
 
-	if ($nodeName == NULL || $nodeName=="" ){
-		$error->setHttpStatus(400);
-		$error->setFunctionalCode(1);
-		$error->setFunctionalLabel($error->getFunctionalLabel() . "nodeName is required\n");
-	}else{
-		$mySQLnodeName=cut($nodeName, USERNAME_LENGTH);
-	}
+    if ($nodeName == null || $nodeName=="" ) {
+        $error->setHttpStatus(400);
+        $error->setFunctionalCode(1);
+        $error->setFunctionalLabel(
+            $error->getFunctionalLabel() . "nodeName is required\n"
+        );
+    } else {
+        $mySQLnodeName=cut($nodeName, USERNAME_LENGTH);
+    }
 
+    if ($error->getHttpStatus() != 200) {
+        throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
+    } else {
 
+        $node=getDAONode($nodeName);
+        
+        try{
+            $db=openDBConnection();
 
-
-	if ($error->getHttpStatus() != 200){
-		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
-	}else{
-		$node=getDAONode($nodeName);
-		
-		try{
-			$db=openDBConnection();
-			
-			$strSQL = "";
-
-			$strSQL = $strSQL  . "UPDATE nodes SET ";
-			$strSQL = $strSQL  . "      cert=? ";
-			$strSQL = $strSQL  . "WHERE nodeName=?";
-			
-			$stmt=$db->prepare($strSQL);
-			$stmt->execute(array($cert, $mySQLnodeName));
-		}catch (Exceptiob $e){
-			$error->setHttpStatus(500);
-			$error->setFunctionalCode(3);
-			$error->setFunctionalLabel($e->getMessaqge());
-			throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
-		}
-	}
-}
-function updateCaCert($nodeName, $ca){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
-
-	$nodeName=normalizeName($nodeName);
-
-	$error = new OSAError();
-	$error->setHttpStatus(200);
-
-	if ($nodeName == NULL || $nodeName=="" ){
-		$error->setHttpStatus(400);
-		$error->setFunctionalCode(1);
-		$error->setFunctionalLabel($error->getFunctionalLabel() . "nodeName is required\n");
-	}else{
-		$mySQLnodeName=cut($nodeName, USERNAME_LENGTH);
-	}
-
-
-
-
-	if ($error->getHttpStatus() != 200){
-		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
-	}else{
-
-		$node=getDAONode($nodeName);
-		
-		
-
-		
-		try{
-			$db=openDBConnection();
-
-			$strSQL = "";
-			$strSQL = $strSQL  . "UPDATE nodes SET ";
-			$strSQL = $strSQL  . "       ca=? ";
-			$strSQL = $strSQL  . "WHERE nodeName=?";
-			
-			$stmt=$db->prepare($strSQL);
-			$stmt->execute(array($ca, $mySQLnodeName));
-		}catch (Exception $e){
-			$error->setHttpStatus(500);
-			$error->setFunctionalCode(3);
-			$error->setFunctionalLabel($e->getMessage());
-			throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
-		}
-		
-	}
-}
-function updateCaChain($nodeName, $caChain){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
-
-	$nodeName=normalizeName($nodeName);
-
-	$error = new OSAError();
-	$error->setHttpStatus(200);
-
-	if ($nodeName == NULL || $nodeName=="" ){
-		$error->setHttpStatus(400);
-		$error->setFunctionalCode(1);
-		$error->setFunctionalLabel($error->getFunctionalLabel() . "nodeName is required\n");
-	}else{
-		$mySQLnodeName=cut($nodeName, USERNAME_LENGTH);
-	}
-
-
-
-
-	if ($error->getHttpStatus() != 200){
-		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
-	}else{
-
-		$node=getDAONode($nodeName);
-		
-		
-
-		
-		try{
-			$db=openDBConnection();
-
-			$strSQL = "";
-			$strSQL = $strSQL  . "UPDATE nodes SET ";
-			$strSQL = $strSQL  . "       caChain=? ";
-			$strSQL = $strSQL  . "WHERE nodeName=?";
-			
-			$stmt=$db->prepare($strSQL);
-			$stmt->execute(array($caChain, $mySQLnodeName));
-		}catch (Exception $e){
-			$error->setHttpStatus(500);
-			$error->setFunctionalCode(3);
-			$error->setFunctionalLabel($e->getMessage());
-			throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
-		}
-		
-	}
-}
-
-
-function updatePrivateKey($nodeName, $key){
-	GLOBAL $BDName;
-	GLOBAL $BDUser;
-	GLOBAL $BDPwd;
-
-	$nodeName=normalizeName($nodeName);
-
-	$error = new OSAError();
-	$error->setHttpStatus(200);
-
-	if ($nodeName == NULL || $nodeName=="" ){
-		$error->setHttpStatus(400);
-		$error->setFunctionalCode(1);
-		$error->setFunctionalLabel($error->getFunctionalLabel() . "nodeName is required\n");
-	}else{
-		$mySQLnodeName=cut($nodeName, USERNAME_LENGTH);
-	}
-
-
-
-
-	if ($error->getHttpStatus() != 200){
-		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
-	}else{
-
-		$node=getDAONode($nodeName);
-		
-		
-
-
-		
-		try{
-			$db=openDBConnection();
-
-			$strSQL = "";
-			$strSQL = $strSQL  . "UPDATE nodes SET ";
-			$strSQL = $strSQL  . "       privateKey=? ";
-			$strSQL = $strSQL  . "WHERE nodeName=?";
-			
-			$stmt=$db->prepare($strSQL);
-			$stmt->execute(array($key, $mySQLnodeName));
-		}catch (Exception $e){
-			$error->setHttpStatus(500);
-			$error->setFunctionalCode(3);
-			$error->setFunctionalLabel($e->getMessage());
-			throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
-		}
-		
-	}
+            $strSQL = "";
+            $strSQL = $strSQL  . "UPDATE nodes SET ";
+            $strSQL = $strSQL  . "       privateKey=? ";
+            $strSQL = $strSQL  . "WHERE nodeName=?";
+            
+            $stmt=$db->prepare($strSQL);
+            $stmt->execute(array($key, $mySQLnodeName));
+        }catch (Exception $e) {
+            $error->setHttpStatus(500);
+            $error->setFunctionalCode(3);
+            $error->setFunctionalLabel($e->getMessage());
+            throw new Exception(
+                $error->GetFunctionalLabel(), $error->getHttpStatus()
+            );
+        }
+        
+    }
 }
 

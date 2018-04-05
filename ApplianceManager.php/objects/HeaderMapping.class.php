@@ -1,4 +1,16 @@
 <?php
+/**
+ * Reverse Proxy as a service
+ * 
+ * PHP Version 7.0
+ * 
+ * @category ReverseProxy
+ * @package  OSA
+ * @author   Benoit HERARD <benoit.herard@orange.com>
+ * @license  http://www.apache.org/licenses/LICENSE-2.0.htm Apache 2 license
+ * @link     https://github.com/zorglub42/OSA/
+*/
+
 /*--------------------------------------------------------
  * Module Name : ApplianceManager
  * Version : 1.0.0
@@ -25,71 +37,161 @@
 
 require_once '../objects/ApplianceObject.class.php';
 
-class HeaderMappingCreation{
-	/**
-	 * @var string headerName HTTP Header name
-	 */
-	public $headerName;
-	/**
-	 * @var string userProperty corresponding user property
-	 */
-	public $userProperty;
+/**
+ * Header mapping class for creation
+ * 
+ * PHP Version 7.0
+ * 
+ * @category ReverseProxy
+ * @package  OSA
+ * @author   Benoit HERARD <benoit.herard@orange.com>
+ * @license  http://www.apache.org/licenses/LICENSE-2.0.htm Apache 2 license
+ * @link     https://github.com/zorglub42/OSA/
+ */
+class HeaderMappingCreation
+{
+    /**
+     * Header name
+     * 
+     * @var string headerName HTTP Header name
+     */
+    public $headerName;
+    /**
+     * User property
+     * 
+     * @var string userProperty corresponding user property
+     */
+    public $userProperty;
 }
-class HeaderMapping extends ApplianceObject{
+/**
+ * Header mapping class
+ * 
+ * PHP Version 7.0
+ * 
+ * @category ReverseProxy
+ * @package  OSA
+ * @author   Benoit HERARD <benoit.herard@orange.com>
+ * @license  http://www.apache.org/licenses/LICENSE-2.0.htm Apache 2 license
+ * @link     https://github.com/zorglub42/OSA/
+ */
+class HeaderMapping extends ApplianceObject
+{
 
-	/**
-	 * @var string serviceName Service identifier
-	 */
-	public $serviceName;
-	/**
-	 * @var string headerName HTTP Header name
-	 */
-	public $headerName;
-	/**
-	 * @var string userProperty corresponding user property
-	 */
-	public $userProperty;
+    /**
+     * Service name
+     * 
+     * @var string serviceName Service identifier
+     */
+    public $serviceName;
+    /**
+     * Header name
+     * 
+     * @var string headerName HTTP Header name
+     */
+    public $headerName;
+    /**
+     * User property
+     * 
+     * @var string userProperty corresponding user property
+     */
+    public $userProperty;
 
-	
-	function setServicename($serviceName){
-		$this->serviceName=$serviceName;
-	}
-	function getServicename(){
-		return $this->serviceName;
-	}
-	
-	function setHeadername($headerName){
-		$this->headerName=$headerName;
-	}
-	function getHeadername(){
-		return $this->headerName;
-	}
-	
-	function setUserProperty($userProperty){
-		$this->userProperty=$userProperty;
-	}
-	function getUserProperty(){
-		return $this->userProperty;
-	}
-
-
-    public function __construct($rqt=NULL)
+    /**
+     * Servicename setter
+     * 
+     * @param string $serviceName servic ename
+     * 
+     * @return void
+     */
+    function setServicename($serviceName)
     {
-		if ($rqt != NULL){
-			$this->setServicename($rqt["serviceName"]);
-			$this->setHeadername($rqt["headerName"]);
-			$this->setUserProperty($rqt["columnName"]);
-			$this->setUri( "services/" . urlencode($rqt["serviceName"]) . "/headers-mapping/" . urlencode($rqt["columnName"]));
-		}
-	}
-	
-	function toArray(){
-		return Array(
-				"uri"  => $this->getUri(),
-				"serviceName"  => $this->getServicename(),
-				"headerName"  => $this->getHeadername(),
-				"userProperty"  => $this->getUserProperty(),
-			);
-	}
-				
+        $this->serviceName=$serviceName;
+    }
+    /**
+     * Service name getter
+     * 
+     * @return string service name
+     */
+    function getServicename()
+    {
+        return $this->serviceName;
+    }
+    
+    /**
+     * Header name setter
+     * 
+     * @param string $headerName Header name
+     * 
+     * @return void
+     */
+    function setHeadername($headerName)
+    {
+        $this->headerName=$headerName;
+    }
+    /**
+     * Header name getter
+     * 
+     * @return string header name
+     */
+    function getHeadername()
+    {
+        return $this->headerName;
+    }
+    
+    /**
+     * User property setter
+     * 
+     * @param string $userProperty user proprety
+     * 
+     * @return void
+     */
+    function setUserProperty($userProperty)
+    {
+        $this->userProperty=$userProperty;
+    }
+    /**
+     * User property getter
+     * 
+     * @return string User property
+     */
+    function getUserProperty()
+    {
+        return $this->userProperty;
+    }
+
+    /**
+     * Constructor
+     * 
+     * @param object $rqt PDO row
+     */
+    public function __construct($rqt=null)
+    {
+        if ($rqt != null) {
+            $this->setServicename($rqt["serviceName"]);
+            $this->setHeadername($rqt["headerName"]);
+            $this->setUserProperty($rqt["columnName"]);
+            $this->setUri(
+                "services/" . 
+                urlencode($rqt["serviceName"]) . 
+                "/headers-mapping/" . 
+                urlencode($rqt["columnName"])
+            );
+        }
+    }
+    
+    /**
+     * Convert object to associative array
+     * 
+     * @return array Object in a array
+     */
+    function toArray()
+    {
+        return Array(
+                "uri"  => $this->getUri(),
+                "serviceName"  => $this->getServicename(),
+                "headerName"  => $this->getHeadername(),
+                "userProperty"  => $this->getUserProperty(),
+            );
+    }
+                
 }

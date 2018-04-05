@@ -1,3 +1,18 @@
+<?php
+/**
+ * Reverse Proxy as a service
+ * 
+ * PHP Version 7.0
+ * 
+ * @category ReverseProxy
+ * @package  OSA
+ * @author   Benoit HERARD <benoit.herard@orange.com>
+ * @license  http://www.apache.org/licenses/LICENSE-2.0.htm Apache 2 license
+ * @link     https://github.com/zorglub42/OSA/
+ * 
+ * @codingStandardsIgnoreStart
+*/
+?>
 <div id="userProperties">
 	<div class="row">
 		<div  class="col-md-6 col-xs-6"  title="<?php echo Localization::getString("user.userName.tooltip")?>">

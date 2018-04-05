@@ -1,5 +1,16 @@
 <?php
-/*--------------------------------------------------------
+/**
+ * Reverse Proxy as a service
+ * 
+ * PHP Version 7.0
+ * 
+ * @category ReverseProxy
+ * @package  OSA
+ * @author   Benoit HERARD <benoit.herard@orange.com>
+ * @license  http://www.apache.org/licenses/LICENSE-2.0.htm Apache 2 license
+ * @link     https://github.com/zorglub42/OSA/
+*/
+/* --------------------------------------------------------
  * Module Name : ApplianceManager
  * Version : 1.0.0
  *
@@ -31,64 +42,65 @@ $firstName="";
 $lastName="";
 
 $hdrs=getallheaders();
-if (isset($hdrs[$defaultHeadersName["firstName"]])){
-	$firstName=$hdrs[$defaultHeadersName["firstName"]];
+if (isset($hdrs[$defaultHeadersName["firstName"]])) {
+    $firstName=$hdrs[$defaultHeadersName["firstName"]];
 }
-if (isset($hdrs[$defaultHeadersName["lastName"]])){
-	$lastName=$hdrs[$defaultHeadersName["lastName"]];
+if (isset($hdrs[$defaultHeadersName["lastName"]])) {
+    $lastName=$hdrs[$defaultHeadersName["lastName"]];
 }
 ?>
 <html>
-	<head>
-	
-		<title><?php echo Localization::getString("app.title")?></title>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="stylesheet" href="css/osa.css.php">
+    <head>
+    
+        <title><?php echo Localization::getString("app.title")?></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="css/osa.css.php">
 
-		<script type="text/javascript" src="js/osa.js.php"></script>
-	
-		<script>
-			var mouseLeaveTimer;
-			$('.selector').tooltip().on('mouseleave', function(e){
-				var that = this;
+        <script type="text/javascript" src="js/osa.js.php"></script>
+    
+        <script>
+            var mouseLeaveTimer;
+            $('.selector').tooltip().on('mouseleave', function(e){
+                var that = this;
 
-				// close the tooltip later (maybe ...)
-				mouseLeaveTimer = setTimeout(function(){
-					$(that).tooltip('close');
-				}, 100);
+                // close the tooltip later (maybe ...)
+                mouseLeaveTimer = setTimeout(function(){
+                    $(that).tooltip('close');
+                }, 100);
 
-				// prevent tooltip widget to close the tooltip now
-				e.stopImmediatePropagation(); 
-			});
+                // prevent tooltip widget to close the tooltip now
+                e.stopImmediatePropagation(); 
+            });
 
-			$(document).on('mouseenter', '.ui-tooltip', function(e){
-				// cancel tooltip closing on hover
-				clearTimeout(mouseLeaveTimer);
-			});
+            $(document).on('mouseenter', '.ui-tooltip', function(e){
+                // cancel tooltip closing on hover
+                clearTimeout(mouseLeaveTimer);
+            });
 
-			$(document).on('mouseleave', '.ui-tooltip', function(){
-				// make sure tooltip is closed when the mouse is gone
-				$('.selector').tooltip('close');
-			});			
-		</script>
-	</head>
-	<body >
-		<div class="container-fluid">
-			<div  style="padding-left:10px;">
-				<img class="img-responsive"  src="./images/LogoTitle.jpg" />
-			</div>	
-			<?php include "include/menuBootstrap.php"?>
-			<div id="waitScreen" class="rounded-corners"  style="position: absolute; z-index:3; visibility: hidden; background-color:#000000;  ">
-			</div>
-			<div id="content">
-			</div>
-			<div id="footer">
-				<hr>
-				<span class="withRightBorder">
-					<?php echo Localization::getString("app.version") . version?>
-				</span>
-			</div>
-		</div>
-	</body>
+            $(document).on('mouseleave', '.ui-tooltip', function(){
+                // make sure tooltip is closed when the mouse is gone
+                $('.selector').tooltip('close');
+            });			
+        </script>
+    </head>
+    <body >
+        <div class="container-fluid">
+            <div  style="padding-left:10px;">
+                <img class="img-responsive"  src="./images/LogoTitle.jpg" />
+            </div>	
+            <?php require "include/menuBootstrap.php";?>
+            <div id="waitScreen" class="rounded-corners"  
+                 style="position: absolute; z-index:3; visibility: hidden; background-color:#000000;">
+            </div>
+            <div id="content">
+            </div>
+            <div id="footer">
+                <hr>
+                <span class="withRightBorder">
+                    <?php echo Localization::getString("app.version") . version?>
+                </span>
+            </div>
+        </div>
+    </body>
 </html>

@@ -1,4 +1,15 @@
 <?php
+/**
+ * Reverse Proxy as a service
+ * 
+ * PHP Version 7.0
+ * 
+ * @category ReverseProxy
+ * @package  OSA
+ * @author   Benoit HERARD <benoit.herard@orange.com>
+ * @license  http://www.apache.org/licenses/LICENSE-2.0.htm Apache 2 license
+ * @link     https://github.com/zorglub42/OSA/
+*/
 /*--------------------------------------------------------
  * Module Name : ApplianceManager
  * Version : 1.0.0
@@ -23,10 +34,24 @@
  * 1.0.0 - 2012-10-01 : Release of the file
 */
 
-class AuthToken{
-	/**
-	 * @var string Authentication Token
-	 */
-	public $token;
+/**
+ * Authentication tocken 
+ * 
+ * PHP Version 7.0
+ * 
+ * @category ReverseProxy
+ * @package  OSA
+ * @author   Benoit HERARD <benoit.herard@orange.com>
+ * @license  http://www.apache.org/licenses/LICENSE-2.0.htm Apache 2 license
+ * @link     https://github.com/zorglub42/OSA/
+ */
+class AuthToken
+{
+    /**
+     * Authentication token
+     * 
+     * @var string Authentication Token
+    */
+    public $token;
 
 }

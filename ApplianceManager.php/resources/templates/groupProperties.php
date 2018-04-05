@@ -1,4 +1,19 @@
-			<div class="panel-body">
+<?php
+/**
+ * Reverse Proxy as a service
+ * 
+ * PHP Version 7.0
+ * 
+ * @category ReverseProxy
+ * @package  OSA
+ * @author   Benoit HERARD <benoit.herard@orange.com>
+ * @license  http://www.apache.org/licenses/LICENSE-2.0.htm Apache 2 license
+ * @link     https://github.com/zorglub42/OSA/
+ * 
+ * @codingStandardsIgnoreStart
+*/
+?>
+<div class="panel-body">
 				<form accept-charset="UTF-8" role="form">
 				<fieldset>
 					<div class="form-group">
