@@ -34,7 +34,6 @@
  * History     :
  * 1.0.0 - 2012-10-01 : Release of the file
 */
-require_once "Settings.ini.php";
 
 /**
  * Get an SQL keyword according to the proper gramar (MySQL/SQLite)
@@ -97,7 +96,7 @@ function openDBConnectionSQLITE()
  */
 function openDBConnectionMYSQL()
 {
-    global $BDName, $BDUser, $BDPwd;
+    @include 'Settings.ini.php';
 
     $T=explode("@", $BDName);
     $DB=$T[0];
@@ -143,8 +142,6 @@ function escapeOrder($str)
  */
 function cut($str, $Lng)
 {
-    global $includeBDMySQL;
-
     return substr($str, 0, $Lng);
 }
 

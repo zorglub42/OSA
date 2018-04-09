@@ -39,7 +39,7 @@ require_once 'groupDAO.php';
 
 
 function getUser($userName = NULL, $request_data = NULL){
-	GLOBAL $defaultHeadersName;
+	@include '../include/Settings.ini.php';
 
 	$error = new OSAError();
 			

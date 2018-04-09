@@ -58,8 +58,8 @@ require_once '../include/Constants.php';
  */
 function getServiceHeadersMapping($serviceName , $userProperty=null)
 {
-    GLOBAL $userProperties;
-    GLOBAL $defaultHeadersName;
+    @include 'Constants.php';
+    @include 'Settings.ini.php';
 
     $serviceName=normalizeName($serviceName);
 
@@ -139,8 +139,8 @@ function getServiceHeadersMapping($serviceName , $userProperty=null)
  */
 function createServiceHeadersMapping($serviceName , $userProperty, $headerName)
 {
-    GLOBAL $userProperties;
-    GLOBAL $defaultHeadersName;
+    @include 'Constants.php';
+    @include 'Settings.ini.php';
 
     $serviceName=normalizeName($serviceName);
 

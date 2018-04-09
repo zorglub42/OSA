@@ -489,9 +489,6 @@ function setPublicationStatus($nodeName, $published)
 */
 function updateNode($nodeName=null, $request_data=null)
 {
-    GLOBAL $BDName;
-    GLOBAL $BDUser;
-    GLOBAL $BDPwd;
 
     $nodeName=normalizeName($nodeName);
 
@@ -665,9 +662,6 @@ function updateNode($nodeName=null, $request_data=null)
  */
 function updateCert($nodeName, $cert)
 {
-    GLOBAL $BDName;
-    GLOBAL $BDUser;
-    GLOBAL $BDPwd;
 
     $nodeName=normalizeName($nodeName);
 
@@ -724,9 +718,6 @@ function updateCert($nodeName, $cert)
  */
 function updateCaCert($nodeName, $ca)
 {
-    GLOBAL $BDName;
-    GLOBAL $BDUser;
-    GLOBAL $BDPwd;
 
     $nodeName=normalizeName($nodeName);
 
@@ -784,9 +775,6 @@ function updateCaCert($nodeName, $ca)
  */
 function updateCaChain($nodeName, $caChain)
 {
-    GLOBAL $BDName;
-    GLOBAL $BDUser;
-    GLOBAL $BDPwd;
 
     $nodeName=normalizeName($nodeName);
 
@@ -841,9 +829,6 @@ function updateCaChain($nodeName, $caChain)
  */
 function updatePrivateKey($nodeName, $key)
 {
-    GLOBAL $BDName;
-    GLOBAL $BDUser;
-    GLOBAL $BDPwd;
 
     $nodeName=normalizeName($nodeName);
 

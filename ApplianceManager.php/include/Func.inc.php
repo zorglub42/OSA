@@ -105,7 +105,8 @@ function normalizeName($name, $allowedExtra="")
  */
 function encrypt($str)
 {
-    GLOBAL $cryptKey;
+    @include 'Crypto.ini.php';
+
     $keyIdx=rand(0, count($cryptKey)-1);
     $key = $cryptKey[$keyIdx];
     while (strlen($key)<strlen($str)) {
@@ -133,7 +134,8 @@ function encrypt($str)
  */
 function decrypt($str)
 {
-    GLOBAL $cryptKey;
+    @include 'Crypto.ini.php';
+
     $keyIdx=substr($str, 0, 3);
     $key=$cryptKey[$keyIdx+0];
     while (strlen($key)<(strlen($str)-3)/3) {
@@ -338,7 +340,7 @@ function getDateFromIso($strDate)
  */
 function getRequestor()
 {
-    GLOBAL $defaultHeadersName;
+    @include 'Settings.ini.php';
 
     $hdrs=getallheaders();
     if (isset($hdrs[$defaultHeadersName["userName"]])) {

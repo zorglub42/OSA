@@ -616,7 +616,7 @@ class Nodes
                           "additionalConfiguration" => $additionalConfiguration,
                           "apply" => $apply,
             );
-            $node=$this->get($nodeName);
+            $node=$this->_get($nodeName);
             $rc= updateNode($nodeName, $params);
             if ($apply=="1") { 
                 applyApacheNodesConfiguration($nodeName, "U");
@@ -701,7 +701,7 @@ class Nodes
     function applyConf($nodeName)
     {
         try{
-            $node=$this->get($nodeName);
+            $node=$this->_get($nodeName);
             applyApacheNodesConfiguration($nodeName, "U");
             return $node;
 
