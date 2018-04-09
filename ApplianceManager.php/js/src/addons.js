@@ -57,6 +57,7 @@ function addonAddDocURI(addon, uri){
 $( document ).ready(function() {
 	//Start mutation observer
 	osaAddonsObserver.observe(document.getElementById("content"), { childList: true });
+	$("#content").html($("#content").html());
 
 	//Add items to API documentation menu
 	apiDocListHtml = $("#apiDocList").html();
