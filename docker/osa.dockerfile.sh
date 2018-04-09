@@ -58,17 +58,20 @@ cat<<EOF | docker build -t osa:$RDBMS-$VERSION  -
 	RUN cd /usr/local/src && git clone https://github.com/zorglub42/OSA
 	RUN cd /usr/local/src/OSA && ./install.sh -m -rdbms $RDBMS /usr/local/OSA
 
+	RUN cd /usr/local/src && git clone https://github.com/zorglub42/OSA-VirtualBackend 
+	RUN cd /usr/local/src && git clone https://github.com/zorglub42/OSA-Letsencrypt 
+	RUN cd /usr/local/src/OSA-Letsencrypt && curl -s  https://dl.eff.org/certbot-auto -o certbot-auto && chmod u+x certbot-auto && ./certbot-auto -n --os-packages-only && ./certbot-auto certificates
+
+
+
 	RUN cat /etc/apache2/ports.conf |sed 's/80/81/'|sed 's/443/8443/'>ports && mv ports /etc/apache2/ports.conf
 	RUN cat /etc/apache2/sites-available/000-default.conf |sed 's/80/81/'>site && mv site /etc/apache2/sites-available/000-default.conf
 	RUN cat /etc/apache2/sites-available/default-ssl.conf |sed 's/443/8443/'>site && mv site /etc/apache2/sites-available/default-ssl.conf
 
 
 	WORKDIR /usr/local/OSA/RunTimeAppliance/shell
-	#RUN cat envvars.sh| sed "s/BOX_DOMAIN=.*/BOX_DOMAIN=\"$BOX_DOMAIN\"/" | sed "s/ROOT_MYSQL_PW=.*/ROOT_MYSQL_PW=\"$ROOT_MYSQL_PW\"/" | sed "s/APPLIANCE_MYSQL_PW=.*/APPLIANCE_MYSQL_PW=\"$APPLIANCE_MYSQL_PW\"/" | sed "s/APPLIANCE_ADMIN_PW=.*/APPLIANCE_ADMIN_PW=\"$APPLIANCE_ADMIN_PW\"/" | sed "s/HTTP_VHOST_PORT=.*/HTTP_VHOST_PORT=80/" | sed "s/HTTPS_VHOST_PORT=.*/HTTPS_VHOST_PORT=443/"| sed "s/HTTPS_ADMIN_VHOST_NAME=.*/HTTPS_ADMIN_VHOST_NAME=localhost/">vars && mv vars envvars.sh && chmod u+x envvars.sh
 	RUN cat envvars.sh| sed "s/ROOT_MYSQL_PW=.*/ROOT_MYSQL_PW=\"$ROOT_MYSQL_PW\"/" | sed "s/APPLIANCE_MYSQL_PW=.*/APPLIANCE_MYSQL_PW=\"$APPLIANCE_MYSQL_PW\"/" | sed "s/HTTP_VHOST_PORT=.*/HTTP_VHOST_PORT=80/" | sed "s/HTTPS_VHOST_PORT=.*/HTTPS_VHOST_PORT=443/"| sed "s/HTTPS_ADMIN_VHOST_NAME=.*/HTTPS_ADMIN_VHOST_NAME=localhost/">vars && mv vars envvars.sh && chmod u+x envvars.sh
 	RUN curl -s https://raw.githubusercontent.com/zorglub42/OSA/master/docker/configure-osa-container.sh >/usr/local/bin/configure-osa-container.sh ;chmod u+x /usr/local/bin/configure-osa-container.sh
-	#RUN $START_RDBMS && service apache2 start && ./configure-osa.sh
-	#RUN cat envvars.sh| sed "s/KEEP_DB=.*/KEEP_DB=1/" >vars && mv vars envvars.sh && chmod u+x envvars.sh
 	RUN printf "$START_RDBMS\nservice apache2 restart\nservice cron restart\n/usr/local/bin/configure-osa-container.sh "'\$*'"||exit 1\n\ntail -f /dev/null\n">/usr/local/bin/start-osa-container.sh ;chmod u+x /usr/local/bin/start-osa-container.sh
 	ENTRYPOINT ["/bin/bash", "/usr/local/bin/start-osa-container.sh"]
 EOF

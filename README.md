@@ -129,12 +129,19 @@ Due to the fact that OSA can create Listening port (nodes), it's better to bind 
 Using port mapping will limit the accessibility of created node in the container.
 (refer to docker documentation if you want to use it anyway)
 
-	docker run --name OSA -p 80:80 -p 443:443 -p 6443:6443 -d osa:mysql-VERSION admin-passwd domain
-	docker run --name OSA -p 80:80 -p 443:443 -p 6443:6443 -d osa:sqlite-VERSION admin-passwd domain
+	docker run --name OSA -p 80:80 -p 443:443 -p 6443:6443 -d osa:mysql-VERSION -pwd:admin-passwd -domain:dns-domain
+	docker run --name OSA -p 80:80 -p 443:443 -p 6443:6443 -d osa:sqlite-VERSION -pwd:admin-passwd -domain:dns-domain
 
 Where parameters are:
-- admin-password: OSA admin password to set
-- domain (optional): your FQDN (Ex: zorglub42.fr)
+- -pwd:admin-password OSA admin password to set
+- -domain:dns-domain (optional): your FQDN (Ex: .zorglub42.fr)
+In addition you can add:
+- -addon:AdnnName to enable an addon
+Ex: -addon:OSA-Letsencryt -addon:OSA-VirtualBackend
+
+	docker run --name OSA -p 80:80 -p 443:443 -p 6443:6443 -d osa:mysql-VERSION -pwd:admin-passwd -domain:dns-domain -addon:OSA-Letsencrypt -addon:OSA-VirtualBackend
+
+
 
 **IMPORTANT NOTE:** -p 80:80 -p 443:443 -p 6443:6443 options assume that ports 80, 443 and 6443 are not used on host running the container. It also assume that you will not create nodes (aka VirtualHosts) listening on other ports.
 In such a case, also map thos ports or run with --net=host option.
