@@ -66,6 +66,16 @@ function backup(){
 
 function restaure(){
 	cd $APPLIANCE_CONFIG_LOC/backup
+
+	FLD=$(date --iso-8601=seconds)
+	mkdir -p invalid-conf/$FLD
+	cp /etc/ssl/certs/osa-node-*.pem invalid-conf/$FLD
+	cp /etc/ssl/private/osa-node-*.key invalid-conf/$FLD
+
+	cp $APACHE_SITES_DEFINITION_DIR/osa-node-* invalid-conf/$FLD
+	cp $APPLIANCE_CONFIG_LOC/applianceManagerServices-node-*.endpoints invalid-conf/$FLD
+	cp $APACHE_LISTEN_PORTS/osa-0-ports.conf invalid-conf/$FLD
+
 	cp osa-node-*.pem /etc/ssl/certs/ 
 	cp osa-node-*.key /etc/ssl/private/
 	rm $APACHE_SITES_DEFINITION_DIR/osa-node-*
