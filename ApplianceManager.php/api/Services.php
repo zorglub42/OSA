@@ -108,7 +108,7 @@ class Services
             }
             if ($noApply==0) {
                 if (!applyApacheConfiguration()) {
-                    throw new RestException("Invalide apache configuration", 500);
+                    throw new RestException(500, "Invalid apache configuration");
                 }
             }
             return $this->getHeadersMapping($serviceName);

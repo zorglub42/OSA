@@ -42,11 +42,8 @@ require_once '../objects/Node.class.php';
 require_once '../objects/Quota.class.php';
 require_once '../objects/User.class.php';
 require_once '../objects/HeaderMapping.class.php';
-require_once '../include/Constants.php';
 require_once '../include/PDOFunc.php';
 require_once '../include/Func.inc.php';
-require_once '../include/Settings.ini.php';
-require_once '../include/Constants.php';
 
 /**
  * Get Headers mapping for a service from database
@@ -58,8 +55,8 @@ require_once '../include/Constants.php';
  */
 function getServiceHeadersMapping($serviceName , $userProperty=null)
 {
-    @include 'Constants.php';
-    @include 'Settings.ini.php';
+    @include '../include/Constants.php';
+    @include '../include/Settings.ini.php';
 
     $serviceName=normalizeName($serviceName);
 
@@ -139,8 +136,8 @@ function getServiceHeadersMapping($serviceName , $userProperty=null)
  */
 function createServiceHeadersMapping($serviceName , $userProperty, $headerName)
 {
-    @include 'Constants.php';
-    @include 'Settings.ini.php';
+    @include '../include/Constants.php';
+    @include '../include/Settings.ini.php';
 
     $serviceName=normalizeName($serviceName);
 
