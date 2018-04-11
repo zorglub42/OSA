@@ -311,7 +311,7 @@ class HttpClient
         if ($method == 'POST') {
             curl_setopt($cUrl, CURLOPT_POST, 1);
             curl_setopt($cUrl, CURLOPT_POSTFIELDS, $content);
-            if (!$this->headerExists("Content-Type", $headers)) {
+            if (!$this->_headerExists("Content-Type", $headers)) {
                 if (is_array($content)) {
                         $headers[]="Content-Type: multipart/form-data"; 
                 } else {
