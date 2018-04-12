@@ -227,7 +227,7 @@ mv /tmp/$$.logrotate.conf $INSTALL_DIR/RunTimeAppliance/shell/logrotate.conf
 ######################################################################
 function updateAdminService(){
 	echo "Setting up admin service"
-	curl -H "Accept: application/json"  "http://127.0.0.1:$PRIVATE_VHOST_PORT/ApplianceManager/services/ApplianceManagerAdmin"|grep -v '"uri"' | grep -v '"groupUri"'| sed 's/"additionalConfiguration":.*/"additionalConfiguration": "RequestHeader set Public-Root-URI \\"%{publicServerProtocol}e%{publicServerName}e%{frontEndEndPoint}e\\"",/'>/tmp/$$.putdata
+	curl -H "Accept: application/json"  "http://127.0.0.1:$PRIVATE_VHOST_PORT/ApplianceManager/services/ApplianceManagerAdmin"|grep -v '"uri"' | grep -v '"groupUri"'| sed 's/"additionalConfiguration":.*/"additionalConfiguration": "RequestHeader setifempty Public-Root-URI \\"%{publicServerProtocol}e%{publicServerName}e%{frontEndEndPoint}e\\"",/'>/tmp/$$.putdata
 
 	#curl -i -X PUT -H "Content-Type: application/json" -d @"/tmp/x2" localhost:82/ApplianceManager/services/ApplianceManagerAdmin
 	curl -i -X PUT -H "Content-Type: application/json" -d @"/tmp/$$.putdata" "http://127.0.0.1:$PRIVATE_VHOST_PORT/ApplianceManager/services/ApplianceManagerAdmin" >/tmp/$$.curl
@@ -583,7 +583,7 @@ function createApacheConf(){
 		sed "s|OSA_VERSION|$VERSION|" > $APACHE_SITES_DEFINITION_DIR/osa-admin.conf
 
 	if [ $ABSOLUTE_URI -eq 0 ] ; then
-		cat $APACHE_SITES_DEFINITION_DIR/osa-admin.conf | grep -v "RequestHeader set Public-Root-URI" > /tmp/$$.osa-admin
+		cat $APACHE_SITES_DEFINITION_DIR/osa-admin.conf | grep -v "RequestHeader setifempty Public-Root-URI" > /tmp/$$.osa-admin
 		cp /tmp/$$.osa-admin $APACHE_SITES_DEFINITION_DIR/osa-admin.conf
 		
 		cat $INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php | sed 's|.*"defaultUriPrefix".*|	define("defaultUriPrefix",  "");|'  > /tmp/$$.Settings.ini.php
