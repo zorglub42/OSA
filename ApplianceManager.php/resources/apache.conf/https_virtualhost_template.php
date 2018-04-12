@@ -51,10 +51,10 @@
        #   Enable/Disable SSL for this virtual host.
        SSLEngine on
        SSLProxyEngine on
-	SSLProxyVerify none 
-	SSLProxyCheckPeerCN off
-	SSLProxyCheckPeerName off
-	SSLProxyCheckPeerExpire off
+       SSLProxyVerify none 
+       SSLProxyCheckPeerCN off
+       SSLProxyCheckPeerName off
+       SSLProxyCheckPeerExpire off
 
        #   A self-signed (snakeoil) certificate can be created by installing
        #   the ssl-cert package. See

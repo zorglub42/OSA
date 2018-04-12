@@ -40,6 +40,9 @@ ServerSignature Off
 
        SSLProxyEngine on
        SSLProxyVerify none
+       SSLProxyCheckPeerName off
+       SSLProxyCheckPeerCN off
+       SSLProxyCheckPeerExpire off
        Options -Indexes
 
 

@@ -110,7 +110,7 @@
             <span class="caret"></span>
           </a>
           <ul class="dropdown-menu" ID="apiDocList">
-            <li><a id="apiDocMenu" onclick='loadDoc("api/doc")' href="#">OSA</a></li>
+            <li><a id="apiDocMenu" onclick='loadDoc("api/doc/")' href="#">OSA</a></li>
           </ul>
         </li>
 		</li>

@@ -341,7 +341,7 @@ $strings["service.label.additionalConfiguration.helpText"]
                                 "variables ".
                                 "(ex: https//public.node.com:8443/myservice)\n" .
                         "	</li>\n" .
-                        "	<br>Ex:<br><code>RequestHeader set Public-Root-URI \"".
+      "	<br>Ex:<br><code>RequestHeader setifempty Public-Root-URI \"".
       "%{publicServerProtocol}e%{publicServerName}e:%{publicServerPort}e/%".
       "{frontEndEndPoint}e\"</code>\n" .
                         "</ul>\n";

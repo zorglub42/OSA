@@ -356,7 +356,7 @@ $strings["service.label.additionalConfiguration.helpText"]
         "		%{publicServerPrefix}e concatenation des variables précédents ".
         "(ex: https//noeud.publique.com:8443/monservice)\n" .
         "	</li>\n" .
-        "	<br>Ex:<br><code>RequestHeader set Public-Root-URI \"".
+        "	<br>Ex:<br><code>RequestHeader setifempty Public-Root-URI \"".
      "%{publicServerProtocol}e%{publicServerName}e:%{publicServerPort}e/".
      "%{frontEndEndPoint}e\"</code>\n" .
         "</ul>\n";

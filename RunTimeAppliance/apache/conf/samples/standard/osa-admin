@@ -107,7 +107,7 @@ SSLStaplingCache        shmcb:/var/run/ocsp(128000)
 
 
 			ProxyPassReverse http://127.0.0.1:PRIVATE_VHOST_PORT/ApplianceManager
-			RequestHeader set Public-Root-URI "%{publicServerProtocol}e%{publicServerName}e"
+			RequestHeader setifempty Public-Root-URI "%{publicServerProtocol}e%{publicServerName}e"
 		
 		</Location>
 
@@ -132,7 +132,7 @@ SSLStaplingCache        shmcb:/var/run/ocsp(128000)
 
 
 			ProxyPassReverse http://localhost:PRIVATE_VHOST_PORT/ApplianceManager/auth/
-			RequestHeader set Public-Root-URI "%{publicServerProtocol}e%{publicServerName}e"
+			RequestHeader setifempty Public-Root-URI "%{publicServerProtocol}e%{publicServerName}e"
 			
 		</Location>
 
@@ -165,7 +165,7 @@ SSLStaplingCache        shmcb:/var/run/ocsp(128000)
 
 
 			ProxyPassReverse http://localhost:PRIVATE_VHOST_PORT/ApplianceManager/auth/token
-			RequestHeader set Public-Root-URI "%{publicServerProtocol}e%{publicServerName}e"
+			RequestHeader setifempty Public-Root-URI "%{publicServerProtocol}e%{publicServerName}e"
 			
 		</Location>
 		<Location  /users/me>
@@ -197,7 +197,7 @@ SSLStaplingCache        shmcb:/var/run/ocsp(128000)
 
 
 			ProxyPassReverse http://localhost:PRIVATE_VHOST_PORT/ApplianceManager/users/me
-			RequestHeader set Public-Root-URI "%{publicServerProtocol}e%{publicServerName}e"
+			RequestHeader setifempty Public-Root-URI "%{publicServerProtocol}e%{publicServerName}e"
 			
 		</Location>
 
