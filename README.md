@@ -116,11 +116,11 @@ It's probably because my sql server didn't restart properly after install. In su
 
 		service mysql restart
 
-## Docker (Unbuntu 16.04)
+## Docker (Unbuntu or Raspbian)
 Instead of installaling on a box, you can also run OSA as a docker container.
 ### Build an OSA Image
 
-	wget https://raw.githubusercontent.com/zorglub42/OSA/master/osa.dockerfile.sh -O osa.dockerfile.sh; bash ./osa.dockerfile.sh [-rdbms mysql|sqlite]
+	wget https://raw.githubusercontent.com/zorglub42/OSA/master/docker/osa.dockerfile.sh -O osa.dockerfile.sh; bash ./osa.dockerfile.sh [-rdbms mysql|sqlite]
 Where parameters are:
 - -rdbms (optional): when set, must be followed by either mysql or sqlite
 
