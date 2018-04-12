@@ -46,6 +46,10 @@ while [ "$1" != "" ] ; do
 done
 echo "I'll use $DRBMS as RDBMS"
 
+if [ "$http_proxy" != "" -o "$https_proxy" != "" ]; then
+	PROXIES=`printf "ENV	http_proxy=$http_proxy\n\tENV	https_proxy=$https_proxy"`
+fi
+
 VERSION=$(curl -s https://raw.githubusercontent.com/zorglub42/OSA/master/ApplianceManager.php/include/Constants.php| grep version|awk -F '"' '{print $4}')
 [ "$VERSION" == "" ] && echo "Unable to get version" && exit 1
 cat<<EOF | docker build -t osa:$RDBMS-$VERSION  -
@@ -53,6 +57,7 @@ cat<<EOF | docker build -t osa:$RDBMS-$VERSION  -
 	FROM $DOCKER_FROM
 	MAINTAINER benoit.herard@orange.com
 
+	$PROXIES
 
 	RUN apt-get update && echo "mysql-server mysql-server/root_password password $ROOT_MYSQL_PW"| debconf-set-selections  && echo "mysql-server mysql-server/root_password_again password $ROOT_MYSQL_PW"|debconf-set-selections && apt-get install -y apache2 php php-curl libapache2-mod-php openssl curl zip autoconf zlib1g-dev zlib1g apache2-dev git inetutils-ping net-tools cron sudo wget vim $RDBMS_PACKAGE
 	RUN cd /usr/local/src && git clone https://github.com/zorglub42/OSA
