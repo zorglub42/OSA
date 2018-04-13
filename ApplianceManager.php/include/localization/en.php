@@ -227,6 +227,7 @@ $strings["service.reqDay.placeholder"]="";
 $strings["service.reqMonth.placeholder"]="";
 
 /*Tooltips*/
+$strings["service.clone.tooltip"]="Cloner this service";
 $strings["service.name.tooltip"]="Enter here service name\n".
                                  "ATTENTION: do not use special chars\n" .
                                  "Service name is an identifier and " .

@@ -53,6 +53,8 @@ var frontEndEndPointFilterPrevVal="";
 var backEndEndPointFilterPrevVal="";
 var nodeNameFilterPrevVal="";
 
+var doServiceClone=false;
+
 /* Enable or disable UI control according to service properties updates */
 function setServiceModified(isModified){
 	serviceModified=isModified;
@@ -97,6 +99,12 @@ function startEditService(serviceURI){
 	$.getJSON(serviceURI, editService).error(displayErrorV2);
 }
 
+
+/* Clone a service */
+function cloneService(serviceURI){
+	doServiceClone=true;
+	startEditService(serviceURI);
+}
 /* Load group list and populate group list field */
 function startPopulateGroups(){
 	$.getJSON("groups/", populateGroups).error(displayErrorV2);
@@ -118,7 +126,11 @@ function populateGroups(groupList){
 
 /* Update (and deploy/undeploy) a service */
 function updateService(serviceURI){
-	saveOrUpdateService('PUT');
+	if (serviceURI != ''){
+		saveOrUpdateService('PUT');
+	}else{
+		saveOrUpdateService('POST');
+	}
 }
 
 
@@ -184,6 +196,16 @@ function editService(service){
 		cbIdentFwd="";
 		cbUserQuota="";
 
+		if (doServiceClone){
+			serviceName="";
+			uri="";
+			serviceNameInputType="text";
+		}else{
+			serviceName=service.serviceName;
+			uri=service.uri;
+			serviceNameInputType="hidden";
+		}
+
 		if (service.isUserQuotasEnabled==1){
 			cbUserQuota="checked";
 		}
@@ -206,13 +228,13 @@ function editService(service){
 			cbOnAllNodes="";
 		}
 
-		$('#content').html(data.replaceAll("{uri}", service.uri)
+		$('#content').html(data.replaceAll("{uri}", uri)
 							   .replaceAll("{reqSec}", service.reqSec==0?"":service.reqSec)
 							   .replaceAll("{reqDay}", service.reqDay==0?"":service.reqDay)
 							   .replaceAll("{reqMonth}", service.reqMonth==0?"":service.reqMonth)
 							   .replaceAll("{cbUserQuota}", cbUserQuota)
-							   .replaceAll("{serviceName}", service.serviceName)
-							   .replaceAll("{serviceNameInputType}","hidden")
+							   .replaceAll("{serviceName}", serviceName)
+							   .replaceAll("{serviceNameInputType}", serviceNameInputType)
 							   .replaceAll("{cbIsPublished}", cbIsPublished)
 							   .replaceAll("{backEndEndPointValue}", service.backEndEndPoint)
 							   .replaceAll("{frontEndEndPointValue}", service.frontEndEndPoint)
@@ -252,6 +274,7 @@ function editService(service){
 				}
 			}
 		);
+
 	});
 }
 
@@ -437,7 +460,7 @@ function setNodesVisiblility(){
 	}else{
 		$('#publishedOnNodes').show();
 		if (!nodesLoaded){
-			$.getJSON("services/" + encodeURIComponent($('#serviceName').val()) + "/nodes/?order=nodeName", displayServiceNodes).error(displayErrorV2);
+			$.getJSON("services/" + encodeURIComponent(currentService.serviceName) + "/nodes/?order=nodeName", displayServiceNodes).error(displayErrorV2);
 		}
 	}
 }
@@ -726,7 +749,7 @@ function  resetServiceFilter(){
 
 /* Load services (search) and display */
 function showServices(){
-
+	doServiceClone=false;
 	prms="order=serviceName";
 	prms=prms + "&serviceNameFilter=" + encodeURIComponent(getFilterValue('serviceNameFilter'));
 	prms=prms + "&groupNameFilter=" + encodeURIComponent(getFilterValue('serviceGroupNameFilter'));

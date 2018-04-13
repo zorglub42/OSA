@@ -87,6 +87,9 @@ require_once "../../include/Localization.php";
 									<button type="button" class="btn btn-default" id="btnUnpublish" title="<?php echo Localization::getString("service.unpublish.tooltip")?>" onclick="publishService('{serviceList[i].uri}', '0')">
 									  <span class="glyphicon glyphicon-pause" aria-hidden="true"></span>
 									</button>
+									<button type="button" class="btn btn-default" id="btnClone" title="<?php echo Localization::getString("service.clone.tooltip")?>" onclick="cloneService('{serviceList[i].uri}', '0')">
+									  <span class="glyphicon glyphicon-copy"></span>
+									</button>
 								</div>
 							</div>
 						</div>
