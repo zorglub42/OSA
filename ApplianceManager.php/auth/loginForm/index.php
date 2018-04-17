@@ -76,8 +76,8 @@
 
 </head>
 <body>
-    <div id="waitScreen" class="rounded-corners"
-         style="position: absolute; z-index:3; visibility: hidden; background-color:#000000;"/>
+    <div id="waitScreen" class="rounded-corners" 
+         style="position: absolute; z-index:3; visibility: hidden; background-color:#000000;"></div>
     <div class="container">
         <div class="row vertical-offset-100">
             <div class="col-md-4 col-md-offset-4">
