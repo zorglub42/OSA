@@ -141,12 +141,48 @@ Ex: -addon:OSA-Letsencryt -addon:OSA-VirtualBackend
 
 	docker run --name OSA -p 80:80 -p 443:443 -p 6443:6443 -d osa:mysql-VERSION -pwd:admin-passwd -domain:dns-domain -addon:OSA-Letsencrypt -addon:OSA-VirtualBackend
 
-
-
 **IMPORTANT NOTE:** -p 80:80 -p 443:443 -p 6443:6443 options assume that ports 80, 443 and 6443 are not used on host running the container. It also assume that you will not create nodes (aka VirtualHosts) listening on other ports.
 In such a case, also map thos ports or run with --net=host option.
 
-## Update
+### Persistent data accross containers and updates
+The best way to upgrade OSA when running a docker image is to re-buil an image and then to restart container.
+But by doieng this without any additionnal configuration, you will loose all your configurations.
+To avoid this, you need to map some container directories to the host.
+
+#### Directory mapping for sqlite version
+For the sqlite version, yopu need to map two directories:
+- /etc/ApplianceManager/conf.ref: OSA configuration file
+- /usr/local/OSA/sql/sqlite/data: sqlite datafile
+
+Ex: -v HOST-DIR-OSA-CONFIG:/etc/ApplianceManager/conf.ref -v HOST-DIR-SQLITE-DATA:/usr/local/OSA/sql/sqlite/data
+
+	mkdir -p /etc/OSA
+	mkdir -p /var/lib/OSA
+	docker run --name OSA -p 80:80 -p 443:443 -p 6443:6443 -v /etc/OSA:/etc/ApplianceManager/conf.ref -v /var/lib/OSA:/usr/local/OSA/sql/sqlite/data -d osa:sqlite-VERSION -pwd:admin-passwd -domain:dns-domain -addon:OSA-Letsencrypt -addon:OSA-VirtualBackend
+
+#### Directory mapping for mysql version
+For the sqlite version, yopu need to map two directories:
+- /etc/ApplianceManager/conf.ref: OSA configuration file
+- /var/lib/mysql: MySQL datafile
+
+But, due to the fact that docker image contains some MySQL structures pre-creation, before the first time you run a container, you need to get MySQL data from OSA image and deploy it to the host:
+
+	mkdir -p /var/lib/osa
+	cd /var/lib/osa	
+	wget https://raw.githubusercontent.com/zorglub42/OSA/master/docker/get-mysql-base.sh -O get-mysql-base.sh && sh get-mysql-base.sh osa:mysql-VERSION && rm get-mysql-base.sh
+	tar xvzf mysql.tgz && rm mysql.tgz
+
+Then, and for all next run you may start a container with the prper "-v" params:
+Ex: -v HOST-DIR-OSA-CONFIG:/etc/ApplianceManager/conf.ref -v HOST-DIR-SQLITE-DATA:/usr/local/OSA/sql/sqlite/data
+
+	mkdir -p /etc/OSA
+	docker run --name OSA -p 80:80 -p 443:443 -p 6443:6443 -v /etc/OSA:/etc/ApplianceManager/conf.ref -v /var/lib/OSA:/var/lib/mysql -d osa:mysql-VERSION -pwd:admin-passwd -domain:dns-domain -addon:OSA-Letsencrypt -addon:OSA-VirtualBackend
+
+
+## Update 
+**NOTE:** This update method is only valid for an installation manually done (i.e. not docker). In reality it can be applied with a running OSA container bu it wil not affect the base image.
+To update OSA with docker, please referer to the docker section.
+
 To deploy a new version of OSA from github do the following
 1.  **If you whant to keep your DB contents:** ensure that KEEP_DB environnement variable is set to 1 in INSTALL_DIR/RunTimeAppliance/shell. You don't have to check that point on next updates unless you want a factory reset.
 2.  start "update.sh" from the folder where initial checkout was done
