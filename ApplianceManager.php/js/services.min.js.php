@@ -510,8 +510,11 @@ function setQuotasVisibility(){
 /* Load add service template and display */
 function addService(){
 	$.get( "resources/templates/serviceAdd.php", function( data ) {
+		currentService={
+			serviceName: "",
+			uri: ""
+		}
 		nodesLoaded=false;
-		currentService=null;
 		currentServiceGroup=null;
 		currentServiceGroupName=null;
 		$('#content').html(data.replaceAll("{uri}", "")
