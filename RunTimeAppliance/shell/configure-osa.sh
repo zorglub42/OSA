@@ -404,9 +404,9 @@ function configureMySQLSettings(){
 # configure SqLite settings (DB file)
 ######################################################################
 function configureSqliteSettings(){
-	sed -i "s|\(OSASqliteFilename \).*|\1$INSTALL_DIR/sql/sqlite/osa.db|" $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc.$RDBMS
+	sed -i "s|\(OSASqliteFilename \).*|\1$INSTALL_DIR/sql/sqlite/data/osa.db|" $INSTALL_DIR/RunTimeAppliance/apache/conf/vhAppliance/osa-endpoints-settings.inc.$RDBMS
 	sed -i 's|.*"RDBMS".*|	define("RDBMS", "'$RDBMS'");|' $INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php
-	sed -i 's|.*"SQLITE_DATABASE_PATH".*|	define("SQLITE_DATABASE_PATH", "'$INSTALL_DIR'/sql/sqlite/osa.db");|' $INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php
+	sed -i 's|.*"SQLITE_DATABASE_PATH".*|	define("SQLITE_DATABASE_PATH", "'$INSTALL_DIR'/sql/sqlite/data/osa.db");|' $INSTALL_DIR/ApplianceManager.php/include/Settings.ini.php
 }
 ######################################################################
 # configureMySQLCreds
@@ -781,7 +781,7 @@ function upgradeSqliteDB(){
 
 				
 			cat  $SQL_UPDATE|  sed "s/PRIVATE_VHOST_PORT/$PRIVATE_VHOST_PORT/g">/tmp/$$.sql
-			sqlite3 ../../sql/sqlite/osa.db</tmp/$$.sql 2>&1 >db_schema.log
+			sqlite3 ../../sql/sqlite/data/osa.db</tmp/$$.sql 2>&1 >db_schema.log
 			if [ $? -ne 0 ] ; then
 				echo "****************** DB Schema management errors!!!! ******************"
 				echo "*		See "`pwd`"/db_schema.log for details"
@@ -805,16 +805,16 @@ function upgradeSqliteDB(){
 # Create (or replace) required SQLite3 object (schema, tables user)
 ######################################################################
 function createSqliteSchema(){
-	if [ -f $INSTALL_DIR/sql/sqlite/osa.db -a $KEEP_DB -eq 0 ] ; then
-		rm $INSTALL_DIR/sql/sqlite/osa.db
+	if [ -f $INSTALL_DIR/sql/sqlite/data/osa.db -a $KEEP_DB -eq 0 ] ; then
+		rm $INSTALL_DIR/sql/sqlite/data/osa.db
 	fi
 	if [ $KEEP_DB -ne 1 ]; then
 		echo "Creating SQLite schema"
 		curDBVersion=`cat ../../sql/sqlite/creation.sql | grep " Version:" | awk -F: '{print $2}'`
 		cat  ../../sql/sqlite/creation.sql|  sed "s/PRIVATE_VHOST_PORT/$PRIVATE_VHOST_PORT/g">/tmp/$$.sql
-		echo "sqlite3 ../../sql/sqlite/osa.db </tmp/$$.sql" >db_schema.log
+		echo "sqlite3 ../../sql/sqlite/data/osa.db </tmp/$$.sql" >db_schema.log
 
-		sqlite3 ../../sql/sqlite/osa.db </tmp/$$.sql >>db_schema.log
+		sqlite3 ../../sql/sqlite/data/osa.db </tmp/$$.sql >>db_schema.log
 	else
 		#Have a look to see if DB needs upgrade
 		if [ -f $INSTALL_DIR/RunTimeAppliance/shell/dbversion ] ; then
@@ -852,9 +852,9 @@ function createSqliteSchema(){
 	else
 		echo $curDBVersion > $INSTALL_DIR/RunTimeAppliance/shell/dbversion
 	fi
-	chown $APACHE_USER:$APACHE_GROUP ../../sql/sqlite/osa.db
-	chown $APACHE_USER:$APACHE_GROUP ../../sql/sqlite/
-	chmod 600 ../../sql/sqlite/osa.db
+	chown $APACHE_USER:$APACHE_GROUP ../../sql/sqlite/data/osa.db
+	chown $APACHE_USER:$APACHE_GROUP ../../sql/sqlite/data
+	chmod 600 ../../sql/sqlite/data/osa.db
 }
 
 ######################################################################
