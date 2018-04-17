@@ -24,6 +24,34 @@
 ##
 #!/bin/bash
 
+BCKUP_CONF_DIR=/etc/ApplianceManager/conf.ref
+
+function copy(){
+	FILE_NAME=$1
+	FROM_DIR=$2
+	TO_DIR=$3
+
+	[ -f $FROM_DIR/$FILE_NAME ] && cp $FROM_DIR/$FILE_NAME $TO_DIR/$FILE_NAME
+}
+
+
+function backupConf(){
+	mkdir -p $BCKUP_CONF_DIR
+
+	copy envvars.sh /usr/local/OSA/RunTimeAppliance/shell $BCKUP_CONF_DIR
+	copy Settings.ini.php /usr/local/OSA/ApplianceManager.php/include $BCKUP_CONF_DIR
+	copy Crypto.ini.php /usr/local/OSA/ApplianceManager.php/include $BCKUP_CONF_DIR
+	copy dbversion /usr/local/OSA/RunTimeAppliance/shell $BCKUP_CONF_DIR
+
+}
+
+function restaureConf(){
+	copy envvars.sh $BCKUP_CONF_DIR /usr/local/OSA/RunTimeAppliance/shell
+	copy Settings.ini.php $BCKUP_CONF_DIR /usr/local/OSA/ApplianceManager.php/include
+	copy Crypto.ini.php $BCKUP_CONF_DIR /usr/local/OSA/ApplianceManager.php/include
+	copy dbversion $BCKUP_CONF_DIR /usr/local/OSA/RunTimeAppliance/shell
+
+}
 function enableAddon(){
         echo "Enabling $1 addon"
         cd /usr/local/src
@@ -66,6 +94,7 @@ if [ ! -f /usr/local/OSA/RunTimeAppliance/shell/container-build ] ; then
 	done
 	if [ "$APPLIANCE_ADMIN_PW" != "" ] ; then
 	
+		restaureConf
 		cd /usr/local/OSA/RunTimeAppliance/shell/
 		cat envvars.sh| sed "s/BOX_DOMAIN=.*/BOX_DOMAIN=\"$BOX_DOMAIN\"/" | sed "s/APPLIANCE_ADMIN_PW=.*/APPLIANCE_ADMIN_PW=\"$APPLIANCE_ADMIN_PW\"/" >vars && mv vars envvars.sh && chmod u+x envvars.sh
 		./configure-osa.sh
@@ -74,6 +103,8 @@ if [ ! -f /usr/local/OSA/RunTimeAppliance/shell/container-build ] ; then
 		for addon in `echo $ADDONS` ; do
 			enableAddon $addon
 		done
+		backupConf
+
 	else
 		echo "Container must be launched with parameters:"
 		echo '	-pwd:XXXX  where XXXX is the admin password'
