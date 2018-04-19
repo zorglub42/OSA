@@ -269,7 +269,7 @@ function displayAvailableGroups(groupList) {
 function editUser(user) {
 	$.get( "resources/templates/userEdit.php", function( data ) {
 		userDate = new Date(user.endDate);
-		dateFormated = userDate.format("<?php echo Localization::getJSString("date.format.parseexact")?>");
+		dateFormated = userDate.format("<?php echo Localization::getJSString("date.format")?>");
 
 		if (user.lastTokenLogin != null){
 			loginDate = new Date(user.lastTokenLogin);
@@ -423,7 +423,7 @@ function displayUserList(userList) {
 			newRow.innerHTML=newRow.innerHTML.replaceAll("{userList[i].userName}", userList[i].userName)
 											 .replaceAll("{userList[i].emailAddress}", userList[i].emailAddress)
 											 .replaceAll("{userList[i].uri}", userList[i].uri)
-											 .replaceAll("{userList[i].endDate}", d.format("<?php echo Localization::getJSString("date.format.parseexact")?>"));
+											 .replaceAll("{userList[i].endDate}", d.format("<?php echo Localization::getJSString("date.format")?>"));
 			table.appendChild(newRow);
 			edit=document.getElementById("btnEdit");
 			del=document.getElementById("btnDelete");
