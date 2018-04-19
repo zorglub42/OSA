@@ -50,7 +50,7 @@ class Localization
 {
     private static $_languages = Array();
     private static $_strings =null;
-    public static $debug=false;
+    public static $debug=true;
     public static $lastModify;
     
     /**

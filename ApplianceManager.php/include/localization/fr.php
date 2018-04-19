@@ -34,12 +34,12 @@
  * History     :
  * 1.0.0 - 2012-10-01 : Release of the file
 */
-$strings["date.format"]="dd/MM/yyyy";
-$strings["date.format.parseexact"]="dd/mm/yyyy";
-$strings["date.format.parseexact.long"]="dd/mm/yyyy hh:MM:ss";
+$strings["date.format"]="dd/mm/yyyy";
+$strings["date.format.parseexact"]="dd/MM/yyyy";
+$strings["date.format.parseexact.long"]="dd/mm/yyyy HH:MM:ss";
 $strings["locale"]="fr";
-/* Global app labels */
-$strings["app.title"]="Open Services Access";
+/* Global app labelsmm
+$strings["app.title""Open Services Access";
 $strings["app.version"]="Open Services Access V";
 
 /* Navigation bar */
