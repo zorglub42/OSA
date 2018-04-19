@@ -44,7 +44,7 @@ while [ "$1" != "" ] ; do
 	shift
 	shift
 done
-echo "I'll use $DRBMS as RDBMS"
+echo "I'll use $RDBMS as RDBMS"
 
 if [ "$http_proxy" != "" -o "$https_proxy" != "" ]; then
 	PROXIES=`printf "ENV	http_proxy=$http_proxy\n\tENV	https_proxy=$https_proxy"`
