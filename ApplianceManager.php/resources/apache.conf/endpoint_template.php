@@ -61,7 +61,7 @@ if ($USER_AUTHENTICATION_ENABLE=="On") {
     if ($COOKIE_AUTH_ENABLED) {
         echo "\tOSACookieAuthEnable On\n";
         echo "\tOSACookieAuthName OSAAuthToken\n";
-        echo "\tOSACookieAuthTTL 60\n";
+        echo "\tOSACookieAuthTTL " . authTokenTTL . "\n";
         if (!empty($FRONT_END_TOP_DOMAIN)) {
             echo "\tOSACookieAuthDomain " . $FRONT_END_TOP_DOMAIN . "\n";
         }
