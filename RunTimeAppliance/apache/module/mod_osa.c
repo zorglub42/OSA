@@ -88,11 +88,11 @@
  * MODULE-DEFINITION-START
  * Name: osa_module
  * ConfigStart
-     MYSQL_LIB="-L/usr/local/lib/mysql -lmysqlclient -lm -lz"
-     if [ "X$MYSQL_LIB" != "X" ]; then
-         LIBS="$LIBS $MYSQL_LIB"
-         echo " + using $MYSQL_LIB for MySQL support"
-     fi
+		 MYSQL_LIB="-L/usr/local/lib/mysql -lmysqlclient -lm -lz"
+		 if [ "X$MYSQL_LIB" != "X" ]; then
+				 LIBS="$LIBS $MYSQL_LIB"
+				 echo " + using $MYSQL_LIB for MySQL support"
+		 fi
  * ConfigEnd
  * MODULE-DEFINITION-END
  */
@@ -141,18 +141,18 @@ typedef struct{
 }stringKeyValList;
 
 typedef struct {
-        char tokens[MAX_SPLITED_TOKENS][MAX_SPLITED_TOKEN_SIZE];
-        int tokensCount;
+				char tokens[MAX_SPLITED_TOKENS][MAX_SPLITED_TOKEN_SIZE];
+				int tokensCount;
 } spliting ;
 
 static char encoding_table[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
-                                'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
-                                'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
-                                'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f',
-                                'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
-                                'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
-                                'w', 'x', 'y', 'z', '0', '1', '2', '3',
-                                '4', '5', '6', '7', '8', '9', '+', '/'};
+																'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
+																'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
+																'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f',
+																'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
+																'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
+																'w', 'x', 'y', 'z', '0', '1', '2', '3',
+																'4', '5', '6', '7', '8', '9', '+', '/'};
 char decoding_table [255];
 int mod_table[] = {0, 2, 1};
 
@@ -164,125 +164,125 @@ stringKeyValList headersMappingList;
 #include "ap_mmn.h"			/* For MODULE_MAGIC_NUMBER */
 /* Use the MODULE_MAGIC_NUMBER to check if at least Apache 2.0 */
 #if AP_MODULE_MAGIC_AT_LEAST(20010223,0)
-  #define APACHE2
+	#define APACHE2
 #endif
 
 /* Compile time options for code generation */
 #ifdef AES
-  #define _AES 1
+	#define _AES 1
 #else
-  #define _AES 0
+	#define _AES 0
 #endif
 /* set any defaults not specified at compile time */
 #ifdef HOST				/* Host to use */
-  #define _HOST STRING(HOST)
+	#define _HOST STRING(HOST)
 #else
-  #define _HOST 0			/* Will default to localhost */
+	#define _HOST 0			/* Will default to localhost */
 #endif
 
 /* Apache 1.x defines the port as a string, but Apache 2.x uses an integer */
 #ifdef PORT				/* The port to use */
-  #ifdef APACHE2
-    #define _PORT PORT
-  #else
-    #define _PORT STRING(PORT)
-  #endif
+	#ifdef APACHE2
+		#define _PORT PORT
+	#else
+		#define _PORT STRING(PORT)
+	#endif
 #else
-  #ifdef APACHE2
-    #define _PORT MYSQL_PORT		/* Use the one from MySQL */
-  #else
-    #define _PORT STRING(MYSQL_PORT)
-  #endif
+	#ifdef APACHE2
+		#define _PORT MYSQL_PORT		/* Use the one from MySQL */
+	#else
+		#define _PORT STRING(MYSQL_PORT)
+	#endif
 #endif
 
 #ifdef SOCKET				/* UNIX socket */
-  #define _SOCKET STRING(SOCKET)
+	#define _SOCKET STRING(SOCKET)
 #else
-  #define _SOCKET MYSQL_UNIX_ADDR
+	#define _SOCKET MYSQL_UNIX_ADDR
 #endif
 
 #ifdef USER				/* Authorized user */
-  #define _USER STRING(USER)
+	#define _USER STRING(USER)
 #else
-  #define _USER 0			/* User must be specified in config */
+	#define _USER 0			/* User must be specified in config */
 #endif
 
 #ifdef PASSWORD				/* Default password */
-  #define _PASSWORD STRING(PASSWORD)
+	#define _PASSWORD STRING(PASSWORD)
 #else
-  #define _PASSWORD 0			/* Password must be specified in config */
+	#define _PASSWORD 0			/* Password must be specified in config */
 #endif
 
 #ifdef DB				/* Default database */
-  #define _DB STRING(DB)
+	#define _DB STRING(DB)
 #else
-  #define _DB "test"			/* Test database */
+	#define _DB "test"			/* Test database */
 #endif
 
 #ifdef PWTABLE				/* Password table */
-  #define _PWTABLE STRING(PWTABLE)
+	#define _PWTABLE STRING(PWTABLE)
 #else
-  #define _PWTABLE "user_info" 		/* Default is user_info */
+	#define _PWTABLE "user_info" 		/* Default is user_info */
 #endif
 
 #ifdef NAMEFIELD			/* Name column in password table */
-  #define _NAMEFIELD STRING(NAMEFIELD)
+	#define _NAMEFIELD STRING(NAMEFIELD)
 #else
-  #define _NAMEFIELD "user_name"	/* Default is "user_name" */
+	#define _NAMEFIELD "user_name"	/* Default is "user_name" */
 #endif
 
 #ifdef PASSWORDFIELD			/* Password column in password table */
-  #define _PASSWORDFIELD STRING(PASSWORDFIELD)
+	#define _PASSWORDFIELD STRING(PASSWORDFIELD)
 #else
-  #define _PASSWORDFIELD "user_password" /* Default is user_password */
+	#define _PASSWORDFIELD "user_password" /* Default is user_password */
 #endif
 
 #ifdef GROUPUSERNAMEFIELD
-  #define _GROUPUSERNAMEFIELD STRING(GROUPUSERNAMEFIELD)
+	#define _GROUPUSERNAMEFIELD STRING(GROUPUSERNAMEFIELD)
 #else
-  #define _GROUPUSERNAMEFIELD NULL
+	#define _GROUPUSERNAMEFIELD NULL
 #endif
 
 #ifdef ENCRYPTION			/* Encryption type */
-  #define _ENCRYPTION STRING(ENCRYPTION)
+	#define _ENCRYPTION STRING(ENCRYPTION)
 #else
-  #define _ENCRYPTION 0			/* Will default to "crypt" in code */
+	#define _ENCRYPTION 0			/* Will default to "crypt" in code */
 #endif
 
 #ifdef SALTFIELD			/* If a salt column is not defined */
-  #define _SALTFIELD STRING(SALTFIELD)
+	#define _SALTFIELD STRING(SALTFIELD)
 #else
-  #define _SALTFIELD "<>"		/* Default is no salt */
+	#define _SALTFIELD "<>"		/* Default is no salt */
 #endif
 
 #ifdef KEEPALIVE			/* Keep the connection alive */
-  #define _KEEPALIVE KEEPALIVE
+	#define _KEEPALIVE KEEPALIVE
 #else
-  #define _KEEPALIVE 0			/* Do not keep it alive */
+	#define _KEEPALIVE 0			/* Do not keep it alive */
 #endif
 
 #ifdef AUTHORITATIVE			/* If we are the last word */
-  #define _AUTHORITATIVE AUTHORITATIVE
+	#define _AUTHORITATIVE AUTHORITATIVE
 #else
-  #define _AUTHORITATIVE 1 		/* Yes, we are */
+	#define _AUTHORITATIVE 1 		/* Yes, we are */
 #endif
 
 #ifdef NOPASSWORD			/* If password not needed */
-  #define _NOPASSWORD NOPASSWORD
+	#define _NOPASSWORD NOPASSWORD
 #else
-  #define _NOPASSWORD 0			/* It is required */
+	#define _NOPASSWORD 0			/* It is required */
 #endif
 
 #ifdef ENABLE				/* If we are to be enabled */
-  #define _ENABLE ENABLE
+	#define _ENABLE ENABLE
 #else
-  #define _ENABLE 1			/* Assume we are */
+	#define _ENABLE 1			/* Assume we are */
 #endif
 
 #ifdef CHARACTERSET
-  #define _CHARACTERSET STRING(CHARACTERSET)
+	#define _CHARACTERSET STRING(CHARACTERSET)
 #else
-  #define _CHARACTERSET NULL		/* Default is no character set */
+	#define _CHARACTERSET NULL		/* Default is no character set */
 #endif
 
 #include "httpd.h"
@@ -294,77 +294,77 @@ stringKeyValList headersMappingList;
 
 
 #ifdef APACHE2
-  #define PCALLOC apr_pcalloc
-  #define SNPRINTF apr_snprintf
-  #define PSTRDUP apr_pstrdup
-  #define PSTRNDUP apr_pstrndup
-  #define STRCAT apr_pstrcat
-  #define POOL apr_pool_t
-  #include "http_request.h"   /* for ap_hook_(check_user_id | auth_checker)*/
-  #include "ap_compat.h"
-  #include "apr_strings.h"
-  #include "apr_sha1.h"
-  #include "apr_base64.h"
-  #include "apr_lib.h"
-  #define ISSPACE apr_isspace
-  #ifdef CRYPT
-    #include "crypt.h"
-  #else
-    #include "unistd.h"
-  #endif
-  #define LOG_ERROR(lvl, stat, rqst, msg)  \
-	  ap_log_rerror (APLOG_MARK, lvl, stat, rqst, msg)
-  #define LOG_ERROR_1(lvl, stat, rqst, msg, parm)  \
-	  ap_log_rerror (APLOG_MARK, lvl, stat, rqst, msg, parm)
-  #define LOG_ERROR_2(lvl, stat, rqst, msg, parm1, parm2)  \
-	  ap_log_rerror (APLOG_MARK, lvl, stat, rqst, msg, parm1, parm2)
-  #define LOG_ERROR_3(lvl, stat, rqst, msg, parm1, parm2, parm3)  \
-	  ap_log_rerror (APLOG_MARK, lvl, stat, rqst, msg, parm1, parm2, parm3)
-  #define APACHE_FUNC static apr_status_t
-  #define APACHE_FUNC_RETURN(rc) return rc
-  #define NOT_AUTHORIZED HTTP_UNAUTHORIZED
-  #define TABLE_GET apr_table_get
+	#define PCALLOC apr_pcalloc
+	#define SNPRINTF apr_snprintf
+	#define PSTRDUP apr_pstrdup
+	#define PSTRNDUP apr_pstrndup
+	#define STRCAT apr_pstrcat
+	#define POOL apr_pool_t
+	#include "http_request.h"   /* for ap_hook_(check_user_id | auth_checker)*/
+	#include "ap_compat.h"
+	#include "apr_strings.h"
+	#include "apr_sha1.h"
+	#include "apr_base64.h"
+	#include "apr_lib.h"
+	#define ISSPACE apr_isspace
+	#ifdef CRYPT
+		#include "crypt.h"
+	#else
+		#include "unistd.h"
+	#endif
+	#define LOG_ERROR(lvl, stat, rqst, msg)  \
+		ap_log_rerror (APLOG_MARK, lvl, stat, rqst, msg)
+	#define LOG_ERROR_1(lvl, stat, rqst, msg, parm)  \
+		ap_log_rerror (APLOG_MARK, lvl, stat, rqst, msg, parm)
+	#define LOG_ERROR_2(lvl, stat, rqst, msg, parm1, parm2)  \
+		ap_log_rerror (APLOG_MARK, lvl, stat, rqst, msg, parm1, parm2)
+	#define LOG_ERROR_3(lvl, stat, rqst, msg, parm1, parm2, parm3)  \
+		ap_log_rerror (APLOG_MARK, lvl, stat, rqst, msg, parm1, parm2, parm3)
+	#define APACHE_FUNC static apr_status_t
+	#define APACHE_FUNC_RETURN(rc) return rc
+	#define NOT_AUTHORIZED HTTP_UNAUTHORIZED
+	#define TABLE_GET apr_table_get
 #else
-  #define PCALLOC ap_pcalloc
-  #define SNPRINTF ap_snprintf
-  #define PSTRDUP ap_pstrdup
-  #define PSTRNDUP ap_pstrndup
-  #define STRCAT apr_pstrcat
-  #define POOL pool
-  #include <stdlib.h>
-  #include "ap_sha1.h"
-  #include "ap_ctype.h"
-  #define LOG_ERROR(lvl, stat, rqst, msg) \
-	  ap_log_error(APLOG_MARK, lvl, rqst->server, msg)
-  #define LOG_ERROR_1(lvl, stat, rqst, msg, parm) \
-	  ap_log_error(APLOG_MARK, lvl, rqst->server, msg, parm)
-  #define LOG_ERROR_2(lvl, stat, rqst, msg, parm1, parm2) \
-	  ap_log_error(APLOG_MARK, lvl, rqst->server, msg, parm1, parm2)
-  #define LOG_ERROR_3(lvl, stat, rqst, msg, parm1, parm2, parm3) \
-	  ap_log_error(APLOG_MARK, lvl, rqst->server, msg, parm1, parm2, parm3)
-  #define APACHE_FUNC static void
-  #define APACHE_FUNC_RETURN(rc) return
-  #define NOT_AUTHORIZED AUTH_REQUIRED
-  #define TABLE_GET ap_table_get
-  #define ISSPACE ap_isspace
+	#define PCALLOC ap_pcalloc
+	#define SNPRINTF ap_snprintf
+	#define PSTRDUP ap_pstrdup
+	#define PSTRNDUP ap_pstrndup
+	#define STRCAT apr_pstrcat
+	#define POOL pool
+	#include <stdlib.h>
+	#include "ap_sha1.h"
+	#include "ap_ctype.h"
+	#define LOG_ERROR(lvl, stat, rqst, msg) \
+		ap_log_error(APLOG_MARK, lvl, rqst->server, msg)
+	#define LOG_ERROR_1(lvl, stat, rqst, msg, parm) \
+		ap_log_error(APLOG_MARK, lvl, rqst->server, msg, parm)
+	#define LOG_ERROR_2(lvl, stat, rqst, msg, parm1, parm2) \
+		ap_log_error(APLOG_MARK, lvl, rqst->server, msg, parm1, parm2)
+	#define LOG_ERROR_3(lvl, stat, rqst, msg, parm1, parm2, parm3) \
+		ap_log_error(APLOG_MARK, lvl, rqst->server, msg, parm1, parm2, parm3)
+	#define APACHE_FUNC static void
+	#define APACHE_FUNC_RETURN(rc) return
+	#define NOT_AUTHORIZED AUTH_REQUIRED
+	#define TABLE_GET ap_table_get
+	#define ISSPACE ap_isspace
 #endif
 
 #include "util_md5.h"
 #ifndef APACHE2
 /* Both Apache 1's ap_config.h and my_global.h define closesocket (to the same value) */
 /* This gets rid of a warning message.  It's OK because we don't use it anyway */
-  #undef closesocket
+	#undef closesocket
 #endif
 #if _AES  /* Only needed if AES encryption desired */
-  #include <my_global.h>
+	#include <my_global.h>
 #endif
 #include <mysql.h>
 #if _AES
-  #include <my_aes.h>
+	#include <my_aes.h>
 #endif
 
 #ifndef SCRAMBLED_PASSWORD_CHAR_LENGTH /* Ensure it is defined for older MySQL releases */
-  #define SCRAMBLED_PASSWORD_CHAR_LENGTH 32 /* Big enough for the old method of scrambling */
+	#define SCRAMBLED_PASSWORD_CHAR_LENGTH 32 /* Big enough for the old method of scrambling */
 #endif
 
 /* salt flags */
@@ -396,118 +396,118 @@ static char * format_cookie(request_rec * r, char ** parm);
 
 
 typedef struct {	      /* Encryption methods */
-  char * string; 	      /* Identifing string */
-  short salt_status;	      /* If a salt is required, optional or unused */
-  short (*func)(POOL * pool, const char * real_pw, const char * sent_pw, const char * salt);
+	char * string; 	      /* Identifing string */
+	short salt_status;	      /* If a salt is required, optional or unused */
+	short (*func)(POOL * pool, const char * real_pw, const char * sent_pw, const char * salt);
 } encryption ;
 
 /* Encryption methods used.  The first entry is the default entry */
 static encryption encryptions[] = {{"crypt", SALT_OPTIONAL, pw_crypted},
-					   {"none", NO_SALT, pw_plain},
-					   {"md5", NO_SALT, pw_md5},
+						 {"none", NO_SALT, pw_plain},
+						 {"md5", NO_SALT, pw_md5},
 #if _AES
-					   {"aes", SALT_REQUIRED, pw_aes},
+						 {"aes", SALT_REQUIRED, pw_aes},
 #endif
-					   {"sha1", NO_SALT, pw_sha1}};
+						 {"sha1", NO_SALT, pw_sha1}};
 typedef struct {		/* User formatting patterns */
-  char pattern;			/* Pattern to match */
-  char * (*func)(request_rec * r, char ** parm);
+	char pattern;			/* Pattern to match */
+	char * (*func)(request_rec * r, char ** parm);
 } format;
 
 format formats[] = {{'h', format_remote_host},
-	            {'a', format_remote_ip},
-		    {'f', format_filename},
-		    {'V', format_server_name},
-		    {'v', format_server_hostname},
-		    {'H', format_protocol},
-		    {'m', format_method},
-		    {'q', format_args},
-		    {'r', format_request},
-		    {'U', format_uri},
-		    {'%', format_percent},
-		    {'C', format_cookie}};
+							{'a', format_remote_ip},
+				{'f', format_filename},
+				{'V', format_server_name},
+				{'v', format_server_hostname},
+				{'H', format_protocol},
+				{'m', format_method},
+				{'q', format_args},
+				{'r', format_request},
+				{'U', format_uri},
+				{'%', format_percent},
+				{'C', format_cookie}};
 /*
  * structure to hold the configuration details for the request
  */
 typedef struct  {
-  char *mysqlhost;		/* host name of db server */
+	char *mysqlhost;		/* host name of db server */
 #ifdef APACHE2
-  int  mysqlport;		/* port number of db server */
+	int  mysqlport;		/* port number of db server */
 #else
-  char * mysqlport;		/* port number of db server */
+	char * mysqlport;		/* port number of db server */
 #endif
-  char *mysqlsocket;		/* socket path of db server */
-  char *mysqluser;		/* user ID to connect to db server */
-  char *mysqlpasswd;		/* password to connect to db server */
-  char *mysqlDB;		/* DB name */
-  char *mysqlpwtable;		/* user password table */
-  char *mysqlgrptable;		/* user group table */
-  char *mysqlNameField;		/* field in password table with username */
-  char *mysqlPasswordField;	/* field in password table with password */
-  char *mysqlGroupField;	/* field in group table with group name */
-  char *mysqlGroupUserNameField;/* field in group table with username */
-  char *mysqlEncryptionField;   /* encryption type for passwords */
-  char *mysqlSaltField;		/* salt for scrambled password */
-  int  mysqlKeepAlive;		/* keep connection persistent? */
-  int  mysqlAuthoritative;	/* are we authoritative? */
-  int  mysqlNoPasswd;		/* do we ignore password? */
-  int  mysqlEnable;		/* do we bother trying to auth at all? */
-  char *mysqlUserCondition; 	/* Condition to add to the user where-clause in select query */
-  char *mysqlGroupCondition; 	/* Condition to add to the group where-clause in select query */
-  char *mysqlCharacterSet;	/* MySQL character set to use */
-  char *reqSecField;		/* "Per second quota" fied name */
-  char *reqDayField;		/* "Per day quota" fied name */
-  char *reqMonthField;		/* "Per month quota" fied name */
+	char *mysqlsocket;		/* socket path of db server */
+	char *mysqluser;		/* user ID to connect to db server */
+	char *mysqlpasswd;		/* password to connect to db server */
+	char *mysqlDB;		/* DB name */
+	char *mysqlpwtable;		/* user password table */
+	char *mysqlgrptable;		/* user group table */
+	char *mysqlNameField;		/* field in password table with username */
+	char *mysqlPasswordField;	/* field in password table with password */
+	char *mysqlGroupField;	/* field in group table with group name */
+	char *mysqlGroupUserNameField;/* field in group table with username */
+	char *mysqlEncryptionField;   /* encryption type for passwords */
+	char *mysqlSaltField;		/* salt for scrambled password */
+	int  mysqlKeepAlive;		/* keep connection persistent? */
+	int  mysqlAuthoritative;	/* are we authoritative? */
+	int  mysqlNoPasswd;		/* do we ignore password? */
+	int  mysqlEnable;		/* do we bother trying to auth at all? */
+	char *mysqlUserCondition; 	/* Condition to add to the user where-clause in select query */
+	char *mysqlGroupCondition; 	/* Condition to add to the group where-clause in select query */
+	char *mysqlCharacterSet;	/* MySQL character set to use */
+	char *reqSecField;		/* "Per second quota" fied name */
+	char *reqDayField;		/* "Per day quota" fied name */
+	char *reqMonthField;		/* "Per month quota" fied name */
 
-  /* Quotas Management */
-  int checkGlobalQuotas;	/* check global quotas for the resource */
-  int checkUserQuotas;		/* check per user quotas for the resource */
-  char *resourceName;		/* Resource on with quota are managed */
-  char *mysqlResourceNameField;	/* Field in tables containing resource name */
-  char *mysqlPerSecField;	/* Field of "per second" quotas */
-  char *mysqlPerDayField;	/* Field of "per day" quotas */
-  char *mysqlPerMonthField;	/* Field of "per month" quotas */
-  /* global quotas */
-  char *mysqlGlobalQuotasTable;	/* Table containing Global quotas definition */
-  char *mysqlGlobalQuotasCondition;	/* Condition to add to the GlobalQuotas where-clause in select query */
-  /* per user quotas */
-  char *mysqlUserQuotasTable;	/* Table containing per user quotas definition */
-  char *mysqlUserQuotasCondition;  /* Condition to add to the PerUserQuotas where-clause in select query */
-  /* quotas counters */
-  char *countersTable;		/* Table containing counters */
-  char *counterNameField; 	/* column for counter name */
-  char *counterValueField;	/* column for counter value */
-  
-  
-  /* Identity forwarding */
-  char *indentityHeadersMapping; /* Forward user identity */
-  
-  /* Log HIT in DB flag */
-  int logHit;
+	/* Quotas Management */
+	int checkGlobalQuotas;	/* check global quotas for the resource */
+	int checkUserQuotas;		/* check per user quotas for the resource */
+	char *resourceName;		/* Resource on with quota are managed */
+	char *mysqlResourceNameField;	/* Field in tables containing resource name */
+	char *mysqlPerSecField;	/* Field of "per second" quotas */
+	char *mysqlPerDayField;	/* Field of "per day" quotas */
+	char *mysqlPerMonthField;	/* Field of "per month" quotas */
+	/* global quotas */
+	char *mysqlGlobalQuotasTable;	/* Table containing Global quotas definition */
+	char *mysqlGlobalQuotasCondition;	/* Condition to add to the GlobalQuotas where-clause in select query */
+	/* per user quotas */
+	char *mysqlUserQuotasTable;	/* Table containing per user quotas definition */
+	char *mysqlUserQuotasCondition;  /* Condition to add to the PerUserQuotas where-clause in select query */
+	/* quotas counters */
+	char *countersTable;		/* Table containing counters */
+	char *counterNameField; 	/* column for counter name */
+	char *counterValueField;	/* column for counter value */
+	
+	
+	/* Identity forwarding */
+	char *indentityHeadersMapping; /* Forward user identity */
+	
+	/* Log HIT in DB flag */
+	int logHit;
 
-  char *serverName;
+	char *serverName;
 
-  
-  /* Cookie authentcation relatives */
-  int cookieAuthEnable;
-  int cookieAuthTTL;
-  char *cookieAuthName;
-  char *cookieAuthLoginForm;
-  char *cookieAuthDomain;
-  int cookieAuthBurn;
-  char *cookieAuthTable;
-  char *cookieAuthUsernameField;
-  char *cookieAuthTokenField;
-  char *cookieAuthValidityField;
-  
-  
-  /* Basic auth relative */
-  int basicAuthEnable;
-  char *require;
-  char *authName;
-  /*Allow unauthenticated access even if (OSARequire && (OSABasicAuthEnable||OSACookieAuthEnable)) are set. In such a case, Identity is forwarded*/
-  int allowAnonymous;
-  
+	
+	/* Cookie authentcation relatives */
+	int cookieAuthEnable;
+	int cookieAuthTTL;
+	char *cookieAuthName;
+	char *cookieAuthLoginForm;
+	char *cookieAuthDomain;
+	int cookieAuthBurn;
+	char *cookieAuthTable;
+	char *cookieAuthUsernameField;
+	char *cookieAuthTokenField;
+	char *cookieAuthValidityField;
+	
+	
+	/* Basic auth relative */
+	int basicAuthEnable;
+	char *require;
+	char *authName;
+	/*Allow unauthenticated access even if (OSARequire && (OSABasicAuthEnable||OSACookieAuthEnable)) are set. In such a case, Identity is forwarded*/
+	int allowAnonymous;
+	
  } osa_config_rec;
 
 /*
@@ -519,11 +519,11 @@ typedef struct  {
  * to worry about that here.
  */
 typedef struct {
-  MYSQL * handle;
-  char host [255];
-  char user [255];
-  char db [255];
-  time_t last_used;
+	MYSQL * handle;
+	char host [255];
+	char user [255];
+	char db [255];
+	time_t last_used;
 } mysql_connection;
 
 static mysql_connection connection = {NULL, "", "", ""};
@@ -533,116 +533,116 @@ void build_decoding_table() {
 
 
 	int i;
-    for ( i = 0; i < 64; i++)
-        decoding_table[(unsigned char) encoding_table[i]] = i;
+		for ( i = 0; i < 64; i++)
+				decoding_table[(unsigned char) encoding_table[i]] = i;
 }
 
 char *base64_encode(POOL *p, const unsigned char *data,
-                    size_t *output_length) {
+										size_t *output_length) {
 
-     size_t input_length=strlen(data);
+		 size_t input_length=strlen(data);
 
-    *output_length = 4 * ((input_length + 2) / 3);
+		*output_length = 4 * ((input_length + 2) / 3);
 
-    char *encoded_data = PCALLOC(p, *output_length+1);
-    //memset(encoded_data, 0, *output_length+1);
-    if (encoded_data == NULL) return NULL;
+		char *encoded_data = PCALLOC(p, *output_length+1);
+		//memset(encoded_data, 0, *output_length+1);
+		if (encoded_data == NULL) return NULL;
 
 	int i,j;
-    for ( i = 0, j = 0; i < input_length;) {
+		for ( i = 0, j = 0; i < input_length;) {
 
-        int octet_a = i < input_length ? data[i++] : 0;
-        int octet_b = i < input_length ? data[i++] : 0;
-        int octet_c = i < input_length ? data[i++] : 0;
+				int octet_a = i < input_length ? data[i++] : 0;
+				int octet_b = i < input_length ? data[i++] : 0;
+				int octet_c = i < input_length ? data[i++] : 0;
 
-        int triple = (octet_a << 0x10) + (octet_b << 0x08) + octet_c;
+				int triple = (octet_a << 0x10) + (octet_b << 0x08) + octet_c;
 
-        encoded_data[j++] = encoding_table[(triple >> 3 * 6) & 0x3F];
-        encoded_data[j++] = encoding_table[(triple >> 2 * 6) & 0x3F];
-        encoded_data[j++] = encoding_table[(triple >> 1 * 6) & 0x3F];
-        encoded_data[j++] = encoding_table[(triple >> 0 * 6) & 0x3F];
-    }
+				encoded_data[j++] = encoding_table[(triple >> 3 * 6) & 0x3F];
+				encoded_data[j++] = encoding_table[(triple >> 2 * 6) & 0x3F];
+				encoded_data[j++] = encoding_table[(triple >> 1 * 6) & 0x3F];
+				encoded_data[j++] = encoding_table[(triple >> 0 * 6) & 0x3F];
+		}
 
-    for ( i = 0; i < mod_table[input_length % 3]; i++)
-        encoded_data[*output_length - 1 - i] = '=';
+		for ( i = 0; i < mod_table[input_length % 3]; i++)
+				encoded_data[*output_length - 1 - i] = '=';
 	encoded_data[*output_length]=0;
-    return encoded_data;
+		return encoded_data;
 }
 
 
 unsigned char *base64_decode(const char *data,
-                             size_t *output_length,
-                             unsigned char *decoded_data) {
+														 size_t *output_length,
+														 unsigned char *decoded_data) {
 
 	size_t input_length=strlen(data);
 
-    if (input_length % 4 != 0) return NULL;
+		if (input_length % 4 != 0) return NULL;
 
-    *output_length = input_length / 4 * 3;
-    if (data[input_length - 1] == '=') (*output_length)--;
-    if (data[input_length - 2] == '=') (*output_length)--;
+		*output_length = input_length / 4 * 3;
+		if (data[input_length - 1] == '=') (*output_length)--;
+		if (data[input_length - 2] == '=') (*output_length)--;
 
-    if (decoded_data == NULL) return NULL;
+		if (decoded_data == NULL) return NULL;
 
 	int i,j;
-    for ( i = 0, j = 0; i < input_length;) {
+		for ( i = 0, j = 0; i < input_length;) {
 
-        int sextet_a = data[i] == '=' ? 0 & i++ : decoding_table[data[i++]];
-        int sextet_b = data[i] == '=' ? 0 & i++ : decoding_table[data[i++]];
-        int sextet_c = data[i] == '=' ? 0 & i++ : decoding_table[data[i++]];
-        int sextet_d = data[i] == '=' ? 0 & i++ : decoding_table[data[i++]];
+				int sextet_a = data[i] == '=' ? 0 & i++ : decoding_table[data[i++]];
+				int sextet_b = data[i] == '=' ? 0 & i++ : decoding_table[data[i++]];
+				int sextet_c = data[i] == '=' ? 0 & i++ : decoding_table[data[i++]];
+				int sextet_d = data[i] == '=' ? 0 & i++ : decoding_table[data[i++]];
 
-        int triple = (sextet_a << 3 * 6)
-        + (sextet_b << 2 * 6)
-        + (sextet_c << 1 * 6)
-        + (sextet_d << 0 * 6);
+				int triple = (sextet_a << 3 * 6)
+				+ (sextet_b << 2 * 6)
+				+ (sextet_c << 1 * 6)
+				+ (sextet_d << 0 * 6);
 
-        if (j < *output_length) decoded_data[j++] = (triple >> 2 * 8) & 0xFF;
-        if (j < *output_length) decoded_data[j++] = (triple >> 1 * 8) & 0xFF;
-        if (j < *output_length) decoded_data[j++] = (triple >> 0 * 8) & 0xFF;
-    }
+				if (j < *output_length) decoded_data[j++] = (triple >> 2 * 8) & 0xFF;
+				if (j < *output_length) decoded_data[j++] = (triple >> 1 * 8) & 0xFF;
+				if (j < *output_length) decoded_data[j++] = (triple >> 0 * 8) & 0xFF;
+		}
 
-    //base64_cleanup();
-    decoded_data[*output_length]=0;
-    return decoded_data;
+		//base64_cleanup();
+		decoded_data[*output_length]=0;
+		return decoded_data;
 }
 
 void split(char *str, char delimiter, spliting *s){
 
-        int i=0;
-        int wordLen=0;
-        char *ptr=str;
-        s->tokensCount=0;
-        while (str[i]){
-                if (str[i]==delimiter){
-                        //confMapping[i]=0;
-                        strncpy(s->tokens[s->tokensCount], ptr, wordLen);
-                        s->tokens[s->tokensCount][wordLen]='\0';
-                        ptr=str+i;
-                        ptr++;
-                        wordLen=0;
-                        s->tokensCount++;
-                }else{
-                        wordLen++;
-                }
-                i++;
-        }
-        strcpy(s->tokens[s->tokensCount], ptr);
-        s->tokensCount++;
+				int i=0;
+				int wordLen=0;
+				char *ptr=str;
+				s->tokensCount=0;
+				while (str[i]){
+								if (str[i]==delimiter){
+												//confMapping[i]=0;
+												strncpy(s->tokens[s->tokensCount], ptr, wordLen);
+												s->tokens[s->tokensCount][wordLen]='\0';
+												ptr=str+i;
+												ptr++;
+												wordLen=0;
+												s->tokensCount++;
+								}else{
+												wordLen++;
+								}
+								i++;
+				}
+				strcpy(s->tokens[s->tokensCount], ptr);
+				s->tokensCount++;
 }
 
 
 
 char *replace(char *st, char *orig, char *repl) {
-  static char buffer[4096];
-  char *ch;
-  if (!(ch = strstr(st, orig)))
-   return st;
-  strncpy(buffer, st, ch-st);  
-  buffer[ch-st] = 0;
-  sprintf(buffer+(ch-st), "%s%s", repl, ch+strlen(orig));
-  return buffer;
-  }
+	static char buffer[4096];
+	char *ch;
+	if (!(ch = strstr(st, orig)))
+	 return st;
+	strncpy(buffer, st, ch-st);  
+	buffer[ch-st] = 0;
+	sprintf(buffer+(ch-st), "%s%s", repl, ch+strlen(orig));
+	return buffer;
+	}
 
 /*--------------------------------------------------------------------------------------------------*/
 /*                 void dumpHTMLError(request_rec *r, char *errMSG)                                 */
@@ -876,12 +876,12 @@ if (soapHeader){
 			dumpHTMLError(r, errMSG);
 			jobDone=1;
 		}else if (strstr(acceptList.tokens[i],"json")){
-        	        dumpJSONError(r, errMSG);
+									dumpJSONError(r, errMSG);
 			jobDone=1;
-	        }else if (strstr(acceptList.tokens[i],"xml")){
-        	        dumpXMLError(r, errMSG);
+					}else if (strstr(acceptList.tokens[i],"xml")){
+									dumpXMLError(r, errMSG);
 			jobDone=1;
-	        }else{
+					}else{
 			dumpTextError(r, errMSG);
 			jobDone=1;
 		}
@@ -945,10 +945,10 @@ while (!getLock && tryNumber <DEAD_LOCK_MAX_RETRY){
 			tryNumber++;
 			usleep(DEAD_LOCK_SLEEP_TIME_MICRO_S);
 		}else{
-        	LOG_ERROR_1(APLOG_ERR, 0, r, "P_db MySQL ERROR: %s: ", mysql_error(connection.handle));
+					LOG_ERROR_1(APLOG_ERR, 0, r, "P_db MySQL ERROR: %s: ", mysql_error(connection.handle));
 			sprintf(query,"rollback");
 			mysql_query(connection.handle, query) ; 
-        	osa_error(r,"DB query error",500);
+					osa_error(r,"DB query error",500);
 		}
 	}else{
 		getLock=1;
@@ -982,10 +982,10 @@ mysql_query(connection.handle, query) ;
 /* static MYSQL *mysql_handle = NULL; */
 
 static void close_connection() {
-  if (connection.handle)
-    mysql_close(connection.handle);
-  connection.handle = NULL;		/* make sure we don't try to use it later */
-  return;
+	if (connection.handle)
+		mysql_close(connection.handle);
+	connection.handle = NULL;		/* make sure we don't try to use it later */
+	return;
 }
 
 /*
@@ -995,8 +995,8 @@ static void close_connection() {
 APACHE_FUNC
 mod_osa_cleanup (void *notused)
 {
-  close_connection();
-  APACHE_FUNC_RETURN(0);
+	close_connection();
+	APACHE_FUNC_RETURN(0);
 }
 
 /*
@@ -1006,8 +1006,8 @@ mod_osa_cleanup (void *notused)
 APACHE_FUNC
 mod_osa_cleanup_child (void *data)
 {
-  /* nothing */
-  APACHE_FUNC_RETURN(0);
+	/* nothing */
+	APACHE_FUNC_RETURN(0);
 }
 
 
@@ -1018,7 +1018,7 @@ mod_osa_cleanup_child (void *data)
 static void
 child_exit(server_rec *s, pool *p)
 {
-  mod_osa_cleanup(NULL);
+	mod_osa_cleanup(NULL);
 }
 #endif
 
@@ -1039,164 +1039,164 @@ child_exit(server_rec *s, pool *p)
 static int
 open_db_handle(request_rec *r, osa_config_rec *m)
 {
-  static MYSQL mysql_conn;
-  char query[MAX_STRING_LEN];
-  short host_match = FALSE;
-  short user_match = FALSE;
+	static MYSQL mysql_conn;
+	char query[MAX_STRING_LEN];
+	short host_match = FALSE;
+	short user_match = FALSE;
 
-  if (connection.handle) {
+	if (connection.handle) {
 
-    /* See if the host has changed */
-    if (!m->mysqlhost || (strcmp(m->mysqlhost, "localhost") == 0)) {
-      if (connection.host[0] == '\0')
-        host_match = TRUE;
-    }
-    else
-      if (m->mysqlhost && (strcmp(m->mysqlhost, connection.host) == 0))
+		/* See if the host has changed */
+		if (!m->mysqlhost || (strcmp(m->mysqlhost, "localhost") == 0)) {
+			if (connection.host[0] == '\0')
+				host_match = TRUE;
+		}
+		else
+			if (m->mysqlhost && (strcmp(m->mysqlhost, connection.host) == 0))
 	host_match = TRUE;
 
-    /* See if the user has changed */
-    if (m->mysqluser) {
-      if (strcmp(m->mysqluser, connection.user) == 0)
+		/* See if the user has changed */
+		if (m->mysqluser) {
+			if (strcmp(m->mysqluser, connection.user) == 0)
 	user_match = TRUE;
-    }
-    else
-      if (connection.user[0] == '\0')
-        user_match = TRUE;
+		}
+		else
+			if (connection.user[0] == '\0')
+				user_match = TRUE;
 
-    /* if the host, or user have changed, need to close and reopen database connection */
-    if (host_match && user_match) {
-      /* If the database hasn't changed, we can just return */
-      if (m->mysqlDB && strcmp(m->mysqlDB, connection.db) == 0)
+		/* if the host, or user have changed, need to close and reopen database connection */
+		if (host_match && user_match) {
+			/* If the database hasn't changed, we can just return */
+			if (m->mysqlDB && strcmp(m->mysqlDB, connection.db) == 0)
 	return TRUE; /* already open */
 
-      /* Otherwise we need to reselect the database */
-      else {
+			/* Otherwise we need to reselect the database */
+			else {
 	if (mysql_select_db(connection.handle,m->mysqlDB) != 0) {
-	  LOG_ERROR_1(APLOG_ERR, 0, r, "open_db_handle.mysql_select_db MySQL ERROR: %s", mysql_error(connection.handle));
-	  return FALSE;
+		LOG_ERROR_1(APLOG_ERR, 0, r, "open_db_handle.mysql_select_db MySQL ERROR: %s", mysql_error(connection.handle));
+		return FALSE;
 	}
 	else {
-	  strcpy (connection.db, m->mysqlDB);
-	  return TRUE;
+		strcpy (connection.db, m->mysqlDB);
+		return TRUE;
 	}
-      }
-    }
-    else
-      close_connection();
-  }
+			}
+		}
+		else
+			close_connection();
+	}
 
-  connection.handle = mysql_init(&mysql_conn);
-  if (! connection.handle) {
-    LOG_ERROR_1(APLOG_ERR, 0, r, "open_db_handle.mysql_init MySQL ERROR: %s", mysql_error(&mysql_conn));
-  }
+	connection.handle = mysql_init(&mysql_conn);
+	if (! connection.handle) {
+		LOG_ERROR_1(APLOG_ERR, 0, r, "open_db_handle.mysql_init MySQL ERROR: %s", mysql_error(&mysql_conn));
+	}
 
-  if (!m->mysqlhost || strcmp(m->mysqlhost,"localhost") == 0) {
-    connection.host[0] = '\0';
-  } else {
-    strcpy(connection.host, m->mysqlhost);
-  }
+	if (!m->mysqlhost || strcmp(m->mysqlhost,"localhost") == 0) {
+		connection.host[0] = '\0';
+	} else {
+		strcpy(connection.host, m->mysqlhost);
+	}
 
 #ifdef APACHE2
-  connection.handle=mysql_real_connect(&mysql_conn,connection.host,m->mysqluser,
-		  		  m->mysqlpasswd, NULL, m->mysqlport,
-				  m->mysqlsocket, 0);
+	connection.handle=mysql_real_connect(&mysql_conn,connection.host,m->mysqluser,
+						m->mysqlpasswd, NULL, m->mysqlport,
+					m->mysqlsocket, 0);
 #else
-  connection.handle=mysql_real_connect(&mysql_conn,connection.host,m->mysqluser,
-		  		  m->mysqlpasswd, NULL, atoi(m->mysqlport),
-				  m->mysqlsocket, 0);
+	connection.handle=mysql_real_connect(&mysql_conn,connection.host,m->mysqluser,
+						m->mysqlpasswd, NULL, atoi(m->mysqlport),
+					m->mysqlsocket, 0);
 #endif
-  if (!connection.handle) {
-    LOG_ERROR_1(APLOG_ERR, 0, r, "open_db_handle.mysql_real_connect MySQL ERROR: %s", mysql_error(&mysql_conn));
-    return FALSE;
-  }
+	if (!connection.handle) {
+		LOG_ERROR_1(APLOG_ERR, 0, r, "open_db_handle.mysql_real_connect MySQL ERROR: %s", mysql_error(&mysql_conn));
+		return FALSE;
+	}
 
-  if (!m->mysqlKeepAlive) {
-    /* close when request done */
+	if (!m->mysqlKeepAlive) {
+		/* close when request done */
 #ifdef APACHE2
-    apr_pool_cleanup_register(r->pool, (void *)NULL, mod_osa_cleanup, mod_osa_cleanup_child);
+		apr_pool_cleanup_register(r->pool, (void *)NULL, mod_osa_cleanup, mod_osa_cleanup_child);
 #else
-    ap_register_cleanup(r->pool, (void *)NULL, mod_osa_cleanup, mod_osa_cleanup_child);
+		ap_register_cleanup(r->pool, (void *)NULL, mod_osa_cleanup, mod_osa_cleanup_child);
 #endif
-  }
+	}
 
-  if (m->mysqluser)
-    strcpy(connection.user, m->mysqluser);
-  else
-    connection.user[0] = '\0';
+	if (m->mysqluser)
+		strcpy(connection.user, m->mysqluser);
+	else
+		connection.user[0] = '\0';
 
-  if (mysql_select_db(connection.handle,m->mysqlDB) != 0) {
-    LOG_ERROR_1(APLOG_ERR, 0, r, "open_db_handle.mysql_select_db MySQL ERROR: %s", mysql_error(connection.handle));
-    return FALSE;
-  }
-  else {
-    strcpy (connection.db, m->mysqlDB);
-  }
-  if (m->mysqlCharacterSet) {	/* If a character set was specified */
-    SNPRINTF(query, sizeof(query)-1, "SET CHARACTER SET %s", m->mysqlCharacterSet);
-    if (mysql_query(connection.handle, query) != 0) {
-      LOG_ERROR_2(APLOG_ERR, 0, r, "open_db_handle.mysql_query MySQL ERROR: %s: %s", mysql_error(connection.handle), r->uri);
-      return FALSE;
-    }
-  }
+	if (mysql_select_db(connection.handle,m->mysqlDB) != 0) {
+		LOG_ERROR_1(APLOG_ERR, 0, r, "open_db_handle.mysql_select_db MySQL ERROR: %s", mysql_error(connection.handle));
+		return FALSE;
+	}
+	else {
+		strcpy (connection.db, m->mysqlDB);
+	}
+	if (m->mysqlCharacterSet) {	/* If a character set was specified */
+		SNPRINTF(query, sizeof(query)-1, "SET CHARACTER SET %s", m->mysqlCharacterSet);
+		if (mysql_query(connection.handle, query) != 0) {
+			LOG_ERROR_2(APLOG_ERR, 0, r, "open_db_handle.mysql_query MySQL ERROR: %s: %s", mysql_error(connection.handle), r->uri);
+			return FALSE;
+		}
+	}
 
-  return TRUE;
+	return TRUE;
 }
 
 static void * create_osa_dir_config (POOL *p, char *d)
 {
-  osa_config_rec *m = PCALLOC(p, sizeof(osa_config_rec));
-  if (!m) return NULL;		/* failure to get memory is a bad thing */
+	osa_config_rec *m = PCALLOC(p, sizeof(osa_config_rec));
+	if (!m) return NULL;		/* failure to get memory is a bad thing */
 
-  /* default values */
-  m->mysqlhost = _HOST;
-  m->mysqlport = _PORT;
-  m->mysqlsocket = _SOCKET;
-  m->mysqluser = _USER;
-  m->mysqlpasswd = _PASSWORD;
-  m->mysqlDB = _DB;
-  m->mysqlpwtable = _PWTABLE;
-  m->mysqlgrptable = 0;                             /* user group table */
-  m->mysqlNameField = _NAMEFIELD;		    /* default user name field */
-  m->mysqlPasswordField = _PASSWORDFIELD;	    /* default user password field */
-  m->mysqlGroupUserNameField = _GROUPUSERNAMEFIELD; /* user name field in group table */
-  m->mysqlEncryptionField = _ENCRYPTION;  	    /* default encryption is encrypted */
-  m->mysqlSaltField = _SALTFIELD;	    	    /* default is scramble password against itself */
-  m->mysqlKeepAlive = _KEEPALIVE;         	    /* do not keep persistent connection */
-  m->mysqlAuthoritative = _AUTHORITATIVE; 	    /* we are authoritative source for users */
-  m->mysqlNoPasswd = _NOPASSWORD;         	    /* we require password */
-  m->mysqlEnable = _ENABLE;		    	    /* authorization on by default */
-  m->mysqlUserCondition = 0;             	    /* No condition to add to the user
-						       where-clause in select query */
-  m->mysqlGroupCondition = 0;            	    /* No condition to add to the group
-						       where-clause in select query */
-  m->mysqlGlobalQuotasCondition = 0;            	    /* No condition to add to the group*/
-  m->mysqlCharacterSet = _CHARACTERSET;		    /* default characterset to use */
+	/* default values */
+	m->mysqlhost = _HOST;
+	m->mysqlport = _PORT;
+	m->mysqlsocket = _SOCKET;
+	m->mysqluser = _USER;
+	m->mysqlpasswd = _PASSWORD;
+	m->mysqlDB = _DB;
+	m->mysqlpwtable = _PWTABLE;
+	m->mysqlgrptable = 0;                             /* user group table */
+	m->mysqlNameField = _NAMEFIELD;		    /* default user name field */
+	m->mysqlPasswordField = _PASSWORDFIELD;	    /* default user password field */
+	m->mysqlGroupUserNameField = _GROUPUSERNAMEFIELD; /* user name field in group table */
+	m->mysqlEncryptionField = _ENCRYPTION;  	    /* default encryption is encrypted */
+	m->mysqlSaltField = _SALTFIELD;	    	    /* default is scramble password against itself */
+	m->mysqlKeepAlive = _KEEPALIVE;         	    /* do not keep persistent connection */
+	m->mysqlAuthoritative = _AUTHORITATIVE; 	    /* we are authoritative source for users */
+	m->mysqlNoPasswd = _NOPASSWORD;         	    /* we require password */
+	m->mysqlEnable = _ENABLE;		    	    /* authorization on by default */
+	m->mysqlUserCondition = 0;             	    /* No condition to add to the user
+									 where-clause in select query */
+	m->mysqlGroupCondition = 0;            	    /* No condition to add to the group
+									 where-clause in select query */
+	m->mysqlGlobalQuotasCondition = 0;            	    /* No condition to add to the group*/
+	m->mysqlCharacterSet = _CHARACTERSET;		    /* default characterset to use */
 
-  m->serverName=NULL;
-  
-  m->indentityHeadersMapping = 0; 			/* default identity forwarding disabled */
-  m->logHit=0;								/*default log hit in DB */
-  m->cookieAuthEnable=0;								/*default cookie authen */
-  m->cookieAuthBurn=1;								/*default cookie authen */
-  m->cookieAuthName="OSAAuthToken";
-  m->cookieAuthDomain=NULL;
-  m->cookieAuthLoginForm=NULL;
-  m->cookieAuthTTL=60;
-
-
-  m->cookieAuthTable="authtoken";
-  m->cookieAuthUsernameField="userName";
-  m->cookieAuthTokenField="token";
-  m->cookieAuthValidityField="validUntil";
+	m->serverName=NULL;
+	
+	m->indentityHeadersMapping = 0; 			/* default identity forwarding disabled */
+	m->logHit=0;								/*default log hit in DB */
+	m->cookieAuthEnable=0;								/*default cookie authen */
+	m->cookieAuthBurn=1;								/*default cookie authen */
+	m->cookieAuthName="OSAAuthToken";
+	m->cookieAuthDomain=NULL;
+	m->cookieAuthLoginForm=NULL;
+	m->cookieAuthTTL=60;
 
 
-  m->basicAuthEnable=0;								/*default cookie authen */
-  m->require=NULL;
-  m->authName="Open Service Access gateway: please enter your credentials";
-  
-  m->allowAnonymous=0;
-  return (void *)m;
+	m->cookieAuthTable="authtoken";
+	m->cookieAuthUsernameField="userName";
+	m->cookieAuthTokenField="token";
+	m->cookieAuthValidityField="validUntil";
+
+
+	m->basicAuthEnable=0;								/*default cookie authen */
+	m->require=NULL;
+	m->authName="Open Service Access gateway: please enter your credentials";
+	
+	m->allowAnonymous=0;
+	return (void *)m;
 }
 
 #ifdef APACHE2
@@ -1303,226 +1303,226 @@ command_rec osa_cmds[] = {
 	(void *) APR_OFFSETOF(osa_config_rec, mysqlCharacterSet),
 	OR_AUTHCFG | RSRC_CONF, "mysql character set to be used"),
 
-        AP_INIT_FLAG("OSALogHit", ap_set_flag_slot,
-        (void *) APR_OFFSETOF(osa_config_rec, logHit),
-        OR_AUTHCFG | RSRC_CONF, "log hit in DB"),
+				AP_INIT_FLAG("OSALogHit", ap_set_flag_slot,
+				(void *) APR_OFFSETOF(osa_config_rec, logHit),
+				OR_AUTHCFG | RSRC_CONF, "log hit in DB"),
 
 
-        AP_INIT_TAKE1("OSAServerName", ap_set_string_slot,
-        (void *) APR_OFFSETOF(osa_config_rec, serverName),
-        OR_AUTHCFG | RSRC_CONF, "Server name prefix. Ex. https://www.server.com"),
+				AP_INIT_TAKE1("OSAServerName", ap_set_string_slot,
+				(void *) APR_OFFSETOF(osa_config_rec, serverName),
+				OR_AUTHCFG | RSRC_CONF, "Server name prefix. Ex. https://www.server.com"),
 
-  
-        AP_INIT_TAKE1("OSACookieAuthTable", ap_set_string_slot,
-        (void *) APR_OFFSETOF(osa_config_rec, cookieAuthTable),
-        OR_AUTHCFG | RSRC_CONF, "table name containing authentication tokens default=authtoken"),
+	
+				AP_INIT_TAKE1("OSACookieAuthTable", ap_set_string_slot,
+				(void *) APR_OFFSETOF(osa_config_rec, cookieAuthTable),
+				OR_AUTHCFG | RSRC_CONF, "table name containing authentication tokens default=authtoken"),
 
-        AP_INIT_TAKE1("OSACookieAuthUsernameField", ap_set_string_slot,
-        (void *) APR_OFFSETOF(osa_config_rec, cookieAuthUsernameField),
-        OR_AUTHCFG | RSRC_CONF, "field name in OSACookieAuthTable containing authenticated used default=userName"),
+				AP_INIT_TAKE1("OSACookieAuthUsernameField", ap_set_string_slot,
+				(void *) APR_OFFSETOF(osa_config_rec, cookieAuthUsernameField),
+				OR_AUTHCFG | RSRC_CONF, "field name in OSACookieAuthTable containing authenticated used default=userName"),
 
-        AP_INIT_TAKE1("OSACookieAuthTokenField", ap_set_string_slot,
-        (void *) APR_OFFSETOF(osa_config_rec, cookieAuthTokenField),
-        OR_AUTHCFG | RSRC_CONF, "field name in OSACookieAuthTable containing generated token default=token"),
+				AP_INIT_TAKE1("OSACookieAuthTokenField", ap_set_string_slot,
+				(void *) APR_OFFSETOF(osa_config_rec, cookieAuthTokenField),
+				OR_AUTHCFG | RSRC_CONF, "field name in OSACookieAuthTable containing generated token default=token"),
 
-        AP_INIT_TAKE1("OSACookieAuthValidityField", ap_set_string_slot,
-        (void *) APR_OFFSETOF(osa_config_rec, cookieAuthValidityField),
-        OR_AUTHCFG | RSRC_CONF, "field name in OSACookieAuthTable containing validity date for generated token default=validUntil"),
-
-
-
-        AP_INIT_FLAG("OSACookieAuthEnable", ap_set_flag_slot,
-        (void *) APR_OFFSETOF(osa_config_rec, cookieAuthEnable),
-        OR_AUTHCFG | RSRC_CONF, "enable authentication/authorization from cookie"),
-
-        AP_INIT_TAKE1("OSACookieAuthName", ap_set_string_slot,
-        (void *) APR_OFFSETOF(osa_config_rec, cookieAuthName),
-        OR_AUTHCFG | RSRC_CONF, "cookie name for authentication"),
-
-        AP_INIT_TAKE1("OSACookieAuthLoginForm", ap_set_string_slot,
-        (void *) APR_OFFSETOF(osa_config_rec, cookieAuthLoginForm),
-        OR_AUTHCFG | RSRC_CONF, "login form URI to redirect to login if OSACookieAuthEnable is enable and not OSABasicAuthEnable"),
-
-        AP_INIT_FLAG("OSACookieAuthBurn", ap_set_flag_slot,
-        (void *) APR_OFFSETOF(osa_config_rec, cookieAuthBurn),
-        OR_AUTHCFG | RSRC_CONF, "burn auth cookie after usage"),
-
-        AP_INIT_TAKE1("OSACookieAuthDomain", ap_set_string_slot,
-        (void *) APR_OFFSETOF(osa_config_rec, cookieAuthDomain),
-        OR_AUTHCFG | RSRC_CONF, "cookie name for authentication"),
-
-        AP_INIT_TAKE1("OSACookieAuthTTL", ap_set_int_slot,
-        (void *) APR_OFFSETOF(osa_config_rec, cookieAuthTTL),
-        OR_AUTHCFG | RSRC_CONF, "Time To Live for authentication cookie"),
+				AP_INIT_TAKE1("OSACookieAuthValidityField", ap_set_string_slot,
+				(void *) APR_OFFSETOF(osa_config_rec, cookieAuthValidityField),
+				OR_AUTHCFG | RSRC_CONF, "field name in OSACookieAuthTable containing validity date for generated token default=validUntil"),
 
 
 
-        AP_INIT_FLAG("OSABasicAuthEnable", ap_set_flag_slot,
-        (void *) APR_OFFSETOF(osa_config_rec, basicAuthEnable),
-        OR_AUTHCFG | RSRC_CONF, "enable authentication/authorization with basic authentication"),
+				AP_INIT_FLAG("OSACookieAuthEnable", ap_set_flag_slot,
+				(void *) APR_OFFSETOF(osa_config_rec, cookieAuthEnable),
+				OR_AUTHCFG | RSRC_CONF, "enable authentication/authorization from cookie"),
 
-        AP_INIT_RAW_ARGS("OSARequire", ap_set_string_slot,
-        (void *) APR_OFFSETOF(osa_config_rec, require),
-        OR_AUTHCFG | RSRC_CONF, "Required authorization"),
+				AP_INIT_TAKE1("OSACookieAuthName", ap_set_string_slot,
+				(void *) APR_OFFSETOF(osa_config_rec, cookieAuthName),
+				OR_AUTHCFG | RSRC_CONF, "cookie name for authentication"),
 
-        AP_INIT_FLAG("OSAAllowAnonymous", ap_set_flag_slot,
-        (void *) APR_OFFSETOF(osa_config_rec, allowAnonymous),
-        OR_AUTHCFG | RSRC_CONF, "Allow unauthenticated access even if (OSARequire && (OSABasicAuthEnable||OSACookieAuthEnable)) are set. In such a case, Identity is forwarded"),
+				AP_INIT_TAKE1("OSACookieAuthLoginForm", ap_set_string_slot,
+				(void *) APR_OFFSETOF(osa_config_rec, cookieAuthLoginForm),
+				OR_AUTHCFG | RSRC_CONF, "login form URI to redirect to login if OSACookieAuthEnable is enable and not OSABasicAuthEnable"),
 
+				AP_INIT_FLAG("OSACookieAuthBurn", ap_set_flag_slot,
+				(void *) APR_OFFSETOF(osa_config_rec, cookieAuthBurn),
+				OR_AUTHCFG | RSRC_CONF, "burn auth cookie after usage"),
 
-        AP_INIT_FLAG("OSACheckGlobalQuotas", ap_set_flag_slot,
-        (void *) APR_OFFSETOF(osa_config_rec, checkGlobalQuotas),
-        OR_AUTHCFG | RSRC_CONF, "check global quotas for resource"),
+				AP_INIT_TAKE1("OSACookieAuthDomain", ap_set_string_slot,
+				(void *) APR_OFFSETOF(osa_config_rec, cookieAuthDomain),
+				OR_AUTHCFG | RSRC_CONF, "cookie name for authentication"),
 
-        AP_INIT_FLAG("OSACheckUserQuotas", ap_set_flag_slot,
-        (void *) APR_OFFSETOF(osa_config_rec, checkUserQuotas),
-        OR_AUTHCFG | RSRC_CONF, "check per user quotas for resource"),
-
-        AP_INIT_TAKE1("OSAResourceName", ap_set_string_slot,
-        (void *) APR_OFFSETOF(osa_config_rec, resourceName),
-        OR_AUTHCFG | RSRC_CONF, "resource on witch quotas are check"),
-
-        AP_INIT_TAKE1("OSAResourceNameField", ap_set_string_slot,
-        (void *) APR_OFFSETOF(osa_config_rec, mysqlResourceNameField),
-        OR_AUTHCFG | RSRC_CONF, "column containing resource name"),
-
-        AP_INIT_TAKE1("OSAPerSecField", ap_set_string_slot,
-        (void *) APR_OFFSETOF(osa_config_rec, mysqlPerSecField),
-        OR_AUTHCFG | RSRC_CONF, "column containing per second quota"),
-
-        AP_INIT_TAKE1("OSAPerDayField", ap_set_string_slot,
-        (void *) APR_OFFSETOF(osa_config_rec, mysqlPerDayField),
-        OR_AUTHCFG | RSRC_CONF, "column containing per day quota"),
-
-        AP_INIT_TAKE1("OSAPerMonthField", ap_set_string_slot,
-        (void *) APR_OFFSETOF(osa_config_rec, mysqlPerMonthField),
-        OR_AUTHCFG | RSRC_CONF, "column containing per month quota"),
-
-        AP_INIT_TAKE1("OSAGlobalQuotasTable", ap_set_string_slot,
-        (void *) APR_OFFSETOF(osa_config_rec, mysqlGlobalQuotasTable),
-        OR_AUTHCFG | RSRC_CONF, "table containing global quotas"),
-
-        AP_INIT_TAKE1("OSAGlobalQuotasCondition", ap_set_string_slot,
-        (void *) APR_OFFSETOF(osa_config_rec, mysqlGlobalQuotasCondition),
-        OR_AUTHCFG | RSRC_CONF, "condition to add to GlobalQuotas query"),
-
-        AP_INIT_TAKE1("OSAUserQuotasTable", ap_set_string_slot,
-        (void *) APR_OFFSETOF(osa_config_rec, mysqlUserQuotasTable),
-        OR_AUTHCFG | RSRC_CONF, "table containing global quotas"),
-
-        AP_INIT_TAKE1("OSAUserQuotasCondition", ap_set_string_slot,
-        (void *) APR_OFFSETOF(osa_config_rec, mysqlUserQuotasCondition),
-        OR_AUTHCFG | RSRC_CONF, "condition to add to UserQuotas query"),
-
-        AP_INIT_TAKE1("OSACountersTable", ap_set_string_slot,
-        (void *) APR_OFFSETOF(osa_config_rec, countersTable),
-        OR_AUTHCFG | RSRC_CONF, "Table containing counters"),
-
-        AP_INIT_TAKE1("OSACounterNameField", ap_set_string_slot,
-        (void *) APR_OFFSETOF(osa_config_rec, counterNameField),
-        OR_AUTHCFG | RSRC_CONF, "Column containting counter name"),
-
-
-        AP_INIT_TAKE1("OSACounterValueField", ap_set_string_slot,
-        (void *) APR_OFFSETOF(osa_config_rec, counterValueField),
-        OR_AUTHCFG | RSRC_CONF, "Column containting counter value"),
-
-        AP_INIT_TAKE1("OSAIdentityHeadersMapping", ap_set_string_slot,
-        (void *) APR_OFFSETOF(osa_config_rec, indentityHeadersMapping),
-        OR_AUTHCFG | RSRC_CONF, "forward user identity as HTTP Headers"),
+				AP_INIT_TAKE1("OSACookieAuthTTL", ap_set_int_slot,
+				(void *) APR_OFFSETOF(osa_config_rec, cookieAuthTTL),
+				OR_AUTHCFG | RSRC_CONF, "Time To Live for authentication cookie"),
 
 
 
-  { NULL }
+				AP_INIT_FLAG("OSABasicAuthEnable", ap_set_flag_slot,
+				(void *) APR_OFFSETOF(osa_config_rec, basicAuthEnable),
+				OR_AUTHCFG | RSRC_CONF, "enable authentication/authorization with basic authentication"),
+
+				AP_INIT_RAW_ARGS("OSARequire", ap_set_string_slot,
+				(void *) APR_OFFSETOF(osa_config_rec, require),
+				OR_AUTHCFG | RSRC_CONF, "Required authorization"),
+
+				AP_INIT_FLAG("OSAAllowAnonymous", ap_set_flag_slot,
+				(void *) APR_OFFSETOF(osa_config_rec, allowAnonymous),
+				OR_AUTHCFG | RSRC_CONF, "Allow unauthenticated access even if (OSARequire && (OSABasicAuthEnable||OSACookieAuthEnable)) are set. In such a case, Identity is forwarded"),
+
+
+				AP_INIT_FLAG("OSACheckGlobalQuotas", ap_set_flag_slot,
+				(void *) APR_OFFSETOF(osa_config_rec, checkGlobalQuotas),
+				OR_AUTHCFG | RSRC_CONF, "check global quotas for resource"),
+
+				AP_INIT_FLAG("OSACheckUserQuotas", ap_set_flag_slot,
+				(void *) APR_OFFSETOF(osa_config_rec, checkUserQuotas),
+				OR_AUTHCFG | RSRC_CONF, "check per user quotas for resource"),
+
+				AP_INIT_TAKE1("OSAResourceName", ap_set_string_slot,
+				(void *) APR_OFFSETOF(osa_config_rec, resourceName),
+				OR_AUTHCFG | RSRC_CONF, "resource on witch quotas are check"),
+
+				AP_INIT_TAKE1("OSAResourceNameField", ap_set_string_slot,
+				(void *) APR_OFFSETOF(osa_config_rec, mysqlResourceNameField),
+				OR_AUTHCFG | RSRC_CONF, "column containing resource name"),
+
+				AP_INIT_TAKE1("OSAPerSecField", ap_set_string_slot,
+				(void *) APR_OFFSETOF(osa_config_rec, mysqlPerSecField),
+				OR_AUTHCFG | RSRC_CONF, "column containing per second quota"),
+
+				AP_INIT_TAKE1("OSAPerDayField", ap_set_string_slot,
+				(void *) APR_OFFSETOF(osa_config_rec, mysqlPerDayField),
+				OR_AUTHCFG | RSRC_CONF, "column containing per day quota"),
+
+				AP_INIT_TAKE1("OSAPerMonthField", ap_set_string_slot,
+				(void *) APR_OFFSETOF(osa_config_rec, mysqlPerMonthField),
+				OR_AUTHCFG | RSRC_CONF, "column containing per month quota"),
+
+				AP_INIT_TAKE1("OSAGlobalQuotasTable", ap_set_string_slot,
+				(void *) APR_OFFSETOF(osa_config_rec, mysqlGlobalQuotasTable),
+				OR_AUTHCFG | RSRC_CONF, "table containing global quotas"),
+
+				AP_INIT_TAKE1("OSAGlobalQuotasCondition", ap_set_string_slot,
+				(void *) APR_OFFSETOF(osa_config_rec, mysqlGlobalQuotasCondition),
+				OR_AUTHCFG | RSRC_CONF, "condition to add to GlobalQuotas query"),
+
+				AP_INIT_TAKE1("OSAUserQuotasTable", ap_set_string_slot,
+				(void *) APR_OFFSETOF(osa_config_rec, mysqlUserQuotasTable),
+				OR_AUTHCFG | RSRC_CONF, "table containing global quotas"),
+
+				AP_INIT_TAKE1("OSAUserQuotasCondition", ap_set_string_slot,
+				(void *) APR_OFFSETOF(osa_config_rec, mysqlUserQuotasCondition),
+				OR_AUTHCFG | RSRC_CONF, "condition to add to UserQuotas query"),
+
+				AP_INIT_TAKE1("OSACountersTable", ap_set_string_slot,
+				(void *) APR_OFFSETOF(osa_config_rec, countersTable),
+				OR_AUTHCFG | RSRC_CONF, "Table containing counters"),
+
+				AP_INIT_TAKE1("OSACounterNameField", ap_set_string_slot,
+				(void *) APR_OFFSETOF(osa_config_rec, counterNameField),
+				OR_AUTHCFG | RSRC_CONF, "Column containting counter name"),
+
+
+				AP_INIT_TAKE1("OSACounterValueField", ap_set_string_slot,
+				(void *) APR_OFFSETOF(osa_config_rec, counterValueField),
+				OR_AUTHCFG | RSRC_CONF, "Column containting counter value"),
+
+				AP_INIT_TAKE1("OSAIdentityHeadersMapping", ap_set_string_slot,
+				(void *) APR_OFFSETOF(osa_config_rec, indentityHeadersMapping),
+				OR_AUTHCFG | RSRC_CONF, "forward user identity as HTTP Headers"),
+
+
+
+	{ NULL }
 };
 #else
 static
 command_rec osa_cmds[] = {
-  { "OSAHost", ap_set_string_slot,
-    (void*)XtOffsetOf(osa_config_rec, mysqlhost),
-    OR_AUTHCFG | RSRC_CONF, TAKE1, "mysql server host name" },
+	{ "OSAHost", ap_set_string_slot,
+		(void*)XtOffsetOf(osa_config_rec, mysqlhost),
+		OR_AUTHCFG | RSRC_CONF, TAKE1, "mysql server host name" },
 
-  { "OSASocket", ap_set_string_slot,
-    (void*)XtOffsetOf(osa_config_rec, mysqlsocket),
-    OR_AUTHCFG | RSRC_CONF, TAKE1, "mysql server socket path" },
+	{ "OSASocket", ap_set_string_slot,
+		(void*)XtOffsetOf(osa_config_rec, mysqlsocket),
+		OR_AUTHCFG | RSRC_CONF, TAKE1, "mysql server socket path" },
 
-  { "OSAPort", ap_set_string_slot,
-    (void*)XtOffsetOf(osa_config_rec, mysqlport),
-    OR_AUTHCFG | RSRC_CONF, TAKE1, "mysql server port number" },
+	{ "OSAPort", ap_set_string_slot,
+		(void*)XtOffsetOf(osa_config_rec, mysqlport),
+		OR_AUTHCFG | RSRC_CONF, TAKE1, "mysql server port number" },
 
-  { "OSAUser", ap_set_string_slot,
-    (void*)XtOffsetOf(osa_config_rec, mysqluser),
-    OR_AUTHCFG | RSRC_CONF, TAKE1, "mysql server user name" },
+	{ "OSAUser", ap_set_string_slot,
+		(void*)XtOffsetOf(osa_config_rec, mysqluser),
+		OR_AUTHCFG | RSRC_CONF, TAKE1, "mysql server user name" },
 
-  { "OSAPassword", ap_set_string_slot,
-    (void*)XtOffsetOf(osa_config_rec, mysqlpasswd),
-    OR_AUTHCFG | RSRC_CONF, TAKE1, "mysql server user password" },
+	{ "OSAPassword", ap_set_string_slot,
+		(void*)XtOffsetOf(osa_config_rec, mysqlpasswd),
+		OR_AUTHCFG | RSRC_CONF, TAKE1, "mysql server user password" },
 
-  { "OSADB", ap_set_string_slot,
-    (void*)XtOffsetOf(osa_config_rec, mysqlDB),
-    OR_AUTHCFG | RSRC_CONF, TAKE1, "mysql database name" },
+	{ "OSADB", ap_set_string_slot,
+		(void*)XtOffsetOf(osa_config_rec, mysqlDB),
+		OR_AUTHCFG | RSRC_CONF, TAKE1, "mysql database name" },
 
-  { "OSAUserTable", ap_set_string_slot,
-    (void*)XtOffsetOf(osa_config_rec, mysqlpwtable),
-    OR_AUTHCFG | RSRC_CONF, TAKE1, "mysql user table name" },
+	{ "OSAUserTable", ap_set_string_slot,
+		(void*)XtOffsetOf(osa_config_rec, mysqlpwtable),
+		OR_AUTHCFG | RSRC_CONF, TAKE1, "mysql user table name" },
 
-  { "OSAGroupTable", ap_set_string_slot,
-    (void*)XtOffsetOf(osa_config_rec, mysqlgrptable),
-    OR_AUTHCFG | RSRC_CONF, TAKE1, "mysql group table name" },
+	{ "OSAGroupTable", ap_set_string_slot,
+		(void*)XtOffsetOf(osa_config_rec, mysqlgrptable),
+		OR_AUTHCFG | RSRC_CONF, TAKE1, "mysql group table name" },
 
-  { "OSANameField", ap_set_string_slot,
-    (void*)XtOffsetOf(osa_config_rec, mysqlNameField),
-    OR_AUTHCFG | RSRC_CONF, TAKE1, "mysql User ID field name within User table" },
+	{ "OSANameField", ap_set_string_slot,
+		(void*)XtOffsetOf(osa_config_rec, mysqlNameField),
+		OR_AUTHCFG | RSRC_CONF, TAKE1, "mysql User ID field name within User table" },
 
-  { "OSAGroupField", ap_set_string_slot,
-    (void*)XtOffsetOf(osa_config_rec, mysqlGroupField),
-    OR_AUTHCFG | RSRC_CONF, TAKE1, "mysql Group field name within table" },
+	{ "OSAGroupField", ap_set_string_slot,
+		(void*)XtOffsetOf(osa_config_rec, mysqlGroupField),
+		OR_AUTHCFG | RSRC_CONF, TAKE1, "mysql Group field name within table" },
 
-  { "OSAGroupUserNameField", ap_set_string_slot,
-    (void*)XtOffsetOf(osa_config_rec, mysqlGroupUserNameField),
-    OR_AUTHCFG | RSRC_CONF, TAKE1, "mysql User ID field name within Group table" },
+	{ "OSAGroupUserNameField", ap_set_string_slot,
+		(void*)XtOffsetOf(osa_config_rec, mysqlGroupUserNameField),
+		OR_AUTHCFG | RSRC_CONF, TAKE1, "mysql User ID field name within Group table" },
 
-  { "OSAPasswordField", ap_set_string_slot,
-    (void*)XtOffsetOf(osa_config_rec, mysqlPasswordField),
-    OR_AUTHCFG | RSRC_CONF, TAKE1, "mysql Password field name within table" },
+	{ "OSAPasswordField", ap_set_string_slot,
+		(void*)XtOffsetOf(osa_config_rec, mysqlPasswordField),
+		OR_AUTHCFG | RSRC_CONF, TAKE1, "mysql Password field name within table" },
 
-  { "OSAPwEncryption", ap_set_string_slot,
-    (void *)XtOffsetOf(osa_config_rec, mysqlEncryptionField),
-    OR_AUTHCFG | RSRC_CONF, TAKE1, "mysql password encryption method" },
+	{ "OSAPwEncryption", ap_set_string_slot,
+		(void *)XtOffsetOf(osa_config_rec, mysqlEncryptionField),
+		OR_AUTHCFG | RSRC_CONF, TAKE1, "mysql password encryption method" },
 
-  { "OSASaltField", ap_set_string_slot,
-    (void *)XtOffsetOf(osa_config_rec, mysqlSaltField),
-    OR_AUTHCFG | RSRC_CONF, TAKE1, "mysql salt field name within table" },
+	{ "OSASaltField", ap_set_string_slot,
+		(void *)XtOffsetOf(osa_config_rec, mysqlSaltField),
+		OR_AUTHCFG | RSRC_CONF, TAKE1, "mysql salt field name within table" },
 
 /*  { "OSAKeepAlive", ap_set_flag_slot,
-    (void*)XtOffsetOf(osa_config_rec, mysqlKeepAlive),
-    OR_AUTHCFG | RSRC_CONF, FLAG, "mysql connection kept open across requests if On" },
+		(void*)XtOffsetOf(osa_config_rec, mysqlKeepAlive),
+		OR_AUTHCFG | RSRC_CONF, FLAG, "mysql connection kept open across requests if On" },
 */
-  { "OSAAuthoritative", ap_set_flag_slot,
-    (void*)XtOffsetOf(osa_config_rec, mysqlAuthoritative),
-    OR_AUTHCFG | RSRC_CONF, FLAG, "mysql lookup is authoritative if On" },
+	{ "OSAAuthoritative", ap_set_flag_slot,
+		(void*)XtOffsetOf(osa_config_rec, mysqlAuthoritative),
+		OR_AUTHCFG | RSRC_CONF, FLAG, "mysql lookup is authoritative if On" },
 
-  { "OSANoPasswd", ap_set_flag_slot,
-    (void*)XtOffsetOf(osa_config_rec, mysqlNoPasswd),
-    OR_AUTHCFG | RSRC_CONF, FLAG, "If On, only check if user exists; ignore password" },
+	{ "OSANoPasswd", ap_set_flag_slot,
+		(void*)XtOffsetOf(osa_config_rec, mysqlNoPasswd),
+		OR_AUTHCFG | RSRC_CONF, FLAG, "If On, only check if user exists; ignore password" },
 
-  { "OSAEnable", ap_set_flag_slot,
-    (void *)XtOffsetOf(osa_config_rec, mysqlEnable),
-    OR_AUTHCFG | RSRC_CONF, FLAG, "enable mysql authorization"},
+	{ "OSAEnable", ap_set_flag_slot,
+		(void *)XtOffsetOf(osa_config_rec, mysqlEnable),
+		OR_AUTHCFG | RSRC_CONF, FLAG, "enable mysql authorization"},
 
-  { "OSAUserCondition", ap_set_string_slot,
-    (void*)XtOffsetOf(osa_config_rec, mysqlUserCondition),
-    OR_AUTHCFG | RSRC_CONF, TAKE1, "condition to add to user where-clause" },
+	{ "OSAUserCondition", ap_set_string_slot,
+		(void*)XtOffsetOf(osa_config_rec, mysqlUserCondition),
+		OR_AUTHCFG | RSRC_CONF, TAKE1, "condition to add to user where-clause" },
 
-  { "OSAGroupCondition", ap_set_string_slot,
-    (void*)XtOffsetOf(osa_config_rec, mysqlGroupCondition),
-    OR_AUTHCFG | RSRC_CONF, TAKE1, "condition to add to group where-clause" },
+	{ "OSAGroupCondition", ap_set_string_slot,
+		(void*)XtOffsetOf(osa_config_rec, mysqlGroupCondition),
+		OR_AUTHCFG | RSRC_CONF, TAKE1, "condition to add to group where-clause" },
 
-  { "OSACharacterSet", ap_set_string_slot,
-    (void*)XtOffsetOf(osa_config_rec, mysqlCharacterSet),
-    OR_AUTHCFG | RSRC_CONF, TAKE1, "mysql character set to use" },
+	{ "OSACharacterSet", ap_set_string_slot,
+		(void*)XtOffsetOf(osa_config_rec, mysqlCharacterSet),
+		OR_AUTHCFG | RSRC_CONF, TAKE1, "mysql character set to use" },
 
-  { NULL }
+	{ NULL }
 };
 #endif
 
@@ -1532,15 +1532,15 @@ module osa_module;
  * Convert binary to hex
  */
 static char * bin2hex (POOL *pool, const char * bin, short len) {
-  int i = 0;
-  static char hexchars [] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
-  char * buffer = PCALLOC(pool, len * 2 + 1);
-  for (i = 0; i < len; i++) {
-    buffer[i*2] = hexchars[bin[i] >> 4 & 0x0f];
-    buffer[i*2+1] = hexchars[bin[i] & 0x0f];
-  }
-  buffer[len * 2] = '\0';
-  return buffer;
+	int i = 0;
+	static char hexchars [] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+	char * buffer = PCALLOC(pool, len * 2 + 1);
+	for (i = 0; i < len; i++) {
+		buffer[i*2] = hexchars[bin[i] >> 4 & 0x0f];
+		buffer[i*2+1] = hexchars[bin[i] & 0x0f];
+	}
+	buffer[len * 2] = '\0';
+	return buffer;
 }
 
 /*
@@ -1548,85 +1548,85 @@ static char * bin2hex (POOL *pool, const char * bin, short len) {
  */
 
 static char hex2chr(char * in) {
-  static const char * data = "0123456789ABCDEF";
-  const char * offset;
-  char val = 0;
-  int i;
+	static const char * data = "0123456789ABCDEF";
+	const char * offset;
+	char val = 0;
+	int i;
 
-  for (i = 0; i < 2; i++) {
-    val <<= 4;
-    offset = strchr(data, toupper(in[i]));
-    if (offset == NULL)
-      return '\0';
-    val += offset - data;
-  }
-  return val;
+	for (i = 0; i < 2; i++) {
+		val <<= 4;
+		offset = strchr(data, toupper(in[i]));
+		if (offset == NULL)
+			return '\0';
+		val += offset - data;
+	}
+	return val;
 }
 
 
 
 /* checks md5 hashed passwords */
 static short pw_md5(POOL * pool, const char * real_pw, const char * sent_pw, const char * salt) {
-  return strcmp(real_pw,ap_md5(pool, (const unsigned char *) sent_pw)) == 0;
+	return strcmp(real_pw,ap_md5(pool, (const unsigned char *) sent_pw)) == 0;
 }
 
 /* Checks crypt()ed passwords */
 static short pw_crypted(POOL * pool, const char * real_pw, const char * sent_pw, const char * salt) {
-  /* salt will contain either the salt or real_pw */
-  return strcmp(real_pw, crypt(sent_pw, salt)) == 0;
+	/* salt will contain either the salt or real_pw */
+	return strcmp(real_pw, crypt(sent_pw, salt)) == 0;
 }
 
 #if _AES
 /* checks aes passwords */
 static short pw_aes(POOL * pool, const char * real_pw, const char * sent_pw, const char * salt) {
-  /* salt will contain the salt value */
-  /* Encryption is in 16 byte blocks */
-  char * encrypted_sent_pw = PCALLOC(pool, 16 * ((strlen(sent_pw) / 16) + 1));
-  short enc_len = my_aes_encrypt(sent_pw, strlen(sent_pw), encrypted_sent_pw, salt, strlen(salt));
-  return enc_len > 0 && memcmp(real_pw, encrypted_sent_pw, enc_len) == 0;
+	/* salt will contain the salt value */
+	/* Encryption is in 16 byte blocks */
+	char * encrypted_sent_pw = PCALLOC(pool, 16 * ((strlen(sent_pw) / 16) + 1));
+	short enc_len = my_aes_encrypt(sent_pw, strlen(sent_pw), encrypted_sent_pw, salt, strlen(salt));
+	return enc_len > 0 && memcmp(real_pw, encrypted_sent_pw, enc_len) == 0;
 }
 #endif
 
 /* checks SHA1 passwords */
 static short pw_sha1(POOL * pool, const char * real_pw, const char * sent_pw, const char * salt) {
-  char *scrambled_sent_pw, *buffer=PCALLOC(pool, 128);
-  short enc_len = 0;
+	char *scrambled_sent_pw, *buffer=PCALLOC(pool, 128);
+	short enc_len = 0;
 #ifdef APACHE2
-  apr_sha1_base64(sent_pw, strlen(sent_pw), buffer);
-  buffer += 5;   /* go past {SHA1} eyecatcher */
-  scrambled_sent_pw = PCALLOC(pool, apr_base64_decode_len(buffer) + 1);
-  enc_len = apr_base64_decode(scrambled_sent_pw, buffer);
+	apr_sha1_base64(sent_pw, strlen(sent_pw), buffer);
+	buffer += 5;   /* go past {SHA1} eyecatcher */
+	scrambled_sent_pw = PCALLOC(pool, apr_base64_decode_len(buffer) + 1);
+	enc_len = apr_base64_decode(scrambled_sent_pw, buffer);
 #else
-  ap_sha1_base64(sent_pw, strlen(sent_pw), buffer);
-  buffer += 5;   /* go past {SHA1} eyecatcher */
-  scrambled_sent_pw = PCALLOC(pool, ap_base64decode_len(buffer) + 1);
-  enc_len = ap_base64decode(scrambled_sent_pw, buffer);
+	ap_sha1_base64(sent_pw, strlen(sent_pw), buffer);
+	buffer += 5;   /* go past {SHA1} eyecatcher */
+	scrambled_sent_pw = PCALLOC(pool, ap_base64decode_len(buffer) + 1);
+	enc_len = ap_base64decode(scrambled_sent_pw, buffer);
 #endif
-  scrambled_sent_pw[enc_len] = '\0';
-  return  strcasecmp(bin2hex(pool, scrambled_sent_pw, enc_len), real_pw) == 0;
+	scrambled_sent_pw[enc_len] = '\0';
+	return  strcasecmp(bin2hex(pool, scrambled_sent_pw, enc_len), real_pw) == 0;
 }
 
 /* checks plain text passwords */
 static short pw_plain(POOL * pool, const char * real_pw, const char * sent_pw, const char * salt) {
-  return strcmp(real_pw, sent_pw) == 0;
+	return strcmp(real_pw, sent_pw) == 0;
 }
 
 static char * str_format(request_rec * r, char * input) {
-  char * output = input, *pos, *start = input, *data, *temp;
-  int i, len, found;
+	char * output = input, *pos, *start = input, *data, *temp;
+	int i, len, found;
 
-  while ((pos = strchr(start, '%')) != NULL) {
-    len = pos - output;			/* Length of string to copy */
-    pos++;				/* Point at formatting character */
-    found = 0;
-    for (i = 0; i < sizeof(formats)/sizeof(formats[0]); i++) {
-      if (*pos == formats[i].pattern) {
+	while ((pos = strchr(start, '%')) != NULL) {
+		len = pos - output;			/* Length of string to copy */
+		pos++;				/* Point at formatting character */
+		found = 0;
+		for (i = 0; i < sizeof(formats)/sizeof(formats[0]); i++) {
+			if (*pos == formats[i].pattern) {
 	pos++;				/* Data following format char */
 	data = formats[i].func(r, &pos);
 	temp = PCALLOC(r->pool, len + strlen(data) + strlen(pos) + 1);
 	if (temp == NULL) {
-          LOG_ERROR_1(APLOG_ERR|APLOG_NOERRNO, 0, r, "str_format MySQL ERROR: Insufficient storage to expand format %c", *(pos-1));
-	  return input;
+					LOG_ERROR_1(APLOG_ERR|APLOG_NOERRNO, 0, r, "str_format MySQL ERROR: Insufficient storage to expand format %c", *(pos-1));
+		return input;
 	}
 	strncpy(temp, output, len);
 	strcat (temp, data);
@@ -1635,21 +1635,21 @@ static char * str_format(request_rec * r, char * input) {
 	output = temp;
 	found = 1;
 	break;
-      }
-    }
-    if (!found) {
-      LOG_ERROR_2(APLOG_ERR|APLOG_NOERRNO, 0, r, "str_format MySQL ERROR: Invalid formatting character at position %ld: \"%s\"",  (long int)pos-(long int)output, output);
-      return input;
-    }
-  }
-  return output;
+			}
+		}
+		if (!found) {
+			LOG_ERROR_2(APLOG_ERR|APLOG_NOERRNO, 0, r, "str_format MySQL ERROR: Invalid formatting character at position %ld: \"%s\"",  (long int)pos-(long int)output, output);
+			return input;
+		}
+	}
+	return output;
 }
 
 static char * format_remote_host(request_rec * r, char ** parm) {
 #ifdef APACHE2
-  return  ap_escape_logitem(r->pool, ap_get_remote_host(r->connection, r->per_dir_config, REMOTE_NAME, NULL));
+	return  ap_escape_logitem(r->pool, ap_get_remote_host(r->connection, r->per_dir_config, REMOTE_NAME, NULL));
 #else
-  return ap_escape_logitem(r->pool, ap_get_remote_host(r->connection, r->per_dir_config, REMOTE_NAME));
+	return ap_escape_logitem(r->pool, ap_get_remote_host(r->connection, r->per_dir_config, REMOTE_NAME));
 #endif
 }
 
@@ -1662,103 +1662,103 @@ static char * format_remote_ip(request_rec * r, char ** parm) {
 }
 
 static char * format_filename(request_rec * r, char ** parm) {
-  return ap_escape_logitem(r->pool, r->filename);
+	return ap_escape_logitem(r->pool, r->filename);
 }
 
 static char * format_server_name(request_rec * r, char ** parm) {
-  return ap_escape_logitem(r->pool, ap_get_server_name(r));
+	return ap_escape_logitem(r->pool, ap_get_server_name(r));
 }
 
 static char * format_server_hostname(request_rec * r, char ** parm) {
-  return ap_escape_logitem(r->pool, r->server->server_hostname);
+	return ap_escape_logitem(r->pool, r->server->server_hostname);
 }
 
 static char * format_protocol(request_rec * r, char ** parm) {
-  return ap_escape_logitem(r->pool, r->protocol);
+	return ap_escape_logitem(r->pool, r->protocol);
 }
 
 static char * format_method(request_rec * r, char ** parm) {
-  return ap_escape_logitem(r->pool, r->method);
+	return ap_escape_logitem(r->pool, r->method);
 }
 
 static char * format_args(request_rec * r, char ** parm) {
-  if (r->args)
-    return ap_escape_logitem(r->pool, r->args);
-  else
-    return "";
+	if (r->args)
+		return ap_escape_logitem(r->pool, r->args);
+	else
+		return "";
 }
 
 static char * format_request(request_rec * r, char ** parm) {
-  return ap_escape_logitem(r->pool,
-    (r->parsed_uri.password) ? STRCAT(r->pool, r->method, " ",
+	return ap_escape_logitem(r->pool,
+		(r->parsed_uri.password) ? STRCAT(r->pool, r->method, " ",
 #ifdef APACHE2
 	apr_uri_unparse(r->pool, &r->parsed_uri, 0),
 #else
 	ap_unparse_uri_components(r->pool, &r->parsed_uri, 0),
 #endif
 	r->assbackwards ? NULL : " ", r->protocol, NULL) :
-    r->the_request);
+		r->the_request);
 }
 
 static char * format_uri(request_rec * r, char ** parm) {
-  return ap_escape_logitem(r->pool, r->uri);
+	return ap_escape_logitem(r->pool, r->uri);
 }
 
 static char * format_percent(request_rec * r, char ** parm) {
-  return "%";
+	return "%";
 }
 
 static char * format_cookie(request_rec * r, char ** parm) {
-  const char * cookies;
-  char * start = *parm;
-  char delim;
-  char * end;
-  char * cookiename;
-  const char * cookiestart, *cookieend;
-  char * cookieval;
-  int len;
+	const char * cookies;
+	char * start = *parm;
+	char delim;
+	char * end;
+	char * cookiename;
+	const char * cookiestart, *cookieend;
+	char * cookieval;
+	int len;
 
-  delim = *start;
-  end = strchr(++start, delim);
-  if (end == NULL) {
-    return "";
-  }
-  *parm = end + 1;   /* Point past end of data */
-  if ((cookies = TABLE_GET(r->headers_in, "Cookie")) == NULL) {
-    return "";
-  }
-  len = end - start;
-  cookiename = PCALLOC(r->pool, len + 2);
-  strncpy(cookiename, start, len);
-  strcat(cookiename, "=");
-  len++;
+	delim = *start;
+	end = strchr(++start, delim);
+	if (end == NULL) {
+		return "";
+	}
+	*parm = end + 1;   /* Point past end of data */
+	if ((cookies = TABLE_GET(r->headers_in, "Cookie")) == NULL) {
+		return "";
+	}
+	len = end - start;
+	cookiename = PCALLOC(r->pool, len + 2);
+	strncpy(cookiename, start, len);
+	strcat(cookiename, "=");
+	len++;
 
-  cookiestart = cookies;
-  while (cookiestart != NULL) {
-    while (*cookiestart != '\0' && ISSPACE(*cookiestart))
-      cookiestart++;
-    if (strncmp(cookiestart, cookiename, len) == 0) {
-      cookiestart += len;
-      cookieend = strchr(cookiestart, ';');		/* Search for end of cookie data */
-      if (cookieend == NULL)			/* NULL means this was the last cookie */
+	cookiestart = cookies;
+	while (cookiestart != NULL) {
+		while (*cookiestart != '\0' && ISSPACE(*cookiestart))
+			cookiestart++;
+		if (strncmp(cookiestart, cookiename, len) == 0) {
+			cookiestart += len;
+			cookieend = strchr(cookiestart, ';');		/* Search for end of cookie data */
+			if (cookieend == NULL)			/* NULL means this was the last cookie */
 	cookieend = cookiestart + strlen(cookiestart);
-      len = cookieend - cookiestart;
-      cookieval = PSTRNDUP(r->pool, cookiestart, len);
+			len = cookieend - cookiestart;
+			cookieval = PSTRNDUP(r->pool, cookiestart, len);
 
-      start = cookieval;
-      while ((start = strchr(start, '%')) != NULL) {  /* Convert any hex data to char */
-         *start = hex2chr(start+1);
+			start = cookieval;
+			while ((start = strchr(start, '%')) != NULL) {  /* Convert any hex data to char */
+				 *start = hex2chr(start+1);
 	 strcpy (start+1, start+3);
 	 start++;
-      }
+			}
 
-      return cookieval;
-    }
-    cookiestart = strchr(cookiestart, ';');
-    if (cookiestart != NULL)
-      cookiestart++;
-  }
-  return "";
+			return cookieval;
+		}
+		cookiestart = strchr(cookiestart, ';');
+		if (cookiestart != NULL)
+			cookiestart++;
+	}
+	return "";
 }
 
 
@@ -1768,84 +1768,84 @@ static char * format_cookie(request_rec * r, char ** parm) {
  * If user or password not found, returns NULL
  */
 static char * get_mysql_pw(request_rec *r, char *user, osa_config_rec *m, const char *salt_column, const char ** psalt) {
-  MYSQL_RES *result;
-  char *pw = NULL;		/* password retrieved */
-  char *sql_safe_user = NULL;
-  int ulen;
-  char query[MAX_STRING_LEN];
+	MYSQL_RES *result;
+	char *pw = NULL;		/* password retrieved */
+	char *sql_safe_user = NULL;
+	int ulen;
+	char query[MAX_STRING_LEN];
 
-  if(!open_db_handle(r,m)) {
+	if(!open_db_handle(r,m)) {
 	LOG_ERROR_1(APLOG_ERR, 0, r, "get_mysql_pw.open_db_handle MySQL ERROR (db open): %s: ", mysql_error(connection.handle));
 
-    return NULL;		/* failure reason already logged */
-  }
+		return NULL;		/* failure reason already logged */
+	}
 
-  /*
-   * If we are not checking for passwords, there may not be a password field
-   * in the database.  We just look up the name field value in this case
-   * since it is guaranteed to exist.
-   */
-  if (m->mysqlNoPasswd) {
-    m->mysqlPasswordField = m->mysqlNameField;
-  }
+	/*
+	 * If we are not checking for passwords, there may not be a password field
+	 * in the database.  We just look up the name field value in this case
+	 * since it is guaranteed to exist.
+	 */
+	if (m->mysqlNoPasswd) {
+		m->mysqlPasswordField = m->mysqlNameField;
+	}
 
-  ulen = strlen(user);
-  sql_safe_user = PCALLOC(r->pool, ulen*2+1);
-  mysql_escape_string(sql_safe_user,user,ulen);
+	ulen = strlen(user);
+	sql_safe_user = PCALLOC(r->pool, ulen*2+1);
+	mysql_escape_string(sql_safe_user,user,ulen);
 
-  if (salt_column) {	/* If a salt was requested */
-    if (m->mysqlUserCondition) {
-      SNPRINTF(query,sizeof(query)-1,"SELECT %s, length(%s), %s FROM %s WHERE %s='%s' AND %s",
+	if (salt_column) {	/* If a salt was requested */
+		if (m->mysqlUserCondition) {
+			SNPRINTF(query,sizeof(query)-1,"SELECT %s, length(%s), %s FROM %s WHERE %s='%s' AND %s",
 		m->mysqlPasswordField, m->mysqlPasswordField, salt_column, m->mysqlpwtable,
 		m->mysqlNameField, sql_safe_user, str_format(r, m->mysqlUserCondition));
-    } else {
-      SNPRINTF(query,sizeof(query)-1,"SELECT %s, length(%s), %s FROM %s WHERE %s='%s'",
+		} else {
+			SNPRINTF(query,sizeof(query)-1,"SELECT %s, length(%s), %s FROM %s WHERE %s='%s'",
 		m->mysqlPasswordField, m->mysqlPasswordField, salt_column, m->mysqlpwtable,
 		m->mysqlNameField, sql_safe_user);
-    }
-  } else {
-    if (m->mysqlUserCondition) {
-      SNPRINTF(query,sizeof(query)-1,"SELECT %s, length(%s) FROM %s WHERE %s='%s' AND %s",
+		}
+	} else {
+		if (m->mysqlUserCondition) {
+			SNPRINTF(query,sizeof(query)-1,"SELECT %s, length(%s) FROM %s WHERE %s='%s' AND %s",
 		m->mysqlPasswordField, m->mysqlPasswordField, m->mysqlpwtable,
 		m->mysqlNameField, sql_safe_user, str_format(r, m->mysqlUserCondition));
-    } else {
-      SNPRINTF(query,sizeof(query)-1,"SELECT %s, length(%s) FROM %s WHERE %s='%s'",
+		} else {
+			SNPRINTF(query,sizeof(query)-1,"SELECT %s, length(%s) FROM %s WHERE %s='%s'",
 		m->mysqlPasswordField, m->mysqlPasswordField, m->mysqlpwtable,
 		m->mysqlNameField, sql_safe_user);
-    }
-  }
+		}
+	}
 
-  if (mysql_query(connection.handle, query) != 0) {
-    LOG_ERROR_2(APLOG_ERR, 0, r, "get_mysql_pw.mysql_query MySQL ERROR: %s: %s", mysql_error(connection.handle), r->uri);
-    return NULL;
-  }
-  result = mysql_store_result(connection.handle);
-  /* if (result && (mysql_num_rows(result) == 1)) */
-  if (result && (mysql_num_rows(result) >= 1)) {
-    MYSQL_ROW data = mysql_fetch_row(result);
-    if (data[0]) {
-      int len = atoi(data[1]);
-      pw = (char *) PCALLOC(r->pool, len + 1);
-      memcpy(pw, data[0], len);
+	if (mysql_query(connection.handle, query) != 0) {
+		LOG_ERROR_2(APLOG_ERR, 0, r, "get_mysql_pw.mysql_query MySQL ERROR: %s: %s", mysql_error(connection.handle), r->uri);
+		return NULL;
+	}
+	result = mysql_store_result(connection.handle);
+	/* if (result && (mysql_num_rows(result) == 1)) */
+	if (result && (mysql_num_rows(result) >= 1)) {
+		MYSQL_ROW data = mysql_fetch_row(result);
+		if (data[0]) {
+			int len = atoi(data[1]);
+			pw = (char *) PCALLOC(r->pool, len + 1);
+			memcpy(pw, data[0], len);
 /*      pw = (char *) PSTRDUP(r->pool, data[0]); */
-    } else {		/* no password in mysql table returns NULL */
-      /* this should never happen, but test for it anyhow */
-      mysql_free_result(result);
-      return NULL;
-    }
+		} else {		/* no password in mysql table returns NULL */
+			/* this should never happen, but test for it anyhow */
+			mysql_free_result(result);
+			return NULL;
+		}
 
-    if (salt_column) {
-      if (data[2]) {
-        *psalt = (char *) PSTRDUP(r->pool, data[2]);
-      } else {		/* no alt in mysql table returns NULL */
-        *psalt = 0;
-      }
-    }
-  }
+		if (salt_column) {
+			if (data[2]) {
+				*psalt = (char *) PSTRDUP(r->pool, data[2]);
+			} else {		/* no alt in mysql table returns NULL */
+				*psalt = 0;
+			}
+		}
+	}
 
-  if (result) mysql_free_result(result);
+	if (result) mysql_free_result(result);
 
-  return pw;
+	return pw;
 }
 
 /*
@@ -1855,54 +1855,54 @@ static char * get_mysql_pw(request_rec *r, char *user, osa_config_rec *m, const 
  */
 static char ** get_mysql_groups(request_rec *r, char *user, osa_config_rec *m)
 {
-  MYSQL_RES *result;
-  char **list = NULL;
-  char query[MAX_STRING_LEN];
-  char *sql_safe_user;
-  int ulen;
+	MYSQL_RES *result;
+	char **list = NULL;
+	char query[MAX_STRING_LEN];
+	char *sql_safe_user;
+	int ulen;
 
-  if(!open_db_handle(r,m)) {
-    return NULL;		/* failure reason already logged */
-  }
+	if(!open_db_handle(r,m)) {
+		return NULL;		/* failure reason already logged */
+	}
 
-  ulen = strlen(user);
-  sql_safe_user = PCALLOC(r->pool, ulen*2+1);
-  mysql_escape_string(sql_safe_user,user,ulen);
+	ulen = strlen(user);
+	sql_safe_user = PCALLOC(r->pool, ulen*2+1);
+	mysql_escape_string(sql_safe_user,user,ulen);
 
-  if (m->mysqlGroupUserNameField == NULL)
-    m->mysqlGroupUserNameField = m->mysqlNameField;
-  if (m->mysqlGroupCondition) {
-    SNPRINTF(query,sizeof(query)-1,"SELECT %s FROM %s WHERE %s='%s' AND %s",
-	      m->mysqlGroupField, m->mysqlgrptable,
-	      m->mysqlGroupUserNameField, sql_safe_user, str_format(r, m->mysqlGroupCondition));
-  } else {
-    SNPRINTF(query,sizeof(query)-1,"SELECT %s FROM %s WHERE %s='%s'",
-	      m->mysqlGroupField, m->mysqlgrptable,
-	      m->mysqlGroupUserNameField, sql_safe_user);
-  }
+	if (m->mysqlGroupUserNameField == NULL)
+		m->mysqlGroupUserNameField = m->mysqlNameField;
+	if (m->mysqlGroupCondition) {
+		SNPRINTF(query,sizeof(query)-1,"SELECT %s FROM %s WHERE %s='%s' AND %s",
+				m->mysqlGroupField, m->mysqlgrptable,
+				m->mysqlGroupUserNameField, sql_safe_user, str_format(r, m->mysqlGroupCondition));
+	} else {
+		SNPRINTF(query,sizeof(query)-1,"SELECT %s FROM %s WHERE %s='%s'",
+				m->mysqlGroupField, m->mysqlgrptable,
+				m->mysqlGroupUserNameField, sql_safe_user);
+	}
 
-  if (mysql_query(connection.handle, query) != 0) {
-    LOG_ERROR_2(APLOG_ERR, 0, r, "MySQL error %s: %s", mysql_error(connection.handle),r->uri);
-    return NULL;
-  }
+	if (mysql_query(connection.handle, query) != 0) {
+		LOG_ERROR_2(APLOG_ERR, 0, r, "MySQL error %s: %s", mysql_error(connection.handle),r->uri);
+		return NULL;
+	}
 
-  result = mysql_store_result(connection.handle);
-  if (result && (mysql_num_rows(result) > 0)) {
-    int i = mysql_num_rows(result);
-    list = (char **) PCALLOC(r->pool, sizeof(char *) * (i+1));
-    list[i] = NULL;		/* last element in array is NULL */
-    while (i--) {		/* populate the array elements */
-      MYSQL_ROW data = mysql_fetch_row(result);
-      if (data[0])
-	list[i] = (char *) PSTRDUP(r->pool, data[0]);
-      else
-	list[i] = "";		/* if no data, make it empty, not NULL */
-    }
-  }
+	result = mysql_store_result(connection.handle);
+	if (result && (mysql_num_rows(result) > 0)) {
+		int i = mysql_num_rows(result);
+		list = (char **) PCALLOC(r->pool, sizeof(char *) * (i+1));
+		list[i] = NULL;		/* last element in array is NULL */
+		while (i--) {		/* populate the array elements */
+			MYSQL_ROW data = mysql_fetch_row(result);
+			if (data[0])
+				list[i] = (char *) PSTRDUP(r->pool, data[0]);
+			else
+				list[i] = "";		/* if no data, make it empty, not NULL */
+		}
+	}
 
-  if (result) mysql_free_result(result);
+	if (result) mysql_free_result(result);
 
-  return list;
+	return list;
 }
 
 
@@ -1968,29 +1968,29 @@ sprintf(counterSecName,"%s$$$S=%d-%02d-%02dT%02d:%02d:%02d",counterPrefix,
 /*     delete previous counters */
 sprintf(query, "DELETE FROM %s WHERE  %s!='%s' and %s like '%s$$$S%%'",sec->countersTable, sec->counterNameField, counterSecName, sec->counterNameField, counterPrefix);
 if (mysql_query(connection.handle, query) != 0) {
-        LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.delete.old.per.second MySQL ERROR: %s: ", mysql_error(connection.handle));
-        return osa_error(r,"DB query error",500);
+				LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.delete.old.per.second MySQL ERROR: %s: ", mysql_error(connection.handle));
+				return osa_error(r,"DB query error",500);
 }
 
 /*    2.1 retreive counter value for current "per second counter" */
 sprintf(query, "SELECT %s FROM %s WHERE %s='%s'", sec->counterValueField, sec->countersTable, sec->counterNameField, counterSecName);
 if (mysql_query(connection.handle, query) != 0) {
-        LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.select_current.per_second MySQL ERROR: %s: ", mysql_error(connection.handle));
-        return osa_error(r,"DB query error",500);
+				LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.select_current.per_second MySQL ERROR: %s: ", mysql_error(connection.handle));
+				return osa_error(r,"DB query error",500);
 }
 result = mysql_store_result(connection.handle);
 if (result && (mysql_num_rows(result) >= 1)) {
 	/*      2.1.1 counter was found, get current counter value */
-        MYSQL_ROW data = mysql_fetch_row(result);
-        reqSec=strtol (data[0],NULL,0);//atoi(data[0]);
+				MYSQL_ROW data = mysql_fetch_row(result);
+				reqSec=strtol (data[0],NULL,0);//atoi(data[0]);
 }else{
 	/*      2.1.2 counter was not found, start from 0 and insert counter into DB */
 	reqSec=0;
-        sprintf(query, "INSERT INTO %s (%s,%s) VALUES ('%s',0)", sec->countersTable, sec->counterNameField, sec->counterValueField, counterSecName);
-        if (mysql_query(connection.handle, query) != 0) {
-                LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.insert.per.second MySQL ERROR: %s: ", mysql_error(connection.handle));
-                return osa_error(r,"DB query error", 500);
-        }
+				sprintf(query, "INSERT INTO %s (%s,%s) VALUES ('%s',0)", sec->countersTable, sec->counterNameField, sec->counterValueField, counterSecName);
+				if (mysql_query(connection.handle, query) != 0) {
+								LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.insert.per.second MySQL ERROR: %s: ", mysql_error(connection.handle));
+								return osa_error(r,"DB query error", 500);
+				}
 }
 if (result) mysql_free_result(result);
 
@@ -1998,14 +1998,14 @@ if (result) mysql_free_result(result);
 sprintf(query, "UPDATE %s SET %s=%lu WHERE %s='%s'", sec->countersTable, sec->counterValueField, reqSec+1, sec->counterNameField, counterSecName);
 if (mysql_query(connection.handle, query) != 0) {
 	LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.update.per.second MySQL ERROR: %s: ", mysql_error(connection.handle));
-    return osa_error(r,"DB query error",500);
+		return osa_error(r,"DB query error",500);
 }
 /*    2.3 if new coutner value exceed quota, display error and stop */
 if (reqSec+1 > maxReqSec){
 	char err[255];
 	sprintf(err, "Maximum number of request (%s %lu/%lu) per second allowed exedeed", quotaScope, reqSec+1, maxReqSec);
 	
-        return osa_error(r,err,httpStatusOver);
+				return osa_error(r,err,httpStatusOver);
 }
 
 
@@ -2022,41 +2022,41 @@ sprintf(counterDayName,"%s$$$D=%d-%02d-%02d",counterPrefix,
 /*      delete previous counters */
 sprintf(query, "DELETE FROM %s WHERE  %s!='%s' and %s like '%s$$$D%%'",sec->countersTable, sec->counterNameField, counterDayName, sec->counterNameField, counterPrefix);
 if (mysql_query(connection.handle, query) != 0) {
-        LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.delete.old.per.day MySQL ERROR: %s: ", mysql_error(connection.handle));
-        return osa_error(r,"DB query error", 500);
+				LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.delete.old.per.day MySQL ERROR: %s: ", mysql_error(connection.handle));
+				return osa_error(r,"DB query error", 500);
 }
 /*    3.1 retreive counter value for current "per day counter" */
 sprintf(query, "SELECT %s FROM %s WHERE %s='%s'", sec->counterValueField, sec->countersTable, sec->counterNameField, counterDayName);
 if (mysql_query(connection.handle, query) != 0) {
-        LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.select_current.per.day MySQL ERROR: %s: ", mysql_error(connection.handle));
-        return osa_error(r,"DB query error", 500);
+				LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.select_current.per.day MySQL ERROR: %s: ", mysql_error(connection.handle));
+				return osa_error(r,"DB query error", 500);
 }
 result = mysql_store_result(connection.handle);
 if (result && (mysql_num_rows(result) >= 1)) {
 	/*      3.1.1 counter was found, get current counter value */
-         MYSQL_ROW data = mysql_fetch_row(result);
-        reqDay=strtol (data[0],NULL,0);//atoi(data[0]);
+				 MYSQL_ROW data = mysql_fetch_row(result);
+				reqDay=strtol (data[0],NULL,0);//atoi(data[0]);
 }else{
 	/*      3.1.2 counter was not found, start from 0 and insert counter into DB */
-        reqDay=0;
-        sprintf(query, "INSERT INTO %s (%s,%s) VALUES ('%s',0)", sec->countersTable, sec->counterNameField, sec->counterValueField, counterDayName);
-        if (mysql_query(connection.handle, query) != 0) {
-                LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.insert.per.day MySQL ERROR: %s: ", mysql_error(connection.handle));
-                return osa_error(r,"DB query error", 500);
-        }
+				reqDay=0;
+				sprintf(query, "INSERT INTO %s (%s,%s) VALUES ('%s',0)", sec->countersTable, sec->counterNameField, sec->counterValueField, counterDayName);
+				if (mysql_query(connection.handle, query) != 0) {
+								LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.insert.per.day MySQL ERROR: %s: ", mysql_error(connection.handle));
+								return osa_error(r,"DB query error", 500);
+				}
 }
 if (result) mysql_free_result(result);/*    3.2 increment coutner (in DB too) */
 sprintf(query, "UPDATE %s SET %s=%lu WHERE %s='%s'", sec->countersTable, sec->counterValueField, reqDay+1, sec->counterNameField, counterDayName);
 if (mysql_query(connection.handle, query) != 0) {
-        LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.update.per.day MySQL ERROR: %s: ", mysql_error(connection.handle));
-        return osa_error(r,"DB query error", 500);
+				LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.update.per.day MySQL ERROR: %s: ", mysql_error(connection.handle));
+				return osa_error(r,"DB query error", 500);
 }
 /*    3.3 if new coutner value exceed quota, display error and stop */
 if (reqDay+1 > maxReqDay){
-        char err[255];
-        sprintf(err, "Maximum number of request (%s %lu/%lu) per day allowed exedeed", quotaScope, reqDay+1, maxReqDay);
+				char err[255];
+				sprintf(err, "Maximum number of request (%s %lu/%lu) per day allowed exedeed", quotaScope, reqDay+1, maxReqDay);
 	
-        return osa_error(r,err, httpStatusOver);
+				return osa_error(r,err, httpStatusOver);
 }
 
 
@@ -2069,42 +2069,42 @@ sprintf(counterMonName,"%s$$$M=%d-%02d",counterPrefix,
 /*      delete previous counters */
 sprintf(query, "DELETE FROM %s WHERE  %s!='%s' and %s like '%s$$$M%%'",sec->countersTable, sec->counterNameField, counterMonName, sec->counterNameField, counterPrefix);
 if (mysql_query(connection.handle, query) != 0) {
-        LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.delete.old.per.month MySQL ERROR: %s: ", mysql_error(connection.handle));
-        return osa_error(r,"DB query error", 500);
+				LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.delete.old.per.month MySQL ERROR: %s: ", mysql_error(connection.handle));
+				return osa_error(r,"DB query error", 500);
 }
 /*    4.1 retreive counter value for current "per month counter" */
 sprintf(query, "SELECT %s FROM %s WHERE %s='%s'", sec->counterValueField, sec->countersTable, sec->counterNameField, counterMonName);
 if (mysql_query(connection.handle, query) != 0) {
-        LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.select_current.per.month MySQL ERROR: %s: ", mysql_error(connection.handle));
-        return osa_error(r,"DB query error", 500);
+				LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.select_current.per.month MySQL ERROR: %s: ", mysql_error(connection.handle));
+				return osa_error(r,"DB query error", 500);
 }
 result = mysql_store_result(connection.handle);
 if (result && (mysql_num_rows(result) >= 1)) {
 	/*      4.1.1 counter was found, get current counter value */
-        MYSQL_ROW data = mysql_fetch_row(result);
-        reqMon=strtol (data[0],NULL,0);//atoi(data[0]);
+				MYSQL_ROW data = mysql_fetch_row(result);
+				reqMon=strtol (data[0],NULL,0);//atoi(data[0]);
 }else{
 	/*      4.1.2 counter was not found, start from 0 and insert counter into DB */
-        reqMon=0;
-        sprintf(query, "INSERT INTO %s (%s,%s) VALUES ('%s',0)", sec->countersTable, sec->counterNameField, sec->counterValueField, counterMonName);
-        if (mysql_query(connection.handle, query) != 0) {
-                LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.insert.per.month MySQL ERROR: %s: ", mysql_error(connection.handle));
-                return osa_error(r,"DB query error", 500);
-        }
+				reqMon=0;
+				sprintf(query, "INSERT INTO %s (%s,%s) VALUES ('%s',0)", sec->countersTable, sec->counterNameField, sec->counterValueField, counterMonName);
+				if (mysql_query(connection.handle, query) != 0) {
+								LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.insert.per.month MySQL ERROR: %s: ", mysql_error(connection.handle));
+								return osa_error(r,"DB query error", 500);
+				}
 }
 if (result) mysql_free_result(result);
 /*    4.2 increment coutner (in DB too) */
 sprintf(query, "UPDATE %s SET %s=%lu WHERE %s='%s'", sec->countersTable, sec->counterValueField, reqMon+1, sec->counterNameField, counterMonName);
 if (mysql_query(connection.handle, query) != 0) {
-        LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.update.per.month MySQL ERROR: %s: ", mysql_error(connection.handle));
-        return osa_error(r,"DB query error", 500);
+				LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.update.per.month MySQL ERROR: %s: ", mysql_error(connection.handle));
+				return osa_error(r,"DB query error", 500);
 }
 /*    4.3 if new coutner value exceed quota, display error and stop */
 if (reqMon+1 > maxReqMon){
-        char err[255];
-        sprintf(err, "Maximum number of request (%s %lu/%lu) per month allowed exedeed", quotaScope, reqMon+1, maxReqMon);
+				char err[255];
+				sprintf(err, "Maximum number of request (%s %lu/%lu) per month allowed exedeed", quotaScope, reqMon+1, maxReqMon);
 	
-        return osa_error(r,err, httpStatusOver);
+				return osa_error(r,err, httpStatusOver);
 
 }
 
@@ -2143,24 +2143,24 @@ sprintf(counterPrefix,"R=%s",  sec->resourceName);
 sprintf(query, "SELECT %s, %s, %s FROM %s WHERE %s='%s'", sec->mysqlPerSecField, sec->mysqlPerDayField, sec->mysqlPerMonthField, sec->mysqlGlobalQuotasTable,  sec->mysqlResourceNameField, sec->resourceName);
 if (sec->mysqlGlobalQuotasCondition){
 	/*    2.1 if configuration set a condition (sql) to retreive quotas, integrate it to request */
-        sprintf(query,"%s AND %s", query, sec->mysqlGlobalQuotasCondition);
+				sprintf(query,"%s AND %s", query, sec->mysqlGlobalQuotasCondition);
 }
 
 if (mysql_query(connection.handle, query) != 0) {
 	/*    2.2 No quota definition was found in DB ==> ERROR */
-        LOG_ERROR_1(APLOG_ERR, 0, r, "checkGlobalQuotas: MySQL ERROR: %s: ", mysql_error(connection.handle));
-        return osa_error(r,"checkGlobalQuotas: DB query error", 500);
+				LOG_ERROR_1(APLOG_ERR, 0, r, "checkGlobalQuotas: MySQL ERROR: %s: ", mysql_error(connection.handle));
+				return osa_error(r,"checkGlobalQuotas: DB query error", 500);
 }
 
 result = mysql_store_result(connection.handle);
 if (result && (mysql_num_rows(result) >= 1)) {
 	/*    2.3 quota definition was found: get values */
-        MYSQL_ROW data = mysql_fetch_row(result);
-        reqSec=strtol (data[0],NULL,0); //atoi(data[0]);
-        reqDay=strtol (data[1],NULL,0); //atoi(data[1]);
-        reqMonth=strtol (data[2],NULL,0); //atoi(data[2]);
+				MYSQL_ROW data = mysql_fetch_row(result);
+				reqSec=strtol (data[0],NULL,0); //atoi(data[0]);
+				reqDay=strtol (data[1],NULL,0); //atoi(data[1]);
+				reqMonth=strtol (data[2],NULL,0); //atoi(data[2]);
 }
-  if (result) mysql_free_result(result);
+	if (result) mysql_free_result(result);
 char scope[255];
 
 /* 3.  Define "quotaScope" variable for checkQuotas and call it */
@@ -2212,28 +2212,28 @@ sprintf(counterPrefix,"R=%s$$$U=%s",  sec->resourceName, r->user);
 sprintf(query, "SELECT %s, %s, %s FROM %s WHERE %s='%s' AND %s='%s'", sec->mysqlPerSecField, sec->mysqlPerDayField, sec->mysqlPerMonthField, sec->mysqlUserQuotasTable,  sec->mysqlResourceNameField, sec->resourceName, sec->mysqlNameField, r->user);
 if (sec->mysqlUserQuotasCondition){
 	/*    2.1 if configuration set a condition (sql) to retreive quotas, integrate it to request */
-        sprintf(query,"%s AND %s", query, sec->mysqlUserQuotasCondition);
+				sprintf(query,"%s AND %s", query, sec->mysqlUserQuotasCondition);
 }
 
 if (mysql_query(connection.handle, query) != 0) {
 	/*    2.2 No quota definition was found in DB ==> ERROR */
-        LOG_ERROR_1(APLOG_ERR, 0, r, "checkUserQuotas: MySQL ERROR: %s: ", mysql_error(connection.handle));
-        return osa_error(r,"checkUserQuotas: DB query error", 500);
+				LOG_ERROR_1(APLOG_ERR, 0, r, "checkUserQuotas: MySQL ERROR: %s: ", mysql_error(connection.handle));
+				return osa_error(r,"checkUserQuotas: DB query error", 500);
 }
 
 result = mysql_store_result(connection.handle);
 if (result && (mysql_num_rows(result) >= 1)) {
 	/*    2.3 quota definition was found: get values */
-        MYSQL_ROW data = mysql_fetch_row(result);
-        reqSec=strtol (data[0],NULL,0); //atol(data[0]);
-        reqDay=strtol (data[1],NULL,0); //atol(data[1]);
-        reqMonth=strtol (data[2],NULL,0); //atoi(data[2]);
+				MYSQL_ROW data = mysql_fetch_row(result);
+				reqSec=strtol (data[0],NULL,0); //atol(data[0]);
+				reqDay=strtol (data[1],NULL,0); //atol(data[1]);
+				reqMonth=strtol (data[2],NULL,0); //atoi(data[2]);
 }else{
-  if (result){
-  	char err[100];
-  	sprintf(err,"No quota defined for user %s with user quotas control is activated on resource %s",r->user, sec->resourceName); 
-        return osa_error(r,err, 500);
-  }
+	if (result){
+		char err[100];
+		sprintf(err,"No quota defined for user %s with user quotas control is activated on resource %s",r->user, sec->resourceName); 
+				return osa_error(r,err, 500);
+	}
 }
 if (result) mysql_free_result(result);
 /* 3.  Define "quotaScope" variable for checkQuotas and call it */
@@ -2433,9 +2433,10 @@ int validateToken(request_rec *r , char *token, int *stillValidFor){
 		}
 		result = mysql_store_result(connection.handle);
 		if (result && (mysql_num_rows(result) >= 1)) {
-	        MYSQL_ROW data = mysql_fetch_row(result);
-      r->user=(char *) PCALLOC(r->pool, strlen(data[0]));
-			strcpy(r->user, data[0]);
+					MYSQL_ROW data = mysql_fetch_row(result);
+			//r->user=(char *) PCALLOC(r->pool, strlen(data[0]));
+ 			//strcpy(r->user, data[0]);
+ 			r->user=(char *) PSTRDUP(r->pool, data[0]);
 			*stillValidFor=atoi(data[1]);
 			rc= OK;
 		}else{
@@ -2606,7 +2607,7 @@ if (sec->checkUserQuotas || sec->checkGlobalQuotas){
 		}
 //	LOG_ERROR_1(APLOG_NOERRNO|APLOG_ERR, 0, r, "User=%s\n", r->user);
 /* BHE BA COOKIE
-  	if (sec->mysqlEnable){
+		if (sec->mysqlEnable){
 		if ((res = ap_get_basic_auth_pw (r, &sent_pw)) != OK)  {
 			LOG_ERROR(APLOG_NOERRNO|APLOG_ERR, 0, r, "checkquotas: Authent is required required, but not no cred in request...... nothing to do...");
 			//Authent is required, but still not occursed (typically first call from browser without creds)
@@ -2635,56 +2636,56 @@ if (sec->checkUserQuotas || sec->checkGlobalQuotas){
 }
 
 int get_basic_auth_creds(request_rec *r, char **pwd){
-  int rc=1;
-  char *authorizationHeader;
+	int rc=1;
+	char *authorizationHeader;
 
-  if ((authorizationHeader = (char*)TABLE_GET(r->headers_in, "Authorization")) == NULL) {
-    return 0;
-  }
+	if ((authorizationHeader = (char*)TABLE_GET(r->headers_in, "Authorization")) == NULL) {
+		return 0;
+	}
 
-  
-  spliting authHeaderWords;
-  split(authorizationHeader, ' ', &authHeaderWords);
-  if (authHeaderWords.tokensCount == 2 && strcmp(authHeaderWords.tokens[0],"Basic")==0){
-    unsigned char decoded[255];
-    size_t len;
-    base64_decode(authHeaderWords.tokens[1],&len, decoded);
-    
+	
+	spliting authHeaderWords;
+	split(authorizationHeader, ' ', &authHeaderWords);
+	if (authHeaderWords.tokensCount == 2 && strcmp(authHeaderWords.tokens[0],"Basic")==0){
+		unsigned char decoded[255];
+		size_t len;
+		base64_decode(authHeaderWords.tokens[1],&len, decoded);
+		
 
-    int i;
-    for (i=0;i<len && decoded[i] != ':';i++);
+		int i;
+		for (i=0;i<len && decoded[i] != ':';i++);
 
-    if (decoded[i]==':'){
-      decoded[i]=0;
-
-
-      r->user=(char *) PCALLOC(r->pool, i+1);
-
-      strncpy(r->user,decoded, i);
-      r->user[i]=0;
+		if (decoded[i]==':'){
+			decoded[i]=0;
 
 
-      (*pwd)=(char *) PCALLOC(r->pool,strlen(decoded+i+1)+1);
-      strcpy(*pwd,decoded+i+1);
-      (*pwd)[strlen(decoded+i+1)]=0;
+			r->user=(char *) PCALLOC(r->pool, i+1);
 
-    }else{
-      rc=0;
-    }
-  	return rc;
-  }else{
-	  return 0;
-  }
+			strncpy(r->user,decoded, i);
+			r->user[i]=0;
+
+
+			(*pwd)=(char *) PCALLOC(r->pool,strlen(decoded+i+1)+1);
+			strcpy(*pwd,decoded+i+1);
+			(*pwd)[strlen(decoded+i+1)]=0;
+
+		}else{
+			rc=0;
+		}
+		return rc;
+	}else{
+		return 0;
+	}
 }
 
 
 int send_request_basic_auth(request_rec *r){
 	char realm[255];
 
-  apr_table_set(r->err_headers_out, "Server", "OSA");
+	apr_table_set(r->err_headers_out, "Server", "OSA");
 
 	osa_config_rec *sec = (osa_config_rec *)ap_get_module_config(r->per_dir_config, &osa_module);
-  
+	
 	sprintf(realm,"Basic realm=\"%s\"", sec->authName);
 	apr_table_set(r->err_headers_out, "WWW-Authenticate", realm);
 	return 0;
@@ -2697,21 +2698,21 @@ int send_request_basic_auth(request_rec *r){
  */
 static int mysql_authenticate_basic_user (request_rec *r)
 {
-  int passwords_match = 0;	/* Assume no match */
-  encryption * enc_data = 0;
-  int i = 0;
+	int passwords_match = 0;	/* Assume no match */
+	encryption * enc_data = 0;
+	int i = 0;
 
-  char *user;
-  osa_config_rec *sec =
-    (osa_config_rec *)ap_get_module_config (r->per_dir_config,
-						   &osa_module);
+	char *user;
+	osa_config_rec *sec =
+		(osa_config_rec *)ap_get_module_config (r->per_dir_config,
+							 &osa_module);
 
-  const char *sent_pw, *real_pw, *salt = 0, *salt_column = 0;
-  int res;
+	const char *sent_pw, *real_pw, *salt = 0, *salt_column = 0;
+	int res;
 
 
-  if (!sec->mysqlEnable)	/* no mysql authorization */
-    return DECLINED;	
+	if (!sec->mysqlEnable)	/* no mysql authorization */
+		return DECLINED;	
 
 	if (sec->cookieAuthEnable){
 		if (r->user != NULL) {
@@ -2721,15 +2722,15 @@ static int mysql_authenticate_basic_user (request_rec *r)
 	}
 	if (sec->basicAuthEnable && r->user==NULL){
 				
-			  if ((res = get_basic_auth_creds (r, (char**)&sent_pw)) == 0){
-          if (sec->allowAnonymous){
-            return OK;
-          }else{
-            send_request_basic_auth(r);
-            return NOT_AUTHORIZED;
-          }
-			  }
-			  
+				if ((res = get_basic_auth_creds (r, (char**)&sent_pw)) == 0){
+					if (sec->allowAnonymous){
+						return OK;
+					}else{
+						send_request_basic_auth(r);
+						return NOT_AUTHORIZED;
+					}
+				}
+				
 	}
 	if (!sec->cookieAuthEnable && !sec->basicAuthEnable){
 		return DECLINED;
@@ -2740,103 +2741,103 @@ static int mysql_authenticate_basic_user (request_rec *r)
 	}
 			
 /* BHE BA COOKIE
-  if ((res = ap_get_basic_auth_pw (r, &sent_pw)) != OK){
-    return res;
-  }
+	if ((res = ap_get_basic_auth_pw (r, &sent_pw)) != OK){
+		return res;
+	}
 */
 
 /* Determine the encryption method */
-  if (sec->mysqlEncryptionField) {
-    for (i = 0; i < sizeof(encryptions) / sizeof(encryptions[0]); i++) {
-      if (strcasecmp(sec->mysqlEncryptionField, encryptions[i].string) == 0) {
+	if (sec->mysqlEncryptionField) {
+		for (i = 0; i < sizeof(encryptions) / sizeof(encryptions[0]); i++) {
+			if (strcasecmp(sec->mysqlEncryptionField, encryptions[i].string) == 0) {
 	enc_data = &(encryptions[i]);
 	break;
-      }
-    }
-    if (!enc_data) {  /* Entry was not found in the list */
-      char authenticationError[255];
-      
-      sprintf(authenticationError,"invalid encryption method %s", sec->mysqlEncryptionField);
-      LOG_ERROR_1(APLOG_NOERRNO|APLOG_ERR, 0, r,"%s",  authenticationError);
-      //ap_note_basic_auth_failure(r);
-      send_request_basic_auth(r);
-	  return osa_error(r,authenticationError,NOT_AUTHORIZED);
-      //return NOT_AUTHORIZED;
+			}
+		}
+		if (!enc_data) {  /* Entry was not found in the list */
+			char authenticationError[255];
+			
+			sprintf(authenticationError,"invalid encryption method %s", sec->mysqlEncryptionField);
+			LOG_ERROR_1(APLOG_NOERRNO|APLOG_ERR, 0, r,"%s",  authenticationError);
+			//ap_note_basic_auth_failure(r);
+			send_request_basic_auth(r);
+		return osa_error(r,authenticationError,NOT_AUTHORIZED);
+			//return NOT_AUTHORIZED;
 
-    }
-  }
-  else
-    enc_data = &encryptions[0];
+		}
+	}
+	else
+		enc_data = &encryptions[0];
 
 #ifdef APACHE2
-  user = r->user;
+	user = r->user;
 #else
-  user = r->connection->user;
+	user = r->connection->user;
 #endif
 
 
-  if (enc_data->salt_status == NO_SALT || !sec->mysqlSaltField)
-    salt = salt_column = 0;
-  else { 			/* Parse the mysqlSaltField */
-    short salt_length = strlen(sec->mysqlSaltField);
+	if (enc_data->salt_status == NO_SALT || !sec->mysqlSaltField)
+		salt = salt_column = 0;
+	else { 			/* Parse the mysqlSaltField */
+		short salt_length = strlen(sec->mysqlSaltField);
 
-    if (strcasecmp(sec->mysqlSaltField, "<>") == 0) { /* Salt against self */
-      salt = salt_column = 0;
-    } else if (sec->mysqlSaltField[0] == '<' && sec->mysqlSaltField[salt_length-1] == '>') {
-      salt =  PSTRNDUP(r->pool, sec->mysqlSaltField+1, salt_length - 2);
-      salt_column = 0;
-    } else {
-      salt = 0;
-      salt_column = sec->mysqlSaltField;
-    }
-  }
+		if (strcasecmp(sec->mysqlSaltField, "<>") == 0) { /* Salt against self */
+			salt = salt_column = 0;
+		} else if (sec->mysqlSaltField[0] == '<' && sec->mysqlSaltField[salt_length-1] == '>') {
+			salt =  PSTRNDUP(r->pool, sec->mysqlSaltField+1, salt_length - 2);
+			salt_column = 0;
+		} else {
+			salt = 0;
+			salt_column = sec->mysqlSaltField;
+		}
+	}
 
-  if (enc_data->salt_status == SALT_REQUIRED && !salt && !salt_column) {
-    LOG_ERROR_1(APLOG_NOERRNO | APLOG_ERR, 0, r, "MySQL Salt field not specified for encryption %s", sec->mysqlEncryptionField);
-    return DECLINED;
-  }
+	if (enc_data->salt_status == SALT_REQUIRED && !salt && !salt_column) {
+		LOG_ERROR_1(APLOG_NOERRNO | APLOG_ERR, 0, r, "MySQL Salt field not specified for encryption %s", sec->mysqlEncryptionField);
+		return DECLINED;
+	}
 
-  real_pw = get_mysql_pw(r, user, sec, salt_column, &salt ); /* Get a salt if one was specified */
+	real_pw = get_mysql_pw(r, user, sec, salt_column, &salt ); /* Get a salt if one was specified */
 
-  if(!real_pw)
-  {
-    /* user not found in database */
+	if(!real_pw)
+	{
+		/* user not found in database */
 
-    LOG_ERROR_2(APLOG_NOERRNO|APLOG_ERR, 0, r, "MySQL user %s not found: %s", user, r->uri);
-    //ap_note_basic_auth_failure (r);
-    send_request_basic_auth(r);
+		LOG_ERROR_2(APLOG_NOERRNO|APLOG_ERR, 0, r, "MySQL user %s not found: %s", user, r->uri);
+		//ap_note_basic_auth_failure (r);
+		send_request_basic_auth(r);
 
-    return osa_error(r,"Wrong username password or account expired", NOT_AUTHORIZED);
-    if (!sec->mysqlAuthoritative)
-      return DECLINED;		/* let other schemes find user */
-    else{
-      return NOT_AUTHORIZED;
-    }
-  }
+		return osa_error(r,"Wrong username password or account expired", NOT_AUTHORIZED);
+		if (!sec->mysqlAuthoritative)
+			return DECLINED;		/* let other schemes find user */
+		else{
+			return NOT_AUTHORIZED;
+		}
+	}
 
-  if (!salt)
-    salt = real_pw;
+	if (!salt)
+		salt = real_pw;
 
-  /* if we don't require password, just return ok since they exist */
-  if (sec->mysqlNoPasswd) {
-	  LOG_ERROR_1(APLOG_NOERRNO|APLOG_ERR, 0, r, "MySQL user found: %s and no pwd check required", user);
-    return OK;
-  }
+	/* if we don't require password, just return ok since they exist */
+	if (sec->mysqlNoPasswd) {
+		LOG_ERROR_1(APLOG_NOERRNO|APLOG_ERR, 0, r, "MySQL user found: %s and no pwd check required", user);
+		return OK;
+	}
 
-  passwords_match = enc_data->func(r->pool, real_pw, sent_pw, salt);
+	passwords_match = enc_data->func(r->pool, real_pw, sent_pw, salt);
 
-  if(passwords_match) {
-	  return OK;
-  } else {
+	if(passwords_match) {
+		return OK;
+	} else {
 	char authenticationError[255];
 	sprintf(authenticationError, "user %s: password mismatch: %s", user, r->uri);
-    LOG_ERROR_1(APLOG_NOERRNO|APLOG_ERR, 0, r,"%s", authenticationError);
+		LOG_ERROR_1(APLOG_NOERRNO|APLOG_ERR, 0, r,"%s", authenticationError);
 
-    //ap_note_basic_auth_failure (r);
-    send_request_basic_auth(r);
+		//ap_note_basic_auth_failure (r);
+		send_request_basic_auth(r);
 	return osa_error(r,authenticationError,NOT_AUTHORIZED);
-    //return NOT_AUTHORIZED;
-  }
+		//return NOT_AUTHORIZED;
+	}
 }
 
 
@@ -2847,108 +2848,109 @@ static int mysql_authenticate_basic_user (request_rec *r)
 static int mysql_check_auth(request_rec *r)
 {
 
-  osa_config_rec *sec =
-    (osa_config_rec *)ap_get_module_config(r->per_dir_config,
-						  &osa_module);
-					  
+	osa_config_rec *sec =
+		(osa_config_rec *)ap_get_module_config(r->per_dir_config,
+							&osa_module);
+						
 	if (!sec->mysqlEnable){
 		return DECLINED;
 	}
 #ifdef APACHE2
-  char *user = r->user;
+	char *user = r->user;
 #else
-  char *user = r->connection->user;
+	char *user = r->connection->user;
 #endif
-  int method = r->method_number;
+	int method = r->method_number;
 
 /*#ifdef APACHE2
-  const apr_array_header_t *reqs_arr = ap_requires(r);
+	const apr_array_header_t *reqs_arr = ap_requires(r);
 #else
-  const array_header *reqs_arr = ap_requires(r);
+	const array_header *reqs_arr = ap_requires(r);
 #endif
 
-  require_line *reqs = reqs_arr ? (require_line *)reqs_arr->elts : NULL;
+	require_line *reqs = reqs_arr ? (require_line *)reqs_arr->elts : NULL;
 */
-  register int x;
-  char **groups = NULL;
+	register int x;
+	char **groups = NULL;
 
-  if (!sec->mysqlGroupField) return DECLINED; /* not doing groups here */
-  //if (!reqs_arr) return DECLINED; /* no "require" line in access config */
+	if (!sec->mysqlGroupField) return DECLINED; /* not doing groups here */
+	//if (!reqs_arr) return DECLINED; /* no "require" line in access config */
 
-  if (!user || user[0]==0) return DECLINED;
-  /* if the group table is not specified, use the same as for password */
-  if (!sec->mysqlgrptable) sec->mysqlgrptable = sec->mysqlpwtable;
+	if (!user || user[0]==0) return DECLINED;
+	/* if the group table is not specified, use the same as for password */
+	if (!sec->mysqlgrptable) sec->mysqlgrptable = sec->mysqlpwtable;
 
-   
-  const char *requireClause = sec->require;
-  const char *t, *want;
-  while (requireClause != NULL && requireClause[0]!=0){
+	 
+	const char *requireClause = sec->require;
+	const char *t, *want;
+	while (requireClause != NULL && requireClause[0]!=0){
 
-    //if (!(reqs[x].method_mask & (1 << method))) continue;
+		//if (!(reqs[x].method_mask & (1 << method))) continue;
 
-    //t = reqs[x].requirement;
-    want = ap_getword_conf(r->pool, &requireClause);
+		//t = reqs[x].requirement;
+		want = ap_getword_conf(r->pool, &requireClause);
 
-    if (!strcmp(want, "valid-user")) {
-      return OK;
-    }
-
-    if (!strcmp(want, "user")) {
-      while (requireClause != NULL && requireClause[0]!=0) {
-			want = ap_getword_conf(r->pool, &requireClause);
-			if (strcmp(user, want) == 0) {
-				return OK;
-			}
-      }
-    }else if(!strcmp(want,"group")) {
-      /* check for list of groups from database only first time thru */
-
-
-      if (groups || (groups = get_mysql_groups(r, user, sec))) {
-
-	/* loop through list of groups specified in htaccess file */
-		while(requireClause != NULL && requireClause[0]!=0) {
-			int i = 0;
-			want = ap_getword_conf(r->pool, &requireClause);
-			/* compare against each group to which this user belongs */
-			while(groups[i]) {	/* last element is NULL */
-				if(!strcmp(groups[i],want)) {
-					return OK;		/* we found the user! */
-				}
-				++i;
-			}
+		if (!strcmp(want, "valid-user")) {
+			return OK;
 		}
 
-     }
-    }
-  }
-  if (sec->mysqlAuthoritative) {
-	  char authorizationError[255];
-	  sprintf(authorizationError,"User %s is not allowed for group %s", user, want);
-      //ap_note_basic_auth_failure(r);
-      if (sec->cookieAuthLoginForm != NULL && TABLE_GET(r->headers_in, "Authorization")==NULL ){
-		  //Authorization fail and we didn't came here by basic auth (Authorization is set by BA);
-		  return redirectToLoginForm(r,"authorization");
-      }else if (sec->basicAuthEnable){
-		  deleteAuthCookie(r);
-		  send_request_basic_auth(r);
-	  }
-	  return osa_error(r,authorizationError,NOT_AUTHORIZED);
-	  
+		if (!strcmp(want, "user")) {
+			while (requireClause != NULL && requireClause[0]!=0) {
+				want = ap_getword_conf(r->pool, &requireClause);
+				if (strcmp(user, want) == 0) {
+					return OK;
+				}
+			}
+		}else if(!strcmp(want,"group")) {
+			/* check for list of groups from database only first time thru */
+
+
+			if (groups || (groups = get_mysql_groups(r, user, sec))) {
+
+				/* loop through list of groups specified in htaccess file */
+				while(requireClause != NULL && requireClause[0]!=0) {
+					int i = 0;
+					want = ap_getword_conf(r->pool, &requireClause);
+					/* compare against each group to which this user belongs */
+					while(groups[i]) {	/* last element is NULL */
+
+						if(!strcmp(groups[i],want)) {
+							return OK;		/* we found the user! */
+						}
+						++i;
+					}
+				}
+
+		 }
+		}
+	}
+	if (sec->mysqlAuthoritative) {
+		char authorizationError[255];
+		sprintf(authorizationError, "User %s is not allowed for group %s", user, want);
+		//ap_note_basic_auth_failure(r);
+		if (sec->cookieAuthLoginForm != NULL && TABLE_GET(r->headers_in, "Authorization")==NULL ){
+			//Authorization fail and we didn't came here by basic auth (Authorization is set by BA);
+			return redirectToLoginForm(r,"authorization");
+		}else if (sec->basicAuthEnable){
+			deleteAuthCookie(r);
+			send_request_basic_auth(r);
+		}
+		return osa_error(r,authorizationError,NOT_AUTHORIZED);
+		
 	
-      //return NOT_AUTHORIZED;
-  }
-  return DECLINED;
+			//return NOT_AUTHORIZED;
+	}
+	return DECLINED;
 }
 
 static int mysql_register_hit(request_rec *r)
 {
  
 
-  MYSQL_RES *result;
-  osa_config_rec *sec =
-    (osa_config_rec *)ap_get_module_config(r->per_dir_config,
-						  &osa_module);
+	MYSQL_RES *result;
+	osa_config_rec *sec =
+		(osa_config_rec *)ap_get_module_config(r->per_dir_config,
+							&osa_module);
 	
 	if (sec->logHit ){
 		if (connection.handle==NULL){
@@ -2998,7 +3000,7 @@ static int mysql_register_hit(request_rec *r)
 		}
 		sprintf(query,"insert into hits( serviceName, frontEndEndPoint, userName, message, status) values( '%s','%s %s%s','%s','%s',%d)",  sec->resourceName, r->method, r->uri, queryString , usr, msg, r->status);
 		if (mysql_query(connection.handle, query) != 0) {
-		        LOG_ERROR_1(APLOG_ERR, 0, r, "mysql_register_hit: MySQL ERROR: %s: ", mysql_error(connection.handle));
+			LOG_ERROR_1(APLOG_ERR, 0, r, "mysql_register_hit: MySQL ERROR: %s: ", mysql_error(connection.handle));
 		}
 		V_db(sec, r, "hits");
 	}
@@ -3010,10 +3012,10 @@ static int mysql_register_hit(request_rec *r)
 static int mysql_forward_identity(request_rec *r)
 {
 
-  MYSQL_RES *result;
-  osa_config_rec *sec =
-    (osa_config_rec *)ap_get_module_config(r->per_dir_config,
-						  &osa_module);
+	MYSQL_RES *result;
+	osa_config_rec *sec =
+		(osa_config_rec *)ap_get_module_config(r->per_dir_config,
+							&osa_module);
 	
 	if (sec->indentityHeadersMapping){
 		if (connection.handle==NULL){
@@ -3022,7 +3024,7 @@ static int mysql_forward_identity(request_rec *r)
 				return osa_error(r,"Unable to connect database", 500);
 			}
 		}
-	      	
+					
 	
 		spliting coupleList;
 		split(sec->indentityHeadersMapping,';',&coupleList);
@@ -3049,11 +3051,11 @@ static int mysql_forward_identity(request_rec *r)
 		
 		if (r->user != NULL){
 			//We found a user in request (i.e successfull authentication ), search the user in DB
-      sprintf(query,"SELECT %s FROM %s WHERE %s='%s'", fields,  sec->mysqlpwtable, sec->mysqlNameField, r->user);
-      if (sec->mysqlUserCondition && strlen(sec->mysqlUserCondition)){
-        strcat(query," AND ");
-        strcat(query, str_format(r, sec->mysqlUserCondition));
-      }
+			sprintf(query,"SELECT %s FROM %s WHERE %s='%s'", fields,  sec->mysqlpwtable, sec->mysqlNameField, r->user);
+			if (sec->mysqlUserCondition && strlen(sec->mysqlUserCondition)){
+				strcat(query," AND ");
+				strcat(query, str_format(r, sec->mysqlUserCondition));
+			}
 
 			if (mysql_query(connection.handle, query) != 0) {
 					LOG_ERROR_1(APLOG_ERR, 0, r, "mysql_forward_identity: MySQL ERROR: %s: ", mysql_error(connection.handle));
@@ -3094,7 +3096,7 @@ static int mysql_forward_identity(request_rec *r)
 #ifdef APACHE2
 static void register_hooks(POOL *p)
 {
-    build_decoding_table();
+		build_decoding_table();
 	srand ( time(NULL) );
 
 	//ap_hook_check_user_id(mysql_authenticate_basic_user, NULL, NULL, APR_HOOK_MIDDLE);
@@ -3124,25 +3126,25 @@ register_hooks              /* register hooks */
 
 #else
 module osa_module = {
-   STANDARD_MODULE_STUFF,
-   NULL,			/* initializer */
-   create_osa_dir_config, /* dir config creater */
-   NULL,			/* dir merger --- default is to override */
-   NULL,			/* server config */
-   NULL,			/* merge server config */
-   osa_cmds,		/* command table */
-   NULL,			/* handlers */
-   NULL,			/* filename translation */
-   mysql_authenticate_basic_user, /* check_user_id */
-   mysql_check_auth,		/* check auth */
-   mysql_check_quotas,		/* check access */
-   NULL,			/* type_checker */
-   NULL,			/* fixups */
-   NULL,			/* logger */
-   NULL,			/* header parser */
-   NULL,			/* child_init */
-   child_exit,			/* child_exit */
-   NULL				/* post read-request */
+	 STANDARD_MODULE_STUFF,
+	 NULL,			/* initializer */
+	 create_osa_dir_config, /* dir config creater */
+	 NULL,			/* dir merger --- default is to override */
+	 NULL,			/* server config */
+	 NULL,			/* merge server config */
+	 osa_cmds,		/* command table */
+	 NULL,			/* handlers */
+	 NULL,			/* filename translation */
+	 mysql_authenticate_basic_user, /* check_user_id */
+	 mysql_check_auth,		/* check auth */
+	 mysql_check_quotas,		/* check access */
+	 NULL,			/* type_checker */
+	 NULL,			/* fixups */
+	 NULL,			/* logger */
+	 NULL,			/* header parser */
+	 NULL,			/* child_init */
+	 child_exit,			/* child_exit */
+	 NULL				/* post read-request */
 };
 #endif
 

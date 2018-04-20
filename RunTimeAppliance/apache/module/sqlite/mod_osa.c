@@ -2307,8 +2307,9 @@ int validateToken(request_rec *r , char *token, int *stillValidFor){
 		}
 		
 		if (sqlite3_step(stmt) == SQLITE_ROW) {
-			r->user=(char*)PCALLOC(r->pool, strlen(sqlite3_column_text(stmt, 0)));
-			strcpy(r->user, sqlite3_column_text(stmt, 0));
+			// r->user=(char*)PCALLOC(r->pool, strlen(sqlite3_column_text(stmt, 0)));
+			// strcpy(r->user, sqlite3_column_text(stmt, 0));
+ 			r->user=(char *) PSTRDUP(r->pool, sqlite3_column_text(stmt, 0));
 			*stillValidFor=atoi(sqlite3_column_text(stmt, 1)); 
 			rc= OK;
 		}else{
