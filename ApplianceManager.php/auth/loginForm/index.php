@@ -126,7 +126,7 @@
             <?php 
             if (isset($_REQUEST["cause"])) {
                 if ($_REQUEST["cause"] == "authorization") {
-                    $msg="D&eacute;sol&eacute; mais tapadroit d'aller sur " . 
+                    $msg="D&eacute;sol&eacute; autorisations inssuffisantes pour accéder a " . 
                          base64_decode($_REQUEST["l"]);
                 } else {
                     $msg=$_REQUEST["cause"];
