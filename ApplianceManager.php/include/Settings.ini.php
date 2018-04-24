@@ -94,7 +94,7 @@
     //auth token 
     
     //validity period (in min)
-    define("authTokenTTL", 60);
+    define("authTokenTTL", 15);
     //cookie name
     define("authTokenCookieName", "OSAAuthToken");
     define("osaAdminUri", "https://localhost:6443/");
