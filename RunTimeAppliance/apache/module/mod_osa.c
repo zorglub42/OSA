@@ -1173,7 +1173,7 @@ static void * create_osa_dir_config (POOL *p, char *d)
 	m->mysqlGlobalQuotasCondition = 0;            	    /* No condition to add to the group*/
 	m->mysqlCharacterSet = _CHARACTERSET;		    /* default characterset to use */
 
-	m->serverName=NULL;
+	m->serverName="";
 	
 	m->indentityHeadersMapping = 0; 			/* default identity forwarding disabled */
 	m->logHit=0;								/*default log hit in DB */
@@ -2257,13 +2257,24 @@ int redirectToLoginForm(request_rec *r, char *cause){
 	osa_config_rec *sec =(osa_config_rec *)ap_get_module_config (r->per_dir_config, &osa_module);
 	r->status=303;
 	char *curUrl;
-	if (r->args==NULL){
-		curUrl=(char *)PCALLOC(r->pool, strlen(r->uri)+1+strlen(sec->serverName));
+	LOG_ERROR_1(APLOG_ERR, 0, r, "serverName=%s: ", sec->serverName);
 
-		sprintf(curUrl,"%s%s", sec->serverName, r->uri);
+	char *requestedServer;
+	if (strncmp(sec->cookieAuthLoginForm, "http://", 7) && strncmp(sec->cookieAuthLoginForm, "https://", 8)){
+		/* If loginForm URL is not starting with "http://" or "https://": is not at absolute URL (i.e. on current server)
+		Use a relative URI for the requested URL */
+ 		requestedServer=(char *) PSTRDUP(r->pool, "");
 	}else{
-		curUrl=(char *)PCALLOC(r->pool, strlen(r->uri)+strlen(r->args)+2+strlen(sec->serverName));
-		sprintf(curUrl,"%s%s?%s", sec->serverName, r->uri, r->args);
+		/* If loginForm URL is starting with "http://" or "https://": it's an absolute URL (i.e. probably not on current server)
+		Use an absolute URI for the requested URL */
+ 		requestedServer=(char *) PSTRDUP(r->pool, sec->serverName);
+	}
+	if (r->args==NULL){
+		curUrl=(char *)PCALLOC(r->pool, strlen(r->uri)+1+strlen(requestedServer));
+		sprintf(curUrl,"%s%s", requestedServer, r->uri);
+	}else{
+		curUrl=(char *)PCALLOC(r->pool, strlen(r->uri)+strlen(r->args)+2+strlen(requestedServer));
+		sprintf(curUrl,"%s%s?%s", requestedServer, r->uri, r->args);
 	}
 	
 	size_t encodedSize;
