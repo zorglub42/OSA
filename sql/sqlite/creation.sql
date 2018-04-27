@@ -26,7 +26,7 @@
 * 1.0.0 - 2012-10-01 : Release of the file
 **/
 
--- Version: 2.8
+-- Version: 2.8.1
 
 
 
@@ -242,7 +242,9 @@ INSERT INTO `groups` (`groupName`,`description`) VALUES
 INSERT INTO `services` (`serviceName`,`reqSec`,`reqDay`,`reqMonth`,`frontEndEndPoint`,`isGlobalQuotasEnabled`,`isUserQuotasEnabled`,`groupName`,`backEndEndPoint`,`backEndUsername`,`backEndPassword`,`isIdentityForwardingEnabled`,`isPublished`,`isHitLoggingEnabled`,`isUserAuthenticationEnabled`) VALUES
 ('ApplianceManagerAdmin',0,0,0,'/ApplianceManagerAdmin',0,0,'Admin','http://127.0.0.1:PRIVATE_VHOST_PORT/ApplianceManager','','002',1,0,0,1);
 INSERT INTO `services` (`serviceName`,`reqSec`,`reqDay`,`reqMonth`,`frontEndEndPoint`,`isGlobalQuotasEnabled`,`isUserQuotasEnabled`,`groupName`,`backEndEndPoint`,`backEndUsername`,`backEndPassword`,`isIdentityForwardingEnabled`,`isPublished`,`isHitLoggingEnabled`,`isUserAuthenticationEnabled`) VALUES
-('ApplianceManagerAdminAuthToken',0,0,0,'/ApplianceManagerAdmin/auth/token',0,0,'valid-user','http://127.0.0.1:PRIVATE_VHOST_PORT/ApplianceManager/auth/token','','002',1,1,0,1);
+('ApplianceManagerAdminAuthToken',0,0,0,'/ApplianceManagerAdmin/auth/token/me',0,0,'valid-user','http://127.0.0.1:PRIVATE_VHOST_PORT/ApplianceManager/auth/token/me','','002',1,1,0,1);
+INSERT INTO `services` (`serviceName`,`reqSec`,`reqDay`,`reqMonth`,`frontEndEndPoint`,`isGlobalQuotasEnabled`,`isUserQuotasEnabled`,`groupName`,`backEndEndPoint`,`backEndUsername`,`backEndPassword`,`isIdentityForwardingEnabled`,`isPublished`,`isHitLoggingEnabled`,`isUserAuthenticationEnabled`) VALUES
+('ApplianceManagerAdminAuthTokenAnyUser',0,0,0,'/ApplianceManagerAdmin/auth/token',0,0,'Admin','http://127.0.0.1:PRIVATE_VHOST_PORT/ApplianceManager/auth/token','','002',1,1,0,1);
 INSERT INTO `services` (`serviceName`,`reqSec`,`reqDay`,`reqMonth`,`frontEndEndPoint`,`isGlobalQuotasEnabled`,`isUserQuotasEnabled`,`groupName`,`backEndEndPoint`,`backEndUsername`,`backEndPassword`,`isIdentityForwardingEnabled`,`isPublished`,`isHitLoggingEnabled`,`isUserAuthenticationEnabled`) VALUES
 ('ApplianceManagerAdminCurrentUser',0,0,0,'/ApplianceManagerAdmin/users/me',0,0,'valid-user','http://127.0.0.1:PRIVATE_VHOST_PORT/ApplianceManager/users/me','','002',1,1,0,1);
 INSERT INTO `services` (`serviceName`,`reqSec`,`reqDay`,`reqMonth`,`frontEndEndPoint`,`isGlobalQuotasEnabled`,`isUserQuotasEnabled`,`groupName`,`backEndEndPoint`,`backEndUsername`,`backEndPassword`,`isIdentityForwardingEnabled`,`isPublished`,`isHitLoggingEnabled`,`isUserAuthenticationEnabled`) VALUES
