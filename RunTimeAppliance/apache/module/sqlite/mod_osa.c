@@ -111,6 +111,7 @@
 #define MAX_SPLITED_TOKENS 20
 #define MAX_SPLITED_TOKEN_SIZE 500
 
+#define ANONYMOUS_USER_ALLOWED "*** ANONYOUS USER ***"
 
 
 #define COOKIE_BURN_SURVIVAL_TIME 10 //allowed surviving time is sec before cookie is burned
@@ -133,7 +134,9 @@
 #include "ap_mmn.h"			/* For MODULE_MAGIC_NUMBER */
 /* Use the MODULE_MAGIC_NUMBER to check if at least Apache 2.0 */
 #if AP_MODULE_MAGIC_AT_LEAST(20010223,0)
-  #define APACHE2
+	#define APACHE2
+#else
+	need_at_least_20010223();
 #endif
 
 /* Compile time options for code generation */
@@ -221,71 +224,40 @@
 #include "http_core.h"
 #include "http_log.h"
 #include "http_protocol.h"
+#include <mod_auth.h>
 
-
-
-#ifdef APACHE2
-  #define PCALLOC apr_pcalloc
-  #define SNPRINTF apr_snprintf
-  #define PSTRDUP apr_pstrdup
-  #define PSTRNDUP apr_pstrndup
-  #define STRCAT apr_pstrcat
-  #define POOL apr_pool_t
-  #include "http_request.h"   /* for ap_hook_(check_user_id | auth_checker)*/
-  #include "ap_compat.h"
-  #include "apr_strings.h"
-  #include "apr_sha1.h"
-  #include "apr_base64.h"
-  #include "apr_lib.h"
-  #define ISSPACE apr_isspace
-  #ifdef CRYPT
-    #include "crypt.h"
-  #else
-    #include "unistd.h"
-  #endif
-  #define LOG_ERROR(lvl, stat, rqst, msg)  \
-	  ap_log_rerror (APLOG_MARK, lvl, stat, rqst, msg)
-  #define LOG_ERROR_1(lvl, stat, rqst, msg, parm)  \
-	  ap_log_rerror (APLOG_MARK, lvl, stat, rqst, msg, parm)
-  #define LOG_ERROR_2(lvl, stat, rqst, msg, parm1, parm2)  \
-	  ap_log_rerror (APLOG_MARK, lvl, stat, rqst, msg, parm1, parm2)
-  #define LOG_ERROR_3(lvl, stat, rqst, msg, parm1, parm2, parm3)  \
-	  ap_log_rerror (APLOG_MARK, lvl, stat, rqst, msg, parm1, parm2, parm3)
-  #define APACHE_FUNC static apr_status_t
-  #define APACHE_FUNC_RETURN(rc) return rc
-  #define NOT_AUTHORIZED HTTP_UNAUTHORIZED
-  #define TABLE_GET apr_table_get
+#define PCALLOC apr_pcalloc
+#define SNPRINTF apr_snprintf
+#define PSTRDUP apr_pstrdup
+#define PSTRNDUP apr_pstrndup
+#define STRCAT apr_pstrcat
+#define POOL apr_pool_t
+#include "http_request.h"   /* for ap_hook_(check_user_id | auth_checker)*/
+#include "ap_compat.h"
+#include "apr_strings.h"
+#include "apr_sha1.h"
+#include "apr_base64.h"
+#include "apr_lib.h"
+#define ISSPACE apr_isspace
+#ifdef CRYPT
+  #include "crypt.h"
 #else
-  #define PCALLOC ap_pcalloc
-  #define SNPRINTF ap_snprintf
-  #define PSTRDUP ap_pstrdup
-  #define PSTRNDUP ap_pstrndup
-  #define STRCAT apr_pstrcat
-  #define POOL pool
-  #include <stdlib.h>
-  #include "ap_sha1.h"
-  #include "ap_ctype.h"
-  #define LOG_ERROR(lvl, stat, rqst, msg) \
-	  ap_log_error(APLOG_MARK, lvl, rqst->server, msg)
-  #define LOG_ERROR_1(lvl, stat, rqst, msg, parm) \
-	  ap_log_error(APLOG_MARK, lvl, rqst->server, msg, parm)
-  #define LOG_ERROR_2(lvl, stat, rqst, msg, parm1, parm2) \
-	  ap_log_error(APLOG_MARK, lvl, rqst->server, msg, parm1, parm2)
-  #define LOG_ERROR_3(lvl, stat, rqst, msg, parm1, parm2, parm3) \
-	  ap_log_error(APLOG_MARK, lvl, rqst->server, msg, parm1, parm2, parm3)
-  #define APACHE_FUNC static void
-  #define APACHE_FUNC_RETURN(rc) return
-  #define NOT_AUTHORIZED AUTH_REQUIRED
-  #define TABLE_GET ap_table_get
-  #define ISSPACE ap_isspace
+  #include "unistd.h"
 #endif
+#define LOG_ERROR(lvl, stat, rqst, msg)  \
+  ap_log_rerror (APLOG_MARK, lvl, stat, rqst, msg)
+#define LOG_ERROR_1(lvl, stat, rqst, msg, parm)  \
+  ap_log_rerror (APLOG_MARK, lvl, stat, rqst, msg, parm)
+#define LOG_ERROR_2(lvl, stat, rqst, msg, parm1, parm2)  \
+  ap_log_rerror (APLOG_MARK, lvl, stat, rqst, msg, parm1, parm2)
+#define LOG_ERROR_3(lvl, stat, rqst, msg, parm1, parm2, parm3)  \
+  ap_log_rerror (APLOG_MARK, lvl, stat, rqst, msg, parm1, parm2, parm3)
+#define APACHE_FUNC static apr_status_t
+#define APACHE_FUNC_RETURN(rc) return rc
+#define NOT_AUTHORIZED HTTP_UNAUTHORIZED
+#define TABLE_GET apr_table_get
 
 #include "util_md5.h"
-#ifndef APACHE2
-/* Both Apache 1's ap_config.h and my_global.h define closesocket (to the same value) */
-/* This gets rid of a warning message.  It's OK because we don't use it anyway */
-  #undef closesocket
-#endif
 #if _AES  /* Only needed if AES encryption desired */
   #include <my_global.h>
 #endif
@@ -531,17 +503,17 @@ typedef struct  {
   char *countersTable;		/* Table containing counters */
   char *counterNameField; 	/* column for counter name */
   char *counterValueField;	/* column for counter value */
-  
-  
+
+
   /* Identity forwarding */
   char *indentityHeadersMapping; /* Forward user identity */
-  
+
   /* Log HIT in DB flag */
   int logHit;
 
   char *serverName;
 
-  
+
   /* Cookie authentcation relatives */
   int cookieAuthEnable;
   int cookieAuthTTL;
@@ -553,15 +525,15 @@ typedef struct  {
   char *cookieAuthUsernameField;
   char *cookieAuthTokenField;
   char *cookieAuthValidityField;
-  
-  
+
+
   /* Basic auth relative */
   int basicAuthEnable;
   char *require;
   char *authName;
-  /*Allow unauthenticated access even if (OSARequire && (OSABasicAuthEnable||OSACookieAuthEnable)) are set. In such a case, Identity is forwarded*/
+  /*Allow unauthenticated access even if (Require && (OSABasicAuthEnable||OSACookieAuthEnable)) are set. In such a case, Identity is forwarded*/
   int allowAnonymous;
-  
+
  } osa_config_rec;
 
 /*
@@ -590,18 +562,18 @@ int sqlite3_stmt_data_count(sqlite3_stmt *stmt){
 int sqlite3_query_execute(sqlite3 *db, char *query){
 
     sqlite3_stmt *res;
-    int rc = sqlite3_prepare_v2(db, query, -1, &res, 0);    
-    
+    int rc = sqlite3_prepare_v2(db, query, -1, &res, 0);
+
     if (rc != SQLITE_OK) {
-        
+
         sqlite3_finalize(res);
         fprintf(stderr, "Failed to prepare statement: %s\n", sqlite3_errmsg(db));
-        
+
         return rc;
-    }    
-    
+    }
+
     rc = sqlite3_step(res);
-    
+
     if (rc == SQLITE_ROW || rc == SQLITE_DONE) {
         rc =0;
     }
@@ -615,7 +587,7 @@ char *replace(char *st, char *orig, char *repl) {
   char *ch;
   if (!(ch = strstr(st, orig)))
    return st;
-  strncpy(buffer, st, ch-st);  
+  strncpy(buffer, st, ch-st);
   buffer[ch-st] = 0;
   sprintf(buffer+(ch-st), "%s%s", repl, ch+strlen(orig));
   return buffer;
@@ -917,12 +889,12 @@ void P_db(osa_config_rec *sec, request_rec *r, char *sem){
       strcpy(sqlError, (char*)sqlite3_errmsg(connection.handle));
       if (strstr(sqlError, "database is locked")){
         tryNumber++;
-        
+
         usleep(DEAD_LOCK_SLEEP_TIME_MICRO_S);
       }else{
             LOG_ERROR_1(APLOG_ERR, 0, r, "P_db SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
             sprintf(query,"rollback");
-            sqlite3_query_execute(connection.handle, query) ; 
+            sqlite3_query_execute(connection.handle, query) ;
             osa_error(r,"DB query error",500);
       }
     }else{
@@ -985,16 +957,6 @@ mod_osa_cleanup_child (void *data)
 }
 
 
-#ifndef APACHE2
-/*
- * handler to do cleanup on child exit
- */
-static void
-child_exit(server_rec *s, pool *p)
-{
-  mod_osa_cleanup(NULL);
-}
-#endif
 
 
 
@@ -1015,7 +977,7 @@ static int open_db_handle(request_rec *r, osa_config_rec *m)
   char query[MAX_STRING_LEN];
   short file_match = FALSE;
   int rc;
-  
+
   if (connection.handle) {
       if (m->sqlite_db_filename && strcmp(m->sqlite_db_filename, connection.sqlite_db_filename) == 0){
       	rc = TRUE; /* already open */
@@ -1063,7 +1025,7 @@ static void * create_osa_dir_config (POOL *p, char *d)
   m->sqlite3CharacterSet = _CHARACTERSET;		    /* default characterset to use */
 
   m->serverName=NULL;
-  
+
   m->indentityHeadersMapping = 0; 			/* default identity forwarding disabled */
   m->logHit=0;								/*default log hit in DB */
   m->cookieAuthEnable=0;								/*default cookie authen */
@@ -1083,12 +1045,11 @@ static void * create_osa_dir_config (POOL *p, char *d)
   m->basicAuthEnable=0;								/*default cookie authen */
   m->require=NULL;
   m->authName="Open Service Access gateway: please enter your credentials";
-  
+
   m->allowAnonymous=0;
   return (void *)m;
 }
 
-#ifdef APACHE2
 static
 command_rec osa_cmds[] = {
 
@@ -1230,13 +1191,13 @@ command_rec osa_cmds[] = {
   (void *) APR_OFFSETOF(osa_config_rec, basicAuthEnable),
   OR_AUTHCFG | RSRC_CONF, "enable authentication/authorization with basic authentication"),
 
-  AP_INIT_RAW_ARGS("OSARequire", ap_set_string_slot,
+  AP_INIT_RAW_ARGS("Require", ap_set_string_slot,
   (void *) APR_OFFSETOF(osa_config_rec, require),
   OR_AUTHCFG | RSRC_CONF, "Required authorization"),
 
   AP_INIT_FLAG("OSAAllowAnonymous", ap_set_flag_slot,
   (void *) APR_OFFSETOF(osa_config_rec, allowAnonymous),
-  OR_AUTHCFG | RSRC_CONF, "Allow unauthenticated access even if (OSARequire && (OSABasicAuthEnable||OSACookieAuthEnable)) are set. In such a case, Identity is forwarded"),
+  OR_AUTHCFG | RSRC_CONF, "Allow unauthenticated access even if (Require && (OSABasicAuthEnable||OSACookieAuthEnable)) are set. In such a case, Identity is forwarded"),
 
 
   AP_INIT_FLAG("OSACheckGlobalQuotas", ap_set_flag_slot,
@@ -1302,76 +1263,6 @@ command_rec osa_cmds[] = {
 
   { NULL }
 };
-#else
-static
-command_rec osa_cmds[] = {
-  { "OSASqliteFilename", ap_set_string_slot,
-    (void*)XtOffsetOf(osa_config_rec, sqlite_db_filename),
-    OR_AUTHCFG | RSRC_CONF, TAKE1, "sqlite db finemane" },
-
-  { "OSAUserTable", ap_set_string_slot,
-    (void*)XtOffsetOf(osa_config_rec, sqlite3pwtable),
-    OR_AUTHCFG | RSRC_CONF, TAKE1, "sqlite3 user table name" },
-
-  { "OSAGroupTable", ap_set_string_slot,
-    (void*)XtOffsetOf(osa_config_rec, sqlite3grptable),
-    OR_AUTHCFG | RSRC_CONF, TAKE1, "sqlite3 group table name" },
-
-  { "OSANameField", ap_set_string_slot,
-    (void*)XtOffsetOf(osa_config_rec, sqlite3NameField),
-    OR_AUTHCFG | RSRC_CONF, TAKE1, "sqlite3 User ID field name within User table" },
-
-  { "OSAGroupField", ap_set_string_slot,
-    (void*)XtOffsetOf(osa_config_rec, sqlite3GroupField),
-    OR_AUTHCFG | RSRC_CONF, TAKE1, "sqlite3 Group field name within table" },
-
-  { "OSAGroupUserNameField", ap_set_string_slot,
-    (void*)XtOffsetOf(osa_config_rec, sqlite3GroupUserNameField),
-    OR_AUTHCFG | RSRC_CONF, TAKE1, "sqlite3 User ID field name within Group table" },
-
-  { "OSAPasswordField", ap_set_string_slot,
-    (void*)XtOffsetOf(osa_config_rec, sqlite3PasswordField),
-    OR_AUTHCFG | RSRC_CONF, TAKE1, "sqlite3 Password field name within table" },
-
-  { "OSAPwEncryption", ap_set_string_slot,
-    (void *)XtOffsetOf(osa_config_rec, sqlite3EncryptionField),
-    OR_AUTHCFG | RSRC_CONF, TAKE1, "sqlite3 password encryption method" },
-
-  { "OSASaltField", ap_set_string_slot,
-    (void *)XtOffsetOf(osa_config_rec, sqlite3SaltField),
-    OR_AUTHCFG | RSRC_CONF, TAKE1, "sqlite3 salt field name within table" },
-
-/*  { "OSAKeepAlive", ap_set_flag_slot,
-    (void*)XtOffsetOf(osa_config_rec, sqlite3KeepAlive),
-    OR_AUTHCFG | RSRC_CONF, FLAG, "sqlite3 connection kept open across requests if On" },
-*/
-  { "OSAAuthoritative", ap_set_flag_slot,
-    (void*)XtOffsetOf(osa_config_rec, sqlite3Authoritative),
-    OR_AUTHCFG | RSRC_CONF, FLAG, "sqlite3 lookup is authoritative if On" },
-
-  { "OSANoPasswd", ap_set_flag_slot,
-    (void*)XtOffsetOf(osa_config_rec, sqlite3NoPasswd),
-    OR_AUTHCFG | RSRC_CONF, FLAG, "If On, only check if user exists; ignore password" },
-
-  { "OSAEnable", ap_set_flag_slot,
-    (void *)XtOffsetOf(osa_config_rec, sqlite3Enable),
-    OR_AUTHCFG | RSRC_CONF, FLAG, "enable sqlite3 authorization"},
-
-  { "OSAUserCondition", ap_set_string_slot,
-    (void*)XtOffsetOf(osa_config_rec, sqlite3UserCondition),
-    OR_AUTHCFG | RSRC_CONF, TAKE1, "condition to add to user where-clause" },
-
-  { "OSAGroupCondition", ap_set_string_slot,
-    (void*)XtOffsetOf(osa_config_rec, sqlite3GroupCondition),
-    OR_AUTHCFG | RSRC_CONF, TAKE1, "condition to add to group where-clause" },
-
-  { "OSACharacterSet", ap_set_string_slot,
-    (void*)XtOffsetOf(osa_config_rec, sqlite3CharacterSet),
-    OR_AUTHCFG | RSRC_CONF, TAKE1, "sqlite3 character set to use" },
-
-  { NULL }
-};
-#endif
 
 module osa_module;
 
@@ -1438,17 +1329,10 @@ static short pw_aes(POOL * pool, const char * real_pw, const char * sent_pw, con
 static short pw_sha1(POOL * pool, const char * real_pw, const char * sent_pw, const char * salt) {
   char *scrambled_sent_pw, *buffer=PCALLOC(pool, 128);
   short enc_len = 0;
-#ifdef APACHE2
   apr_sha1_base64(sent_pw, strlen(sent_pw), buffer);
   buffer += 5;   /* go past {SHA1} eyecatcher */
   scrambled_sent_pw = PCALLOC(pool, apr_base64_decode_len(buffer) + 1);
   enc_len = apr_base64_decode(scrambled_sent_pw, buffer);
-#else
-  ap_sha1_base64(sent_pw, strlen(sent_pw), buffer);
-  buffer += 5;   /* go past {SHA1} eyecatcher */
-  scrambled_sent_pw = PCALLOC(pool, ap_base64decode_len(buffer) + 1);
-  enc_len = ap_base64decode(scrambled_sent_pw, buffer);
-#endif
   scrambled_sent_pw[enc_len] = '\0';
   return  strcasecmp(bin2hex(pool, scrambled_sent_pw, enc_len), real_pw) == 0;
 }
@@ -1493,18 +1377,14 @@ static char * str_format(request_rec * r, char * input) {
 }
 
 static char * format_remote_host(request_rec * r, char ** parm) {
-#ifdef APACHE2
   return  ap_escape_logitem(r->pool, ap_get_remote_host(r->connection, r->per_dir_config, REMOTE_NAME, NULL));
-#else
-  return ap_escape_logitem(r->pool, ap_get_remote_host(r->connection, r->per_dir_config, REMOTE_NAME));
-#endif
 }
 
 static char * format_remote_ip(request_rec * r, char ** parm) {
 #if (AP_SERVER_MAJORVERSION_NUMBER==2) && (AP_SERVER_MINORVERSION_NUMBER>=4)
 		return r->connection->client_ip;
 #else
- 		return r->connection->remote_ip;	
+ 		return r->connection->remote_ip;
 #endif
 }
 
@@ -1538,11 +1418,7 @@ static char * format_args(request_rec * r, char ** parm) {
 static char * format_request(request_rec * r, char ** parm) {
   return ap_escape_logitem(r->pool,
     (r->parsed_uri.password) ? STRCAT(r->pool, r->method, " ",
-#ifdef APACHE2
 	apr_uri_unparse(r->pool, &r->parsed_uri, 0),
-#else
-	ap_unparse_uri_components(r->pool, &r->parsed_uri, 0),
-#endif
 	r->assbackwards ? NULL : " ", r->protocol, NULL) :
     r->the_request);
 }
@@ -1663,14 +1539,14 @@ static char * get_sqlite3_pw(request_rec *r, char *user, osa_config_rec *m, cons
   }
 
   sqlite3_stmt *stmt;
-  int rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);    
+  int rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);
 
   if (rc != SQLITE_OK) {
       sqlite3_finalize(stmt);
       LOG_ERROR_2(APLOG_ERR, 0, r, "get_sqlite3_pw.sqlite3_query SQLite ERROR: %s: %s", sqlite3_errmsg(connection.handle), r->uri);
       return NULL;
   }
-  sqlite3_bind_text(stmt, 1, sql_safe_user, strlen(sql_safe_user), 0);    
+  sqlite3_bind_text(stmt, 1, sql_safe_user, strlen(sql_safe_user), 0);
   rc = sqlite3_step(stmt);
 
   /* if (result && (sqlite3_num_rows(result) == 1)) */
@@ -1734,13 +1610,13 @@ static char ** get_sqlite3_groups(request_rec *r, char *user, osa_config_rec *m)
   }
 
   sqlite3_stmt *stmt;
-  int rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);    
+  int rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);
 
   if (rc != SQLITE_OK) {
       sqlite3_finalize(stmt);
       LOG_ERROR_2(APLOG_ERR, 0, r, "get_sqlite3_pw.sqlite3_query SQLite ERROR: %s: %s", sqlite3_errmsg(connection.handle), r->uri);
       return NULL;
-  }    
+  }
   sqlite3_bind_text(stmt, 1, sql_safe_user, strlen(sql_safe_user), 0);
   int i = sqlite3_stmt_data_count(stmt);
   rc = sqlite3_step(stmt);
@@ -1819,7 +1695,7 @@ int checkQuotas( osa_config_rec *sec, request_rec *r,char *counterPrefix, char *
   /*    delete previous counters (outdated counters)*/
   /*      Create counter name from counterPrefix and current second value */
   sprintf(counterSecName,"%s$$$S=%d-%02d-%02dT%02d:%02d:%02d",counterPrefix,
-                timeinfo->tm_year+1900, 
+                timeinfo->tm_year+1900,
                 timeinfo->tm_mon+1,
                 timeinfo->tm_mday,
                 timeinfo->tm_hour,
@@ -1835,13 +1711,13 @@ int checkQuotas( osa_config_rec *sec, request_rec *r,char *counterPrefix, char *
 
   /*    2.1 retreive counter value for current "per second counter" */
   sprintf(query, "SELECT %s FROM %s WHERE %s='%s'", sec->counterValueField, sec->countersTable, sec->counterNameField, counterSecName);
-  sqlite3_rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);    
+  sqlite3_rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);
 
   if (sqlite3_rc != SQLITE_OK) {
     sqlite3_finalize(stmt);
     LOG_ERROR_2(APLOG_ERR, 0, r, "get_sqlite3_pw.sqlite3_query SQLite ERROR: %s: %s", sqlite3_errmsg(connection.handle), r->uri);
     return osa_error(r,"DB query error", 500);;
-  }    
+  }
   if (sqlite3_step(stmt) == SQLITE_ROW) {
     /*      2.1.1 counter was found, get current counter value */
     reqSec=strtol (sqlite3_column_text(stmt, 0),NULL,0);//atoi(data[0]);
@@ -1867,7 +1743,7 @@ int checkQuotas( osa_config_rec *sec, request_rec *r,char *counterPrefix, char *
   if (reqSec+1 > maxReqSec){
     char err[255];
     sprintf(err, "Maximum number of request (%s %lu/%lu) per second allowed exedeed", quotaScope, reqSec+1, maxReqSec);
-    
+
     return osa_error(r,err,httpStatusOver);
   }
 
@@ -1879,7 +1755,7 @@ int checkQuotas( osa_config_rec *sec, request_rec *r,char *counterPrefix, char *
   /*      Create counter name from counterPrefix and current day value */
   /*sprintf(counterDayName,"%s-D=%d",counterPrefix, timeinfo->tm_mday);*/
   sprintf(counterDayName,"%s$$$D=%d-%02d-%02d",counterPrefix,
-              timeinfo->tm_year+1900, 
+              timeinfo->tm_year+1900,
                 timeinfo->tm_mon+1,
                 timeinfo->tm_mday);
   /*      delete previous counters */
@@ -1890,13 +1766,13 @@ int checkQuotas( osa_config_rec *sec, request_rec *r,char *counterPrefix, char *
   }
   /*    3.1 retreive counter value for current "per day counter" */
   sprintf(query, "SELECT %s FROM %s WHERE %s='%s'", sec->counterValueField, sec->countersTable, sec->counterNameField, counterDayName);
-  sqlite3_rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);    
+  sqlite3_rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);
 
   if (sqlite3_rc != SQLITE_OK) {
     sqlite3_finalize(stmt);
     LOG_ERROR_2(APLOG_ERR, 0, r, "get_sqlite3_pw.sqlite3_query SQLite ERROR: %s: %s", sqlite3_errmsg(connection.handle), r->uri);
     return osa_error(r,"DB query error", 500);;
-  }    
+  }
   if (sqlite3_step(stmt) == SQLITE_ROW) {
     /*      3.1.1 counter was found, get current counter value */
     reqDay=strtol (sqlite3_column_text(stmt, 0),NULL,0);//atoi(data[0]);
@@ -1929,7 +1805,7 @@ int checkQuotas( osa_config_rec *sec, request_rec *r,char *counterPrefix, char *
   /* 4. Check per month quotas */
   /*      Create counter name from counterPrefix and current month value */
   sprintf(counterMonName,"%s$$$M=%d-%02d",counterPrefix,
-                timeinfo->tm_year+1900, 
+                timeinfo->tm_year+1900,
                 timeinfo->tm_mon+1);
   /*      delete previous counters */
   sprintf(query, "DELETE FROM %s WHERE  %s!='%s' and %s like '%s$$$M%%'",sec->countersTable, sec->counterNameField, counterMonName, sec->counterNameField, counterPrefix);
@@ -1939,13 +1815,13 @@ int checkQuotas( osa_config_rec *sec, request_rec *r,char *counterPrefix, char *
   }
   /*    4.1 retreive counter value for current "per month counter" */
   sprintf(query, "SELECT %s FROM %s WHERE %s='%s'", sec->counterValueField, sec->countersTable, sec->counterNameField, counterMonName);
-  sqlite3_rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);    
+  sqlite3_rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);
 
   if (sqlite3_rc != SQLITE_OK) {
     sqlite3_finalize(stmt);
     LOG_ERROR_2(APLOG_ERR, 0, r, "get_sqlite3_pw.sqlite3_query SQLite ERROR: %s: %s", sqlite3_errmsg(connection.handle), r->uri);
     return osa_error(r,"DB query error", 500);;
-  }    
+  }
   if (sqlite3_step(stmt) == SQLITE_ROW) {
     reqMon=strtol (sqlite3_column_text(stmt, 0),NULL,0);//atoi(data[0]);
   }else{
@@ -2013,14 +1889,14 @@ int checkGlobalQuotas( osa_config_rec *sec, request_rec *r){
     sprintf(query,"%s AND %s", query, sec->sqlite3GlobalQuotasCondition);
   }
 
-  sqlite3_rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);    
+  sqlite3_rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);
 
   if (sqlite3_rc != SQLITE_OK) {
     /*    2.2 No quota definition was found in DB ==> ERROR */
     sqlite3_finalize(stmt);
     LOG_ERROR_1(APLOG_ERR, 0, r, "checkGlobalQuotas: SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
     return osa_error(r,"checkGlobalQuotas: DB query error", 500);
-  }    
+  }
   if (sqlite3_step(stmt) == SQLITE_ROW) {
     /*    2.3 quota definition was found: get values */
     reqSec=strtol (sqlite3_column_text(stmt, 0),NULL,0); //atoi(data[0]);
@@ -2070,7 +1946,7 @@ int checkUserQuotas( osa_config_rec *sec, request_rec *r){
   sqlite3_stmt *stmt;
   int sqlite3_rc;
 
-    
+
 
 
   /* 1. create a counter prefix from quotas enabled resource resource name and username */
@@ -2083,7 +1959,7 @@ int checkUserQuotas( osa_config_rec *sec, request_rec *r){
     sprintf(query,"%s AND %s", query, sec->sqlite3UserQuotasCondition);
   }
 
-  sqlite3_rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);    
+  sqlite3_rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);
 
   if (sqlite3_rc != SQLITE_OK) {
     /*    2.2 No quota definition was found in DB ==> ERROR */
@@ -2100,7 +1976,7 @@ int checkUserQuotas( osa_config_rec *sec, request_rec *r){
     reqMonth=strtol (sqlite3_column_text(stmt, 2),NULL,0); //atoi(data[2]);
   }else{
     char err[100];
-    sprintf(err,"No quota defined for user %s with user quotas control is activated on resource %s",r->user, sec->resourceName); 
+    sprintf(err,"No quota defined for user %s with user quotas control is activated on resource %s",r->user, sec->resourceName);
     sqlite3_finalize(stmt);
     return osa_error(r,err, 500);
   }
@@ -2145,7 +2021,7 @@ int redirectToLoginForm(request_rec *r, char *cause){
 		curUrl=(char *)PCALLOC(r->pool, strlen(r->uri)+strlen(r->args)+2+strlen(requestedServer));
 		sprintf(curUrl,"%s%s?%s", requestedServer, r->uri, r->args);
 	}
-	
+
 	size_t encodedSize;
 	char *b64EncodedCurUrl=base64_encode(r->pool, curUrl, &encodedSize);
 	char *location;
@@ -2156,9 +2032,9 @@ int redirectToLoginForm(request_rec *r, char *cause){
 		urlPrm='?';
 	}
 
-		
+
 	if (cause==NULL){
-	
+
 		location=(char *)PCALLOC(r->pool, encodedSize+strlen(sec->cookieAuthLoginForm)+4+(sec->cookieAuthDomain!=NULL?strlen(sec->cookieAuthDomain)+4:0));
 		sprintf(location,"%s%cl=%s", sec->cookieAuthLoginForm, urlPrm, b64EncodedCurUrl);
 	}else{
@@ -2239,38 +2115,51 @@ int getTokenFromCookie(request_rec *r, char *token){
 		int i;
 		osa_config_rec *sec =(osa_config_rec *)ap_get_module_config (r->per_dir_config, &osa_module);
 
-		
-		
+
+
 		if ((cookies = TABLE_GET(r->headers_in, "Cookie")) != NULL) {
 			split((char*)cookies,';', &cookiesList);
 			for (i=0;i<cookiesList.tokensCount;i++){
 				spliting cookie;
 				split(trim(cookiesList.tokens[i]),'=',&cookie);
 				if (strcmp(trim(cookie.tokens[0]), sec->cookieAuthName)==0){
-		
+
 					strcpy(token, trim(cookie.tokens[1]));
 					i=cookiesList.tokensCount;
 				}
-				
+
 			}
 		}
+
 		if (token[0]==0){
 			if (!sec->basicAuthEnable){
 				if(sec->cookieAuthLoginForm==NULL){
 					//authCookie is the only authentication mode: no cookie=error
 					return osa_error(r,"No authentication cookie found",400);
 				}else{
-					return redirectToLoginForm(r, NULL);
+          if (!sec->allowAnonymous){
+						return redirectToLoginForm(r, NULL);
+					}else{
+						//BA is not available but anonymous access is allowed
+			 			r->user=(char *) PSTRDUP(r->pool, ANONYMOUS_USER_ALLOWED);
+						return OK;
+					}
 				}
 			}else{
 				if (TABLE_GET(r->headers_in, "Authorization")==NULL && sec->cookieAuthLoginForm!=NULL) {
-					return redirectToLoginForm(r,NULL);
+          if (!sec->allowAnonymous){
+						return redirectToLoginForm(r,NULL);
+					}else{
+						//BA is not available but not Authorization header and anonymous access is allowed
+			 			r->user=(char *) PSTRDUP(r->pool, ANONYMOUS_USER_ALLOWED);
+						return OK;
+					}
 				}
 				//basicAuth is also available, so let basic auth do the job
 				return DECLINED;
 			}
 		}
-		
+
 		return OK;
 }
 
@@ -2295,6 +2184,11 @@ int validateToken(request_rec *r , char *token, int *stillValidFor){
 		char query[MAX_STRING_LEN];
 		int rc;
 
+		if (token[0]==0){
+			return OK;
+		}
+    
+
 		sprintf(query,"DELETE FROM %s WHERE %s<CURRENT_TIMESTAMP",sec->cookieAuthTable, sec->cookieAuthValidityField);
 		if (sqlite3_query_execute(connection.handle, query) != 0) {
 			LOG_ERROR_1(APLOG_ERR, 0, r, "sqlite3_check_auth_cookie: SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
@@ -2302,33 +2196,33 @@ int validateToken(request_rec *r , char *token, int *stillValidFor){
 		}
 
 		sprintf(query,"SELECT %s,((julianday(%s) - julianday(CURRENT_TIMESTAMP)) * 86400.0)  FROM %s WHERE token='%s' AND %s>=CURRENT_TIMESTAMP",
-			sec->cookieAuthUsernameField, 
+			sec->cookieAuthUsernameField,
 			sec->cookieAuthValidityField,
 			sec->cookieAuthTable,
 			token,
 			sec->cookieAuthValidityField);
 
     sqlite3_stmt *stmt;
-    int sqlite3_rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);    
+    int sqlite3_rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);
 
     if (rc != SQLITE_OK) {
       sqlite3_finalize(stmt);
 			LOG_ERROR_1(APLOG_ERR, 0, r, "sqlite3_check_auth_cookie: SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
 			return osa_error(r,"DB query error",500);
 		}
-		
+
 		if (sqlite3_step(stmt) == SQLITE_ROW) {
 			// r->user=(char*)PCALLOC(r->pool, strlen(sqlite3_column_text(stmt, 0)));
 			// strcpy(r->user, sqlite3_column_text(stmt, 0));
  			r->user=(char *) PSTRDUP(r->pool, sqlite3_column_text(stmt, 0));
-			*stillValidFor=atoi(sqlite3_column_text(stmt, 1)); 
-			rc= OK;
+			*stillValidFor=atoi(sqlite3_column_text(stmt, 1));
+			rc = OK;
 		}else{
 			//received token was not found in DB
 			if (sec->cookieAuthLoginForm!=NULL){
 				//A login form is set up and we wre in the cookie auth schema,
 				//Assume that this schema is the prefred one and continue with it
-				
+
 				rc= redirectToLoginForm(r, NULL);
 			}else if (sec->basicAuthEnable){
 				deleteAuthCookie(r);
@@ -2355,12 +2249,12 @@ int generateToken(request_rec *r, char *receivedToken){
     sprintf(token,"%10d-%010d-%010d-%010d-%010d",  (unsigned)time(NULL), (rand()%1000000000)+1, (rand()%1000000000)+1, (rand()%1000000000)+1, (rand()%1000000000)+1);
 
 
-    sprintf(query,"INSERT INTO %s (%s, %s, %s) VALUES ('%s',DateTime(CURRENT_TIMESTAMP, '+%d minute'), '%s')", 
+    sprintf(query,"INSERT INTO %s (%s, %s, %s) VALUES ('%s',DateTime(CURRENT_TIMESTAMP, '+%d minute'), '%s')",
       sec->cookieAuthTable,
       sec->cookieAuthTokenField,
       sec->cookieAuthValidityField,
       sec->cookieAuthUsernameField,
-      token, sec->cookieAuthTTL, 
+      token, sec->cookieAuthTTL,
       r->user);
 
       if (sqlite3_query_execute(connection.handle, query) != 0) {
@@ -2369,7 +2263,7 @@ int generateToken(request_rec *r, char *receivedToken){
           return osa_error(r,"DB query error",500);
         }else{
           LOG_ERROR_1(APLOG_ERR, 0, r, "%s", "Generated token already exists: retry");
-        }	
+        }
       }else{
         done=1;
       }
@@ -2380,10 +2274,10 @@ int generateToken(request_rec *r, char *receivedToken){
     sprintf(query,"UPDATE %s SET %s=DateTime(CURRENT_TIMESTAMP, '+%d second') WHERE %s='%s'",
       sec->cookieAuthTable,
       sec->cookieAuthValidityField,
-      COOKIE_BURN_SURVIVAL_TIME, 
+      COOKIE_BURN_SURVIVAL_TIME,
       sec->cookieAuthTokenField,
       receivedToken);
-      
+
     if (sqlite3_query_execute(connection.handle, query) != 0) {
       LOG_ERROR_1(APLOG_ERR, 0, r, "sqlite3_check_auth_cookie: SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
       return osa_error(r,"DB query error",500);
@@ -2433,7 +2327,7 @@ static int sqlite3_authenticate_cookie_user(request_rec *r){
         }
       }
       Rc=getTokenFromCookie(r, token);
-      if (Rc != OK){
+      if (Rc != OK ){
         return Rc;
       }
 
@@ -2444,7 +2338,7 @@ static int sqlite3_authenticate_cookie_user(request_rec *r){
       }
       if ( ((sec->cookieAuthTTL*60)-stillValidFor) >COOKIE_BURN_SURVIVAL_TIME){
         //We received a request with a token created for more than COOKIE_BURN_SURVIVAL_TIME secs
-        //re-generate a new one and burn the received one 
+        //re-generate a new one and burn the received one
 
         Rc=generateToken(r, token);
         if (Rc != OK){
@@ -2452,7 +2346,7 @@ static int sqlite3_authenticate_cookie_user(request_rec *r){
         }
       }
 
-        
+
   }else{
     Rc=DECLINED;
   }
@@ -2511,7 +2405,7 @@ static int sqlite3_check_quotas(request_rec *r){
       rc= checkGlobalQuotas(sec,r);
 
     }
-    
+
 
     return rc;
   }else{
@@ -2529,14 +2423,14 @@ int get_basic_auth_creds(request_rec *r, char **pwd){
     return 0;
   }
 
-  
+
   spliting authHeaderWords;
   split(authorizationHeader, ' ', &authHeaderWords);
   if (authHeaderWords.tokensCount == 2 && strcmp(authHeaderWords.tokens[0],"Basic")==0){
     unsigned char decoded[255];
     size_t len;
     base64_decode(authHeaderWords.tokens[1],&len, decoded);
-    
+
 
     int i;
     for (i=0;i<len && decoded[i] != ':';i++);
@@ -2566,9 +2460,9 @@ int send_request_basic_auth(request_rec *r){
 	char realm[255];
 
   apr_table_set(r->err_headers_out, "Server", "OSA");
-  
+
 	osa_config_rec *sec = (osa_config_rec *)ap_get_module_config(r->per_dir_config, &osa_module);
-  
+
 	sprintf(realm,"Basic realm=\"%s\"", sec->authName);
 	apr_table_set(r->err_headers_out, "WWW-Authenticate", realm);
 	return 0;
@@ -2595,25 +2489,26 @@ static int sqlite3_authenticate_basic_user (request_rec *r)
 
 
   if (!sec->sqlite3Enable)	/* no sqlite3 authorization */
-    return DECLINED;	
+    return DECLINED;
 
 	if (sec->cookieAuthEnable){
 		if (r->user != NULL) {
 			return DECLINED;
 		}
-			
+
 	}
 	if (sec->basicAuthEnable && r->user==NULL){
-				
+
 			  if ((res = get_basic_auth_creds (r, (char**)&sent_pw)) == 0){
 				if (sec->allowAnonymous){
+          r->user=(char *) PSTRDUP(r->pool, ANONYMOUS_USER_ALLOWED);
 					return OK;
 				}else{
 					send_request_basic_auth(r);
 					return NOT_AUTHORIZED;
 				}
 			  }
-			  
+
 	}
 	if (!sec->cookieAuthEnable && !sec->basicAuthEnable){
 		return DECLINED;
@@ -2633,7 +2528,7 @@ static int sqlite3_authenticate_basic_user (request_rec *r)
     }
     if (!enc_data) {  /* Entry was not found in the list */
       char authenticationError[255];
-      
+
       sprintf(authenticationError,"invalid encryption method %s", sec->sqlite3EncryptionField);
       LOG_ERROR_1(APLOG_NOERRNO|APLOG_ERR, 0, r,"%s",  authenticationError);
       //ap_note_basic_auth_failure(r);
@@ -2646,11 +2541,7 @@ static int sqlite3_authenticate_basic_user (request_rec *r)
   else
     enc_data = &encryptions[0];
 
-#ifdef APACHE2
   user = r->user;
-#else
-  user = r->connection->user;
-#endif
 
 
   if (enc_data->salt_status == NO_SALT || !sec->sqlite3SaltField)
@@ -2722,21 +2613,23 @@ static int sqlite3_authenticate_basic_user (request_rec *r)
 /*
  * check if user is member of at least one of the necessary group(s)
  */
-static int sqlite3_check_auth(request_rec *r)
+authz_status sqlite3_check_auth(request_rec *r, const char *require_line, const void *parsed_require_line)
 {
 
   osa_config_rec *sec =
     (osa_config_rec *)ap_get_module_config(r->per_dir_config,
 						  &osa_module);
-					  
-	if (!sec->sqlite3Enable){
-		return DECLINED;
-	}
-#ifdef APACHE2
+
+  if (!sec->sqlite3Enable || apr_strnatcasecmp((const char *) ap_auth_type(r), "osa") != 0  ){
+  	return AUTHZ_GRANTED;
+  }
+
+  //Whe have a rule to check but r->user is empty: force apache to trigger authent
+  if (!r->user || r->user[0]==0) return AUTHZ_DENIED_NO_USER;
+
+  //r->user == ANONYMOUS_USER_ALLOWED i.e authent has aleady been done and no user were found but anonymous access is allowed
+  if (apr_strnatcmp((const char *)r->user, ANONYMOUS_USER_ALLOWED)==0) return AUTHZ_GRANTED;
   char *user = r->user;
-#else
-  char *user = r->connection->user;
-#endif
   int method = r->method_number;
 
 /*#ifdef APACHE2
@@ -2753,11 +2646,10 @@ static int sqlite3_check_auth(request_rec *r)
   if (!sec->sqlite3GroupField) return DECLINED; /* not doing groups here */
   //if (!reqs_arr) return DECLINED; /* no "require" line in access config */
 
-  if (!user || user[0]==0) return DECLINED;
   /* if the group table is not specified, use the same as for password */
   if (!sec->sqlite3grptable) sec->sqlite3grptable = sec->sqlite3pwtable;
 
-   
+
   const char *requireClause = sec->require;
   const char *t, *want;
   while (requireClause != NULL && requireClause[0]!=0){
@@ -2768,14 +2660,14 @@ static int sqlite3_check_auth(request_rec *r)
     want = ap_getword_conf(r->pool, &requireClause);
 
     if (!strcmp(want, "valid-user")) {
-      return OK;
+      return AUTHZ_GRANTED;
     }
 
     if (!strcmp(want, "user")) {
       while (requireClause != NULL && requireClause[0]!=0) {
 			want = ap_getword_conf(r->pool, &requireClause);
 			if (strcmp(user, want) == 0) {
-				return OK;
+				return AUTHZ_GRANTED;
 			}
       }
     }else if(!strcmp(want,"group")) {
@@ -2790,8 +2682,8 @@ static int sqlite3_check_auth(request_rec *r)
           want = ap_getword_conf(r->pool, &requireClause);
           /* compare against each group to which this user belongs */
           while(groups[i]) {	/* last element is NULL */
-            if(!strcmp(groups[i],want)) {
-              return OK;		/* we found the user! */
+            if(!strcmp(groups[i], want)) {
+              return AUTHZ_GRANTED;		/* we found the user! */
             }
             ++i;
           }
@@ -2812,7 +2704,7 @@ static int sqlite3_check_auth(request_rec *r)
         deleteAuthCookie(r);
         send_request_basic_auth(r);
       }
-      return osa_error(r,authorizationError,NOT_AUTHORIZED);
+      return osa_error(r,authorizationError, NOT_AUTHORIZED);
   }
   return DECLINED;
 }
@@ -2824,12 +2716,12 @@ static int sqlite3_clean_module(request_rec *r){
 
 static int sqlite3_register_hit(request_rec *r)
 {
- 
+
 
   osa_config_rec *sec =
     (osa_config_rec *)ap_get_module_config(r->per_dir_config,
 						  &osa_module);
-	
+
 	if (sec->logHit ){
 		if (connection.handle==NULL){
 			/* connect database */
@@ -2849,9 +2741,9 @@ static int sqlite3_register_hit(request_rec *r)
 		char query[2048];
 
 
-		
+
 		msg[0]=0;
-		
+
 		char *S= apr_pstrdup(r->pool, apr_table_get(r->err_headers_out, OSA_ERROR_HEADER));
 		if (S==NULL||strcmp(S,"(null)")==0){
 			/* Particular case: authent was required, but module succed to handle and authent failed (thandel case where no creds were in request) */
@@ -2892,7 +2784,7 @@ static int sqlite3_forward_identity(request_rec *r)
     (osa_config_rec *)ap_get_module_config(r->per_dir_config,
 						  &osa_module);
 
-	
+
 	if (sec->indentityHeadersMapping){
 		if (connection.handle==NULL){
 			/* connect database */
@@ -2900,7 +2792,7 @@ static int sqlite3_forward_identity(request_rec *r)
 				return osa_error(r,"Unable to connect database", 500);
 			}
 		}
-	      	
+
 
 		spliting coupleList;
 		split(sec->indentityHeadersMapping,';',&coupleList);
@@ -2910,21 +2802,21 @@ static int sqlite3_forward_identity(request_rec *r)
 		query[0]='\0';
 		fields[0]='\0';
 		headersMappingList.listCount=0;
-		
-		
+
+
 		//Explode configuration string in set (header name/field name)
 		for (i=0;i<coupleList.tokensCount;i++){
-			spliting mapping; 
+			spliting mapping;
 			split(coupleList.tokens[i],',',&mapping);
 			strcpy(headersMappingList.list[i].key, mapping.tokens[1]);
-			
+
 			headersMappingList.listCount++;
 			if (i>0){
 				strcat(fields,",");
 			}
 			strcat(fields, mapping.tokens[0]);
 		}
-		
+
 		if (r->user != NULL){
 			//We found a user in request (i.e successfull authentication ), search the user in DB
 			sprintf(query,"SELECT %s FROM %s WHERE upper(%s)=upper(?)",
@@ -2934,33 +2826,33 @@ static int sqlite3_forward_identity(request_rec *r)
         strcat(query, str_format(r, sec->sqlite3UserCondition));
       }
       sqlite3_stmt *stmt;
-      int sqlite3_rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);    
-		
+      int sqlite3_rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);
+
       if (sqlite3_rc != SQLITE_OK) {
           sqlite3_finalize(stmt);
 					LOG_ERROR_1(APLOG_ERR, 0, r, "sqlite3_forward_identity: SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
 					return osa_error(r,"DB query error",500);
 			}
-      sqlite3_bind_text(stmt, 1, r->user, strlen(r->user), 0);    
-      
+      sqlite3_bind_text(stmt, 1, r->user, strlen(r->user), 0);
+
 			if (sqlite3_step(stmt) == SQLITE_ROW) {
 				int i;
 				char headerName[500];
 				char headerValue[500];
 				for (i=0;i<headersMappingList.listCount;i++){
-					
+
 					if (sqlite3_column_text(stmt, i)){
 						strcpy(headersMappingList.list[i].val, sqlite3_column_text(stmt, i));
 					}else{
 						headersMappingList.list[i].val[0]=0;
 					}
-					
+
 					apr_table_setn(r->headers_in, headersMappingList.list[i].key, headersMappingList.list[i].val);
-									
+
 				}
 			}else{
 		    LOG_ERROR_1(APLOG_ERR, 0, r, "User %s not found in DB", r->user);
-        
+
       }
 			sqlite3_finalize(stmt);
 		}else{
@@ -2977,22 +2869,33 @@ static int sqlite3_forward_identity(request_rec *r)
 	return OK;
 }
 #ifdef APACHE2
+static const authz_provider authz_osa_provider =
+{
+	&sqlite3_check_auth,
+	NULL,
+};
 static void register_hooks(POOL *p)
 {
     build_decoding_table();
 	srand ( time(NULL) );
 
-	//ap_hook_check_user_id(sqlite3_authenticate_basic_user, NULL, NULL, APR_HOOK_MIDDLE);
-	//ap_hook_auth_checker(sqlite3_check_auth, NULL, NULL, APR_HOOK_MIDDLE);
-	ap_hook_fixups(sqlite3_authenticate_cookie_user, NULL, NULL, APR_HOOK_FIRST);
-	ap_hook_fixups(sqlite3_authenticate_basic_user, NULL, NULL, APR_HOOK_FIRST);
-	ap_hook_fixups(sqlite3_check_auth, NULL, NULL, APR_HOOK_FIRST);
+
+  ap_register_auth_provider(p, AUTHZ_PROVIDER_GROUP, "group",
+		AUTHZ_PROVIDER_VERSION,
+		&authz_osa_provider, AP_AUTH_INTERNAL_PER_URI);
+	ap_register_auth_provider(p, AUTHZ_PROVIDER_GROUP, "valid-user",
+		AUTHZ_PROVIDER_VERSION,
+		&authz_osa_provider, AP_AUTH_INTERNAL_PER_URI);
+
+
+  ap_hook_check_authn(sqlite3_authenticate_cookie_user, NULL, NULL, APR_HOOK_MIDDLE, AP_AUTH_INTERNAL_PER_URI);
+	ap_hook_check_authn(sqlite3_authenticate_basic_user, NULL, NULL, APR_HOOK_MIDDLE, AP_AUTH_INTERNAL_PER_URI);
 	ap_hook_fixups(sqlite3_check_quotas, NULL, NULL, APR_HOOK_FIRST);
 	ap_hook_fixups(sqlite3_forward_identity, NULL, NULL, APR_HOOK_LAST);
 	ap_hook_log_transaction( sqlite3_register_hit, NULL, NULL, APR_HOOK_FIRST);
 	ap_hook_log_transaction( sqlite3_clean_module, NULL, NULL, APR_HOOK_LAST);
-	
-	
+
+
 }
 #endif
 
@@ -3031,5 +2934,3 @@ module osa_module = {
    NULL				/* post read-request */
 };
 #endif
-
-

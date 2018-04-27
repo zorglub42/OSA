@@ -81,13 +81,13 @@ SSLStaplingCache        shmcb:/var/run/ocsp(128000)
 		<Location  />
 
 			Include /etc/ApplianceManager/osa-endpoints-settings.inc	
-			AuthBasicAuthoritative Off
 			OSAAuthoritative On
 			OSAEnable on
 			OSABasicAuthEnable On
 			OSACookieAuthEnable On
 			OSACookieAuthName OSAAuthToken
 			OSACookieAuthTTL 60
+			AuthType OSA
 			OSARequire group  Admin
 			OSAIdentityHeadersMapping userName,X_REMOTE_USER;firstName,X_OSA_FIRSTNAME;lastName,X_OSA_LASTNAME;entity,X_OSA_ENTITY;emailAddress,X_OSA_EMAIL
 			

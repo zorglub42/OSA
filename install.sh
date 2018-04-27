@@ -76,11 +76,7 @@ cd $INSTALL_DIR/RunTimeAppliance/shell
 EOF
 chmod u+x $PWD/update.sh
 
-if [ "$RDBMS" == "mysql" ] ; then
-	MODULE_SRC_DIR=$INSTALL_DIR/RunTimeAppliance/apache/module
-else
-	MODULE_SRC_DIR=$INSTALL_DIR/RunTimeAppliance/apache/module/sqlite
-fi
+MODULE_SRC_DIR=$INSTALL_DIR/RunTimeAppliance/apache/module/$RDBMS
 if [ $COMPILE_MODULE -eq 1 ] ; then
 	cd $MODULE_SRC_DIR
 	aclocal

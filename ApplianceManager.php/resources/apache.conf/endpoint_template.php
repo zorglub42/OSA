@@ -50,7 +50,7 @@ if (isset($FORWARD_AUTH_TOKEN) && $FORWARD_AUTH_TOKEN  ) {
         echo "\tRequestHeader add Authorization %{ORGAUTH}e\n";
 }
 if ($USER_AUTHENTICATION_ENABLE=="On") {
-    echo "\tAuthBasicAuthoritative Off\n";
+    //echo "\tAuthBasicAuthoritative Off\n";
     echo "\tOSAAuthoritative On\n";
     echo "\tOSAEnable on\n";
 
@@ -71,10 +71,11 @@ if ($USER_AUTHENTICATION_ENABLE=="On") {
             echo "\tOSACookieAuthLoginForm " . $LOGIN_FORM_URI . "\n";
         }
     }
+    echo "\tAuthType OSA\n";
     if ($GROUP_NAME != "valid-user") {
-        echo "\tOSARequire group  " . $GROUP_NAME ."\n";
+        echo "\tRequire group  " . $GROUP_NAME ."\n";
     } else {
-        echo "\tOSARequire valid-user\n";
+        echo "\tRequire valid-user\n";
     }
     if ($ANONYMOUS_ALLOWED) {
         echo "\tOSAAllowAnonymous On\n";

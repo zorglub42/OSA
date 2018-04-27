@@ -52,7 +52,7 @@ fi
 
 $APACHE_INIT_SCRIPT stop
 echo $APACHE_APXS -c -L$MYSQL_LIB_DIR -I/usr/include/mysql -lmysqlclient -lm -lz mod_osa.c 
-$APACHE_APXS -c -L$MYSQL_LIB_DIR -I/usr/include/mysql -lmysqlclient -lm -lz mod_osa.c
+$APACHE_APXS -c -L$MYSQL_LIB_DIR -I/usr/include/mysql -lmysqlclient -lm -lz mod_osa.c  ../base/osa_base.c
 if [ $? -ne 0 ]; then
 	exit 1
 fi
