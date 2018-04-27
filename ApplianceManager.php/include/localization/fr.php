@@ -176,6 +176,8 @@ $strings["user.quotas.reqMonth.tooltip"]
      "passer sur le service";
 $strings["user.lastTokenLogin.tooltip"]
     ="Dernière fois que l'utilisateur s'est connecté en utilisant un cookie/token";
+$strings["user.addGroups.tooltip"]
+    ="Ajouter l'utilisateur dans les groupes séléctionnés";
 
 /* Details*/
 $strings["user.properties.new"]="Proriétés du nouvel utilisateur";

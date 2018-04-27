@@ -36,7 +36,7 @@ require_once "../../include/Localization.php";
 							</div>
 						</div>
 						<div class="list-group" id="data" >
-							<div class="row" id="rowTpl" style="display:none">
+							<div class="row" id="rowTpl" style="display:none"">
 								<div class="col-md-4 col-xs-4 ellipsis" title="{groupList[i].groupName}">
 									{groupList[i].groupName}
 								</div>
@@ -55,7 +55,7 @@ require_once "../../include/Localization.php";
 						<div class="row">
 							<div class="col-md-12 col-xs-12">
 								<label for="avaialableGroupList"><?php echo Localization::getString("user.label.availableGroups")?></label><br>
-								<select id="availableGroupsList" title="{availableGroupsToolTip}" name="availableGroupsList" id="availableGroupsList" size="15" multiple  class="availableGroupsList">
+								<select id="availableGroupsList" title="{availableGroupsToolTip}" name="availableGroupsList" id="availableGroupsList" size="15" multiple  class="availableGroupsList"  ondblclick="addGroupToUser('{currentUser.uri}')">
 								</select>
 							</div>
 							<div class="row">

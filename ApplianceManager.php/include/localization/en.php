@@ -192,6 +192,8 @@ $strings["user.label.endDate"]="End date";
 $strings["user.label.additionalData"]="Additionnal data";
 $strings["user.label.membership"]="Member of";
 $strings["user.label.lastTokenLogin"]="Last login (cookie)";
+$strings["user.addGroups.tooltip"]
+    ="Add this user in selected groups";
 
 
 
