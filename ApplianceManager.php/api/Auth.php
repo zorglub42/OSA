@@ -44,7 +44,7 @@ require_once '../include/Func.inc.php';
 require_once '../include/PDOFunc.php';
 require_once '../include/HTTPClient.php';
 require_once '../include/Settings.ini.php';
-
+require_once 'Users.php';
 /**
  * Authentication management
  * 
@@ -134,7 +134,7 @@ class Auth
             
             $headers=Array("Accept: application/json");
             $httpResponse=$httpClient->post(
-                osaAdminUri . "/auth/token",
+                osaAdminUri . "/auth/token/me",
                 "",
                 $headers,
                 $userName,
@@ -188,9 +188,11 @@ class Auth
     }
 
     /**
-     * Generate authentication token for authenticated user
+     * Generate authentication a token for authenticated user
      * 
-     * @url POST /token 
+     * Generate authentication a token for authenticated user (current user)
+     * 
+     * @url POST /token/me 
      * 
      * @return AuthToken Token
      */
@@ -228,6 +230,59 @@ class Auth
                 $timeInterval = "+" . authTokenTTL . " minute";
             }
             $stmt->execute(array($token, $timeInterval, $requestor));
+        }catch (Exception $e){
+            throw new RestException(500, $e->getMessage());
+        }
+        return Array("token" => $token);
+    
+    }
+    /**
+     * Generate authentication a token for any user
+     * 
+     * Generate authentication a token for any user
+     * 
+     * @param string $userName User id for who we want a token
+     * 
+     * @url POST /token/{userName}
+     * 
+     * @return AuthToken Token
+     */
+    function generateForAny($userName)
+    {
+
+        $userService = new Users();
+        $user = $userService->getOne($userName);
+ 
+        $token=time() . $this->_getAleat() . 
+                        $this->_getAleat() .
+                        $this->_getAleat() .
+                        $this->_getAleat();
+        
+
+    
+        try {
+            $db=openDBConnection();
+            
+            $db->exec(
+                "DELETE FROM authtoken ".
+                "WHERE validUntil<" . getSQLKeyword("now")
+            );
+
+            $strSQL="";
+            $strSQL=$strSQL . "INSERT INTO authtoken (token, validUntil, userName) ";
+            $strSQL=$strSQL . "VALUES (";
+            $strSQL=$strSQL . "        ?,"; 
+            $strSQL=$strSQL . "        " . getSQlKeyword("add_minute") . " , ";
+            $strSQL=$strSQL . "        ?";
+            $strSQL=$strSQL . ")";
+
+            $stmt=$db->prepare($strSQL);
+            if (RDBMS == "mysql") {
+                $timeInterval = authTokenTTL;
+            } else {
+                $timeInterval = "+" . authTokenTTL . " minute";
+            }
+            $stmt->execute(array($token, $timeInterval, $userName));
         }catch (Exception $e){
             throw new RestException(500, $e->getMessage());
         }
