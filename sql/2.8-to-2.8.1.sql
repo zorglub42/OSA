@@ -27,9 +27,7 @@ SELECT 'ApplianceManagerAdminAuthTokenAnyUser',reqSec,reqDay,reqMonth,frontEndEn
 FROM   services
 WHERE serviceName='ApplianceManagerAdminAuthToken';
 
-
 UPDATE services
-SET        frontEndEndPoint=replace(frontEndEndPoint,'/token','/token/me'),
-           backEndEndPoint=replace(backEndEndPoint,'/token','/token/me')
+SET	   frontEndEndPoint=replace(frontEndEndPoint,'/token','/token/me'),
+	   backEndEndPoint=replace(backEndEndPoint,'/token','/token/me')
 WHERE  serviceName='ApplianceManagerAdminAuthToken';
-
