@@ -26,3 +26,10 @@ INSERT INTO `services` (`serviceName`,`reqSec`,`reqDay`,`reqMonth`,`frontEndEndP
 SELECT 'ApplianceManagerAdminAuthTokenAnyUser',reqSec,reqDay,reqMonth,frontEndEndPoint,isGlobalQuotasEnabled,isUserQuotasEnabled,'Admin',backEndEndPoint,backEndUsername,backEndPassword,isIdentityForwardingEnabled,isPublished,isHitLoggingEnabled,isUserAuthenticationEnabled
 FROM   services
 WHERE serviceName='ApplianceManagerAdminAuthToken';
+
+
+UPDATE services
+SET        frontEndEndPoint=replace(frontEndEndPoint,'/token','/token/me'),
+           backEndEndPoint=replace(backEndEndPoint,'/token','/token/me')
+WHERE  serviceName='ApplianceManagerAdminAuthToken';
+
