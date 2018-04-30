@@ -814,6 +814,7 @@ function createSqliteSchema(){
 		cat  ../../sql/sqlite/creation.sql|  sed "s/PRIVATE_VHOST_PORT/$PRIVATE_VHOST_PORT/g">/tmp/$$.sql
 		echo "sqlite3 ../../sql/sqlite/data/osa.db </tmp/$$.sql" >db_schema.log
 
+		mkdir -p ../../sql/sqlite/data 
 		sqlite3 ../../sql/sqlite/data/osa.db </tmp/$$.sql >>db_schema.log
 	else
 		#Have a look to see if DB needs upgrade
