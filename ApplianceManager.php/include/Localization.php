@@ -112,8 +112,8 @@ class Localization
                 }
             }
             unset($strings);
-            include "localization/default.php";
-            self::$lastModify=filemtime("localization/default.php");
+            include dirname(__FILE__) . "/localization/default.php";
+            self::$lastModify=filemtime(dirname(__FILE__) . "/localization/default.php");
             self::$_strings=$strings;
         }
         if (isset(self::$_strings[$string])) {
