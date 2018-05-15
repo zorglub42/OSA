@@ -71,7 +71,7 @@ if ($USER_AUTHENTICATION_ENABLE=="On") {
             echo "\tOSACookieAuthLoginForm " . $LOGIN_FORM_URI . "\n";
         }
     }
-    echo "\tAuthType OSA\n";
+    //echo "\tAuthType OSA\n";
     if ($GROUP_NAME != "valid-user") {
         echo "\tRequire group  " . $GROUP_NAME ."\n";
     } else {

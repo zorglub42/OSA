@@ -24,43 +24,7 @@
 #else
 	#define _AES 0
 #endif
-/* set any defaults not specified at compile time */
-#ifdef HOST				/* Host to use */
-	#define _HOST STRING(HOST)
-#else
-	#define _HOST 0			/* Will default to localhost */
-#endif
 
-/* Apache 1.x defines the port as a string, but Apache 2.x uses an integer */
-#ifdef PORT				/* The port to use */
-	#define _PORT PORT
-#else
-	#define _PORT MYSQL_PORT		/* Use the one from MySQL */
-#endif
-
-#ifdef SOCKET				/* UNIX socket */
-	#define _SOCKET STRING(SOCKET)
-#else
-	#define _SOCKET MYSQL_UNIX_ADDR
-#endif
-
-#ifdef USER				/* Authorized user */
-	#define _USER STRING(USER)
-#else
-	#define _USER 0			/* User must be specified in config */
-#endif
-
-#ifdef PASSWORD				/* Default password */
-	#define _PASSWORD STRING(PASSWORD)
-#else
-	#define _PASSWORD 0			/* Password must be specified in config */
-#endif
-
-#ifdef DB				/* Default database */
-	#define _DB STRING(DB)
-#else
-	#define _DB "test"			/* Test database */
-#endif
 
 #ifdef PWTABLE				/* Password table */
 	#define _PWTABLE STRING(PWTABLE)
@@ -166,6 +130,13 @@
 
 
 
+#ifndef TRUE
+#define TRUE 1
+#endif
+#ifndef FALSE
+#define FALSE 0
+#endif
+
 
 #include <time.h>
 #include <stdio.h>
@@ -247,7 +218,81 @@ typedef struct {		/* User formatting patterns */
 } format;
 
 
+typedef struct  {
+	void *db_server;		/* host name of db server */
+	char *osapwtable;		/* user password table */
+	char *osagrptable;		/* user group table */
+	char *osaNameField;		/* field in password table with username */
+	char *osaPasswordField;	/* field in password table with password */
+	char *osaGroupField;	/* field in group table with group name */
+	char *osaGroupUserNameField;/* field in group table with username */
+	char *osaEncryptionField;   /* encryption type for passwords */
+	char *osaSaltField;		/* salt for scrambled password */
+	int  osaKeepAlive;		/* keep connection persistent? */
+	int  osaAuthoritative;	/* are we authoritative? */
+	int  osaNoPasswd;		/* do we ignore password? */
+	int  osaEnable;		/* do we bother trying to auth at all? */
+	char *osaUserCondition; 	/* Condition to add to the user where-clause in select query */
+	char *osaGroupCondition; 	/* Condition to add to the group where-clause in select query */
+	char *osaCharacterSet;	/* MySQL character set to use */
+	char *reqSecField;		/* "Per second quota" fied name */
+	char *reqDayField;		/* "Per day quota" fied name */
+	char *reqMonthField;		/* "Per month quota" fied name */
+
+	/* Quotas Management */
+	int checkGlobalQuotas;	/* check global quotas for the resource */
+	int checkUserQuotas;		/* check per user quotas for the resource */
+	char *resourceName;		/* Resource on with quota are managed */
+	char *osaResourceNameField;	/* Field in tables containing resource name */
+	char *osaPerSecField;	/* Field of "per second" quotas */
+	char *osaPerDayField;	/* Field of "per day" quotas */
+	char *osaPerMonthField;	/* Field of "per month" quotas */
+	/* global quotas */
+	char *osaGlobalQuotasTable;	/* Table containing Global quotas definition */
+	char *osaGlobalQuotasCondition;	/* Condition to add to the GlobalQuotas where-clause in select query */
+	/* per user quotas */
+	char *osaUserQuotasTable;	/* Table containing per user quotas definition */
+	char *osaUserQuotasCondition;  /* Condition to add to the PerUserQuotas where-clause in select query */
+	/* quotas counters */
+	char *countersTable;		/* Table containing counters */
+	char *counterNameField; 	/* column for counter name */
+	char *counterValueField;	/* column for counter value */
+	
+	
+	/* Identity forwarding */
+	char *indentityHeadersMapping; /* Forward user identity */
+	
+	/* Log HIT in DB flag */
+	int logHit;
+
+	char *serverName;
+
+	
+	/* Cookie authentcation relatives */
+	int cookieAuthEnable;
+	int cookieAuthTTL;
+	char *cookieAuthName;
+	char *cookieAuthLoginForm;
+	char *cookieAuthDomain;
+	int cookieAuthBurn;
+	char *cookieAuthTable;
+	char *cookieAuthUsernameField;
+	char *cookieAuthTokenField;
+	char *cookieAuthValidityField;
+	
+	
+	/* Basic auth relative */
+	int basicAuthEnable;
+	char *require;
+	char *authName;
+	/*Allow unauthenticated access even if (Require && (OSABasicAuthEnable||OSACookieAuthEnable)) are set. In such a case, Identity is forwarded*/
+	int allowAnonymous;
+	
+ } osa_config_rec;
+
+
 stringKeyValList headersMappingList;
+module osa_module;
 
 
 
@@ -264,10 +309,99 @@ void split(char *str, char delimiter, spliting *s);
 char *replace(char *st, char *orig, char *repl);
 int renderErrorBody(request_rec *r, char *errMSG, int status);
 void dumpSOAPFault(request_rec *r, char *errMSG);
-static void dumpXMLError(request_rec *r, char *errMSG);
-static void dumpJSONError(request_rec *r, char *errMSG);
-static void dumpTextError(request_rec *r, char *errMSG);
-static void dumpHTMLError(request_rec *r, char *errMSG);
+void dumpXMLError(request_rec *r, char *errMSG);
+void dumpJSONError(request_rec *r, char *errMSG);
+void dumpTextError(request_rec *r, char *errMSG);
+void dumpHTMLError(request_rec *r, char *errMSG);
 int osa_error(request_rec *r, char *errMSG, int status);
 
 
+char hex2chr(char * in);
+char *bin2hex (POOL *pool, const char * bin, short len);
+
+/* Encryption methods used.  The first entry is the default entry */
+short pw_md5(POOL * pool, const char * real_pw, const char * sent_pw, const char * salt);
+short pw_crypted(POOL * pool, const char * real_pw, const char * sent_pw, const char * salt);
+#if _AES
+short pw_aes(POOL * pool, const char * real_pw, const char * sent_pw, const char * salt);
+#endif
+short pw_sha1(POOL * pool, const char * real_pw, const char * sent_pw, const char * salt);
+short pw_plain(POOL * pool, const char * real_pw, const char * sent_pw, const char * salt);
+
+char * format_remote_host(request_rec * r, char ** parm);
+char * format_remote_ip(request_rec * r, char ** parm);
+char * format_filename(request_rec * r, char ** parm);
+char * format_server_name(request_rec * r, char ** parm);
+char * format_server_hostname(request_rec * r, char ** parm);
+char * format_protocol(request_rec * r, char ** parm);
+char * format_method(request_rec * r, char ** parm);
+char * format_args(request_rec * r, char ** parm);
+char * format_request(request_rec * r, char ** parm);
+char * format_uri(request_rec * r, char ** parm);
+char * format_percent(request_rec * r, char ** parm);
+char * format_cookie(request_rec * r, char ** parm);
+
+char * str_format(request_rec * r, char * input);
+char *trim(char *str);
+int get_basic_auth_creds(request_rec *r, char **pwd);
+int authenticate_basic_user (request_rec *r);
+int redirectToLoginForm(request_rec *r, char *cause);
+int haveOSACookie(request_rec *r);
+int getTokenFromCookie(request_rec *r, char *token);
+void deleteAuthCookie(request_rec *r);
+
+int authenticate_cookie_user(request_rec *r);
+int send_request_basic_auth(request_rec *r);
+
+
+int check_quotas(request_rec *r);	
+int check_auth(request_rec *r);
+authz_status check_auth_base(request_rec *r, const char *require_line, const void *parsed_require_line);
+
+
+
+void register_hooks(POOL *p);
+
+void P_db(osa_config_rec *sec, request_rec *r, char *sem); //To implement for specific RDMBS
+void V_db(osa_config_rec *sec, request_rec *r, char *sem); //To implement for specific RDMBS
+void *create_osa_dir_config (POOL *p, char *d); //To implement for specific RDMBS
+char * get_db_pw(request_rec *r, char *user, osa_config_rec *m, const char *salt_column, const char ** psalt); //To implement for specific RDMBS
+int generateToken(request_rec *r, char *receivedToken);//To implement for specific RDMBS
+int validateToken(request_rec *r , char *token, int *stillValidFor);//To implement for specific RDMBS
+char ** get_groups(request_rec *r, char *user, osa_config_rec *m); //To implement for specific RDMBS
+int checkUserQuotas( osa_config_rec *sec, request_rec *r); 		//To implement for specific RDMBS
+int checkGlobalQuotas( osa_config_rec *sec, request_rec *r);	//To implement for specific RDMBS
+int register_hit(request_rec *r); //To implement for specific RDMBS
+int forward_identity(request_rec *r); //To implement for specific RDMBS
+
+static encryption encryptions[] = {{"crypt", SALT_OPTIONAL, pw_crypted},
+						 {"none", NO_SALT, pw_plain},
+						 {"md5", NO_SALT, pw_md5},
+#if _AES
+						 {"aes", SALT_REQUIRED, pw_aes},
+#endif
+						 {"sha1", NO_SALT, pw_sha1}};
+
+
+
+static format formats[] = {{'h', format_remote_host},
+	            {'a', format_remote_ip},
+		    {'f', format_filename},
+		    {'V', format_server_name},
+		    {'v', format_server_hostname},
+		    {'H', format_protocol},
+		    {'m', format_method},
+		    {'q', format_args},
+		    {'r', format_request},
+		    {'U', format_uri},
+		    {'%', format_percent},
+		    {'C', format_cookie}};
+
+
+static const authz_provider authz_osa_provider =
+{
+	&check_auth_base,
+	NULL,
+};
+
+static command_rec osa_cmds[];
