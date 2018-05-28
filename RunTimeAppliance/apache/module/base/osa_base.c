@@ -947,7 +947,12 @@ int check_auth(request_rec *r)
 	if (!sec->osaGroupField) return DECLINED; /* not doing groups here */
 	//if (!reqs_arr) return DECLINED; /* no "require" line in access config */
 
-	if (!user || user[0]==0) return DECLINED;
+	if (!user || user[0]==0 ) return DECLINED;
+
+	if (strcmp(user, ANONYMOUS_USER_ALLOWED)==0){
+		r->user = NULL;
+		return DECLINED;
+	}
 	/* if the group table is not specified, use the same as for password */
 	if (!sec->osagrptable) sec->osagrptable = sec->osapwtable;
 
