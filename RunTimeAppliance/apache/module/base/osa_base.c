@@ -829,7 +829,7 @@ int getTokenFromCookie(request_rec *r, char *token){
 			if (!sec->basicAuthEnable){
 				if(sec->cookieAuthLoginForm==NULL){
 					//authCookie is the only authentication mode: no cookie=error
-					return osa_error(r,"No authentication cookie found",400);
+					return osa_error(r,"No authentication cookie found", 401);
 				}else{
 					return redirectToLoginForm(r, NULL);
 				}
@@ -838,6 +838,7 @@ int getTokenFromCookie(request_rec *r, char *token){
 					return redirectToLoginForm(r,NULL);
 				}
 				//basicAuth is also available, so let basic auth do the job
+				LOG_ERROR_1(APLOG_DEBUG, 0, r, "%s", "No cookie found, let's try Basic Auth");
 				return DECLINED;
 			}
 		}
@@ -851,13 +852,14 @@ void deleteAuthCookie(request_rec *r){
 	//Delete cookie on client to try Basic Auth on next shot
 	char buff[255];
 	osa_config_rec *sec =(osa_config_rec *)ap_get_module_config (r->per_dir_config, &osa_module);
-	sprintf(buff,"%s=%d; path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT", sec->cookieAuthName,rand());
+	sprintf(buff,"%s=deleted; path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT", sec->cookieAuthName);
 	if (sec->cookieAuthDomain != NULL){
 		char domain[MAX_STRING_LEN];
 		sprintf(domain,"; domain=%s",  sec->cookieAuthDomain);
 		strcat(buff, domain);
 	}
 	apr_table_set(r->headers_out, "Set-Cookie", buff);
+	apr_table_set(r->err_headers_out, "Set-Cookie", buff);
 }
 
 
@@ -891,6 +893,7 @@ int authenticate_cookie_user(request_rec *r){
 			int stillValidFor;
 			Rc=validateToken(r, token, &stillValidFor);
 			if (Rc != OK){
+				deleteAuthCookie(r);
 				return Rc;
 			}
 			if ( ((sec->cookieAuthTTL*60)-stillValidFor) >COOKIE_BURN_SURVIVAL_TIME){
@@ -898,6 +901,7 @@ int authenticate_cookie_user(request_rec *r){
 				//re-generate a new one and burn the received one 
 				Rc=generateToken(r, token);
 				if (Rc != OK){
+					deleteAuthCookie(r);
 					return Rc;
 				}
 			}
@@ -950,13 +954,18 @@ int check_auth(request_rec *r)
 	 
 	const char *requireClause = sec->require;
 	const char *t, *want;
+
+	if (!requireClause){
+		return DECLINED;
+	}
+
 	while (requireClause != NULL && requireClause[0]!=0){
 
 		//if (!(reqs[x].method_mask & (1 << method))) continue;
 
 		//t = reqs[x].requirement;
 		want = ap_getword_conf(r->pool, &requireClause);
-
+		
 		if (!strcmp(want, "valid-user")) {
 			return OK;
 		}
@@ -988,7 +997,7 @@ int check_auth(request_rec *r)
 					}
 				}
 
-		 }
+		 	}
 		}
 	}
 	if (sec->osaAuthoritative) {
@@ -1107,7 +1116,6 @@ int check_quotas(request_rec *r){
  */
 int authenticate_basic_user (request_rec *r)
 {
-	LOG_ERROR_1(APLOG_ERR, 0, r,"%s", "authenticate_basic_user");
 
 	int passwords_match = 0;	/* Assume no match */
 	encryption * enc_data = 0;
@@ -1128,6 +1136,7 @@ int authenticate_basic_user (request_rec *r)
 
 	if (r->user != NULL) {
 
+		LOG_ERROR_1(APLOG_DEBUG, 0, r, "Basic Auth: Found user=%s in request (pre-auth)", r->user);
 		//User was authenticated by some else (ex. Cookie, other module)
 		//Use it/trust it
 		return DECLINED;
@@ -1160,6 +1169,7 @@ int authenticate_basic_user (request_rec *r)
 		if (r->user==NULL){
 			return osa_error(r,"User not authentifed!", NOT_AUTHORIZED);
 		}
+		LOG_ERROR_1(APLOG_DEBUG, 0, r, "Basic Auth: Found user=%s in request (pre-auth)", r->user);
 	}
 			
 
@@ -1253,26 +1263,79 @@ int authenticate_basic_user (request_rec *r)
 }
 
 
+void *create_osa_dir_config (POOL *p, char *d)
+{
+	osa_config_rec *m = PCALLOC(p, sizeof(osa_config_rec));
+	if (!m) return NULL;		/* failure to get memory is a bad thing */
+
+	m->db_server=get_db_server_config(p, m);
+
+	if (!m->db_server) return NULL;
+
+	m->osapwtable = _PWTABLE;
+	m->osagrptable = 0;                             /* user group table */
+	m->osaNameField = _NAMEFIELD;		    /* default user name field */
+	m->osaPasswordField = _PASSWORDFIELD;	    /* default user password field */
+	m->osaGroupUserNameField = _GROUPUSERNAMEFIELD; /* user name field in group table */
+	m->osaEncryptionField = _ENCRYPTION;  	    /* default encryption is encrypted */
+	m->osaSaltField = _SALTFIELD;	    	    /* default is scramble password against itself */
+	m->osaKeepAlive = _KEEPALIVE;         	    /* do not keep persistent connection */
+	m->osaAuthoritative = _AUTHORITATIVE; 	    /* we are authoritative source for users */
+	m->osaNoPasswd = _NOPASSWORD;         	    /* we require password */
+	m->osaEnable = _ENABLE;		    	    /* authorization on by default */
+	m->osaUserCondition = 0;             	    /* No condition to add to the user
+									 where-clause in select query */
+	m->osaGroupCondition = 0;            	    /* No condition to add to the group
+									 where-clause in select query */
+	m->osaGlobalQuotasCondition = 0;            	    /* No condition to add to the group*/
+	m->osaCharacterSet = _CHARACTERSET;		    /* default characterset to use */
+
+	m->serverName="";
+	
+	m->indentityHeadersMapping = 0; 			/* default identity forwarding disabled */
+	m->logHit=0;								/*default log hit in DB */
+	m->cookieAuthEnable=0;								/*default cookie authen */
+	m->cookieAuthBurn=1;								/*default cookie authen */
+	m->cookieAuthName="OSAAuthToken";
+	m->cookieAuthDomain=NULL;
+	m->cookieAuthLoginForm=NULL;
+	m->cookieAuthTTL=60;
+
+
+	m->cookieAuthTable="authtoken";
+	m->cookieAuthUsernameField="userName";
+	m->cookieAuthTokenField="token";
+	m->cookieAuthValidityField="validUntil";
+
+
+	m->basicAuthEnable=0;								/*default cookie authen */
+	m->require=NULL;
+	m->authName="Open Service Access gateway: please enter your credentials";
+	
+	m->allowAnonymous=0;
+
+	return (void *)m;
+}
 
 void register_hooks(POOL *p)
 {
 	build_decoding_table();
 	srand ( time(NULL) );
 
-	ap_register_auth_provider(p, AUTHZ_PROVIDER_GROUP, "group",
-		AUTHZ_PROVIDER_VERSION,
-		&authz_osa_provider, AP_AUTH_INTERNAL_PER_URI);
-	ap_register_auth_provider(p, AUTHZ_PROVIDER_GROUP, "valid-user",
-		AUTHZ_PROVIDER_VERSION,
-		&authz_osa_provider, AP_AUTH_INTERNAL_PER_URI);
+	// ap_register_auth_provider(p, AUTHZ_PROVIDER_GROUP, "group",
+	// 	AUTHZ_PROVIDER_VERSION,
+	// 	&authz_osa_provider, AP_AUTH_INTERNAL_PER_URI);
+	// ap_register_auth_provider(p, AUTHZ_PROVIDER_GROUP, "valid-user",
+	// 	AUTHZ_PROVIDER_VERSION,
+	// 	&authz_osa_provider, AP_AUTH_INTERNAL_PER_URI);
 
 
-	ap_hook_check_authn(authenticate_cookie_user, NULL, NULL, APR_HOOK_MIDDLE, AP_AUTH_INTERNAL_PER_URI);
-	ap_hook_check_authn(authenticate_basic_user, NULL, NULL, APR_HOOK_MIDDLE, AP_AUTH_INTERNAL_PER_URI);
+	// ap_hook_check_authn(authenticate_cookie_user, NULL, NULL, APR_HOOK_MIDDLE, AP_AUTH_INTERNAL_PER_URI);
+	// ap_hook_check_authn(authenticate_basic_user, NULL, NULL, APR_HOOK_MIDDLE, AP_AUTH_INTERNAL_PER_URI);
 
 
-	// ap_hook_fixups(authenticate_cookie_user, NULL, NULL, APR_HOOK_FIRST);
-	// ap_hook_fixups(authenticate_basic_user, NULL, NULL, APR_HOOK_FIRST);
+	ap_hook_fixups(authenticate_cookie_user, NULL, NULL, APR_HOOK_FIRST);
+	ap_hook_fixups(authenticate_basic_user, NULL, NULL, APR_HOOK_FIRST);
 	ap_hook_fixups(check_auth, NULL, NULL, APR_HOOK_FIRST);
 	ap_hook_fixups(check_quotas, NULL, NULL, APR_HOOK_FIRST);
 	ap_hook_fixups(forward_identity, NULL, NULL, APR_HOOK_LAST);

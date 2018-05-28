@@ -28,7 +28,7 @@ LDLIBS = @LDLIBS@
 
 all : mod_osa.la
 
-mod_osa.la : mod_osa.c ../base/osa_base.h ../base/osa_base.c
+mod_osa.la : mod_osa.c ../base/osa_base.h ../base/osa_base.c ../base/cmd_config.h
 	$(APXS) -c $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $(MYSQL_CFLAGS) $(MYSQL_LIBS) $(MYSQL_LIB_DIR) mod_osa.c ../base/osa_base.c
 
 $(DESTDIR)$(LIBEXECDIR) :

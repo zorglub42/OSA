@@ -87,8 +87,7 @@ SSLStaplingCache        shmcb:/var/run/ocsp(128000)
 			OSACookieAuthEnable On
 			OSACookieAuthName OSAAuthToken
 			OSACookieAuthTTL 60
-			AuthType OSA
-			Require group  Admin
+			OSARequire group  Admin
 			OSAIdentityHeadersMapping userName,X_REMOTE_USER;firstName,X_OSA_FIRSTNAME;lastName,X_OSA_LASTNAME;entity,X_OSA_ENTITY;emailAddress,X_OSA_EMAIL
 			
 			
@@ -147,7 +146,7 @@ SSLStaplingCache        shmcb:/var/run/ocsp(128000)
 			OSACookieAuthName OSAAuthToken
 			OSACookieAuthTTL 60
 			AuthType OSA
-			Require valid-user
+			OSARequire valid-user
 			OSAIdentityHeadersMapping userName,X_REMOTE_USER;firstName,X_OSA_FIRSTNAME;lastName,X_OSA_LASTNAME;entity,X_OSA_ENTITY;emailAddress,X_OSA_EMAIL
 						
 			
@@ -180,7 +179,7 @@ SSLStaplingCache        shmcb:/var/run/ocsp(128000)
 			OSACookieAuthName OSAAuthToken
 			OSACookieAuthTTL 60
 			AuthType OSA
-			Require valid-user
+			OSARequire valid-user
 			OSAIdentityHeadersMapping userName,X_REMOTE_USER;firstName,X_OSA_FIRSTNAME;lastName,X_OSA_LASTNAME;entity,X_OSA_ENTITY;emailAddress,X_OSA_EMAIL
 						
 			

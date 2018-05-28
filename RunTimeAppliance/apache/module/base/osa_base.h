@@ -187,6 +187,10 @@
 #endif
 
 
+// Prefix for logs
+#ifdef APLOG_USE_MODULE
+APLOG_USE_MODULE(osa);
+#endif
 
 
 
@@ -359,12 +363,12 @@ int check_auth(request_rec *r);
 authz_status check_auth_base(request_rec *r, const char *require_line, const void *parsed_require_line);
 
 
-
+void *create_osa_dir_config (POOL *p, char *d);
 void register_hooks(POOL *p);
 
 void P_db(osa_config_rec *sec, request_rec *r, char *sem); //To implement for specific RDMBS
 void V_db(osa_config_rec *sec, request_rec *r, char *sem); //To implement for specific RDMBS
-void *create_osa_dir_config (POOL *p, char *d); //To implement for specific RDMBS
+void *get_db_server_config (POOL *p, osa_config_rec *m);  //To implement for specific RDMBS
 char * get_db_pw(request_rec *r, char *user, osa_config_rec *m, const char *salt_column, const char ** psalt); //To implement for specific RDMBS
 int generateToken(request_rec *r, char *receivedToken);//To implement for specific RDMBS
 int validateToken(request_rec *r , char *token, int *stillValidFor);//To implement for specific RDMBS

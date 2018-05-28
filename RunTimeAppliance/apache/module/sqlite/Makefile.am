@@ -28,7 +28,7 @@ LDLIBS = @LDLIBS@
 
 all : mod_osa.la
 
-mod_osa.la : mod_osa.c ../base/osa_base.h ../base/osa_base.c
+mod_osa.la : mod_osa.c ../base/osa_base.h ../base/cmd_config.h ../base/osa_base.c
 	$(APXS) -c $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $(SQLITE3_CFLAGS) $(SQLITE3_LIBS) mod_osa.c ../base/osa_base.c
 
 $(DESTDIR)$(LIBEXECDIR) :

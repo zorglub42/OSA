@@ -390,14 +390,12 @@ static int open_db_handle(request_rec *r, osa_config_rec *m)
 }
 
 
-void *create_osa_dir_config (POOL *p, char *d)
+void *get_db_server_config (POOL *p, osa_config_rec *m)
 {
-	osa_config_rec *m = PCALLOC(p, sizeof(osa_config_rec));
 	mysql_server *s = PCALLOC(p, sizeof(mysql_server));
-	if (!m || !s) return NULL;		/* failure to get memory is a bad thing */
+	if (!s) return NULL;		/* failure to get memory is a bad thing */
 
-	m->db_server=s;
-
+	
 	/* default values */
 	s->mysqlhost = _HOST;
 	s->mysqlport = _PORT;
@@ -405,49 +403,7 @@ void *create_osa_dir_config (POOL *p, char *d)
 	s->mysqluser = _USER;
 	s->mysqlpasswd = _PASSWORD;
 
-	getDbServer(m)->mysqlDB = _DB;
-	m->osapwtable = _PWTABLE;
-	m->osagrptable = 0;                             /* user group table */
-	m->osaNameField = _NAMEFIELD;		    /* default user name field */
-	m->osaPasswordField = _PASSWORDFIELD;	    /* default user password field */
-	m->osaGroupUserNameField = _GROUPUSERNAMEFIELD; /* user name field in group table */
-	m->osaEncryptionField = _ENCRYPTION;  	    /* default encryption is encrypted */
-	m->osaSaltField = _SALTFIELD;	    	    /* default is scramble password against itself */
-	m->osaKeepAlive = _KEEPALIVE;         	    /* do not keep persistent connection */
-	m->osaAuthoritative = _AUTHORITATIVE; 	    /* we are authoritative source for users */
-	m->osaNoPasswd = _NOPASSWORD;         	    /* we require password */
-	m->osaEnable = _ENABLE;		    	    /* authorization on by default */
-	m->osaUserCondition = 0;             	    /* No condition to add to the user
-									 where-clause in select query */
-	m->osaGroupCondition = 0;            	    /* No condition to add to the group
-									 where-clause in select query */
-	m->osaGlobalQuotasCondition = 0;            	    /* No condition to add to the group*/
-	m->osaCharacterSet = _CHARACTERSET;		    /* default characterset to use */
-
-	m->serverName="";
-	
-	m->indentityHeadersMapping = 0; 			/* default identity forwarding disabled */
-	m->logHit=0;								/*default log hit in DB */
-	m->cookieAuthEnable=0;								/*default cookie authen */
-	m->cookieAuthBurn=1;								/*default cookie authen */
-	m->cookieAuthName="OSAAuthToken";
-	m->cookieAuthDomain=NULL;
-	m->cookieAuthLoginForm=NULL;
-	m->cookieAuthTTL=60;
-
-
-	m->cookieAuthTable="authtoken";
-	m->cookieAuthUsernameField="userName";
-	m->cookieAuthTokenField="token";
-	m->cookieAuthValidityField="validUntil";
-
-
-	m->basicAuthEnable=0;								/*default cookie authen */
-	m->require=NULL;
-	m->authName="Open Service Access gateway: please enter your credentials";
-	
-	m->allowAnonymous=0;
-	return (void *)m;
+	return (void *)s;
 }
 
 const char *set_mysql_host(cmd_parms *cmd, void *cfg, const char *host){
@@ -495,23 +451,10 @@ const char *set_mysql_db(cmd_parms *cmd, void *cfg, const char *db){
 
 
 static command_rec osa_cmds[] = {
+	// Common config 	
+	#include "../base/cmd_config.h"
 
-	AP_INIT_RAW_ARGS("OSAAuthName", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, authName),
-	OR_AUTHCFG | RSRC_CONF, "Realm value for basic auth"),
-
-	AP_INIT_TAKE1("OSAReqMonthField", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, reqMonthField),
-	OR_AUTHCFG | RSRC_CONF, "max number of request per month field"),
-
-	AP_INIT_TAKE1("OSAReqDayField", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, reqDayField),
-	OR_AUTHCFG | RSRC_CONF, "max number of request per day field"),
-
-	AP_INIT_TAKE1("OSAReqSecField", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, reqSecField),
-	OR_AUTHCFG | RSRC_CONF, "max number of request per second field"),
-
+	//Mysql config
 	AP_INIT_TAKE1("OSAHost", set_mysql_host,
 	NULL,
 	OR_AUTHCFG | RSRC_CONF, "MySQL server host"),
@@ -536,192 +479,9 @@ static command_rec osa_cmds[] = {
 	NULL,
 	OR_AUTHCFG | RSRC_CONF, "MySQL server password"),
 
-	AP_INIT_TAKE1("OSAUserTable", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, osapwtable),
-	OR_AUTHCFG | RSRC_CONF, "mysql user table name"),
-
-	AP_INIT_TAKE1("OSAGroupTable", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, osagrptable),
-	OR_AUTHCFG | RSRC_CONF, "mysql group table name"),
-
-	AP_INIT_TAKE1("OSANameField", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, osaNameField),
-	OR_AUTHCFG | RSRC_CONF, "mysql User ID field name within User table"),
-
-	AP_INIT_TAKE1("OSAGroupField", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, osaGroupField),
-	OR_AUTHCFG | RSRC_CONF, "mysql Group field name within table"),
-
-	AP_INIT_TAKE1("OSAGroupUserNameField", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, osaGroupUserNameField),
-	OR_AUTHCFG | RSRC_CONF, "mysql User ID field name within Group table"),
-
-	AP_INIT_TAKE1("OSAPasswordField", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, osaPasswordField),
-	OR_AUTHCFG | RSRC_CONF, "mysql Password field name within table"),
-
-	AP_INIT_TAKE1("OSAPwEncryption", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, osaEncryptionField),
-	OR_AUTHCFG | RSRC_CONF, "mysql password encryption method"),
-
-	AP_INIT_TAKE1("OSASaltField", ap_set_string_slot,
-	(void*) APR_OFFSETOF(osa_config_rec, osaSaltField),
-	OR_AUTHCFG | RSRC_CONF, "mysql salfe field name within table"),
-
-	AP_INIT_FLAG("OSAAuthoritative", ap_set_flag_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, osaAuthoritative),
-	OR_AUTHCFG | RSRC_CONF, "mysql lookup is authoritative if On"),
-
-	AP_INIT_FLAG("OSANoPasswd", ap_set_flag_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, osaNoPasswd),
-	OR_AUTHCFG | RSRC_CONF, "If On, only check if user exists; ignore password"),
-
-	AP_INIT_FLAG("OSAEnable", ap_set_flag_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, osaEnable),
-	OR_AUTHCFG | RSRC_CONF, "enable mysql authorization"),
-
-	AP_INIT_TAKE1("OSAUserCondition", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, osaUserCondition),
-	OR_AUTHCFG | RSRC_CONF, "condition to add to user where-clause"),
-
-	AP_INIT_TAKE1("OSAGroupCondition", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, osaGroupCondition),
-	OR_AUTHCFG | RSRC_CONF, "condition to add to group where-clause"),
-
-	AP_INIT_TAKE1("OSACharacterSet", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, osaCharacterSet),
-	OR_AUTHCFG | RSRC_CONF, "mysql character set to be used"),
-
-	AP_INIT_FLAG("OSALogHit", ap_set_flag_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, logHit),
-	OR_AUTHCFG | RSRC_CONF, "log hit in DB"),
-
-
-	AP_INIT_TAKE1("OSAServerName", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, serverName),
-	OR_AUTHCFG | RSRC_CONF, "Server name prefix. Ex. https://www.server.com"),
-
-
-	AP_INIT_TAKE1("OSACookieAuthTable", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, cookieAuthTable),
-	OR_AUTHCFG | RSRC_CONF, "table name containing authentication tokens default=authtoken"),
-
-	AP_INIT_TAKE1("OSACookieAuthUsernameField", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, cookieAuthUsernameField),
-	OR_AUTHCFG | RSRC_CONF, "field name in OSACookieAuthTable containing authenticated used default=userName"),
-
-	AP_INIT_TAKE1("OSACookieAuthTokenField", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, cookieAuthTokenField),
-	OR_AUTHCFG | RSRC_CONF, "field name in OSACookieAuthTable containing generated token default=token"),
-
-	AP_INIT_TAKE1("OSACookieAuthValidityField", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, cookieAuthValidityField),
-	OR_AUTHCFG | RSRC_CONF, "field name in OSACookieAuthTable containing validity date for generated token default=validUntil"),
-
-
-
-	AP_INIT_FLAG("OSACookieAuthEnable", ap_set_flag_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, cookieAuthEnable),
-	OR_AUTHCFG | RSRC_CONF, "enable authentication/authorization from cookie"),
-
-	AP_INIT_TAKE1("OSACookieAuthName", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, cookieAuthName),
-	OR_AUTHCFG | RSRC_CONF, "cookie name for authentication"),
-
-	AP_INIT_TAKE1("OSACookieAuthLoginForm", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, cookieAuthLoginForm),
-	OR_AUTHCFG | RSRC_CONF, "login form URI to redirect to login if OSACookieAuthEnable is enable and not OSABasicAuthEnable"),
-
-	AP_INIT_FLAG("OSACookieAuthBurn", ap_set_flag_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, cookieAuthBurn),
-	OR_AUTHCFG | RSRC_CONF, "burn auth cookie after usage"),
-
-	AP_INIT_TAKE1("OSACookieAuthDomain", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, cookieAuthDomain),
-	OR_AUTHCFG | RSRC_CONF, "cookie name for authentication"),
-
-	AP_INIT_TAKE1("OSACookieAuthTTL", ap_set_int_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, cookieAuthTTL),
-	OR_AUTHCFG | RSRC_CONF, "Time To Live for authentication cookie"),
-
-
-
-	AP_INIT_FLAG("OSABasicAuthEnable", ap_set_flag_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, basicAuthEnable),
-	OR_AUTHCFG | RSRC_CONF, "enable authentication/authorization with basic authentication"),
-
-	AP_INIT_RAW_ARGS("Require", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, require),
-	OR_AUTHCFG | RSRC_CONF, "Required authorization"),
-
-	AP_INIT_FLAG("OSAAllowAnonymous", ap_set_flag_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, allowAnonymous),
-	OR_AUTHCFG | RSRC_CONF, "Allow unauthenticated access even if (OSARequire && (OSABasicAuthEnable||OSACookieAuthEnable)) are set. In such a case, Identity is forwarded"),
-
-
-	AP_INIT_FLAG("OSACheckGlobalQuotas", ap_set_flag_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, checkGlobalQuotas),
-	OR_AUTHCFG | RSRC_CONF, "check global quotas for resource"),
-
-	AP_INIT_FLAG("OSACheckUserQuotas", ap_set_flag_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, checkUserQuotas),
-	OR_AUTHCFG | RSRC_CONF, "check per user quotas for resource"),
-
-	AP_INIT_TAKE1("OSAResourceName", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, resourceName),
-	OR_AUTHCFG | RSRC_CONF, "resource on witch quotas are check"),
-
-	AP_INIT_TAKE1("OSAResourceNameField", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, osaResourceNameField),
-	OR_AUTHCFG | RSRC_CONF, "column containing resource name"),
-
-	AP_INIT_TAKE1("OSAPerSecField", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, osaPerSecField),
-	OR_AUTHCFG | RSRC_CONF, "column containing per second quota"),
-
-	AP_INIT_TAKE1("OSAPerDayField", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, osaPerDayField),
-	OR_AUTHCFG | RSRC_CONF, "column containing per day quota"),
-
-	AP_INIT_TAKE1("OSAPerMonthField", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, osaPerMonthField),
-	OR_AUTHCFG | RSRC_CONF, "column containing per month quota"),
-
-	AP_INIT_TAKE1("OSAGlobalQuotasTable", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, osaGlobalQuotasTable),
-	OR_AUTHCFG | RSRC_CONF, "table containing global quotas"),
-
-	AP_INIT_TAKE1("OSAGlobalQuotasCondition", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, osaGlobalQuotasCondition),
-	OR_AUTHCFG | RSRC_CONF, "condition to add to GlobalQuotas query"),
-
-	AP_INIT_TAKE1("OSAUserQuotasTable", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, osaUserQuotasTable),
-	OR_AUTHCFG | RSRC_CONF, "table containing global quotas"),
-
-	AP_INIT_TAKE1("OSAUserQuotasCondition", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, osaUserQuotasCondition),
-	OR_AUTHCFG | RSRC_CONF, "condition to add to UserQuotas query"),
-
-	AP_INIT_TAKE1("OSACountersTable", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, countersTable),
-	OR_AUTHCFG | RSRC_CONF, "Table containing counters"),
-
-	AP_INIT_TAKE1("OSACounterNameField", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, counterNameField),
-	OR_AUTHCFG | RSRC_CONF, "Column containting counter name"),
-
-
-	AP_INIT_TAKE1("OSACounterValueField", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, counterValueField),
-	OR_AUTHCFG | RSRC_CONF, "Column containting counter value"),
-
-	AP_INIT_TAKE1("OSAIdentityHeadersMapping", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, indentityHeadersMapping),
-	OR_AUTHCFG | RSRC_CONF, "forward user identity as HTTP Headers"),
-
 	{ NULL }
 };
+
 
 /*
  * Fetch and return password string from database for named user.

@@ -73,9 +73,9 @@ if ($USER_AUTHENTICATION_ENABLE=="On") {
     }
     //echo "\tAuthType OSA\n";
     if ($GROUP_NAME != "valid-user") {
-        echo "\tRequire group  " . $GROUP_NAME ."\n";
+        echo "\tOSARequire group  " . $GROUP_NAME ."\n";
     } else {
-        echo "\tRequire valid-user\n";
+        echo "\tOSARequire valid-user\n";
     }
     if ($ANONYMOUS_ALLOWED) {
         echo "\tOSAAllowAnonymous On\n";
