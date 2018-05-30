@@ -1139,6 +1139,14 @@ cd $EXEC_DIR
 chmod 700 envvars.sh
 chown -R root:root $INSTALL_DIR
 
+# Fix "[core:warn] [pid 27226] (99)Cannot assign requested address: AH00056: connect to listener on [::]:XXX" core warning
+# when listeing to all interfaces
+[ "$HTTP_VHOST_ADDR" == '*' ] && HTTP_VHOST_ADDR=0.0.0.0
+[ "$HTTPS_VHOST_ADDR" == '*' ] && HTTPS_VHOST_ADDR=0.0.0.0
+[ "$HTTPS_ADMIN_VHOST_ADDR" == '*' ] && HTTPS_ADMIN_VHOST_ADDR=0.0.0.0
+
+
+
 
 if [ -f /etc/redhat-release ] ; then
 	echo "RedHat system"
