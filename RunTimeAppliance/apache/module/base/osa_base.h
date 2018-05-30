@@ -309,6 +309,9 @@ unsigned char *base64_decode(const char *data,
 							 size_t *output_length,
 							 unsigned char *decoded_data);
 
+void url_encoder_rfc_tables_init();
+char *url_encode(unsigned char *s, char *enc);
+
 void split(char *str, char delimiter, spliting *s);
 char *replace(char *st, char *orig, char *repl);
 int renderErrorBody(request_rec *r, char *errMSG, int status);

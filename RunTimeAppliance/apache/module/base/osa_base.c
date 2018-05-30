@@ -11,7 +11,29 @@ static char encoding_table[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
 								'4', '5', '6', '7', '8', '9', '+', '/'};
 char decoding_table [255];
 int mod_table[] = {0, 2, 1};
+char rfc3986[256] = {0};
 
+
+void url_encoder_rfc_tables_init(){
+
+    int i;
+
+    for (i = 0; i < 256; i++){
+
+        rfc3986[i] = isalnum( i) || i == '~' || i == '-' || i == '.' || i == '_' ? i : 0;
+    }
+}
+
+char *url_encode(unsigned char *s, char *enc){
+
+    for (; *s; s++){
+        if (rfc3986[*s]) sprintf( enc, "%c", rfc3986[*s]);
+        else sprintf( enc, "%%%02X", *s);
+        while (*++enc);
+    }
+
+    return( enc);
+}
 
 /*------------------------------------------------------------------------*/
 /*                 void build_decoding_table()                            */
@@ -752,20 +774,40 @@ int redirectToLoginForm(request_rec *r, char *cause){
 	char *b64EncodedCurUrl=base64_encode(r->pool, curUrl, &encodedSize);
 	char *location;
 	char urlPrm;
+	char *redirect_uri;
 	if (strstr(sec->cookieAuthLoginForm,"?") != NULL){
 		urlPrm='&';
 	}else{
 		urlPrm='?';
 	}
 
+	if (strstr(sec->cookieAuthLoginForm, "%url%")){
+		char *var=strstr(sec->cookieAuthLoginForm, "%url%");
+		char encoded[strlen(curUrl)*3];
+		url_encode(curUrl, encoded);
+
+		redirect_uri=(char *)PCALLOC(r->pool, strlen(sec->cookieAuthLoginForm)+strlen(encoded));
+
+
+		*var=0;
+
+
+		sprintf(redirect_uri, "%s%s%s", sec->cookieAuthLoginForm, encoded, var+5);
+		*var='%';
+
+
+	}else{
+		redirect_uri = sec->cookieAuthLoginForm;
+	}
+	LOG_ERROR_1(APLOG_DEBUG, 0, r, "redirect_uri=%s", redirect_uri);
 		
 	if (cause==NULL){
 	
-		location=(char *)PCALLOC(r->pool, encodedSize+strlen(sec->cookieAuthLoginForm)+4+(sec->cookieAuthDomain!=NULL?strlen(sec->cookieAuthDomain)+4:0));
-		sprintf(location,"%s%cl=%s", sec->cookieAuthLoginForm, urlPrm, b64EncodedCurUrl);
+		location=(char *)PCALLOC(r->pool, encodedSize+strlen(redirect_uri)+4+(sec->cookieAuthDomain!=NULL?strlen(sec->cookieAuthDomain)+4:0));
+		sprintf(location,"%s%cl=%s", redirect_uri, urlPrm, b64EncodedCurUrl);
 	}else{
-		location=(char *)PCALLOC(r->pool, encodedSize+strlen(sec->cookieAuthLoginForm)+4+strlen(cause)+7+(sec->cookieAuthDomain!=NULL?strlen(sec->cookieAuthDomain)+4:0));
-		sprintf(location,"%s%cl=%s&cause=%s", sec->cookieAuthLoginForm, urlPrm,  b64EncodedCurUrl, cause);
+		location=(char *)PCALLOC(r->pool, encodedSize+strlen(redirect_uri)+4+strlen(cause)+7+(sec->cookieAuthDomain!=NULL?strlen(sec->cookieAuthDomain)+4:0));
+		sprintf(location,"%s%cl=%s&cause=%s", redirect_uri, urlPrm,  b64EncodedCurUrl, cause);
 	}
 	if (sec->cookieAuthDomain != NULL){
 		strcat(location, "&d=");
@@ -1325,6 +1367,7 @@ void *create_osa_dir_config (POOL *p, char *d)
 void register_hooks(POOL *p)
 {
 	build_decoding_table();
+	url_encoder_rfc_tables_init();
 	srand ( time(NULL) );
 
 	// ap_register_auth_provider(p, AUTHZ_PROVIDER_GROUP, "group",
