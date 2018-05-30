@@ -167,7 +167,7 @@ function delFiles(){
 
 function getRealIp(){
 	if [ "$1" == '*' ] ; then
-		echo '*'
+		echo '0.0.0.0'
 	else
 		arp $1 | sed 's/.*(\(.*\)).*/\1/'
 	fi
