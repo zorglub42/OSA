@@ -371,3 +371,21 @@ function addSQLFilter($compToAdd, $sqlString)
     $sqlString=$sqlString . $compToAdd;
     return $sqlString;
 }
+
+
+
+function subsituteVar($string, $varName, $varValue){
+    return str_replace("%{" . $varName ."}e", $varValue, $string);
+}
+
+
+function constructURL($scheme, $host, $port, $path){
+    $ret = $scheme . "://" . $host;
+    if ($scheme == "https" && $port != 443){
+        $ret = $ret . ":" . $port;
+    }elseif ($scheme == "http" && $port != 80){
+        $ret = $ret . ":" . $port;
+    }
+    $ret = $ret . $path;
+    return $ret;
+}

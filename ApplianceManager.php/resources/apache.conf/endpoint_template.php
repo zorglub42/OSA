@@ -65,7 +65,7 @@ if ($USER_AUTHENTICATION_ENABLE=="On") {
         if (!empty($FRONT_END_TOP_DOMAIN)) {
             echo "\tOSACookieAuthDomain " . $FRONT_END_TOP_DOMAIN . "\n";
         }
-        echo "\tOSAServerName " . $PUBLIC_SERVER_PREFIX . "\n";
+        #echo "\tOSAServerName " . $PUBLIC_SERVER_PREFIX . "\n";
         
         if ($LOGIN_FORM_URI != "") {
             echo "\tOSACookieAuthLoginForm " . $LOGIN_FORM_URI . "\n";
@@ -105,6 +105,7 @@ if ($USER_AUTHENTICATION_ENABLE=="On") {
     
     <?php
     $urlParts=getUrlParts($BACK_END);
+
     echo "ProxyPassReverseCookieDomain " . 
          $urlParts["domain"] . 
          " $FRONT_END_DOMAIN\n";
@@ -114,9 +115,13 @@ if ($USER_AUTHENTICATION_ENABLE=="On") {
     echo $ADDITIONAL_CONFIGURATION . "\n";
     ?>
 
-
-
-
     ProxyPassReverse <?php echo "$BACK_END\n"?>
+    
+    ProxyPassReverse <?php 
+        // When using ProxyPreserveHost, backend is using frontend server in 302-redirect location (f.e. when addind trailing /)
+        // So Add a ProxyPassReverse rule to handle this
+        echo str_replace($urlParts["host"],$FRONT_END_DOMAIN, $BACK_END) . "\n"
+    ?>
+    
     
 </Location>

@@ -200,40 +200,7 @@ class Auth
     {
 
         $requestor=getRequestor();
-        $token=time() . $this->_getAleat() . 
-                        $this->_getAleat() .
-                        $this->_getAleat() .
-                        $this->_getAleat();
-        
-
-    
-        try {
-            $db=openDBConnection();
-            
-            $db->exec(
-                "DELETE FROM authtoken ".
-                "WHERE validUntil<" . getSQLKeyword("now")
-            );
-
-            $strSQL="";
-            $strSQL=$strSQL . "INSERT INTO authtoken (token, validUntil, userName) ";
-            $strSQL=$strSQL . "VALUES (";
-            $strSQL=$strSQL . "        ?,"; 
-            $strSQL=$strSQL . "        " . getSQlKeyword("add_minute") . " , ";
-            $strSQL=$strSQL . "        ?";
-            $strSQL=$strSQL . ")";
-
-            $stmt=$db->prepare($strSQL);
-            if (RDBMS == "mysql") {
-                $timeInterval = authTokenTTL;
-            } else {
-                $timeInterval = "+" . authTokenTTL . " minute";
-            }
-            $stmt->execute(array($token, $timeInterval, $requestor));
-        }catch (Exception $e){
-            throw new RestException(500, $e->getMessage());
-        }
-        return Array("token" => $token);
+        return $this->generateForAny($requestor);
     
     }
     /**
@@ -241,22 +208,22 @@ class Auth
      * 
      * Generate authentication a token for any user
      * 
-     * @param string $userName User id for who we want a token
+     * @param string $userName   User id for who we want a token
+     * @param int    $mustExists User must exists in OSA (default 1)
+     *                           {@choice 1,0} {@from query}
      * 
      * @url POST /token/{userName}
      * 
      * @return AuthToken Token
      */
-    function generateForAny($userName)
+    function generateForAny($userName, $mustExists=1)
     {
 
-        $userService = new Users();
-        $user = $userService->getOne($userName);
+        if ($mustExists == 1) {
+            $userService = new Users();
+            $user = $userService->getOne($userName);
+        }
  
-        $token=time() . $this->_getAleat() . 
-                        $this->_getAleat() .
-                        $this->_getAleat() .
-                        $this->_getAleat();
         
 
     
@@ -282,7 +249,28 @@ class Auth
             } else {
                 $timeInterval = "+" . authTokenTTL . " minute";
             }
-            $stmt->execute(array($token, $timeInterval, $userName));
+
+            $tokenGenerated=false;
+            while (!$tokenGenerated) {
+                $tokenGenerated=true;
+                $token=time() . $this->_getAleat() . 
+                                $this->_getAleat() .
+                                $this->_getAleat() .
+                                $this->_getAleat();
+                try{
+                    $stmt->execute(array($token, $timeInterval, $userName));
+
+                }catch (Exception $e){
+                    if (strpos($e->getMessage(), "Duplicate entry")>=0 
+                        ||strpos($e->getMessage(), "UNIQUE constraint failed")>=0
+                    ) {
+                        $tokenGenerated=false;
+                    } else {
+                        throw $e;
+                    }
+                }
+                        
+            }
         }catch (Exception $e){
             throw new RestException(500, $e->getMessage());
         }

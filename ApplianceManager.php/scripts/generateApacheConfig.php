@@ -164,10 +164,10 @@ while ($row=$stmt->fetch(PDO::FETCH_ASSOC)) {
     }
     $ANONYMOUS_ALLOWED = ($row["isAnonymousAllowed"]==1);
     if ($row["additionalConfiguration"] != "") {
-        $ADDITIONAL_CONFIGURATION=str_replace(
-            "%{frontEndEndPoint}e",
-            $row["frontEndEndPoint"],
-            $row["additionalConfiguration"]
+        $ADDITIONAL_CONFIGURATION=subsituteVar(
+            $row["additionalConfiguration"],
+            "frontEndEndPoint",
+            $row["frontEndEndPoint"]
         );
     } else {
         $ADDITIONAL_CONFIGURATION="";

@@ -13,6 +13,8 @@
 
 #define COOKIE_BURN_SURVIVAL_TIME 10 //allowed surviving time is sec before cookie is burned
 
+#define REQUEST_URL_PARAM "%requested_uri%" //Pseudo variable name form loginform url
+
 #define STRING(x) STR(x)		/* Used to build strings from compile options */
 #define STR(x) #x
 
@@ -268,8 +270,6 @@ typedef struct  {
 	
 	/* Log HIT in DB flag */
 	int logHit;
-
-	char *serverName;
 
 	
 	/* Cookie authentcation relatives */

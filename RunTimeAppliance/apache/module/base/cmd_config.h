@@ -76,10 +76,6 @@
 	(void *) APR_OFFSETOF(osa_config_rec, logHit),
 	OR_AUTHCFG | RSRC_CONF, "log hit in DB"),
 
-	AP_INIT_TAKE1("OSAServerName", ap_set_string_slot,
-	(void *) APR_OFFSETOF(osa_config_rec, serverName),
-	OR_AUTHCFG | RSRC_CONF, "Server name prefix. Ex. https://www.server.com"),
-
 	AP_INIT_TAKE1("OSACookieAuthTable", ap_set_string_slot,
 	(void *) APR_OFFSETOF(osa_config_rec, cookieAuthTable),
 	OR_AUTHCFG | RSRC_CONF, "table name containing authentication tokens default=authtoken"),

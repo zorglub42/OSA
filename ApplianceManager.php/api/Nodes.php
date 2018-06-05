@@ -619,7 +619,9 @@ class Nodes
             $node=$this->_get($nodeName);
             $rc= updateNode($nodeName, $params);
             if ($apply=="1") { 
-                applyApacheNodesConfiguration($nodeName, "U");
+                if (!applyApacheNodesConfiguration($nodeName, "U")) {
+                    throw new RestException(400, "Invalid apache configuration");
+                }
                 /*if (!applyApacheNodesConfiguration($nodeName, "C")) {
                     $node["apply"]=0;
                     $this->update($nodeName, $node);

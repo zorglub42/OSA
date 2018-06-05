@@ -744,7 +744,26 @@ int get_basic_auth_creds(request_rec *r, char **pwd){
 	}
 }
 
+char *get_requested_server(request_rec *r){
+	const char *hostHeader = TABLE_GET(r->headers_in, "Host");
+	char *hostname;
+	if (hostHeader != NULL){
+		hostname=PSTRDUP(r->pool, hostHeader);
+	}else{
+		hostname=r->server->server_hostname;
+	}
 
+	char *ret=(char*)PCALLOC(r->pool, strlen(hostname) *2);
+
+	sprintf(ret, "%s://%s", ap_http_scheme(r), hostname);
+	if ((strcmp(ap_http_scheme(r), "http")==0 && ap_default_port(r) != DEFAULT_HTTP_PORT) ||
+	    (strcmp(ap_http_scheme(r), "https")==0 && ap_default_port(r) != DEFAULT_HTTPS_PORT)){
+
+		sprintf(ret, "%s:%d", ret,  ap_default_port(r));
+	}
+	LOG_ERROR_1(APLOG_DEBUG, 0, r, "requested_server=%s", ret);
+	return ret;
+}
 
 int redirectToLoginForm(request_rec *r, char *cause){
 
@@ -752,16 +771,18 @@ int redirectToLoginForm(request_rec *r, char *cause){
 	r->status=303;
 	char *curUrl;
 
-	char *requestedServer;
-	if (strncmp(sec->cookieAuthLoginForm, "http://", 7) && strncmp(sec->cookieAuthLoginForm, "https://", 8)){
-		/* If loginForm URL is not starting with "http://" or "https://": is not at absolute URL (i.e. on current server)
-		Use a relative URI for the requested URL */
- 		requestedServer=(char *) PSTRDUP(r->pool, "");
-	}else{
-		/* If loginForm URL is starting with "http://" or "https://": it's an absolute URL (i.e. probably not on current server)
-		Use an absolute URI for the requested URL */
- 		requestedServer=(char *) PSTRDUP(r->pool, sec->serverName);
-	}
+
+	char *requestedServer=get_requested_server(r);
+	// if (strncmp(sec->cookieAuthLoginForm, "http://", 7) && strncmp(sec->cookieAuthLoginForm, "https://", 8)){
+	// 	/* If loginForm URL is not starting with "http://" or "https://": is not at absolute URL (i.e. on current server)
+	// 	Use a relative URI for the requested URL */
+ 	// 	requestedServer=(char *) PSTRDUP(r->pool, "");
+	// }else{
+	// 	/* If loginForm URL is starting with "http://" or "https://": it's an absolute URL (i.e. probably not on current server)
+	// 	Use an absolute URI for the requested URL */
+ 	// 	requestedServer=(char *) PSTRDUP(r->pool, sec->serverName);
+	// }
+
 	if (r->args==NULL){
 		curUrl=(char *)PCALLOC(r->pool, strlen(r->uri)+1+strlen(requestedServer));
 		sprintf(curUrl,"%s%s", requestedServer, r->uri);
@@ -781,8 +802,8 @@ int redirectToLoginForm(request_rec *r, char *cause){
 		urlPrm='?';
 	}
 
-	if (strstr(sec->cookieAuthLoginForm, "%url%")){
-		char *var=strstr(sec->cookieAuthLoginForm, "%url%");
+	if (strstr(sec->cookieAuthLoginForm, REQUEST_URL_PARAM)){
+		char *var=strstr(sec->cookieAuthLoginForm, REQUEST_URL_PARAM);
 		char encoded[strlen(curUrl)*3];
 		url_encode(curUrl, encoded);
 
@@ -792,7 +813,7 @@ int redirectToLoginForm(request_rec *r, char *cause){
 		*var=0;
 
 
-		sprintf(redirect_uri, "%s%s%s", sec->cookieAuthLoginForm, encoded, var+5);
+		sprintf(redirect_uri, "%s%s%s", sec->cookieAuthLoginForm, encoded, var+strlen(REQUEST_URL_PARAM));
 		*var='%';
 
 
@@ -803,12 +824,22 @@ int redirectToLoginForm(request_rec *r, char *cause){
 		
 	if (cause==NULL){
 	
-		location=(char *)PCALLOC(r->pool, encodedSize+strlen(redirect_uri)+4+(sec->cookieAuthDomain!=NULL?strlen(sec->cookieAuthDomain)+4:0));
+		location=(char *)PCALLOC(r->pool, encodedSize 
+										  + strlen(redirect_uri) + 4 // 4=> "l="
+										  + (sec->cookieAuthDomain!=NULL?strlen(sec->cookieAuthDomain)+4:0) // 4 => "d="
+										  + strlen(requestedServer)
+		);
 		sprintf(location,"%s%cl=%s", redirect_uri, urlPrm, b64EncodedCurUrl);
 	}else{
-		location=(char *)PCALLOC(r->pool, encodedSize+strlen(redirect_uri)+4+strlen(cause)+7+(sec->cookieAuthDomain!=NULL?strlen(sec->cookieAuthDomain)+4:0));
+		location=(char *)PCALLOC(r->pool, encodedSize
+										  +strlen(redirect_uri)+4
+										  +strlen(cause)+7 // 7= > "cause="
+										  +(sec->cookieAuthDomain!=NULL?strlen(sec->cookieAuthDomain)+4:0) // 4 => "d="
+										  +strlen(requestedServer)
+		);
 		sprintf(location,"%s%cl=%s&cause=%s", redirect_uri, urlPrm,  b64EncodedCurUrl, cause);
 	}
+
 	if (sec->cookieAuthDomain != NULL){
 		strcat(location, "&d=");
 		strcat(location,sec->cookieAuthDomain);
@@ -868,6 +899,7 @@ int getTokenFromCookie(request_rec *r, char *token){
 			}
 		}
 		if (token[0]==0){
+			LOG_ERROR_1(APLOG_DEBUG, 0, r, "%s", "No cookie found, let's check if BasicAuth or loginForm are defined");
 			if (!sec->basicAuthEnable){
 				if(sec->cookieAuthLoginForm==NULL){
 					//authCookie is the only authentication mode: no cookie=error
@@ -1337,8 +1369,6 @@ void *create_osa_dir_config (POOL *p, char *d)
 	m->osaGlobalQuotasCondition = 0;            	    /* No condition to add to the group*/
 	m->osaCharacterSet = _CHARACTERSET;		    /* default characterset to use */
 
-	m->serverName="";
-	
 	m->indentityHeadersMapping = 0; 			/* default identity forwarding disabled */
 	m->logHit=0;								/*default log hit in DB */
 	m->cookieAuthEnable=0;								/*default cookie authen */
