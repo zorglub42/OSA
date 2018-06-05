@@ -33,7 +33,6 @@
  * History     :
  * 1.0.0 - 2012-10-01 : Release of the file
 */
-
 define("FIRSTNAME_LENGTH", 45);
 define("LASTNAME_LENGTH", 45);
 define("ENTITY_LENGTH", 45);
