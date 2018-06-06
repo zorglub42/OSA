@@ -21,7 +21,9 @@ ServerSignature Off
 <VirtualHost <?php echo $HTTP_VHOST_ADDR . ":" . $HTTP_VHOST_PORT?>>
        ServerName <?php echo "$HTTP_VHOST_NAME\n"?>
 
-
+       <?php
+       $publicServerPrefix=constructURL("http", $HTTP_VHOST_NAME, $HTTP_VHOST_PORT, "");
+       ?>
 
 
        SetEnv publicServerProtocol http://
@@ -29,7 +31,7 @@ ServerSignature Off
        SetEnvIf Host "(.*)" publicServerName=$1
        SetEnv publicServerPort <?php  echo "$HTTP_VHOST_PORT\n"?>
        SetEnv publicServerTopDomain <?php  echo "$HTTP_VHOST_TOP_DOMAIN\n"?>
-       SetEnv publicServerPrefix http://<?php echo $HTTP_VHOST_NAME . ":" . $HTTP_VHOST_PORT . "\n"?>
+       SetEnv publicServerPrefix <?php echo $publicServerPrefix . "\n"?>
         
         
 
@@ -57,7 +59,14 @@ ServerSignature Off
     ProxyTimeout 120 
     DocumentRoot /var/www/local/empty	
     Include <?php echo runtimeApplianceConfigLocation?>/applianceManagerServices-node-<?php echo $NODE_NAME?>.endpoints
-    <?php echo $ADDITIONAL_CONFIGURATION . "\n"?>
+    <?php 
+    $ADDITIONAL_CONFIGURATION=subsituteVar($ADDITIONAL_CONFIGURATION, "publicServerProtocol", "http://");
+    $ADDITIONAL_CONFIGURATION=subsituteVar($ADDITIONAL_CONFIGURATION, "publicServerName", $HTTP_VHOST_NAME);
+    $ADDITIONAL_CONFIGURATION=subsituteVar($ADDITIONAL_CONFIGURATION, "publicServerPort", $HTTP_VHOST_PORT);
+    $ADDITIONAL_CONFIGURATION=subsituteVar($ADDITIONAL_CONFIGURATION, "publicServerTopDomain", $HTTP_VHOST_TOP_DOMAIN);
+    $ADDITIONAL_CONFIGURATION=subsituteVar($ADDITIONAL_CONFIGURATION, "publicServerPrefix", $publicServerPrefix);
+    echo $ADDITIONAL_CONFIGURATION . "\n"?>
+
     Header set Server OSA-<?php echo version?>
 
 </VirtualHost>
