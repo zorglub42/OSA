@@ -744,7 +744,7 @@ int get_basic_auth_creds(request_rec *r, char **pwd){
 	}
 }
 
-char *get_requested_server(request_rec *r){
+char *get_requested_server(request_rec *r, char *ret){
 	const char *hostHeader = TABLE_GET(r->headers_in, "Host");
 	char *hostname;
 	if (hostHeader != NULL){
@@ -753,7 +753,6 @@ char *get_requested_server(request_rec *r){
 		hostname=r->server->server_hostname;
 	}
 
-	char *ret=(char*)PCALLOC(r->pool, strlen(hostname) *2);
 
 	sprintf(ret, "%s://%s", ap_http_scheme(r), hostname);
 	if ((strcmp(ap_http_scheme(r), "http")==0 && ap_default_port(r) != DEFAULT_HTTP_PORT) ||
@@ -771,8 +770,9 @@ int redirectToLoginForm(request_rec *r, char *cause){
 	r->status=303;
 	char *curUrl;
 
+	char requestedServer[255];
 
-	char *requestedServer=get_requested_server(r);
+	get_requested_server(r, requestedServer);
 	// if (strncmp(sec->cookieAuthLoginForm, "http://", 7) && strncmp(sec->cookieAuthLoginForm, "https://", 8)){
 	// 	/* If loginForm URL is not starting with "http://" or "https://": is not at absolute URL (i.e. on current server)
 	// 	Use a relative URI for the requested URL */
