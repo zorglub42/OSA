@@ -873,13 +873,14 @@ int validateToken(request_rec *r , char *token, int *stillValidFor){
 		}
 	}
 
-	sprintf(query,"DELETE FROM %s WHERE %s<CURRENT_TIMESTAMP",sec->cookieAuthTable, sec->cookieAuthValidityField);
+	sprintf(query,"DELETE FROM %s WHERE %s<datetime(CURRENT_TIMESTAMP, 'localtime')",sec->cookieAuthTable, sec->cookieAuthValidityField);
 	if (sqlite3_query_execute(connection.handle, query) != 0) {
 		LOG_ERROR_1(APLOG_ERR, 0, r, "sqlite3_check_auth_cookie: SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
 		return osa_error(r,"DB query error",500);
 	}
+ LOG_ERROR_1(APLOG_DEBUG, 0, r, "%s", query);
 
-	sprintf(query,"SELECT %s,((julianday(%s) - julianday(CURRENT_TIMESTAMP)) * 86400.0)  FROM %s WHERE token='%s' AND %s>=CURRENT_TIMESTAMP",
+	sprintf(query,"SELECT %s,((julianday(%s) - julianday(datetime(CURRENT_TIMESTAMP, 'localtime'))) * 86400.0)  FROM %s WHERE token='%s' AND %s>=datetime(CURRENT_TIMESTAMP, 'localtime')",
 		sec->cookieAuthUsernameField, 
 		sec->cookieAuthValidityField,
 		sec->cookieAuthTable,
@@ -894,6 +895,7 @@ int validateToken(request_rec *r , char *token, int *stillValidFor){
 			LOG_ERROR_1(APLOG_ERR, 0, r, "sqlite3_check_auth_cookie: SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
 			return osa_error(r,"DB query error",500);
 		}
+  LOG_ERROR_1(APLOG_DEBUG, 0, r, "%s", query);
 		
 		if (sqlite3_step(stmt) == SQLITE_ROW) {
 			// r->user=(char*)PCALLOC(r->pool, strlen(sqlite3_column_text(stmt, 0)));
@@ -939,7 +941,7 @@ int generateToken(request_rec *r, char *receivedToken){
     sprintf(token,"%10d-%010d-%010d-%010d-%010d",  (unsigned)time(NULL), (rand()%1000000000)+1, (rand()%1000000000)+1, (rand()%1000000000)+1, (rand()%1000000000)+1);
 
 
-    sprintf(query,"INSERT INTO %s (%s, %s, %s) VALUES ('%s',DateTime(CURRENT_TIMESTAMP, '+%d minute'), '%s')", 
+    sprintf(query,"INSERT INTO %s (%s, %s, %s) VALUES ('%s',DateTime(datetime(CURRENT_TIMESTAMP, 'localtime'), '+%d minute'), '%s')", 
       sec->cookieAuthTable,
       sec->cookieAuthTokenField,
       sec->cookieAuthValidityField,
@@ -961,10 +963,10 @@ int generateToken(request_rec *r, char *receivedToken){
 
   if (sec->cookieAuthBurn){
     //Burn received token
-    sprintf(query,"UPDATE %s SET %s=DateTime(CURRENT_TIMESTAMP, '+%d second') WHERE %s='%s'",
+    sprintf(query,"UPDATE %s SET %s=DateTime(datetime(CURRENT_TIMESTAMP, 'localtime'), '+%d second') WHERE %s='%s'",
       sec->cookieAuthTable,
       sec->cookieAuthValidityField,
-      COOKIE_BURN_SURVIVAL_TIME, 
+      sec->cookieCacheTime, 
       sec->cookieAuthTokenField,
       receivedToken);
       

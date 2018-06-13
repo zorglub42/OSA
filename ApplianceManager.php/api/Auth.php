@@ -165,7 +165,7 @@ class Auth
 
             $strSQL="";
             $strSQL=$strSQL . "UPDATE users SET lastTokenLogin=" . 
-                              getSQlKeyword("now") . 
+                              getSQLKeyword("now") . 
                               " WHERE userName=? ";
             
             $stmt=$db->prepare($strSQL);
@@ -239,7 +239,7 @@ class Auth
             $strSQL=$strSQL . "INSERT INTO authtoken (token, validUntil, userName) ";
             $strSQL=$strSQL . "VALUES (";
             $strSQL=$strSQL . "        ?,"; 
-            $strSQL=$strSQL . "        " . getSQlKeyword("add_minute") . " , ";
+            $strSQL=$strSQL . "        " . getSQLKeyword("add_minute") . " , ";
             $strSQL=$strSQL . "        ?";
             $strSQL=$strSQL . ")";
 

@@ -970,7 +970,7 @@ int authenticate_cookie_user(request_rec *r){
 				deleteAuthCookie(r);
 				return Rc;
 			}
-			if ( ((sec->cookieAuthTTL*60)-stillValidFor) >COOKIE_BURN_SURVIVAL_TIME){
+			if ( ((sec->cookieAuthTTL*60)-stillValidFor) >sec->cookieCacheTime){
 				//We received a request with a token created for more than COOKIE_BURN_SURVIVAL_TIME secs
 				//re-generate a new one and burn the received one 
 				Rc=generateToken(r, token);
@@ -1390,6 +1390,7 @@ void *create_osa_dir_config (POOL *p, char *d)
 	m->authName="Open Service Access gateway: please enter your credentials";
 	
 	m->allowAnonymous=0;
+	m->cookieCacheTime=COOKIE_BURN_SURVIVAL_TIME;
 
 	return (void *)m;
 }

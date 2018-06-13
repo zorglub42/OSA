@@ -42,12 +42,12 @@
  * 
  * @return string
  */
-function getSQlKeyword($word)
+function getSQLKeyword($word)
 {
     $sqlGrammar = array(
         "sqlite"=> array(
-                "now"=>'DateTime("Now")',
-                "add_minute" =>'DateTime(CURRENT_TIMESTAMP, ?)',
+                "now"=>"datetime(CURRENT_TIMESTAMP, 'localtime')",
+                "add_minute" =>"DateTime(datetime(CURRENT_TIMESTAMP, 'localtime'), ?)",
             ),
         "mysql" => array(
                 "now"=>"now()",

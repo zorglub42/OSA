@@ -116,6 +116,10 @@
 	(void *) APR_OFFSETOF(osa_config_rec, cookieAuthTTL),
 	OR_AUTHCFG | RSRC_CONF, "Time To Live for authentication cookie"),
 
+	AP_INIT_TAKE1("OSACookieAuthCacheTTL", ap_set_int_slot,
+	(void *) APR_OFFSETOF(osa_config_rec, cookieCacheTime),
+	OR_AUTHCFG | RSRC_CONF, "usable cache duration after cookie burning (in sec)"),
+
 	AP_INIT_FLAG("OSABasicAuthEnable", ap_set_flag_slot,
 	(void *) APR_OFFSETOF(osa_config_rec, basicAuthEnable),
 	OR_AUTHCFG | RSRC_CONF, "enable authentication/authorization with basic authentication"),

@@ -1066,7 +1066,7 @@ int generateToken(request_rec *r, char *receivedToken){
 		sprintf(query,"UPDATE %s SET %s=date_add(now() ,interval %d second) WHERE %s='%s'",
 			sec->cookieAuthTable,
 			sec->cookieAuthValidityField,
-			COOKIE_BURN_SURVIVAL_TIME, 
+			sec->cookieCacheTime, 
 			sec->cookieAuthTokenField,
 			receivedToken);
 			

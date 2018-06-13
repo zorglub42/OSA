@@ -35,24 +35,25 @@
  * 1.0.0 - 2012-10-01 : Release of the file
 */
     // Database connection parameter
-    define("RDBMS", "sqlite");
+	define("RDBMS", "sqlite");
+
     define("SQLITE_DATABASE_PATH", "/usr/local/OSA/sql/sqlite/osa.db");
 
     $BDName="appliance@localhost:3306";
     $BDUser="appliance";
     $BDPwd="mysql";
     
-    define("runtimeApplianceConfigLocation",  "/usr/local/OSA/RunTimeAppliance/apache/conf/vhAppliance");
+	define("runtimeApplianceConfigLocation",  "/usr/local/OSA/RunTimeAppliance/apache/conf/vhAppliance");
     
     // Runtime appliance automatic configuration
-    define("runtimeApplianceConfigScript", "/usr/local/OSA/RunTimeAppliance/shell/doAppliance.sh");
-    define("runtimeApplianceConfigScriptLogFile", "/var/log/OSA/doAppliance.log");
+	define("runtimeApplianceConfigScript", "/usr/local/OSA/RunTimeAppliance/shell/doAppliance.sh");
+	define("runtimeApplianceConfigScriptLogFile", "/var/log/OSA/doAppliance.log");
             
-    define("runtimeApplianceVirtualHostsConfigScript", "/usr/local/OSA/RunTimeAppliance/shell/doVHAppliance.sh");
-    define("runtimeApplianceVirtualHostsConfigScriptLogFile", "/var/log/OSA/doVHAppliance.log");
+	define("runtimeApplianceVirtualHostsConfigScript", "/usr/local/OSA/RunTimeAppliance/shell/doVHAppliance.sh");
+	define("runtimeApplianceVirtualHostsConfigScriptLogFile", "/var/log/OSA/doVHAppliance.log");
 
-    define("runtimeApplianceEnableDisableVirtulaHostScript", "/usr/local/OSA/RunTimeAppliance/shell/enableDisableNode.sh");
-    define("runtimeApplianceEnableDisableVirtulaHostLogFile", "/var/log/OSA/enabDisabVH.log");
+	define("runtimeApplianceEnableDisableVirtulaHostScript", "/usr/local/OSA/RunTimeAppliance/shell/enableDisableNode.sh");
+	define("runtimeApplianceEnableDisableVirtulaHostLogFile", "/var/log/OSA/enabDisabVH.log");
 
 
     define("runtimeApplianceAutomaticConfiguration", true);
@@ -60,7 +61,7 @@
 
 
 
-    define("runtimeApplianceConfigScriptLogDir", "/var/log/OSA");
+	define("runtimeApplianceConfigScriptLogDir", "/var/log/OSA");
 
 
 
@@ -95,7 +96,8 @@
     
     //validity period (in min)
     define("authTokenTTL", 15);
+    define("authTokenCacheTTL", 2);
     //cookie name
     define("authTokenCookieName", "OSAAuthToken");
-    define("osaAdminUri", "https://localhost:6443/");
+	define("osaAdminUri", "https://localhost:6443/");
 ?>

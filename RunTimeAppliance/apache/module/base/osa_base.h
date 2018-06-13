@@ -11,7 +11,7 @@
 
 #define ANONYMOUS_USER_ALLOWED "*** ANONYOUS USER ***"
 
-#define COOKIE_BURN_SURVIVAL_TIME 10 //allowed surviving time is sec before cookie is burned
+#define COOKIE_BURN_SURVIVAL_TIME 2 //allowed surviving time is sec before cookie is burned
 
 #define REQUEST_URL_PARAM "%requested_uri%" //Pseudo variable name form loginform url
 
@@ -291,6 +291,7 @@ typedef struct  {
 	char *authName;
 	/*Allow unauthenticated access even if (Require && (OSABasicAuthEnable||OSACookieAuthEnable)) are set. In such a case, Identity is forwarded*/
 	int allowAnonymous;
+	int cookieCacheTime;
 	
  } osa_config_rec;
 
