@@ -141,7 +141,7 @@ while ($row=$stmt->fetch(PDO::FETCH_ASSOC)) {
     $FRONT_END_TOP_DOMAIN="";
     $FRONT_END_DOMAIN=$_REQUEST["domain"] ;
     $domParts=explode(".", $_REQUEST["domain"]);
-    if (count($domParts)>1 && ! preg_match("/[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/", $FRONT_END_DOMAIN)) {
+    if (count($domParts)>2 && ! preg_match("/[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/", $FRONT_END_DOMAIN)) {
         for ($i=1;$i<count($domParts);$i++) {
             $FRONT_END_TOP_DOMAIN = $FRONT_END_TOP_DOMAIN . "." . $domParts[$i];
         }
