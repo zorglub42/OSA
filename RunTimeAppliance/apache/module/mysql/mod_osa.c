@@ -969,10 +969,7 @@ int checkUserQuotas( osa_config_rec *sec, request_rec *r){
 }
 
 
-
-
-
-int validateToken(request_rec *r , char *token, int *stillValidFor){
+int cleanGeneratedTokens(request_rec *r){
 	 osa_config_rec *sec =(osa_config_rec *)ap_get_module_config (r->per_dir_config, &osa_module);
 		char *query;
 		MYSQL_RES *result;
@@ -986,9 +983,26 @@ int validateToken(request_rec *r , char *token, int *stillValidFor){
 		}
 
 		query=apr_psprintf(r->pool, "DELETE FROM %s WHERE %s<now()",sec->cookieAuthTable, sec->cookieAuthValidityField);
+
 		if (mysql_query(connection.handle, query) != 0) {
 			LOG_ERROR_1(APLOG_ERR, 0, r, "validateToken: MySQL ERROR: %s: ", mysql_error(connection.handle));
 			return osa_error(r,"DB query error",500);
+		}
+		return OK;
+}
+
+
+int validateToken(request_rec *r , char *token, int *stillValidFor){
+	 osa_config_rec *sec =(osa_config_rec *)ap_get_module_config (r->per_dir_config, &osa_module);
+		char *query;
+		MYSQL_RES *result;
+		int rc;
+
+		if (connection.handle==NULL){
+			/* connect database */
+			if(!open_db_handle(r,sec)) {
+				return osa_error(r,"Unable to connect database", 500);
+			}
 		}
 
 		query=apr_psprintf(r->pool, "SELECT %s,TIMESTAMPDIFF(SECOND, now(), %s)  FROM %s WHERE token='%s' AND %s>=now()",
@@ -1042,18 +1056,17 @@ int generateToken(request_rec *r, char *receivedToken){
 		}
 	}
 
-	srand(clock());
 	int done=0;
-
+	int iter=0;
 	do{
-		token=apr_psprintf(r->pool, "%10d-%010d-%010d-%010d-%010d",  (unsigned)time(NULL), (rand()%1000000000)+1, (rand()%1000000000)+1, (rand()%1000000000)+1, (rand()%1000000000)+1);
+		token=getToken(r);
 
-
-		query=apr_psprintf(r->pool, "INSERT INTO %s (%s, %s, %s) VALUES ('%s', date_add(now() ,interval %d minute), '%s')", 
+		query=apr_psprintf(r->pool, "INSERT INTO %s (%s, %s, %s, %s) VALUES ('%s', date_add(now() ,interval %d minute), '%s', 0)", 
 			sec->cookieAuthTable,
 			sec->cookieAuthTokenField,
 			sec->cookieAuthValidityField,
 			sec->cookieAuthUsernameField,
+			sec->cookieAuthBurnedField,
 			token, sec->cookieAuthTTL, 
 			r->user);
 			if (mysql_query(connection.handle, query) != 0) {
@@ -1061,7 +1074,8 @@ int generateToken(request_rec *r, char *receivedToken){
 					LOG_ERROR_1(APLOG_ERR, 0, r, "generateToken: MySQL ERROR: %s: ", mysql_error(connection.handle));
 					return osa_error(r,"DB query error",500);
 				}else{
-					LOG_ERROR_1(APLOG_ERR, 0, r, "%s", "Generated token already exists: retry");
+					LOG_ERROR_1(APLOG_ERR, 0, r, "%d: Generated token already exists: retry", iter);
+					iter++;
 				}	
 			}else{
 				done=1;
@@ -1069,14 +1083,16 @@ int generateToken(request_rec *r, char *receivedToken){
 	}while (!done);
 
 	if (sec->cookieAuthBurn){
-		//Burn received token
-		query=apr_psprintf(r->pool, "UPDATE %s SET %s=date_add(now() ,interval %d second) WHERE %s='%s'",
+		//Burn received token (Makit as burned set it outdated to be garbadged after cacheTTL)
+		query=apr_psprintf(r->pool, "UPDATE %s SET %s=date_add(now() ,interval %d second), %s=1 WHERE %s='%s' and %s=0",
 			sec->cookieAuthTable,
 			sec->cookieAuthValidityField,
 			sec->cookieCacheTime, 
+			sec->cookieAuthBurnedField,
 			sec->cookieAuthTokenField,
-			receivedToken);
-			
+			receivedToken,
+			sec->cookieAuthBurnedField);
+
 		if (mysql_query(connection.handle, query) != 0) {
 			LOG_ERROR_1(APLOG_ERR, 0, r, "generateToken: MySQL ERROR: %s: ", mysql_error(connection.handle));
 			return osa_error(r,"DB query error",500);

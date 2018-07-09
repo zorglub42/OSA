@@ -47,7 +47,7 @@ fi
 $APACHE_INIT_SCRIPT stop
 clear
 echo $APACHE_APXS -c  -I/usr/include/sqlite  -lsqlite3 -lm -lz mod_osa.c 
-$APACHE_APXS -c -I/usr/include/sqlite  -lsqlite3 -lm -lz mod_osa.c  ../base/osa_base.c
+$APACHE_APXS -c -I/usr/include/sqlite  -lsqlite3 -lm -lz -ljson-c mod_osa.c  ../base/osa_base.c
 if [ $? -ne 0 ]; then
 	exit 1
 fi

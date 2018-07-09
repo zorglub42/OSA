@@ -18,6 +18,10 @@
 #define STR(x) #x
 
 
+#define SOCACHE_ID "osa-socache"			// Cache  identifier
+#define KEYVAL_CACHE_ID_PATTERN "D=%s/R=%s/U=%s"	// Cache item identifer pattern
+#define USER_PW_CACHE_ID_PATTERN "U.pwd=%s"	// Cache item identifer pattern
+#define TOKEN_CLEAN_CACHE_ID_PATTERN "tokenClean"	// Cache item identifer pattern
 
 /* Compile time options for code generation */
 #ifdef AES
@@ -173,6 +177,13 @@
 #include <apr_base64.h>
 #include <apr_lib.h>
 #include "util_md5.h"
+#include <mod_cache.h>
+#include <ap_socache.h>
+#include <util_mutex.h>
+
+
+#include <json-c/json.h>
+#include <json/json_tokener.h>
 
 
 #ifdef CRYPT
@@ -285,6 +296,7 @@ typedef struct  {
 	char *cookieAuthUsernameField;
 	char *cookieAuthTokenField;
 	char *cookieAuthValidityField;
+	char *cookieAuthBurnedField;
 	
 	
 	/* Basic auth relative */
@@ -297,6 +309,15 @@ typedef struct  {
 	
  } osa_config_rec;
 
+typedef struct {
+	ap_socache_instance_t *socache_instance; //Cache instance pointer
+	ap_socache_provider_t *provider;		 //Cache provider (sdm/shmcb)
+	char *cache_socache_id;					 //Cache identifier
+} osa_cache_provider;
+
+
+static osa_cache_provider osa_cache;  //Module cache
+static apr_global_mutex_t *socache_mutex = NULL;
 
 module osa_module;
 
@@ -357,6 +378,7 @@ int authenticate_basic_user (request_rec *r);
 int redirectToLoginForm(request_rec *r, char *cause);
 int haveOSACookie(request_rec *r);
 int getTokenFromCookie(request_rec *r, char *token);
+char *getToken(request_rec *r);
 void deleteAuthCookie(request_rec *r);
 
 int authenticate_cookie_user(request_rec *r);
@@ -385,6 +407,8 @@ int checkGlobalQuotas( osa_config_rec *sec, request_rec *r);	//To implement for 
 int register_hit(request_rec *r); //To implement for specific RDMBS
 int get_user_basic_attributes(request_rec *r, char *fields, stringKeyValList *headersMappingList); //To implement for specific RDMBS
 int get_user_extended_attributes(request_rec *r, stringKeyValList *props); //To implement for specific RDMBS
+int cleanGeneratedTokens(request_rec *r); //To implement for specific RDMBS
+
 
 static encryption encryptions[] = {{"crypt", SALT_OPTIONAL, pw_crypted},
 						 {"none", NO_SALT, pw_plain},

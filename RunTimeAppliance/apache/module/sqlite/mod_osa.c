@@ -106,7 +106,7 @@
 #else
   #define _DB_FILE "osa.db"			/* Will default to localhost */
 #endif
-#define SQLITE3_BUSY_TIMEOUT 5000 //ms
+#define SQLITE3_BUSY_TIMEOUT 10000 //ms
 
 /*
  * structure to hold the configuration details for the request
@@ -853,7 +853,24 @@ int checkUserQuotas( osa_config_rec *sec, request_rec *r){
 
 }
 
+int cleanGeneratedTokens(request_rec *r){
+	osa_config_rec *sec =(osa_config_rec *)ap_get_module_config (r->per_dir_config, &osa_module);
+  char *query;
 
+	if (connection.handle==NULL){
+		/* connect database */
+		if(!open_db_handle(r,sec)) {
+			return osa_error(r,"Unable to connect database", 500);
+		}
+	}
+
+	query=apr_psprintf(r->pool, "DELETE FROM %s WHERE %s<datetime(CURRENT_TIMESTAMP, 'localtime')",sec->cookieAuthTable, sec->cookieAuthValidityField);
+	if (sqlite3_query_execute(connection.handle, query) != 0) {
+		LOG_ERROR_1(APLOG_ERR, 0, r, "cleanGeneratedTokens: SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
+		return osa_error(r,"DB query error",500);
+	}
+  return OK;
+}
 
 
 
@@ -869,12 +886,6 @@ int validateToken(request_rec *r , char *token, int *stillValidFor){
 		}
 	}
 
-	query=apr_psprintf(r->pool, "DELETE FROM %s WHERE %s<datetime(CURRENT_TIMESTAMP, 'localtime')",sec->cookieAuthTable, sec->cookieAuthValidityField);
-	if (sqlite3_query_execute(connection.handle, query) != 0) {
-		LOG_ERROR_1(APLOG_ERR, 0, r, "sqlite3_check_auth_cookie: SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
-		return osa_error(r,"DB query error",500);
-	}
- LOG_ERROR_1(APLOG_DEBUG, 0, r, "%s", query);
 
 	query=apr_psprintf(r->pool, "SELECT %s,((julianday(%s) - julianday(datetime(CURRENT_TIMESTAMP, 'localtime'))) * 86400.0)  FROM %s WHERE token='%s' AND %s>=datetime(CURRENT_TIMESTAMP, 'localtime')",
 		sec->cookieAuthUsernameField, 
@@ -888,7 +899,7 @@ int validateToken(request_rec *r , char *token, int *stillValidFor){
 
     if (rc != SQLITE_OK) {
       sqlite3_finalize(stmt);
-			LOG_ERROR_1(APLOG_ERR, 0, r, "sqlite3_check_auth_cookie: SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
+			LOG_ERROR_1(APLOG_ERR, 0, r, "validateToken: SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
 			return osa_error(r,"DB query error",500);
 		}
   LOG_ERROR_1(APLOG_DEBUG, 0, r, "%s", query);
@@ -924,7 +935,6 @@ int generateToken(request_rec *r, char *receivedToken){
   char *query;
   int Rc=OK;
 
-  srand(clock());
   int done=0;
 	if (connection.handle==NULL){
 		/* connect database */
@@ -934,20 +944,21 @@ int generateToken(request_rec *r, char *receivedToken){
 	}
 
   do{
-    token=apr_psprintf(r->pool, "%10d-%010d-%010d-%010d-%010d",  (unsigned)time(NULL), (rand()%1000000000)+1, (rand()%1000000000)+1, (rand()%1000000000)+1, (rand()%1000000000)+1);
+		token=getToken(r);
 
-
-    query=apr_psprintf(r->pool, "INSERT INTO %s (%s, %s, %s) VALUES ('%s',DateTime(datetime(CURRENT_TIMESTAMP, 'localtime'), '+%d minute'), '%s')", 
+    query=apr_psprintf(r->pool, "INSERT INTO %s (%s, %s, %s, %s) VALUES ('%s',DateTime(datetime(CURRENT_TIMESTAMP, 'localtime'), '+%d minute'), '%s', 0)", 
       sec->cookieAuthTable,
       sec->cookieAuthTokenField,
       sec->cookieAuthValidityField,
       sec->cookieAuthUsernameField,
+			sec->cookieAuthBurnedField,
       token, sec->cookieAuthTTL, 
       r->user);
 
+
       if (sqlite3_query_execute(connection.handle, query) != 0) {
         if (strstr(sqlite3_errmsg(connection.handle),"Duplicate entry") == NULL){
-          LOG_ERROR_1(APLOG_ERR, 0, r, "sqlite3_check_auth_cookie: SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
+          LOG_ERROR_1(APLOG_ERR, 0, r, "generateToken: SQLite ERROR: %s", sqlite3_errmsg(connection.handle));
           return osa_error(r,"DB query error",500);
         }else{
           LOG_ERROR_1(APLOG_ERR, 0, r, "%s", "Generated token already exists: retry");
@@ -959,15 +970,17 @@ int generateToken(request_rec *r, char *receivedToken){
 
   if (sec->cookieAuthBurn){
     //Burn received token
-    query=apr_psprintf(r->pool, "UPDATE %s SET %s=DateTime(datetime(CURRENT_TIMESTAMP, 'localtime'), '+%d second') WHERE %s='%s'",
+    query=apr_psprintf(r->pool, "UPDATE %s SET %s=DateTime(datetime(CURRENT_TIMESTAMP, 'localtime'), '+%d second'), %s=1 WHERE %s='%s' and %s=0",
       sec->cookieAuthTable,
       sec->cookieAuthValidityField,
       sec->cookieCacheTime, 
+			sec->cookieAuthBurnedField,
       sec->cookieAuthTokenField,
-      receivedToken);
+      receivedToken,
+			sec->cookieAuthBurnedField);
       
     if (sqlite3_query_execute(connection.handle, query) != 0) {
-      LOG_ERROR_1(APLOG_ERR, 0, r, "sqlite3_check_auth_cookie: SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
+      LOG_ERROR_1(APLOG_ERR, 0, r, "generateToken(update): SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
       return osa_error(r,"DB query error",500);
     }
   }

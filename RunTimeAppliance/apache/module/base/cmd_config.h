@@ -92,6 +92,10 @@
 	(void *) APR_OFFSETOF(osa_config_rec, cookieAuthValidityField),
 	OR_AUTHCFG | RSRC_CONF, "field name in OSACookieAuthTable containing validity date for generated token default=validUntil"),
 
+	AP_INIT_TAKE1("OSACookieAuthBurnedField", ap_set_string_slot,
+	(void *) APR_OFFSETOF(osa_config_rec, cookieAuthBurnedField),
+	OR_AUTHCFG | RSRC_CONF, "field name in OSACookieAuthTable containing a maked to konw if token has already been consumed (cache related) default=burned"),
+
 	AP_INIT_FLAG("OSACookieAuthEnable", ap_set_flag_slot,
 	(void *) APR_OFFSETOF(osa_config_rec, cookieAuthEnable),
 	OR_AUTHCFG | RSRC_CONF, "enable authentication/authorization from cookie"),

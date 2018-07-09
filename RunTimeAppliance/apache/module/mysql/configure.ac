@@ -41,6 +41,13 @@ AC_ARG_WITH([mysql-lib-path],
  AC_MSG_RESULT([mysqllibs is $MYSQL_LIBS])
 AC_SUBST(MYSQL_LIBS)
 
+AC_ARG_WITH([jsonc-lib-path],
+  [AS_HELP_STRING([--with-jsonc-lib-path], [location of the JSON-C libraries])],
+  [JSONC_LIBS="-L$withval -ljson-c"],
+  [JSONC_LIBS='-ljson-c'])
+ AC_MSG_RESULT([jsonclibs is $JSONC_LIBS])
+AC_SUBST(JSONC_LIBS)
+
 CPPFLAGS=""
 AC_SUBST(CPPFLAGS)
 

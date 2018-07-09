@@ -31,6 +31,14 @@ AC_ARG_WITH([sqlite3-lib-path],
  AC_MSG_RESULT([sqlite3libs is $SQLITE3_LIBS])
 AC_SUBST(SQLITE3_LIBS)
 
+AC_ARG_WITH([jsonc-lib-path],
+  [AS_HELP_STRING([--with-jsonc-lib-path], [location of the JSON-C libraries])],
+  [JSONC_LIBS="-L$withval -ljson-c"],
+  [JSONC_LIBS='-ljson-c'])
+ AC_MSG_RESULT([jsonclibs is $JSONC_LIBS])
+AC_SUBST(JSONC_LIBS)
+
+
 CPPFLAGS=""
 AC_SUBST(CPPFLAGS)
 

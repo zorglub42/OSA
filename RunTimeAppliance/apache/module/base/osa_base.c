@@ -14,6 +14,395 @@ int mod_table[] = {0, 2, 1};
 char rfc3986[256] = {0};
 
 
+//BHE----------
+char *to_json_string(request_rec *r, stringKeyValList *list){
+	json_object * user = json_object_new_object();
+	json_object *jarray = json_object_new_array();
+
+	for (int i=0;i<list->listCount;i++){
+		json_object *attr = json_object_new_object();
+		json_object *jstring = json_object_new_string(list->list[i].val);
+		json_object_object_add(attr, list->list[i].key, jstring);
+		json_object_array_add(jarray,attr);
+	}
+	json_object_object_add(user, "keval", jarray);
+	char *rc =PSTRDUP(r->pool, json_object_to_json_string(user)); 
+	json_object_put(user);
+
+	return rc;
+}
+
+void from_json_string(request_rec *r, char *jsonStr, stringKeyValList *list){
+	json_object *jobj=json_tokener_parse(jsonStr);
+
+	json_object *attrs;
+	json_object_object_get_ex(jobj, "keval", &attrs);
+
+
+	list->listCount=json_object_array_length(attrs);
+
+	for (int i = 0; i < json_object_array_length(attrs); i++) {
+		json_object *tmp = json_object_array_get_idx(attrs, i);
+		json_object_object_foreach(tmp, key, val) {
+			list->list[i].key=PSTRDUP(r->pool, key);
+			list->list[i].val=PSTRDUP(r->pool, json_object_get_string(val));		
+		}
+	}
+	json_object_put(jobj);
+
+}
+int acquire(request_rec *r){
+ 	if (socache_mutex) {
+        apr_status_t status = apr_global_mutex_lock(socache_mutex);
+        if (status != APR_SUCCESS) {
+            ap_log_rerror(APLOG_MARK, APLOG_ERR, status, r, APLOGNO(02350)
+                    "could not acquire lock, ignoring cache");
+            return FALSE;
+        }
+    }
+	return  TRUE;
+
+}
+
+int release(request_rec *r){
+	if (socache_mutex) {
+		apr_status_t status = apr_global_mutex_unlock(socache_mutex);
+		if (status != APR_SUCCESS) {
+			ap_log_rerror(APLOG_MARK, APLOG_ERR, status, r, APLOGNO(02356)
+					"could not release lock, ignoring cache");
+			return FALSE;
+		}
+    }
+	return TRUE;
+}
+
+// initialize mutex mgnt for chld processes
+static void osa_child_init(apr_pool_t *p, server_rec *s)
+{
+    const char *lock;
+    apr_status_t rv;
+    if (!socache_mutex) {
+        return; /* don't waste the overhead of creating mutex & cache */
+    }
+    lock = apr_global_mutex_lockfile(socache_mutex);
+    rv = apr_global_mutex_child_init(&socache_mutex, lock, p);
+    if (rv != APR_SUCCESS) {
+        ap_log_error(APLOG_MARK, APLOG_CRIT, rv, s, APLOGNO(02394)
+                "failed to initialise mutex in child_init");
+    }
+}
+
+//Remove global mutex
+static apr_status_t remove_lock(void *data)
+{
+    if (socache_mutex) {
+        apr_global_mutex_destroy(socache_mutex);
+        socache_mutex = NULL;
+    }
+    return APR_SUCCESS;
+}
+
+// Clean up on module shutdown: cache destoy
+static apr_status_t destroy_cache(void *data)
+{
+    server_rec *s = data;
+    if (osa_cache.provider && osa_cache.socache_instance) {
+        osa_cache.provider->destroy(
+                osa_cache.socache_instance, s);
+        osa_cache.socache_instance = NULL;
+    }
+    return APR_SUCCESS;
+}
+
+
+
+// register mutex as soon a possible
+static int osa_precfg(apr_pool_t *pconf, apr_pool_t *plog, apr_pool_t *ptmp)
+{
+    apr_status_t rv = ap_mutex_register(pconf, SOCACHE_ID, NULL,
+            APR_LOCK_DEFAULT, 0);
+    if (rv != APR_SUCCESS) {
+        ap_log_perror(APLOG_MARK, APLOG_CRIT, rv, plog, APLOGNO(02390)
+        "failed to register %s mutex", SOCACHE_ID);
+        return 500; /* An HTTP status would be a misnomer! */
+    }
+
+    return OK;
+}
+static int cache_post_config(apr_pool_t *pconf, apr_pool_t *plog,
+        apr_pool_t *ptmp, server_rec *base_server)
+{
+	const char *lock;
+    apr_status_t rv;
+
+	//BHE
+	//rpdp_server_config_rec *conf = ap_get_module_config(base_server->module_config, &rpdp_module);
+	osa_cache.cache_socache_id=SOCACHE_ID;
+
+	if (!socache_mutex) {
+    	rv = ap_global_mutex_create(&socache_mutex, NULL, osa_cache.cache_socache_id, NULL, base_server, pconf, 0);
+		if (rv != APR_SUCCESS) {
+			ap_log_perror(APLOG_MARK, APLOG_CRIT, rv, plog, APLOGNO(02391)
+			"failed to create %s mutex", osa_cache.cache_socache_id);
+			return 500; /* An HTTP status would be a misnomer! */
+        }else{
+			ap_log_perror(APLOG_MARK, APLOG_DEBUG, rv, plog, 
+			"mutex created for %s", osa_cache.cache_socache_id);			
+		}
+	}
+ 	apr_pool_cleanup_register(pconf, NULL, remove_lock, apr_pool_cleanup_null);
+
+	// static struct ap_socache_hints socache_hints =
+    // { 64, 2048, 60000000 };
+
+	//"shmcb"
+	osa_cache.provider = ap_lookup_provider(AP_SOCACHE_PROVIDER_GROUP, "shmcb", AP_SOCACHE_PROVIDER_VERSION);
+	if (!osa_cache.provider){
+		ap_log_perror(APLOG_MARK, APLOG_CRIT, 0, plog,
+			"shmcb/dbm provider not found");
+		return HTTP_INTERNAL_SERVER_ERROR;
+		
+	}
+
+	const char *errmsg = osa_cache.provider->create(&(osa_cache.socache_instance), "/tmp/osa_cache", ptmp, pconf);
+	//BHE
+	//const char *errmsg = osa_cache.provider->create(&(osa_cache.socache_instance), conf->cache_filename, ptmp, pconf);
+	if (errmsg) {
+		ap_log_perror(APLOG_MARK, APLOG_CRIT, 0, plog,
+			"cache creation failure: %s", errmsg);
+		return HTTP_INTERNAL_SERVER_ERROR;
+	}
+
+	rv = osa_cache.provider->init(osa_cache.socache_instance, osa_cache.cache_socache_id,
+			NULL, base_server, pconf);
+			//&socache_hints, base_server, pconf);
+	if (rv != APR_SUCCESS) {
+		ap_log_perror(APLOG_MARK, APLOG_CRIT, rv, plog, 
+			"OSA cache %s initialization failure", osa_cache.cache_socache_id);
+		return HTTP_INTERNAL_SERVER_ERROR; // An HTTP status would be a misnomer! 
+	}
+	
+	apr_pool_cleanup_register(pconf, (void *) base_server, destroy_cache, apr_pool_cleanup_null);
+		
+	return OK;
+
+}
+static int read_keyval_from_cache(server_rec *server, request_rec *r, char *dataType, char * resource, char *user, stringKeyValList *list){
+	int rc;
+
+	if (!acquire(r)) return FALSE;
+
+
+
+	unsigned char id[strlen(dataType) + strlen(resource) + strlen(user) + strlen(KEYVAL_CACHE_ID_PATTERN)];
+	//int datalen = sizeof(grant);
+	int datalen = MAX_STRING_LEN;
+	char jsonStr[datalen];
+
+	sprintf(id, KEYVAL_CACHE_ID_PATTERN, dataType, resource, user); 
+
+	apr_status_t rv = osa_cache.provider->retrieve(osa_cache.socache_instance, server, id,  strlen(id), jsonStr, &datalen, r->pool);
+	if (rv != APR_SUCCESS) {
+		switch (rv){
+			case APR_NOTFOUND:
+				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, 
+				"failed to retreive object err=%s", "APR_NOTFOUND");
+			break;;
+			case APR_EGENERAL:
+				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, 
+				"failed to retreive object err=%s", "APR_EGENERAL");
+			break;;
+			case APR_ENOSPC:
+				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, 
+				"failed to retreive object err=%s", "APR_ENOSPC");
+			break;;
+			default:
+				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, 
+				"failed to retreive object err=%s", "DEFAULT");
+			break;;
+
+		}
+		ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, 
+		"failed to retreive object from %s %d", osa_cache.cache_socache_id, rv);
+		rc=FALSE;
+	}else{
+		from_json_string(r, jsonStr, list);
+		ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, "got data %s for U=%s r=%s from cache %s", jsonStr, user, resource, osa_cache.cache_socache_id);
+		rc=TRUE;
+	}
+
+	if (!release(r)) return FALSE;
+	return rc;
+}
+static void store_keyval_cache(request_rec *r, char *dataType,  char * resource, char *user, stringKeyValList *list){
+
+	if (!acquire(r)) return ;
+
+
+
+	unsigned char id[strlen(dataType) + strlen(resource) + strlen(user) + strlen(KEYVAL_CACHE_ID_PATTERN)];
+	char *jsonStr = to_json_string(r, list);
+	//rpdp_config_rec *conf = ap_get_module_config(r->per_dir_config, &rpdp_module);
+	//ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, "TTL=%lu", conf->cacheTTL);
+
+	sprintf(id, KEYVAL_CACHE_ID_PATTERN, dataType, resource, user); 
+	apr_status_t rv = osa_cache.provider->store(osa_cache.socache_instance, r->server, id,  strlen(id), apr_time_now()+ (30 * 1000000), jsonStr, strlen(jsonStr), r->pool);
+	//apr_status_t rv = rpdp_cache.provider->store(rpdp_cache.socache_instance, r->server, id,  strlen(id), apr_time_now()+ (conf->cacheTTL * 1000000), grant, strlen(grant), r->pool);
+	if (rv != APR_SUCCESS){
+		ap_log_rerror(APLOG_MARK, APLOG_CRIT, rv, r, "failed to store object err=%d", rv);
+	}else{
+		ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, "object succesfully stored");
+	}
+	
+
+	release(r);
+	
+}
+static int read_pw_from_cache(server_rec *server, request_rec *r, char *user, char *pw){
+	int rc;
+
+	if (!acquire(r)) return FALSE;
+
+
+
+	unsigned char id[strlen(user) + strlen(USER_PW_CACHE_ID_PATTERN)];
+	//int datalen = sizeof(grant);
+	int datalen = MAX_STRING_LEN;
+	char data[datalen];
+
+	sprintf(id, USER_PW_CACHE_ID_PATTERN, user); 
+
+	apr_status_t rv = osa_cache.provider->retrieve(osa_cache.socache_instance, server, id,  strlen(id), data, &datalen, r->pool);
+	if (rv != APR_SUCCESS) {
+		switch (rv){
+			case APR_NOTFOUND:
+				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, 
+				"failed to retreive object err=%s", "APR_NOTFOUND");
+			break;;
+			case APR_EGENERAL:
+				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, 
+				"failed to retreive object err=%s", "APR_EGENERAL");
+			break;;
+			case APR_ENOSPC:
+				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, 
+				"failed to retreive object err=%s", "APR_ENOSPC");
+			break;;
+			default:
+				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, 
+				"failed to retreive object err=%s", "DEFAULT");
+			break;;
+
+		}
+		ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, 
+		"failed to retreive object from %s %d", osa_cache.cache_socache_id, rv);
+		rc=FALSE;
+	}else{
+		data[datalen]=0;
+		ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, "got pw %s for U=%s fromcache %s", data, user, osa_cache.cache_socache_id);
+		strcpy(pw, data);
+		rc=TRUE;
+	}
+
+	if (!release(r)) return FALSE;
+	return rc;
+}
+static void store_pw_cache(request_rec *r, char *user, char *pw){
+
+	if (!acquire(r)) return ;
+
+
+
+	unsigned char id[strlen(user) + strlen(USER_PW_CACHE_ID_PATTERN)];
+	//rpdp_config_rec *conf = ap_get_module_config(r->per_dir_config, &rpdp_module);
+	//ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, "TTL=%lu", conf->cacheTTL);
+
+	sprintf(id, USER_PW_CACHE_ID_PATTERN, user); 
+	apr_status_t rv = osa_cache.provider->store(osa_cache.socache_instance, r->server, id,  strlen(id), apr_time_now()+ (30 * 1000000), pw, strlen(pw), r->pool);
+	//apr_status_t rv = rpdp_cache.provider->store(rpdp_cache.socache_instance, r->server, id,  strlen(id), apr_time_now()+ (conf->cacheTTL * 1000000), grant, strlen(grant), r->pool);
+	if (rv != APR_SUCCESS){
+		ap_log_rerror(APLOG_MARK, APLOG_CRIT, rv, r, "failed to store object err=%d", rv);
+	}else{
+		ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, "object succesfully stored: %s", pw);
+	}
+	
+
+	release(r);
+	
+}
+static int read_tokens_clean_cache(server_rec *server, request_rec *r){
+	int rc;
+
+	if (!acquire(r)) return FALSE;
+
+
+
+	unsigned char id[strlen(TOKEN_CLEAN_CACHE_ID_PATTERN)+1];
+	//int datalen = sizeof(grant);
+	int datalen = MAX_STRING_LEN;
+	char data[1];
+
+	sprintf(id, TOKEN_CLEAN_CACHE_ID_PATTERN); 
+
+	apr_status_t rv = osa_cache.provider->retrieve(osa_cache.socache_instance, server, id,  strlen(id), data, &datalen, r->pool);
+	if (rv != APR_SUCCESS) {
+		switch (rv){
+			case APR_NOTFOUND:
+				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, 
+				"failed to retreive object err=%s", "APR_NOTFOUND");
+			break;;
+			case APR_EGENERAL:
+				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, 
+				"failed to retreive object err=%s", "APR_EGENERAL");
+			break;;
+			case APR_ENOSPC:
+				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, 
+				"failed to retreive object err=%s", "APR_ENOSPC");
+			break;;
+			default:
+				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, 
+				"failed to retreive object err=%s", "DEFAULT");
+			break;;
+
+		}
+		ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, 
+		"failed to retreive object from %s %d", osa_cache.cache_socache_id, rv);
+		rc=FALSE;
+	}else{
+		rc=TRUE;
+	}
+
+	if (!release(r)) return FALSE;
+	return rc;
+}
+static void store_tokens_clean(request_rec *r){
+
+	if (!acquire(r)) return ;
+	osa_config_rec *sec =(osa_config_rec *)ap_get_module_config (r->per_dir_config, &osa_module);
+	
+
+
+
+	unsigned char id[strlen(TOKEN_CLEAN_CACHE_ID_PATTERN)+1];
+	//rpdp_config_rec *conf = ap_get_module_config(r->per_dir_config, &rpdp_module);
+	//ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, "TTL=%lu", conf->cacheTTL);
+
+	sprintf(id, TOKEN_CLEAN_CACHE_ID_PATTERN); 
+	apr_status_t rv = osa_cache.provider->store(osa_cache.socache_instance, r->server, id,  strlen(id), apr_time_now()+ (sec->cookieCacheTime * 1000000), "", 0, r->pool);
+	//apr_status_t rv = rpdp_cache.provider->store(rpdp_cache.socache_instance, r->server, id,  strlen(id), apr_time_now()+ (conf->cacheTTL * 1000000), grant, strlen(grant), r->pool);
+	if (rv != APR_SUCCESS){
+		ap_log_rerror(APLOG_MARK, APLOG_CRIT, rv, r, "failed to store object err=%d", rv);
+	}else{
+		ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, "object succesfully stored: (tokens_clean)");
+	}
+	
+
+	release(r);
+	
+}
+
+//BHE----------------
+
+
 void url_encoder_rfc_tables_init(){
 
     int i;
@@ -957,14 +1346,22 @@ void deleteAuthCookie(request_rec *r){
 /*--------------------------------------------------------------------------------------------------*/
 int authenticate_cookie_user(request_rec *r){
 
-	/* retreive configuration */
 	osa_config_rec *sec =(osa_config_rec *)ap_get_module_config (r->per_dir_config, &osa_module);
+	/* retreive configuration */
 	int Rc=OK;
 	const char *sent_pw;
 
 	if (sec->cookieAuthEnable){
 			char token[MAX_STRING_LEN];			
 			
+			if (!read_tokens_clean_cache(r->server, r)){
+				Rc=cleanGeneratedTokens(r);
+				if (Rc != OK){
+					return Rc;
+				}
+				store_tokens_clean(r);
+				
+			}
 			Rc=getTokenFromCookie(r, token);
 			if (Rc != OK){
 				return Rc;
@@ -975,8 +1372,10 @@ int authenticate_cookie_user(request_rec *r){
 				deleteAuthCookie(r);
 				return Rc;
 			}
-			if ( ((sec->cookieAuthTTL*60)-stillValidFor) >sec->cookieCacheTime){
-				//We received a request with a token created for more than COOKIE_BURN_SURVIVAL_TIME secs
+			if ( ((sec->cookieAuthTTL*60)-stillValidFor) > sec->cookieCacheTime){
+				//We received a request with a token and found it in table, but its cache suvival time is elapsed
+				// will expire within sec->cookieCacheTime sec
+				//i.e original cookie was burn and survival period (COOKIE_BURN_SURVIVAL_TIME) is over
 				//re-generate a new one and burn the received one 
 				Rc=generateToken(r, token);
 				if (Rc != OK){
@@ -1063,6 +1462,25 @@ int check_auth(request_rec *r)
 			}
 		}else if(!strcmp(want,"group")) {
 			/* check for list of groups from database only first time thru */
+			stringKeyValList groupList;
+			groupList.listCount=0;
+			if (read_keyval_from_cache(r->server, r, "groups", "", r->user, &groupList)){
+				groups=(char **) PCALLOC(r->pool, sizeof(char *) * (groupList.listCount+1));
+				groups[groupList.listCount]=0;
+				for (int i=0;i<groupList.listCount;i++){
+					groups[i]=PSTRDUP(r->pool, groupList.list[i].val);
+				}
+			}else{
+				groups = get_groups(r, user, sec);
+				if (groups){
+					for (int i=0;groups[i];i++){
+						groupList.list[i].key=PSTRDUP(r->pool, "group");
+						groupList.list[i].val=PSTRDUP(r->pool, groups[i]);
+						groupList.listCount++;
+					}
+					store_keyval_cache(r, "groups", "", r->user, &groupList);
+				}
+			}
 
 
 			if (groups || (groups = get_groups(r, user, sec))) {
@@ -1230,21 +1648,21 @@ int authenticate_basic_user (request_rec *r)
 
 	if (sec->basicAuthEnable && r->user==NULL){
 				
-				if ((res = get_basic_auth_creds (r, (char**)&sent_pw)) == 0){
-					if (sec->allowAnonymous){
-						//If this method is tigerred, it's because, authent is required or anonymous access is allowed and we found creds in the request.
-						// At this point, creds where not validated, but like anonymous access is allowed, we need to let apache to got futher
-						//so:
-						//  - set  a fake user because apache expect a user at the end of auth methods
-						//  - inform apache that auth is OK	
-						//Fake user will be erased in AUTHZ 
-	 					r->user=(char *) PSTRDUP(r->pool, ANONYMOUS_USER_ALLOWED);
-						return OK;
-					}else{
-						send_request_basic_auth(r);
-						return NOT_AUTHORIZED;
-					}
-				}
+		if ((res = get_basic_auth_creds (r, (char**)&sent_pw)) == 0){
+			if (sec->allowAnonymous){
+				//If this method is tigerred, it's because, authent is required or anonymous access is allowed and we found creds in the request.
+				// At this point, creds where not validated, but like anonymous access is allowed, we need to let apache to got futher
+				//so:
+				//  - set  a fake user because apache expect a user at the end of auth methods
+				//  - inform apache that auth is OK	
+				//Fake user will be erased in AUTHZ 
+				r->user=(char *) PSTRDUP(r->pool, ANONYMOUS_USER_ALLOWED);
+				return OK;
+			}else{
+				send_request_basic_auth(r);
+				return NOT_AUTHORIZED;
+			}
+		}
 				
 	}
 	if (!sec->cookieAuthEnable && !sec->basicAuthEnable){
@@ -1304,7 +1722,16 @@ int authenticate_basic_user (request_rec *r)
 		return DECLINED;
 	}
 
-	real_pw = get_db_pw(r, user, sec, salt_column, &salt ); /* Get a salt if one was specified */
+	char cached_pw[MAX_STRING_LEN];
+	cached_pw[0]=0;
+	if (read_pw_from_cache(r->server, r, user, cached_pw)){
+		real_pw=PSTRDUP(r->pool, cached_pw);
+	}else{
+		real_pw = get_db_pw(r, user, sec, salt_column, &salt ); /* Get a salt if one was specified */
+		if (real_pw){
+			store_pw_cache(r, user, (char *)real_pw);
+		}
+	}
 
 	if(!real_pw)
 	{
@@ -1388,7 +1815,7 @@ void *create_osa_dir_config (POOL *p, char *d)
 	m->cookieAuthUsernameField="userName";
 	m->cookieAuthTokenField="token";
 	m->cookieAuthValidityField="validUntil";
-
+    m->cookieAuthBurnedField="burned";
 
 	m->basicAuthEnable=0;								/*default cookie authen */
 	m->require=NULL;
@@ -1401,6 +1828,9 @@ void *create_osa_dir_config (POOL *p, char *d)
 
 	return (void *)m;
 }
+
+
+
 int forward_identity(request_rec *r)
 {
 	stringKeyValList headersMappingList;
@@ -1435,12 +1865,19 @@ int forward_identity(request_rec *r)
 		if (r->user != NULL){
 			int rc;
 
-			if ((rc=get_user_basic_attributes(r, fields, &headersMappingList)) != OK){
-				LOG_ERROR_1(APLOG_DEBUG, 0, r, "%s", "Kak boud");
-				return rc;
+			if (!read_keyval_from_cache(r->server, r, "basic", sec->resourceName, r->user,  &headersMappingList)){
+				if ((rc=get_user_basic_attributes(r, fields, &headersMappingList)) != OK){
+					return rc;
+				}else{
+					store_keyval_cache(r, "basic", sec->resourceName, r->user, &headersMappingList);
+				}
+
 			}
+
+
 			//We found a user in request (i.e successfull authentication ), search the user in DB
 			for (i=0;i<headersMappingList.listCount;i++){
+
 				apr_table_setn(r->headers_in, headersMappingList.list[i].key, headersMappingList.list[i].val);
 			}
 		}else{
@@ -1465,8 +1902,12 @@ int forward_extended_identity(request_rec *r){
 		apr_status_t rc=OK;
 
 		userProps.listCount=0;
-		if ((rc=get_user_extended_attributes(r, &userProps)) != OK){
-			return rc;
+		if (!read_keyval_from_cache(r->server, r, "extended", sec->resourceName, r->user, &userProps)){
+			if ((rc=get_user_extended_attributes(r, &userProps)) != OK){
+				return rc;
+			}else{
+				store_keyval_cache(r, "extended", sec->resourceName, r->user, &userProps);
+			}
 		}
 
 
@@ -1498,6 +1939,8 @@ int forward_extended_identity(request_rec *r){
 }
 
 
+
+
 void register_hooks(POOL *p)
 {
 	build_decoding_table();
@@ -1514,6 +1957,9 @@ void register_hooks(POOL *p)
 
 	// ap_hook_check_authn(authenticate_cookie_user, NULL, NULL, APR_HOOK_MIDDLE, AP_AUTH_INTERNAL_PER_URI);
 	// ap_hook_check_authn(authenticate_basic_user, NULL, NULL, APR_HOOK_MIDDLE, AP_AUTH_INTERNAL_PER_URI);
+    ap_hook_pre_config(osa_precfg, NULL, NULL, APR_HOOK_MIDDLE);
+    ap_hook_post_config(cache_post_config, NULL, NULL, APR_HOOK_MIDDLE);
+	ap_hook_child_init(osa_child_init, NULL, NULL, APR_HOOK_MIDDLE);
 
 
 	ap_hook_fixups(authenticate_cookie_user, NULL, NULL, APR_HOOK_FIRST);
@@ -1529,3 +1975,18 @@ void register_hooks(POOL *p)
 
 
 
+char *getToken(request_rec *r){
+	char *token;
+	struct timeval tv;
+	gettimeofday(&tv,NULL);
+	unsigned long time_in_micros = 1000000 * tv.tv_sec + tv.tv_usec;
+
+	token=ap_md5(r->pool,
+					apr_psprintf(r->pool,
+					"%lu-%010d-%010d-%010d",
+					time_in_micros, getpid(),
+					(rand()%1000000000)+1, (rand()%1000000000)+1
+	));
+
+	return token;
+}
