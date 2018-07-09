@@ -19,6 +19,7 @@ LIBEXECDIR = @LIBEXECDIR@
 SYSCONFDIR = @SYSCONFDIR@
 SQLITE3_CFLAGS = @SQLITE3_CFLAGS@
 SQLITE3_LIBS = @SQLITE3_LIBS@
+JSONC_LIBS = @JSONC_LIBS@
 
 CPPFLAGS = @CPPFLAGS@
 CFLAGS = @CFLAGS@
@@ -29,27 +30,27 @@ LDLIBS = @LDLIBS@
 all : mod_osa.la
 
 mod_osa.la : mod_osa.c ../base/osa_base.h ../base/cmd_config.h ../base/osa_base.c
-	$(APXS) -c $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $(SQLITE3_CFLAGS) $(SQLITE3_LIBS) mod_osa.c ../base/osa_base.c
+        $(APXS) -c $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $(JSONC_LIBS) $(SQLITE3_CFLAGS) $(SQLITE3_LIBS) mod_osa.c ../base/osa_base.c
 
 $(DESTDIR)$(LIBEXECDIR) :
-	mkdir -p $@
+        mkdir -p $@
 
 $(DESTDIR)$(SYSCONFDIR)/mods-available/ :
-	mkdir -p $@
+        mkdir -p $@
 
 install : all $(DESTDIR)$(LIBEXECDIR) $(DESTDIR)$(SYSCONFDIR)/mods-available/
-	$(APXS) -i -S LIBEXECDIR=$(DESTDIR)$(LIBEXECDIR) mod_osa.la
-	cp osa.load  $(DESTDIR)$(SYSCONFDIR)/mods-available/.
-	cp osa.conf  $(DESTDIR)$(SYSCONFDIR)/mods-available/.
+        $(APXS) -i -S LIBEXECDIR=$(DESTDIR)$(LIBEXECDIR) mod_osa.la
+        cp osa.load  $(DESTDIR)$(SYSCONFDIR)/mods-available/.
+        cp osa.conf  $(DESTDIR)$(SYSCONFDIR)/mods-available/.
 
 clean :
-	-rm -rf .libs
-	-rm -f mod_osa.o mod_osa.la mod_osa.lo mod_osa.slo mod_osa.loT
-	-rm -f config.log config.status
-	-rm -rf autom4te.cache
+        -rm -rf .libs
+        -rm -f mod_osa.o mod_osa.la mod_osa.lo mod_osa.slo mod_osa.loT
+        -rm -f config.log config.status
+        -rm -rf autom4te.cache
 
 distclean : clean
-	-rm -f Makefile Makefile.in
+        -rm -f Makefile Makefile.in
 
 realclean : distclean
-	-rm -f configure
+        -rm -f configure
