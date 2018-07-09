@@ -125,8 +125,8 @@ require_once "../../include/Localization.php";
 					</div> 
 					<div class="list-group" id="data" >
 						<a class="list-group-item row" id="rowTpl" style="display:none" >
-							<div class="col-md-5 ellipsis" title="{{headers[i].name}">{headers[i].name}<input  id="propertyName_{i}" type="hidden" value="{headers[i].name}"/></div>
-							<div class="col-md-5 ellipsis" title="{headers[i].header}">{headers[i].header}<input id="propertyHeader_{i}" type="hidden" value="{headers[i].header}"/></div>
+							<div class="col-md-2 ellipsis" title="{{headers[i].name}">{headers[i].name}<input  id="propertyName_{i}" type="hidden" value="{headers[i].name}"/></div>
+							<div class="col-md-8 ellipsis" title="{headers[i].header}">{headers[i].header}<input id="propertyHeader_{i}" type="hidden" value="{headers[i].header}"/></div>
 							<div class="col-md-2">
 								<button type="button" class="btn btn-default" title="<?php echo Localization::getString("user.property.delete.tooltip")?>" onclick="deleteHeaderMapping('{i}', '{headers[i].name}')">
 									<span class="glyphicon glyphicon glyphicon-trash" aria-hidden="true"></span>
@@ -134,8 +134,8 @@ require_once "../../include/Localization.php";
 							</div>
 						</a>
 						<a class="list-group-item row" id="newProp" >
-							<div class="col-md-5 ellipsis"><input  id="propertyName_new" type="text"/></div>
-							<div class="col-md-5 ellipsis" ><input id="propertyHeader_new" value=""/></div>
+							<div class="col-md-2 ellipsis"><input  class="form-control" id="propertyName_new" type="text"/></div>
+							<div class="col-md-8 ellipsis" ><input  class="form-control" id="propertyHeader_new" value=""/></div>
 							<div class="col-md-2">
 								<button type="button" class="btn btn-default" title="<?php echo Localization::getString("user.property.add.tooltip")?>" onclick="addHeaderMapping()">
 									<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>

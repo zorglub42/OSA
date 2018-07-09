@@ -68,8 +68,8 @@
 	</div>
 	<div class="list-group" id="data" >
 		<a class="list-group-item row" id="rowTpl" style="display:none" >
-			<div class="col-md-5 ellipsis" title="{propertiesList[i].name}">{propertiesList[i].name}<input  id="propertyName_{i}" type="hidden" value="{propertiesList[i].name}"/></div>
-			<div class="col-md-5 ellipsis" title="{propertiesList[i].value}"><input id="propertyValue_{i}" value="{propertiesList[i].value}"/></div>
+			<div class="col-md-2 ellipsis" title="{propertiesList[i].name}">{propertiesList[i].name}<input id="propertyName_{i}" type="hidden" value="{propertiesList[i].name}"/></div>
+			<div class="col-md-8 ellipsis" title="{propertiesList[i].value}"><input  class="form-control" id="propertyValue_{i}" value="{propertiesList[i].value}"/></div>
 			<div class="col-md-2">
 				<button type="button" class="btn btn-default" title="<?php echo Localization::getString("user.property.delete.tooltip")?>" onclick="deleteUserProperty('{i}', '{propertiesList[i].name}')">
 					<span class="glyphicon glyphicon glyphicon-trash" aria-hidden="true"></span>
@@ -77,8 +77,8 @@
 			</div>
 		</a>
 		<a class="list-group-item row" id="newProp" >
-			<div class="col-md-5 ellipsis"><input  id="propertyName_new" type="text"/></div>
-			<div class="col-md-5 ellipsis" ><input id="propertyValue_new" value=""/></div>
+			<div class="col-md-2 ellipsis"><input  id="propertyName_new" type="text"  class="form-control"/></div>
+			<div class="col-md-8 ellipsis" ><input id="propertyValue_new" value="" class="form-control"/></div>
 			<div class="col-md-2">
 				<button type="button" class="btn btn-default" title="<?php echo Localization::getString("user.property.add.tooltip")?>" onclick="addUserProperty()">
 					<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>

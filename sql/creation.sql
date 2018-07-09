@@ -69,7 +69,7 @@ CREATE TABLE `counters` (
 `counterName` varchar(255) NOT NULL,
 `value` int(10) unsigned NOT NULL,
 PRIMARY KEY (`counterName`) USING BTREE
-) CHARSET=LATIN1  ENGINE=InnoDB;
+) CHARSET=utf8  ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -83,7 +83,7 @@ CREATE TABLE `groups` (
 `groupName` varchar(45) NOT NULL,
 `description` varchar(2000) NOT NULL,
 PRIMARY KEY (`groupName`) USING BTREE
-) CHARSET=LATIN1  ENGINE=InnoDB;
+) CHARSET=utf8  ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -104,7 +104,7 @@ CREATE TABLE `hits` (
 PRIMARY KEY (`id`),
 KEY `idx_serviceName` (`serviceName`),
 KEY `idx_userName` (`userName`)
-) CHARSET=LATIN1  ENGINE=InnoDB;
+) CHARSET=utf8  ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -131,7 +131,7 @@ CREATE TABLE `nodes` (
 `isPublished` tinyint(1) NOT NULL default 1,
 PRIMARY KEY (`nodeName`),
 UNIQUE KEY `UNQ_BIND` (`localIP`,`port`,`serverFQDN`)
-) CHARSET=LATIN1  ENGINE=InnoDB;
+) CHARSET=utf8  ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -164,7 +164,7 @@ CREATE TABLE `services` (
 PRIMARY KEY (`serviceName`) USING BTREE,
 KEY `FK_services_groups` (`groupName`),
 CONSTRAINT `FK_services_groups` FOREIGN KEY (`groupName`) REFERENCES `groups` (`groupName`)
-) CHARSET=LATIN1  ENGINE=InnoDB;
+) CHARSET=utf8  ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -182,7 +182,7 @@ KEY `fk_servicesnodes_1` (`serviceName`),
 KEY `fk_servicesnodes_2` (`nodeName`),
 CONSTRAINT `fk_servicesnodes_1` FOREIGN KEY (`serviceName`) REFERENCES `services` (`serviceName`) ON DELETE CASCADE ON UPDATE NO ACTION,
 CONSTRAINT `fk_servicesnodes_2` FOREIGN KEY (`nodeName`) REFERENCES `nodes` (`nodeName`) ON DELETE CASCADE ON UPDATE NO ACTION
-) CHARSET=LATIN1  ENGINE=InnoDB;
+) CHARSET=utf8  ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -204,7 +204,7 @@ CREATE TABLE `users` (
 `extra` TEXT NULL,
 `lastTokenLogin` datetime NULL,
 PRIMARY KEY (`userName`) USING BTREE
-) CHARSET=LATIN1  ENGINE=InnoDB;
+) CHARSET=utf8  ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -221,7 +221,7 @@ PRIMARY KEY (`userName`,`groupName`) USING BTREE,
 KEY `FK_user_groups_group` (`groupName`) USING BTREE,
 CONSTRAINT `FK_user_groups_group` FOREIGN KEY (`groupName`) REFERENCES `groups` (`groupName`),
 CONSTRAINT `FK_user_groups_user` FOREIGN KEY (`userName`) REFERENCES `users` (`userName`) ON DELETE CASCADE ON UPDATE CASCADE
-) CHARSET=LATIN1  ENGINE=InnoDB;
+) CHARSET=utf8  ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -241,7 +241,7 @@ PRIMARY KEY (`serviceName`,`userName`) USING BTREE,
 KEY `FK_user_quotas_user` (`userName`) USING BTREE,
 CONSTRAINT `FK_user_quotas_resource` FOREIGN KEY (`serviceName`) REFERENCES `services` (`serviceName`) ON DELETE CASCADE,
 CONSTRAINT `FK_user_quotas_user` FOREIGN KEY (`userName`) REFERENCES `users` (`userName`) ON DELETE CASCADE
-) CHARSET=LATIN1  ENGINE=InnoDB;
+) CHARSET=utf8  ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
@@ -261,7 +261,7 @@ CONSTRAINT fk_headersmapping_1
 FOREIGN KEY (serviceName)
 REFERENCES services (serviceName)
 ON DELETE CASCADE
-ON UPDATE NO ACTION) CHARSET=LATIN1  ENGINE=InnoDB;
+ON UPDATE NO ACTION) CHARSET=utf8  ENGINE=InnoDB;
 
 
 
@@ -276,7 +276,7 @@ CREATE TABLE `additionnaluserproperties` (
     FOREIGN KEY (`userName`)
     REFERENCES `users` (`userName`)
     ON DELETE CASCADE
-    ON UPDATE NO ACTION);
+    ON UPDATE NO ACTION) CHARSET=utf8  ENGINE=InnoDB;
 
 
 /*!40101 SET character_set_client = @saved_cs_client */;

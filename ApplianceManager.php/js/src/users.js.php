@@ -366,7 +366,7 @@ function editUser(user) {
 				newRow.className=newRow.className + " tabular_table_body" +  (i%2);
 				newRow.innerHTML=newRow.innerHTML.replaceAll("{i}", i)
 												 .replaceAll("{propertiesList[i].name}", user.properties[i].name)
-												 .replaceAll("{propertiesList[i].value}", user.properties[i].value);
+												 .replaceAll("{propertiesList[i].value}", user.properties[i].value.replaceAll("\"","&quot;"));
 
 				table.insertBefore(newRow, document.getElementById('newProp'));
 			}
