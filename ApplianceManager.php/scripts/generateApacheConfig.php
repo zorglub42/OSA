@@ -115,16 +115,31 @@ while ($row=$stmt->fetch(PDO::FETCH_ASSOC)) {
         
     } else {
         $IDENTITY_MAPPING="";
+        $IDENTITY_EXTENDED_MAPPING="";
         foreach (getServiceHeadersMapping($SERVICE_NAME) as $mapping) {
-            if (!empty($IDENTITY_MAPPING)) {
-                $IDENTITY_MAPPING=$IDENTITY_MAPPING. ";";
+            if ($mapping["extendedAttribute"]==0) {
+                if (!empty($IDENTITY_MAPPING)) {
+                    $IDENTITY_MAPPING=$IDENTITY_MAPPING. ";";
+                }
+                $IDENTITY_MAPPING=$IDENTITY_MAPPING . 
+                                  $mapping["userProperty"] . 
+                                  "," . 
+                                  $mapping["headerName"];
+            } else {
+                if (!empty($IDENTITY_EXTENDED_MAPPING)) {
+                    $IDENTITY_EXTENDED_MAPPING=$IDENTITY_EXTENDED_MAPPING. ";";
+                }
+                $IDENTITY_EXTENDED_MAPPING=$IDENTITY_EXTENDED_MAPPING . 
+                                  $mapping["userProperty"] . 
+                                  "," . 
+                                  $mapping["headerName"];
+
             }
-            $IDENTITY_MAPPING=$IDENTITY_MAPPING . 
-                              $mapping["userProperty"] . 
-                              "," . 
-                              $mapping["headerName"];
         }
+        //echo "EXT=$IDENTITY_EXTENDED_MAPPING";
+        //die();
         if (empty($IDENTITY_MAPPING)) {
+            // No specific mapping found in DB (old version?) so us default mapping
             foreach ($userProperties as $property) {
                 if (!empty($IDENTITY_MAPPING)) {
                     $IDENTITY_MAPPING=$IDENTITY_MAPPING. ";";

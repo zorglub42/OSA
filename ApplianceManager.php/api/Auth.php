@@ -253,10 +253,14 @@ class Auth
             $tokenGenerated=false;
             while (!$tokenGenerated) {
                 $tokenGenerated=true;
-                $token=time() . $this->_getAleat() . 
-                                $this->_getAleat() .
-                                $this->_getAleat() .
-                                $this->_getAleat();
+                list($usec, $sec) = explode(" ", microtime());
+                $time_in_micros = $sec .  ($usec*1000000);
+
+                $token=md5(
+                    $time_in_micros . sprintf("-%010d", getmypid()) . 
+                    $this->_getAleat() . 
+                    $this->_getAleat()
+                );
                 try{
                     $stmt->execute(array($token, $timeInterval, $userName));
 

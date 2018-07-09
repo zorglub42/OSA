@@ -37,6 +37,33 @@ require_once 'groupDAO.php';
 
 
 
+function setUserProperties($db, $userName, $properties) {
+	if (!is_null($properties)) {
+		$stmt = $db->prepare("DELETE FROM additionnaluserproperties WHERE userName=?");
+			
+		$stmt->execute(array($userName));
+		foreach ($properties as $p) {
+			$stmt = $db->prepare("INSERT INTO additionnaluserproperties(userName, propertyName, value) values (?, ?, ?)");
+			$prms=array($userName, $p->name, $p->value);
+			$stmt->execute($prms);
+		}
+	}		
+}
+
+
+function getUserProperties($db, $user) {
+	$userProps=$user->getProperties();
+	$stmt = $db->prepare("SELECT * FROM additionnaluserproperties WHERE userName=?");
+		
+	$stmt->execute(array($user->getUsername()));
+	while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+		$property = new UserProperty($row);
+		array_push($userProps, $property);
+		
+	}
+	$user->setProperties($userProps);
+
+}
 
 function getUser($userName = NULL, $request_data = NULL){
 	@include '../include/Settings.ini.php';
@@ -64,6 +91,7 @@ function getUser($userName = NULL, $request_data = NULL){
 			$row = $stmt->fetch(PDO::FETCH_ASSOC);
 			if ($row){
 				$user = new User($row);
+				getUserProperties($db, $user);
 				$rc= $user->toArray();
 			}else{
 				$error->setHttpStatus(404);
@@ -83,6 +111,10 @@ function getUser($userName = NULL, $request_data = NULL){
 	}else{
 		$strSQLComp="";
 		$prmBind=array();
+		if (isset($request_data["extraFilter"]) && !empty($request_data["extraFilter"])){
+			$strSQLComp=" WHERE exists(SELECT 'x' FROM additionnaluserproperties up WHERE up.userName=u.userName AND value like ?)";
+			array_push($prmBind, "%" . $request_data["extraFilter"] . "%");
+		}
 		if (isset($request_data["withLog"]) && $request_data["withLog"]==1){
 			$strSQLComp=" WHERE exists(SELECT 'x' FROM hits h WHERE h.userName=u.userName)";
 		}elseif (isset($request_data["withLog"]) && $request_data["withLog"]==0){
@@ -109,10 +141,6 @@ function getUser($userName = NULL, $request_data = NULL){
 			$strSQLComp = addSQLFilter("entity like ?", $strSQLComp);
 			array_push($prmBind, "%" . $request_data["entityFilter"] . "%");
 		}
-		if (isset($request_data["extraFilter"]) && $request_data["extraFilter"]!==""){
-			$strSQLComp = addSQLFilter("u.extra like ?", $strSQLComp);
-			array_push($prmBind, "%" . $request_data["extraFilter"] . "%");
-		}
 		$strSQL="SELECT * FROM users u" . $strSQLComp	;
 		if (isset($request_data["order"]) && $request_data["order"] != ""){
 			$strSQL=$strSQL . " ORDER BY " . escapeOrder($request_data["order"]);
@@ -123,6 +151,7 @@ function getUser($userName = NULL, $request_data = NULL){
 			$rc = Array();
 			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 				$user = new User($row);
+				getUserProperties($db, $user);
 				array_push ($rc, $user->toArray());
 			}
 		}catch (Exception $e){
@@ -170,17 +199,13 @@ function addUser($userName = NULL, $request_data = NULL){
 		$mySQLmd5Password=  md5($request_data["password"]) ;
 	}
 	if (!isset($request_data["email"]) || $request_data["email"]=="" ){
-		$error->setHttpStatus(400);
-		$error->setFunctionalCode(1);
-		$error->setFunctionalLabel($error->getFunctionalLabel() . "email address is required\n");
+		$mySQLEmail=null;
 	}else{
 		$mySQLEmail= cut($request_data["email"], EMAIL_LENGTH) ;
 	}
 
 	if (!isset($request_data["endDate"]) || $request_data["endDate"]=="" ){
-		$error->setHttpStatus(400);
-		$error->setFunctionalCode(1);
-		$error->setFunctionalLabel($error->getFunctionalLabel() . "endDate is required\n");
+		$mySQLEndDate=null;
 	}else{
 		if ( preg_match( "/([0-9]{4})-([0-9]{2})-([0-9]{2})/", $request_data["endDate"], $regs ) ) {
 		  $mySQLEndDate = "$regs[1]-$regs[2]-$regs[3] 00:00:00";
@@ -205,10 +230,11 @@ function addUser($userName = NULL, $request_data = NULL){
 	}else{
 		$mySQLEntity=null; 
 	}
-	if (isset($request_data["extra"])){
-		$mySQLExtra=str_replace("\r", "", str_replace("\n","",$request_data["extra"])) ;
+	if(isset($request_data["properties"])) {
+		$properties=$request_data["properties"];
 	}else{
-		$mySQLExtra=null; 
+		$properties=null;
+	
 	}
 
 
@@ -216,13 +242,17 @@ function addUser($userName = NULL, $request_data = NULL){
 	if ($error->getHttpStatus() != 200){
 		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
 	}else{
-		$strSQL = "INSERT INTO users (userName, password, md5Password, endDate, emailAddress, firstName, lastName, entity, extra) values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		$strSQL = "INSERT INTO users (userName, password, md5Password, endDate, emailAddress, firstName, lastName, entity) values (?, ?, ?, ?, ?, ?, ?, ?)";
 		try{
 			
 			$db=openDBConnection();
 			$stmt=$db->prepare($strSQL);
-			$stmt->execute(array($mySQLuserName,$mySQLPassword,$mySQLmd5Password,$mySQLEndDate,$mySQLEmail,$mySQLFirstname,$mySQLLastname,$mySQLEntity,$mySQLExtra));
+			$db->beginTransaction();
+			$stmt->execute(array($mySQLuserName,$mySQLPassword,$mySQLmd5Password,$mySQLEndDate,$mySQLEmail,$mySQLFirstname,$mySQLLastname,$mySQLEntity));
+			setUserProperties($db, $mySQLuserName, $properties);
+			$db->commit();
 		}catch (Exception $e){
+				$db->rollBack();
 				$error->setFunctionalCode(5);
 				if (strpos($e->getMessage(),"Duplicate entry")>=0 ||strpos($e->getMessage(),"UNIQUE constraint failed")>=0 ){
 					$error->setHttpStatus(409);
@@ -338,7 +368,7 @@ function updateUser($userName = NULL, $request_data = NULL){
 	
 	
 	$strUPD="";
-	if (isset($request_data["password"])){
+	if (isset($request_data["password"]) && !is_null($request_data["password"]) ){
 		if ($request_data["password"]=="" ){
 			$error->setHttpStatus(400);
 			$error->setFunctionalCode(1);
@@ -352,7 +382,7 @@ function updateUser($userName = NULL, $request_data = NULL){
 		}
 		$strUPD=$strUPD . "password=?, md5Password=?, ";
 	}
-	if (isset($request_data["email"])) { 
+	if (isset($request_data["email"])&& !is_null($request_data["email"])) { 
 		if($request_data["email"]=="" ){
 			$error->setHttpStatus(400);
 			$error->setFunctionalCode(1);
@@ -363,7 +393,7 @@ function updateUser($userName = NULL, $request_data = NULL){
 			$strUPD = $strUPD . "emailAddress=?, ";
 		}
 	}
-	if (isset($request_data["endDate"])){
+	if (isset($request_data["endDate"])&& !is_null($request_data["endDate"])){
 		if ($request_data["endDate"]=="" ){
 			$error->setHttpStatus(400);
 			$error->setFunctionalCode(1);
@@ -382,30 +412,29 @@ function updateUser($userName = NULL, $request_data = NULL){
 	}
 
 
-	if (isset($request_data["lastName"])){
+	if (isset($request_data["lastName"]) && !is_null($request_data["lastName"])){
 		$mySQLLastname=cut($request_data["lastName"], USERNAME_LENGTH) ;
 		array_push($bindPrms, $mySQLLastname);
 		$strUPD=$strUPD . "lastName=?, "; 
 	}
-	if (isset($request_data["firstName"])){
+	if (isset($request_data["firstName"]) && !is_null($request_data["firstName"])){
 		$mySQLFirstname=cut($request_data["firstName"], FIRSTNAME_LENGTH) ;
 		array_push($bindPrms, $mySQLFirstname);
 		$strUPD=$strUPD . "firstName=?,"; 
 	}
-	if (isset($request_data["entity"])){
+	if (isset($request_data["entity"]) && !is_null($request_data["entity"])){
 		$mySQLEntity=cut($request_data["entity"], ENTITY_LENGTH);
 		array_push($bindPrms, $mySQLEntity);
 		$strUPD=$strUPD . "entity=?, "; 
 	}
 
-	if (isset($request_data["extra"])){
-		$mySQLExtra=str_replace("\r", "", str_replace("\n","",$request_data["extra"])) ;
-		array_push($bindPrms, $mySQLExtra);
-		$strUPD=$strUPD . "extra=?, "; 
-		
+	if(isset($request_data["properties"])) {
+		$properties=$request_data["properties"];
 	}else{
-		$mySQLExtra=null; 
+		$properties=null;
+	
 	}
+
 
 	if ($error->getHttpStatus() != 200){
 		throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());
@@ -418,9 +447,13 @@ function updateUser($userName = NULL, $request_data = NULL){
 
 		try {
 			$db=openDBConnection();
+			$db->beginTransaction();
 			$stmt=$db->prepare($strSQL);
 			$stmt->execute($bindPrms);
+			setUserProperties($db, $userName, $properties);
+			$db->commit();
 		}catch (Exception $e){
+			$db->rollBack();
 			$error->setHttpStatus(500);
 			$error->setFunctionalCode(3);
 			$error->setFunctionalLabel($e->getMessage());

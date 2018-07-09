@@ -530,6 +530,8 @@ function createApacheConf(){
 	$APACHE_LOAD_MOD osa
 	$APACHE_LOAD_MOD rewrite
 	$APACHE_LOAD_MOD proxy_wstunnel
+	$APACHE_LOAD_MOD cache_socache
+	$APACHE_LOAD_MOD socache_shmcb
 
 #Configure ports.conf
 	:>$APACHE_LISTEN_PORTS

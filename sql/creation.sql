@@ -26,7 +26,7 @@
 * 1.0.0 - 2012-10-01 : Release of the file
 **/
 
--- Version: 2.8.1
+-- Version: 3.0
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -51,6 +51,7 @@ CREATE TABLE `authtoken` (
 `token` varchar(255) NOT NULL,
 `validUntil` datetime DEFAULT NULL,
 `userName` varchar(45) DEFAULT NULL,
+`burned` int(1) DEFAULT 0,
 PRIMARY KEY (`token`),
 KEY `fk_authtoken_1` (`userName`),
 KEY `idx_date` (`validUntil`)
@@ -194,8 +195,8 @@ DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
 `userName` varchar(45) NOT NULL,
 `password` varchar(2048) NOT NULL,
-`endDate` datetime NOT NULL,
-`emailAddress` varchar(200) NOT NULL,
+`endDate` datetime NULL,
+`emailAddress` varchar(200) NULL,
 `md5Password` varchar(2048) NOT NULL,
 `firstName` varchar(45) DEFAULT NULL,
 `lastName` varchar(45) DEFAULT NULL,
@@ -253,6 +254,7 @@ id INT NOT NULL AUTO_INCREMENT,
 serviceName VARCHAR(45) NOT NULL,
 columnName VARCHAR(45) NOT NULL,
 headerName VARCHAR(45) NOT NULL,
+extendedAttribute INT NULL DEFAULT 0,
 PRIMARY KEY (id),
 INDEX fk_headersmapping_1_idx (serviceName ASC),
 CONSTRAINT fk_headersmapping_1
@@ -260,6 +262,22 @@ FOREIGN KEY (serviceName)
 REFERENCES services (serviceName)
 ON DELETE CASCADE
 ON UPDATE NO ACTION) CHARSET=LATIN1  ENGINE=InnoDB;
+
+
+
+
+DROP TABLE IF EXISTS `additionnaluserproperties`;
+CREATE TABLE `additionnaluserproperties` (
+  `userName` VARCHAR(45) NOT NULL,
+  `propertyName` VARCHAR(45) NOT NULL,
+  `value` TEXT NULL,
+  PRIMARY KEY (`userName`, `propertyName`),
+  CONSTRAINT `fk_additionnaluserproperties_user`
+    FOREIGN KEY (`userName`)
+    REFERENCES `users` (`userName`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION);
+
 
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

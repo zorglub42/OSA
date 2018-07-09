@@ -21,9 +21,8 @@
 # History     :
 # 1.0.0 - 2012-10-01 : Release of the file
 
-
-	
-	OSASqliteFilename /home/jmjb0521/Dev/workspace/ApplianceManager/sql/sqlite/osa.db
+OSACookieAuthBurn Off
+	OSASqliteFilename /usr/local/OSA/sql/sqlite/osa.db
 
 	OSAUserTable users
 	OSANameField userName
@@ -31,7 +30,7 @@
 	OSAPwEncryption md5
 	OSAGroupTable usersgroups
 	OSAGroupField groupName
-	OSAUserCondition endDate>DateTime('now')
+	OSAUserCondition "endDate>DateTime('now') or endDate is null"
 	
 	
 	OSAResourceNameField serviceName
@@ -50,3 +49,7 @@
 	OSAGlobalQuotasTable services
 	OSAUserQuotasTable usersquotas
 
+
+	OSAUserAttributeTable additionnaluserproperties
+	OSAUserAttributeNameField propertyName
+	OSAUserAttributeValueField value

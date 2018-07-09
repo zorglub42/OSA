@@ -86,6 +86,9 @@ if ($USER_AUTHENTICATION_ENABLE=="On") {
         echo "\tRequestHeader unset " . $defaultHeadersName["userName"] . "\n";
     } else {
         echo "\tOSAIdentityHeadersMapping " . $IDENTITY_MAPPING . "\n";
+        if (!empty($IDENTITY_EXTENDED_MAPPING)){
+            echo "\tOSAIdentityExtendedHeadersMapping " . $IDENTITY_EXTENDED_MAPPING . "\n";
+        }
     }
     
 } else {

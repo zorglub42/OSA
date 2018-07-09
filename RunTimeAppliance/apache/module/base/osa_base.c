@@ -147,7 +147,7 @@ unsigned char *base64_decode(const char *data,
 }
 
 
-void split(char *str, char delimiter, spliting *s){
+void split(request_rec *r, char *str, char delimiter, spliting *s){
 
 	int i=0;
 	int wordLen=0;
@@ -155,9 +155,12 @@ void split(char *str, char delimiter, spliting *s){
 	s->tokensCount=0;
 	while (str[i]){
 		if (str[i]==delimiter){
-			//confMapping[i]=0;
-			strncpy(s->tokens[s->tokensCount], ptr, wordLen);
-			s->tokens[s->tokensCount][wordLen]='\0';
+
+			char c=ptr[wordLen];
+			ptr[wordLen]=0;
+			s->tokens[s->tokensCount]=PSTRDUP(r->pool, ptr);
+			ptr[wordLen]=c;
+
 			ptr=str+i;
 			ptr++;
 			wordLen=0;
@@ -167,12 +170,12 @@ void split(char *str, char delimiter, spliting *s){
 		}
 		i++;
 	}
-	strcpy(s->tokens[s->tokensCount], ptr);
+	s->tokens[s->tokensCount]=PSTRDUP(r->pool, ptr);
 	s->tokensCount++;
 }
 
 char *replace(char *st, char *orig, char *repl) {
-	static char buffer[4096];
+	static char buffer[MAX_STRING_LEN];
 	char *ch;
 	if (!(ch = strstr(st, orig))){
 		return st;
@@ -201,17 +204,17 @@ char *replace(char *st, char *orig, char *repl) {
 /*         DONE                                                                                     */
 /*--------------------------------------------------------------------------------------------------*/
 void dumpHTMLError(request_rec *r, char *errMSG){
-	char strHttpBody[2000];
+	char *strHttpBody;
 
-	strHttpBody[0]=0;
-
-	strcat(strHttpBody,"<h1>An error has occurred</h1>\n");
-	strcat(strHttpBody,"<table>\n");
-	strcat(strHttpBody,"	<tr><td>Error code:</td><td>-1</td></tr>\n");
-	strcat(strHttpBody,"	<tr><td>Error label:</td><td>");
-	strcat(strHttpBody,errMSG);
-	strcat(strHttpBody,"</td></tr>\n");
-	strcat(strHttpBody,"</table>\n");
+	strHttpBody=apr_psprintf(r->pool, "%s%s%s%s%s%s%s",
+		"<h1>An error has occurred</h1>\n",
+		"<table>\n",
+		"	<tr><td>Error code:</td><td>-1</td></tr>\n",
+		"	<tr><td>Error label:</td><td>",
+		errMSG,
+		"</td></tr>\n",
+		"</table>\n"
+	);
 
 	r->content_type="text/html";
 	ap_rputs(strHttpBody, r);
@@ -232,13 +235,13 @@ void dumpHTMLError(request_rec *r, char *errMSG){
 /*         DONE                                                                                     */
 /*--------------------------------------------------------------------------------------------------*/
 void dumpTextError(request_rec *r, char *errMSG){
-	char strHttpBody[2000];
+	char *strHttpBody;
 
-	strHttpBody[0]=0;
-
-	strcat(strHttpBody,"Error code: -1\n");
-	strcat(strHttpBody,"Error label: ");
-	strcat(strHttpBody,errMSG);
+	strHttpBody=apr_psprintf(r->pool, "%s%s%s",
+		"Error code: -1\n",
+		"Error label: ",
+		errMSG
+	);
 
 	r->content_type="text/plain";
 	ap_rputs(strHttpBody, r);
@@ -260,20 +263,20 @@ void dumpTextError(request_rec *r, char *errMSG){
 /*         DONE                                                                                     */
 /*--------------------------------------------------------------------------------------------------*/
 void dumpJSONError(request_rec *r, char *errMSG){
-	char strHttpBody[2000];
+	char *strHttpBody;
 
-	char errorMessage[255];
-	strcpy(errorMessage,replace(errMSG,"\n","\\n"));
-	strcpy(errorMessage,replace(errorMessage,"\"","\\\""));
+	char *errorMessage;
+	errorMessage=apr_psprintf(r->pool, "%s", replace(errMSG,"\n","\\n"));
+	errorMessage=apr_psprintf(r->pool, "%s", replace(errorMessage,"\"","\\\""));
 
-	strHttpBody[0]=0;
-
-	strcat(strHttpBody,"{\n");
-	strcat(strHttpBody,"    \"code\": \"-1\",\n");
-	strcat(strHttpBody,"    \"label\": \"");
-	strcat(strHttpBody,errorMessage);
-	strcat(strHttpBody,"\"\n");
-	strcat(strHttpBody,"}\n");
+	strHttpBody=apr_psprintf(r->pool, "%s%s%s%s%s%s",
+		"{\n",
+		"    \"code\": \"-1\",\n",
+		"    \"label\": \"",
+		errorMessage,
+		"\"\n",
+		"}\n"
+	);
 
 	r->content_type="application/json";
 	ap_rputs(strHttpBody, r);
@@ -295,15 +298,16 @@ void dumpJSONError(request_rec *r, char *errMSG){
 /*         DONE                                                                                     */
 /*--------------------------------------------------------------------------------------------------*/
 void dumpXMLError(request_rec *r, char *errMSG){
-	char strHttpBody[2000];
+	char *strHttpBody;
 
-	strHttpBody[0]=0;
-	strcat(strHttpBody,"<?xml version='1.0' encoding='UTF-8'?>\n");
-	strcat(strHttpBody,"<osa>\n");
-	strcat(strHttpBody,"	<code>-1</code>\n");
-	strcat(strHttpBody,"	<label>");
-	strcat(strHttpBody,errMSG);
-	strcat(strHttpBody,"</osa>\n");
+	strHttpBody=apr_psprintf(r->pool, "%s%s%s%s%s%s",
+		"<?xml version='1.0' encoding='UTF-8'?>\n",
+		"<osa>\n",
+		"	<code>-1</code>\n",
+		"	<label>",
+		errMSG,
+		"</osa>\n"
+	);
 
 	r->content_type="text/xml";
 	ap_rputs(strHttpBody, r);
@@ -325,21 +329,22 @@ void dumpXMLError(request_rec *r, char *errMSG){
 /*         DONE                                                                                     */
 /*--------------------------------------------------------------------------------------------------*/
 void dumpSOAPFault(request_rec *r, char *errMSG){
-	char strHttpBody[2000];
+	char *strHttpBody;
 
-	strHttpBody[0]=0;
-	strcat(strHttpBody,"<?xml version='1.0' ?>\n");
-	strcat(strHttpBody,"<env:Envelope xmlns:env='http://schemas.xmlsoap.org/soap/envelope/'>\n");
-	strcat(strHttpBody,"	<env:Body>\n");
-	strcat(strHttpBody,"		<env:Fault>\n");
-	strcat(strHttpBody,"			<faultcode>env:Server</faultcode>\n");
-	strcat(strHttpBody,"			<faultstring>");
-	strcat(strHttpBody,"                    	");
-	strcat(strHttpBody, errMSG);
-	strcat(strHttpBody,"                    </faultstring>\n");
-	strcat(strHttpBody,"		</env:Fault>\n");
-	strcat(strHttpBody,"	</env:Body>\n");
-	strcat(strHttpBody,"</env:Envelope>\n");
+	strHttpBody=apr_psprintf(r->pool, "%s%s%s%s%s%s%s%s%s%s%s%s",
+		"<?xml version='1.0' ?>\n",
+		"<env:Envelope xmlns:env='http://schemas.xmlsoap.org/soap/envelope/'>\n",
+		"	<env:Body>\n",
+		"		<env:Fault>\n",
+		"			<faultcode>env:Server</faultcode>\n",
+		"			<faultstring>",
+		"                    	",
+		errMSG,
+		"                    </faultstring>\n",
+		"		</env:Fault>\n",
+		"	</env:Body>\n",
+		"</env:Envelope>\n"
+	);
 
 	r->content_type="text/xml";
 
@@ -377,7 +382,7 @@ int renderErrorBody(request_rec *r, char *errMSG, int status){
 		dumpSOAPFault(r, errMSG);
 	}else{
 		spliting acceptList;
-		split(acceptHeader,',', &acceptList);
+		split(r, acceptHeader,',', &acceptList);
 		int i;
 		int jobDone=0;
 		for (i=0;i<acceptList.tokensCount && !jobDone;i++){
@@ -385,12 +390,12 @@ int renderErrorBody(request_rec *r, char *errMSG, int status){
 				dumpHTMLError(r, errMSG);
 				jobDone=1;
 			}else if (strstr(acceptList.tokens[i],"json")){
-										dumpJSONError(r, errMSG);
+				dumpJSONError(r, errMSG);
 				jobDone=1;
-						}else if (strstr(acceptList.tokens[i],"xml")){
-										dumpXMLError(r, errMSG);
+			}else if (strstr(acceptList.tokens[i],"xml")){
+				dumpXMLError(r, errMSG);
 				jobDone=1;
-						}else{
+			}else{
 				dumpTextError(r, errMSG);
 				jobDone=1;
 			}
@@ -711,9 +716,9 @@ int get_basic_auth_creds(request_rec *r, char **pwd){
 
 	
 	spliting authHeaderWords;
-	split(authorizationHeader, ' ', &authHeaderWords);
+	split(r, authorizationHeader, ' ', &authHeaderWords);
 	if (authHeaderWords.tokensCount == 2 && strcmp(authHeaderWords.tokens[0],"Basic")==0){
-		unsigned char decoded[255];
+		unsigned char decoded[MAX_STRING_LEN];
 		size_t len;
 		base64_decode(authHeaderWords.tokens[1],&len, decoded);
 		
@@ -770,7 +775,7 @@ int redirectToLoginForm(request_rec *r, char *cause){
 	r->status=303;
 	char *curUrl;
 
-	char requestedServer[255];
+	char requestedServer[MAX_STRING_LEN];
 
 	get_requested_server(r, requestedServer);
 	// if (strncmp(sec->cookieAuthLoginForm, "http://", 7) && strncmp(sec->cookieAuthLoginForm, "https://", 8)){
@@ -862,10 +867,10 @@ int haveOSACookie(request_rec *r){
 		int i;
 
 		if ((cookies = TABLE_GET(r->headers_in, "Cookie")) != NULL) {
-			split((char*)cookies,';', &cookiesList);
+			split(r, (char*)cookies,';', &cookiesList);
 			for (i=0;i<cookiesList.tokensCount;i++){
 				spliting cookie;
-				split(trim(cookiesList.tokens[i]),'=',&cookie);
+				split(r, trim(cookiesList.tokens[i]),'=',&cookie);
 				if (strcmp(trim(cookie.tokens[0]), sec->cookieAuthName)==0){
 					return 1;
 				}
@@ -886,10 +891,10 @@ int getTokenFromCookie(request_rec *r, char *token){
 		
 		
 		if ((cookies = TABLE_GET(r->headers_in, "Cookie")) != NULL) {
-			split((char*)cookies,';', &cookiesList);
+			split(r, (char*)cookies,';', &cookiesList);
 			for (i=0;i<cookiesList.tokensCount;i++){
 				spliting cookie;
-				split(trim(cookiesList.tokens[i]),'=',&cookie);
+				split(r, trim(cookiesList.tokens[i]),'=',&cookie);
 				if (strcmp(trim(cookie.tokens[0]), sec->cookieAuthName)==0){
 		
 					strcpy(token, trim(cookie.tokens[1]));
@@ -924,13 +929,13 @@ int getTokenFromCookie(request_rec *r, char *token){
 
 void deleteAuthCookie(request_rec *r){
 	//Delete cookie on client to try Basic Auth on next shot
-	char buff[255];
+	char *buff;
 	osa_config_rec *sec =(osa_config_rec *)ap_get_module_config (r->per_dir_config, &osa_module);
-	sprintf(buff,"%s=deleted; path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT", sec->cookieAuthName);
+	buff=apr_psprintf(r->pool, "%s=deleted; path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT", sec->cookieAuthName);
 	if (sec->cookieAuthDomain != NULL){
-		char domain[MAX_STRING_LEN];
-		sprintf(domain,"; domain=%s",  sec->cookieAuthDomain);
-		strcat(buff, domain);
+		char *domain;
+		domain=apr_psprintf(r->pool, "; domain=%s",  sec->cookieAuthDomain);
+		buff=apr_psprintf(r->pool, "%s%s", buff, domain);
 	}
 	apr_table_set(r->headers_out, "Set-Cookie", buff);
 	apr_table_set(r->err_headers_out, "Set-Cookie", buff);
@@ -958,7 +963,7 @@ int authenticate_cookie_user(request_rec *r){
 	const char *sent_pw;
 
 	if (sec->cookieAuthEnable){
-			char token[255];			
+			char token[MAX_STRING_LEN];			
 			
 			Rc=getTokenFromCookie(r, token);
 			if (Rc != OK){
@@ -987,13 +992,13 @@ int authenticate_cookie_user(request_rec *r){
 }
 
 int send_request_basic_auth(request_rec *r){
-	char realm[255];
+	char *realm;
 
 	apr_table_set(r->err_headers_out, "Server", "OSA");
 
 	osa_config_rec *sec = (osa_config_rec *)ap_get_module_config(r->per_dir_config, &osa_module);
 	
-	sprintf(realm,"Basic realm=\"%s\"", sec->authName);
+	realm=apr_psprintf(r->pool, "Basic realm=\"%s\"", sec->authName);
 	apr_table_set(r->err_headers_out, "WWW-Authenticate", realm);
 	return 0;
 }
@@ -1080,8 +1085,8 @@ int check_auth(request_rec *r)
 		}
 	}
 	if (sec->osaAuthoritative) {
-		char authorizationError[255];
-		sprintf(authorizationError, "User %s is not allowed for group %s", user, want);
+		char *authorizationError;
+		apr_psprintf(r->pool, "User %s is not allowed for group %s", user, want);
 		//ap_note_basic_auth_failure(r);
 		if (sec->cookieAuthLoginForm != NULL && TABLE_GET(r->headers_in, "Authorization")==NULL ){
 			//Authorization fail and we didn't came here by basic auth (Authorization is set by BA);
@@ -1261,9 +1266,9 @@ int authenticate_basic_user (request_rec *r)
 			}
 		}
 		if (!enc_data) {  /* Entry was not found in the list */
-			char authenticationError[255];
+			char *authenticationError;
 			
-			sprintf(authenticationError,"invalid encryption method %s", sec->osaEncryptionField);
+			authenticationError=apr_psprintf(r->pool, "invalid encryption method %s", sec->osaEncryptionField);
 			LOG_ERROR_1(APLOG_NOERRNO|APLOG_ERR, 0, r,"%s",  authenticationError);
 			//ap_note_basic_auth_failure(r);
 			send_request_basic_auth(r);
@@ -1330,8 +1335,8 @@ int authenticate_basic_user (request_rec *r)
 	if(passwords_match) {
 		return OK;
 	} else {
-		char authenticationError[255];
-		sprintf(authenticationError, "user %s: password mismatch: %s", user, r->uri);
+		char *authenticationError;
+		authenticationError=apr_psprintf(r->pool, "user %s: password mismatch: %s", user, r->uri);
 		LOG_ERROR_1(APLOG_NOERRNO|APLOG_ERR, 0, r,"%s", authenticationError);
 
 		//ap_note_basic_auth_failure (r);
@@ -1392,8 +1397,106 @@ void *create_osa_dir_config (POOL *p, char *d)
 	m->allowAnonymous=0;
 	m->cookieCacheTime=COOKIE_BURN_SURVIVAL_TIME;
 
+	m->indentityHeadersExtendedMapping=NULL;
+
 	return (void *)m;
 }
+int forward_identity(request_rec *r)
+{
+	stringKeyValList headersMappingList;
+
+	osa_config_rec *sec =
+		(osa_config_rec *)ap_get_module_config(r->per_dir_config,
+							&osa_module);
+	
+	if (sec->indentityHeadersMapping){ //basic attributes
+					
+	
+		spliting coupleList;
+		split(r, sec->indentityHeadersMapping,';',&coupleList);
+		int i;
+		char *fields="";
+		headersMappingList.listCount=0;
+		
+		
+		//Explode configuration string in set (header name/field name)
+		for (i=0;i<coupleList.tokensCount;i++){
+			spliting mapping; 
+			split(r, coupleList.tokens[i],',',&mapping);
+			headersMappingList.list[i].key=PSTRDUP(r->pool, mapping.tokens[1]);
+			
+			headersMappingList.listCount++;
+			if (i>0){
+				fields=STRCAT(r->pool, fields,",", NULL);
+			}
+			fields=STRCAT(r->pool, fields, mapping.tokens[0], NULL);
+		}
+		
+		if (r->user != NULL){
+			int rc;
+
+			if ((rc=get_user_basic_attributes(r, fields, &headersMappingList)) != OK){
+				LOG_ERROR_1(APLOG_DEBUG, 0, r, "%s", "Kak boud");
+				return rc;
+			}
+			//We found a user in request (i.e successfull authentication ), search the user in DB
+			for (i=0;i<headersMappingList.listCount;i++){
+				apr_table_setn(r->headers_in, headersMappingList.list[i].key, headersMappingList.list[i].val);
+			}
+		}else{
+			//We didn't found a user in request (i.e unsuccessfull authentication BUT allowAnonymous is set )
+			// Forward empty headers
+			for (i=0;i<headersMappingList.listCount;i++){
+				apr_table_setn(r->headers_in, headersMappingList.list[i].key, "");
+			}
+		}
+	}
+	return OK;
+}
+
+int forward_extended_identity(request_rec *r){
+	stringKeyValList extendedHeadersMappingList;
+	osa_config_rec *sec =
+			(osa_config_rec *)ap_get_module_config (r->per_dir_config,
+								&osa_module);
+	if (sec->indentityHeadersExtendedMapping){
+		stringKeyValList userProps;
+		stringKeyValList extendedMapping;
+		apr_status_t rc=OK;
+
+		userProps.listCount=0;
+		if ((rc=get_user_extended_attributes(r, &userProps)) != OK){
+			return rc;
+		}
+
+
+		spliting coupleList;
+		split(r, sec->indentityHeadersExtendedMapping,';',&coupleList);
+		int i;
+		
+		
+		//Explode configuration string in set (header name/field name)
+		for (i=0;i<coupleList.tokensCount;i++){
+			spliting mapping; 
+			split(r, coupleList.tokens[i],',',&mapping);
+
+			char *headerVal="";
+			for (int j=0;j<userProps.listCount;j++){
+				if (strcmp(userProps.list[j].key, mapping.tokens[0]) == 0) {
+					headerVal=userProps.list[j].val;
+					j=userProps.listCount; //End search loop
+				}
+			}
+			apr_table_setn(r->headers_in,  PSTRDUP(r->pool, mapping.tokens[1]), PSTRDUP(r->pool, headerVal));
+
+		}
+		return OK;
+
+	}else{
+		return OK;
+	}
+}
+
 
 void register_hooks(POOL *p)
 {
@@ -1418,6 +1521,7 @@ void register_hooks(POOL *p)
 	ap_hook_fixups(check_auth, NULL, NULL, APR_HOOK_FIRST);
 	ap_hook_fixups(check_quotas, NULL, NULL, APR_HOOK_FIRST);
 	ap_hook_fixups(forward_identity, NULL, NULL, APR_HOOK_LAST);
+	ap_hook_fixups(forward_extended_identity, NULL, NULL, APR_HOOK_LAST);
 	ap_hook_log_transaction( register_hit, NULL, NULL, APR_HOOK_FIRST);
 	
 	

@@ -62,6 +62,13 @@ class HeaderMappingCreation
      * @var string userProperty corresponding user property
      */
     public $userProperty;
+
+    /**
+     * Extended attribute
+     * 
+     * @var int extendedAttribute (0->basic user property, 1->extended property)
+     */
+    public $extendedAttribute;
 }
 /**
  * Header mapping class
@@ -95,6 +102,13 @@ class HeaderMapping extends ApplianceObject
      * @var string userProperty corresponding user property
      */
     public $userProperty;
+
+    /**
+     * Extended attribute
+     * 
+     * @var int extendtedAttribute (0->basic user property, 1->extended property)
+     */
+    public $extendedAttribute;
 
     /**
      * Servicename setter
@@ -159,6 +173,28 @@ class HeaderMapping extends ApplianceObject
         return $this->userProperty;
     }
 
+
+    /**
+     * Extended attribute setter
+     * 
+     * @param int $extendedAttribute Is it an extended user proprety
+     * 
+     * @return void
+     */
+    function setExtendedAttribute($extendedAttribute)
+    {
+        $this->extendedAttribute=$extendedAttribute;
+    }
+    /**
+     * Extended attribute getter
+     * 
+     * @return int Is it and extended user property
+     */
+    function getExtendedAttribute()
+    {
+        return $this->extendedAttribute;
+    }
+
     /**
      * Constructor
      * 
@@ -176,6 +212,7 @@ class HeaderMapping extends ApplianceObject
                 "/headers-mapping/" . 
                 urlencode($rqt["columnName"])
             );
+            $this->setExtendedAttribute($rqt["extendedAttribute"]);
         }
     }
     
@@ -191,6 +228,7 @@ class HeaderMapping extends ApplianceObject
                 "serviceName"  => $this->getServicename(),
                 "headerName"  => $this->getHeadername(),
                 "userProperty"  => $this->getUserProperty(),
+                "extendedAttribute"  => $this->getExtendedAttribute(),
             );
     }
                 

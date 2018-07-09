@@ -127,8 +127,6 @@ $strings["user.entity.placeholder"]="Organisation de l'utilisateur (optionnelle)
 $strings["user.emailAddress.placeholder"]="Adresse mail de l'utilisateur";
 $strings["user.endDate.placeholder"]
     ="Date de fin après laquelle il sera impossible de se connecter";
-$strings["user.additionalData.placeholder"]
-    ="Données aditionnelles à votre libre choix";
 $strings["user.quotas.reqSec.placeholder"]="";
 $strings["user.quotas.reqDay.placeholder"]="";
 $strings["user.quotas.reqMonth.placeholder"]="";
@@ -147,7 +145,6 @@ $strings["user.entity.tooltip"]="Organisation de l'utilisateur (optionnelle)";
 $strings["user.emailAddress.tooltip"]="Adresse mail de l'utilisateur";
 $strings["user.endDate.tooltip"]
     ="Date de fin après laquelle il sera impossible de se connecter";
-$strings["user.additionalData.tooltip"]="Données aditionnelles à votre libre choix";
 $strings["user.membership.tooltip"]
     ="Liste des groupes dont l'utilisateur {currentUser.userName} fait partie";
 $strings["user.availableGroups.tooltip"]
@@ -178,6 +175,11 @@ $strings["user.lastTokenLogin.tooltip"]
     ="Dernière fois que l'utilisateur s'est connecté en utilisant un cookie/token";
 $strings["user.addGroups.tooltip"]
     ="Ajouter l'utilisateur dans les groupes séléctionnés";
+$strings["user.property.delete.tooltip"]
+    ="Supprime cette propriété de l'utilisateur";
+$strings["user.property.add.tooltip"]
+    ="Ajoute cette propriété à l'utilisateur";
+    
 
 /* Details*/
 $strings["user.properties.new"]="Proriétés du nouvel utilisateur";
@@ -201,11 +203,13 @@ $strings["user.label.lastName"]="Nom";
 $strings["user.label.entity"]="Organisation";
 $strings["user.label.emailAddress"]="Adresse mail";
 $strings["user.label.endDate"]="Date de fin";
-$strings["user.label.additionalData"]="Données aditionnelles";
 $strings["user.label.membership"]="Fait partie de";
 $strings["user.label.availableGroups"]="Groupes disponbles";
 $strings["user.label.lastTokenLogin"]="Dernière connexion (cookie)";
-
+$strings["user.property.name"] = "Propriété";
+$strings["user.property.header"] = "Header";
+$strings["user.property.value"] = "Valeur";
+$strings["user.property.delete.confirm"] = "Supprimer la propriété: ";
 
 /*Services */
 /* List */
@@ -363,13 +367,17 @@ $strings["service.label.additionalConfiguration.helpText"]
      "%{publicServerProtocol}e%{publicServerName}e:%{publicServerPort}e/".
      "%{frontEndEndPoint}e\"</code>\n" .
         "</ul>\n";
-$strings["service.label.headers"]="Headers HTTP à transmettre";
+$strings["service.label.headers"]
+    ="Headers HTTP à transmettre (attributs basics)";
+$strings["service.label.headers.properties"]
+    ="Headers HTTP à transmettre (propriétés additionnelles)";
 $strings["service.label.headers.userName"]=$strings["user.label.userName"];
 $strings["service.label.headers.firstName"]=$strings["user.label.firstName"];
 $strings["service.label.headers.lastName"]=$strings["user.label.lastName"];
 $strings["service.label.headers.entity"]=$strings["user.label.entity"];
 $strings["service.label.headers.emailAddress"]=$strings["user.label.emailAddress"];
-$strings["service.label.headers.extra"]=$strings["user.label.additionalData"];
+$strings["service.label.headers.properties"]
+    ="Headers HTTP à transmettre (attributs etendus)";
 
 
 

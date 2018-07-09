@@ -407,8 +407,8 @@ class Users
      * @param string $entityFilter       [optional] Only retreive user with entity
      *                                   containing that string
      *                                   (filter conbination is AND)
-     * @param string $extraFilter        [optional] Only retreive user with extra
-     *                                   data containing that string
+     * @param string $extraFilter        [optional] Only retreive user with at least
+     *                                   1 extended property containing that string
      *                                   (filter conbination is AND)
      * @param string $order              [optional] "SQL Like" order clause based on
      *                                   User properties
@@ -461,14 +461,14 @@ class Users
      * 
      * Create a new user into the system
      * 
-     * @param string $userName  user identitfier
-     * @param string $password  password to authenticate against OSA
-     * @param string $email     user's mail address
-     * @param string $endDate   users's validity end date in ISO 8601 full format
-     * @param string $firstName [Optional] user's first name
-     * @param string $lastName  [Optional] user's last name
-     * @param string $entity    [Optional] user's entity
-     * @param string $extra     [Optional] users's extra data in free format
+     * @param string $userName   user identitfier
+     * @param string $password   password to authenticate against OSA
+     * @param string $email      user's mail address
+     * @param string $endDate    users's validity end date in ISO 8601 full format
+     * @param string $firstName  [Optional] user's first name
+     * @param string $lastName   [Optional] user's last name
+     * @param string $entity     [Optional] user's entity
+     * @param array  $properties [Optional] users's properties {@type UserProperty}
      * 
      * @url POST :userName
      * @url POST
@@ -476,8 +476,8 @@ class Users
      * @return User newly created user
      */
     function create(
-        $userName, $password, $email, $endDate, $firstName=null, $lastName=null,
-        $entity=null, $extra=null
+        $userName, $password, $email=null, $endDate=null, $firstName=null, $lastName=null,
+        $entity=null, $properties=null
     ) {
         try{
             //Array param is legacy from previous (initial) version of Restler 
@@ -487,7 +487,7 @@ class Users
                          "firstName" =>$firstName,
                          "lastName" =>$lastName,
                          "entity" =>$entity,
-                         "extra" =>$extra
+                         "properties" =>$properties,
             );
             return addUser($userName, $params);
         }catch (Exception $e){
@@ -506,21 +506,21 @@ class Users
      * Update user properties
      * 
      * @param string $userName  user identitfier
-     * @param string $password  password to authenticate against OSA
-     * @param string $email     user's mail address
-     * @param string $endDate   users's validity end date in ISO 8601 full format
+     * @param string $password  [Optional] password to authenticate against OSA
+     * @param string $email     [Optional] user's mail address
+     * @param string $endDate   [Optional] users's validity end date in ISO 8601 full format
      * @param string $firstName [Optional] user's first name
      * @param string $lastName  [Optional] user's last name
      * @param string $entity    [Optional] user's entity
-     * @param string $extra     [Optional] users's extra data in free format
+     * @param array  $properties [Optional] users's properties {@type UserProperty}
      * 
      * @url PUT :userName
      * 
      * @return User updated user
      */
     function update(
-        $userName, $password, $email, $endDate, $firstName=null,
-        $lastName=null, $entity=null, $extra=null
+        $userName, $password=null, $email=null, $endDate=null, $firstName=null,
+        $lastName=null, $entity=null, $properties=null
     ) {
         try{
             $this->_get($userName);
@@ -531,7 +531,7 @@ class Users
                          "firstName" =>$firstName,
                          "lastName" =>$lastName,
                          "entity" =>$entity,
-                         "extra" =>$extra
+                         "properties" => $properties,
             );
             
             

@@ -67,17 +67,17 @@ function getServiceHeadersMapping($serviceName , $userProperty=null)
         $qryPrms=array("serviceName" => $serviceName);
         $strSQL="SELECT * FROM headersmapping h WHERE serviceName=:serviceName";
         if (! empty($userProperty)) {
-            if (! in_array($userProperty, $userProperties)) {
+            /*if (! in_array($userProperty, $userProperties)) {
                 $error->setFunctionalCode(4);
                 $error->setHttpStatus(400);
                 $error->setFunctionalLabel(
                     "User property " . $userProperty . " can not be mapped"
                 );
-            }
+            }*/
             $strSQL = $strSQL . " AND columnName=:userProperty";
             $qryPrms["userProperty"]=$userProperty;
         }
-        if ($error->getHttpStatus() ==200) {
+        if ($error->getHttpStatus() == 200) {
             $db=openDBConnection();
             $stmt=$db->prepare($strSQL);
             $stmt->execute($qryPrms);
@@ -92,6 +92,7 @@ function getServiceHeadersMapping($serviceName , $userProperty=null)
                         $row["serviceName"]=$serviceName;
                         $row["columnName"]=$property;
                         $row["headerName"]=$defaultHeadersName[$property];
+                        $row["extendedAttribute"]=0;
 
                         $mapping = new HeaderMapping($row);
                         array_push($rc, $mapping->toArray());
@@ -134,8 +135,9 @@ function getServiceHeadersMapping($serviceName , $userProperty=null)
  * 
  * @return array Created mapping
  */
-function createServiceHeadersMapping($serviceName , $userProperty, $headerName)
-{
+function createServiceHeadersMapping(
+    $serviceName , $userProperty, $headerName,$extendedAttribute=0
+) {
     @include '../include/Constants.php';
     @include '../include/Settings.ini.php';
 
@@ -144,14 +146,15 @@ function createServiceHeadersMapping($serviceName , $userProperty, $headerName)
     $error = new OSAError();
     $error->setHttpStatus(200);
 
-    if (! in_array($userProperty, $userProperties)) {
+    /*if (! in_array($userProperty, $userProperties)) {
         $error->setFunctionalCode(4);
         $error->setHttpStatus(400);
         $error->setFunctionalLabel(
             "User property " . $userProperty . " can not be mapped"
         );
         throw new Exception($error->GetFunctionalLabel(), $error->getHttpStatus());;
-    } elseif (empty($headerName)) {
+    } else*/
+    if (empty($headerName)) {
         $error->setFunctionalCode(4);
         $error->setHttpStatus(400);
         $error->setFunctionalLabel("headerName is required");
@@ -161,17 +164,19 @@ function createServiceHeadersMapping($serviceName , $userProperty, $headerName)
             $qryPrms=array(
                 "serviceName" => $serviceName,
                 "userProperty"=>$userProperty,
-                "headerName"=>$headerName
+                "headerName"=>$headerName,
+                "extendedAttribute"=>$extendedAttribute,
             );
 
             $strSQL="INSERT INTO headersmapping ".
-                    "   (serviceName, columnName, headerName) ".
+                    "   (serviceName, columnName, headerName, extendedAttribute) ".
                     "values ".
-                    "   (:serviceName, :userProperty, :headerName)";
+                    "   (:serviceName, :userProperty, :headerName, :extendedAttribute)";
             $db=openDBConnection();
             $stmt=$db->prepare($strSQL);
             $stmt->execute($qryPrms);
         }catch (Exception $e) {
+            echo $e->getMessage();
             if (strpos($e->getMessage(), "Duplicate entry")>=0
                 || strpos($e->getMessage(), "UNIQUE constraint failed")>=0
             ) {

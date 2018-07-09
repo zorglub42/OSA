@@ -26,7 +26,7 @@
 * 1.0.0 - 2012-10-01 : Release of the file
 **/
 
--- Version: 2.8.1
+-- Version: 3.0
 
 
 
@@ -39,6 +39,7 @@ CREATE TABLE `authtoken` (
 `token` varchar(255) NOT NULL,
 `validUntil` datetime DEFAULT NULL,
 `userName` varchar(45) DEFAULT NULL,
+`burned` int(1) default 0,
 PRIMARY KEY (`token`)
 ) ;
 CREATE INDEX fk_authtoken_1 on authtoken(userName);
@@ -155,8 +156,8 @@ DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
 `userName` varchar(45) NOT NULL,
 `password` varchar(2048) NOT NULL,
-`endDate` datetime NOT NULL,
-`emailAddress` varchar(200) NOT NULL,
+`endDate` datetime NULL,
+`emailAddress` varchar(200) NULL,
 `md5Password` varchar(2048) NOT NULL,
 `firstName` varchar(45) DEFAULT NULL,
 `lastName` varchar(45) DEFAULT NULL,
@@ -203,6 +204,7 @@ id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 serviceName VARCHAR(45) NOT NULL,
 columnName VARCHAR(45) NOT NULL,
 headerName VARCHAR(45) NOT NULL,
+extendedAttribute INT(1) NOT NULL DEFAULT 0,
 CONSTRAINT fk_headersmapping_1
 FOREIGN KEY (serviceName)
 REFERENCES services (serviceName)
@@ -210,7 +212,18 @@ ON DELETE CASCADE
 ON UPDATE NO ACTION) ;
 CREATE INDEX fk_headersmapping_1_idx on headersmapping (serviceName ASC);
 
-
+DROP TABLE IF EXISTS `additionnaluserproperties` ;
+CREATE TABLE `additionnaluserproperties` (
+  `userName` VARCHAR(45) NOT NULL,
+  `propertyName` VARCHAR(45) NOT NULL,
+  `value` TEXT NULL,
+  PRIMARY KEY (`userName`, `propertyName`),
+  CONSTRAINT `fk_additionnaluserproperties_user`
+    FOREIGN KEY (`userName`)
+    REFERENCES `users` (`userName`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION
+);
 
 CREATE VIEW excedeedcounters as
 	SELECT c.* , s.serviceName, NULL userName, s.reqSec, s.reqDay, s.reqMonth

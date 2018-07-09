@@ -54,10 +54,37 @@
 			<div id="lastTokenLogin">{lastTokenLogin}</div>
 		</div>
 	</div>
-	<div class="row">
-		<div  class="col-md-12 "  title="<?php echo Localization::getString("user.additionalData.tooltip")?>">
-			<label for="extra"><?php echo Localization::getString("user.label.additionalData")?></label><br>
-			<textarea class="form-control" rows=10 placeholder="<?php echo Localization::getString("user.additionalData.placeholder")?>" id="extra" onchange="setUserModified(true)" onkeypress="setUserModified(true)">{extra}</textarea>
-		</div>
+	<br>
+	<style>
+		.row {
+			margin-right: 0px;
+			margin-left: 0px;
+		}
+	</style>
+	<div class="row list-group-item header" >
+		<div class="col-md-5 ellipsis" title="<?php echo Localization::getString("user.property.name")?>"><?php echo Localization::getString("user.property.name")?></div>
+		<div class="col-md-5 ellipsis" title="<?php echo Localization::getString("user.property.value")?>"><?php echo Localization::getString("user.property.value")?></div>
+		<div class="col-md-2 ellipsis" title="<?php echo Localization::getString("list.actions")?>"><?php echo Localization::getString("list.actions")?></div>
 	</div>
+	<div class="list-group" id="data" >
+		<a class="list-group-item row" id="rowTpl" style="display:none" >
+			<div class="col-md-5 ellipsis" title="{propertiesList[i].name}">{propertiesList[i].name}<input  id="propertyName_{i}" type="hidden" value="{propertiesList[i].name}"/></div>
+			<div class="col-md-5 ellipsis" title="{propertiesList[i].value}"><input id="propertyValue_{i}" value="{propertiesList[i].value}"/></div>
+			<div class="col-md-2">
+				<button type="button" class="btn btn-default" title="<?php echo Localization::getString("user.property.delete.tooltip")?>" onclick="deleteUserProperty('{i}', '{propertiesList[i].name}')">
+					<span class="glyphicon glyphicon glyphicon-trash" aria-hidden="true"></span>
+				</button>
+			</div>
+		</a>
+		<a class="list-group-item row" id="newProp" >
+			<div class="col-md-5 ellipsis"><input  id="propertyName_new" type="text"/></div>
+			<div class="col-md-5 ellipsis" ><input id="propertyValue_new" value=""/></div>
+			<div class="col-md-2">
+				<button type="button" class="btn btn-default" title="<?php echo Localization::getString("user.property.add.tooltip")?>" onclick="addUserProperty()">
+					<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+				</button>
+			</div>
+		</a>
+	</div>
+
 </div>

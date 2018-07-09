@@ -40,7 +40,7 @@
 var currentUserURI;
 var currentUser;
 var userModified;
-
+var propertiesCount;
 
 var editQuota = "Edit this quota";
 var deleteQuota = "Delete this quota";
@@ -148,7 +148,6 @@ function addUser() {
 							   .replaceAll("{entity}", "")
 							   .replaceAll("{emailAddress}", "")
 							   .replaceAll("{endDate}", "")
-							   .replaceAll("{extra}", "")
 		);
 		$('#userEndDate').datepicker();
 		$('#lastTokenLogin').hide();
@@ -181,7 +180,6 @@ function saveOrUpdateUser(method) {
 	lastName = "lastName="
 			+ encodeURIComponent(document.getElementById("lastName").value);
 	entity = "entity=" + encodeURIComponent(document.getElementById("entity").value);
-	extra = "extra=" + encodeURIComponent(document.getElementById("extra").value);
 	try{
 		d=Date.parseExact(document.getElementById("userEndDate").value,"<?php echo Localization::getJSString("date.format.parseexact")?>");
 		d.setHours(12);
@@ -190,8 +188,26 @@ function saveOrUpdateUser(method) {
 	}catch (ex){
 		endDate="endDate=";
 	}
+	user={
+		"userName": $("#userName").val(),
+		"password": $("#userPass").val(),
+		"email": $("#userMail").val(),
+		"firstName": $("#firstName").val(),
+		"lastName": $("#lastName").val(),
+		"entity": $("#entity").val(),
+		"properties": []
+	};
+	for (i=0;i<propertiesCount;i++){
+		if ($("#propertyName_" + i).val() !== undefined && $("#propertyValue_" + i).val() !== undefined){
+			prop={
+				"name": $("#propertyName_" + i).val(),
+				"value": $("#propertyValue_" + i).val()
+			}
+			user.properties.push(prop);
+		}
+	}
 	postData = password + "&" + email + "&" + endDate + "&" + firstName + "&"
-			+ lastName + "&" + entity + "&" + extra;
+			+ lastName + "&" + entity;
 	if (method == 'POST') {
 		uri = "users/";
 		postData = "userName="
@@ -203,8 +219,10 @@ function saveOrUpdateUser(method) {
 	$.ajax({
 		url : uri,
 		dataType : 'json',
+		contentType: "application/json",
 		type : method,
-		data : postData,
+		//data : postData,
+		data: JSON.stringify(user),
 		success : startEditCurrentUser,
 		error : displayErrorV2
 	});
@@ -265,11 +283,55 @@ function displayAvailableGroups(groupList) {
 		}
 }
 
+function addUserProperty(){
+	if ($("#propertyName_new").val() != "" && $("#propertyValue_new").val() != ""){
+		for (i=0;i<propertiesCount;i++){
+			if ($("#propertyName_" + i).val() == $("#propertyName_new").val()){
+				alert("<?php echo Localization::getJSString("user.property.exists")?>");
+				return false;
+			}
+		}
+		table=document.getElementById("data");
+
+		rowPattern=document.getElementById("rowTpl");
+
+		newRow=rowPattern.cloneNode(true);
+		newRow.removeAttribute('id');
+		newRow.setAttribute('id', 'property_' + propertiesCount);
+		newRow.removeAttribute('style');
+		newRow.className=newRow.className + " tabular_table_body" +  ((propertiesCount)%2);
+		newRow.innerHTML=newRow.innerHTML.replaceAll("{i}", propertiesCount)
+										.replaceAll("{propertiesList[i].name}", $("#propertyName_new").val())
+										.replaceAll("{propertiesList[i].value}", $("#propertyValue_new").val());
+
+		table.insertBefore(newRow, document.getElementById('newProp'));
+		$("#propertyValue_new").val("");
+		$("#propertyName_new").val("");
+		propertiesCount++;
+
+		setUserModified(true);
+
+	}
+}
+
+function deleteUserProperty(propNum, propName){
+	if (confirm("<?php echo Localization::getJSString("user.property.delete.confirm")?> " + propName + "?")) {
+		prop=document.getElementById('property_' + propNum);
+		prop.parentNode	.removeChild(prop);
+		setUserModified(true);
+	}
+
+}
+
 /* Load edit user template and display */
 function editUser(user) {
 	$.get( "resources/templates/userEdit.php", function( data ) {
-		userDate = new Date(user.endDate);
-		dateFormated = userDate.format("<?php echo Localization::getJSString("date.format")?>");
+		if (user.endDate !== null){
+			userDate = new Date(user.endDate);
+			dateFormated = userDate.format("<?php echo Localization::getJSString("date.format")?>");
+		}else{
+			dateFormated="";
+		}
 
 		if (user.lastTokenLogin != null){
 			loginDate = new Date(user.lastTokenLogin);
@@ -288,9 +350,30 @@ function editUser(user) {
 							   .replaceAll("{emailAddress}", user.emailAddress)
 							   .replaceAll("{endDate}", dateFormated)
 							   .replaceAll("{lastTokenLogin}", lastTokenLogin)
-							   .replaceAll("{extra}", user.extra==null?"":user.extra)
 							   .replaceAll("{uri}", user.uri)
 		);
+
+		if (user.properties.length>0){
+			for (i=0;i<user.properties.length;i++){
+				table=document.getElementById("data");
+
+				rowPattern=document.getElementById("rowTpl");
+
+				newRow=rowPattern.cloneNode(true);
+				newRow.removeAttribute('id');
+				newRow.setAttribute('id', 'property_' + i);
+				newRow.removeAttribute('style');
+				newRow.className=newRow.className + " tabular_table_body" +  (i%2);
+				newRow.innerHTML=newRow.innerHTML.replaceAll("{i}", i)
+												 .replaceAll("{propertiesList[i].name}", user.properties[i].name)
+												 .replaceAll("{propertiesList[i].value}", user.properties[i].value);
+
+				table.insertBefore(newRow, document.getElementById('newProp'));
+			}
+			
+		}
+		propertiesCount=user.properties.length;
+
 		$('#userEndDate').datepicker();
 		setUserModified(false);
 	});
@@ -407,8 +490,13 @@ function displayUserList(userList) {
 
 
 		for (i=0;i<userList.length;i++){
-			var d = new Date();
-			d.setISO8601(userList[i].endDate);
+			if (userList[i].endDate !== null){
+				var d = new Date();
+				d.setISO8601(userList[i].endDate);
+				dateFormated=d.format("<?php echo Localization::getJSString("date.format")?>")
+			}else{
+				dateFormated="";
+			}
 
 			addItem(usersListAutoComplete, userList[i].userName);
 			addItem(emailsListAutoComplete, userList[i].emailAddress, true);
@@ -423,7 +511,7 @@ function displayUserList(userList) {
 			newRow.innerHTML=newRow.innerHTML.replaceAll("{userList[i].userName}", userList[i].userName)
 											 .replaceAll("{userList[i].emailAddress}", userList[i].emailAddress)
 											 .replaceAll("{userList[i].uri}", userList[i].uri)
-											 .replaceAll("{userList[i].endDate}", d.format("<?php echo Localization::getJSString("date.format")?>"));
+											 .replaceAll("{userList[i].endDate}", dateFormated);
 			table.appendChild(newRow);
 			edit=document.getElementById("btnEdit");
 			del=document.getElementById("btnDelete");

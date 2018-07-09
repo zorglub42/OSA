@@ -127,7 +127,6 @@ $strings["user.entity.placeholder"]="User's organisation (optional)";
 $strings["user.emailAddress.placeholder"]="User's email address";
 $strings["user.endDate.placeholder"]="From this date it will no more possible " .
                                      "for the user to connect again";
-$strings["user.additionalData.placeholder"]="Additionnal data (free use)";
 $strings["user.quotas.reqSec.placeholder"]="";
 $strings["user.quotas.reqDay.placeholder"]="";
 $strings["user.quotas.reqMonth.placeholder"]="";
@@ -146,7 +145,6 @@ $strings["user.entity.tooltip"]="User's organisation (optinal)";
 $strings["user.emailAddress.tooltip"]="Adresse mail de l'utilisateur";
 $strings["user.endDate.tooltip"]="From this date it will no more possible for " .
                                  "the user to connect again";
-$strings["user.additionalData.tooltip"]="Additionnal data (free use)";
 $strings["user.membership.tooltip"]="{currentUser.userName} groups membership";
 $strings["user.availableGroups.tooltip"]="Select (with CTRL+Click) groups in which ".
                                          "{currentUser.userName} should be added";
@@ -189,11 +187,14 @@ $strings["user.label.lastName"]="Last name";
 $strings["user.label.entity"]="Organisation";
 $strings["user.label.emailAddress"]="Email address";
 $strings["user.label.endDate"]="End date";
-$strings["user.label.additionalData"]="Additionnal data";
 $strings["user.label.membership"]="Member of";
 $strings["user.label.lastTokenLogin"]="Last login (cookie)";
 $strings["user.addGroups.tooltip"]
     ="Add this user in selected groups";
+$strings["user.property.delete.tooltip"]
+    ="Remove this property from the user";
+$strings["user.property.add.tooltip"]
+    ="Add this property to the user";
 
 
 
@@ -354,7 +355,6 @@ $strings["service.label.headers.firstName"]=$strings["user.label.firstName"];
 $strings["service.label.headers.lastName"]=$strings["user.label.lastName"];
 $strings["service.label.headers.entity"]=$strings["user.label.entity"];
 $strings["service.label.headers.emailAddress"]=$strings["user.label.emailAddress"];
-$strings["service.label.headers.extra"]=$strings["user.label.additionalData"];
 
 
 /* Tabs */

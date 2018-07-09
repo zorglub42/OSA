@@ -54,6 +54,7 @@ var backEndEndPointFilterPrevVal="";
 var nodeNameFilterPrevVal="";
 
 var doServiceClone=false;
+var serviceHeadersCount;
 
 /* Enable or disable UI control according to service properties updates */
 function setServiceModified(isModified){
@@ -157,6 +158,7 @@ function checkUserAuth(){
 		 $('#group').hide();
 		 $('#idForwarding').hide();
 		 $('#idMapping').hide();
+		 $('#idAttributesMapping').hide();
 		 $('#userQuota').hide();
 	}
 	setServiceModified(true);
@@ -167,8 +169,10 @@ function checkUserAuth(){
 function cbForwardIdentClicked(){
 		if (!document.getElementById("isIdentityForwardingEnabled").checked){
 			$("#idMapping").hide();
+			$("#idAttributesMapping").hide();
 		}else{
 			$("#idMapping").show();
+			$("#idAttributesMapping").show();
 		}
 		setServiceModified(true)
 }
@@ -178,6 +182,45 @@ function cbForwardIdentClicked(){
 function cbHeaderClicked(header){
 		$("#" + header + "Header").prop('disabled',!document.getElementById("cb" + header + "Header").checked);
 		setServiceModified(true);
+}
+
+function deleteHeaderMapping(propNum, propName){
+	if (confirm("<?php echo Localization::getJSString("user.property.delete.confirm")?> " + propName + "?")) {
+		prop=document.getElementById('property_' + propNum);
+		prop.parentNode	.removeChild(prop);
+		setServiceModified(true);
+	}
+
+}
+function addHeaderMapping(){
+	if ($("#propertyName_new").val() != "" && $("#propertyHeader_new").val() != ""){
+		for (i=0;i<serviceHeadersCount;i++){
+			if ($("#propertyHeader_" + i).val() == $("#propertyHeader_new").val()){
+				alert("<?php echo Localization::getJSString("user.property.mapping.exists")?>");
+				return false;
+			}
+		}
+		table=document.getElementById("data");
+
+		rowPattern=document.getElementById("rowTpl");
+
+		newRow=rowPattern.cloneNode(true);
+		newRow.removeAttribute('id');
+		newRow.setAttribute('id', 'property_' + serviceHeadersCount);
+		newRow.removeAttribute('style');
+		newRow.className=newRow.className + " tabular_table_body" +  ((serviceHeadersCount)%2);
+		newRow.innerHTML=newRow.innerHTML.replaceAll("{i}", serviceHeadersCount)
+										.replaceAll("{headers[i].name}", $("#propertyName_new").val())
+										.replaceAll("{headers[i].header}", $("#propertyHeader_new").val());
+
+		table.insertBefore(newRow, document.getElementById('newProp'));
+		$("#propertyHeader_new").val("");
+		$("#propertyName_new").val("");
+		serviceHeadersCount++;
+
+		setServiceModified(true);
+
+	}
 }
 
 /* Load edit service template and display */
@@ -267,11 +310,31 @@ function editService(service){
 		$.getJSON( service.uri + "/headers-mapping",
 			function (data){
 				for (i=0;i<data.length;i++){
-					$("#cb" + data[i].userProperty + "Header").prop("checked",true);
-					$("#" + data[i].userProperty + "Header").val(data[i].headerName);
-					cbHeaderClicked(data[i].userProperty);
-					setServiceModified(false);
+					if (data[i].extendedAttribute == 0){
+						$("#cb" + data[i].userProperty + "Header").prop("checked",true);
+						$("#" + data[i].userProperty + "Header").val(data[i].headerName);
+						cbHeaderClicked(data[i].userProperty);
+					}else{
+						table=document.getElementById("data");
+
+						rowPattern=document.getElementById("rowTpl");
+
+						newRow=rowPattern.cloneNode(true);
+						newRow.removeAttribute('id');
+						newRow.setAttribute('id', 'property_' + i);
+						newRow.removeAttribute('style');
+						newRow.className=newRow.className + " tabular_table_body" +  (i%2);
+						newRow.innerHTML=newRow.innerHTML.replaceAll("{i}", i)
+														.replaceAll("{headers[i].name}", data[i].userProperty)
+														.replaceAll("{headers[i].header}", data[i].headerName);
+
+						table.insertBefore(newRow, document.getElementById('newProp'));
+
+					}
 				}
+				serviceHeadersCount=data.length;
+				serviceHeadersCount=i;
+				setServiceModified(false);
 			}
 		);
 
@@ -395,9 +458,20 @@ function setHeadersMappings(){
 				mapping[hdrNum]=m
 				mapping[hdrNum].userProperty="<?php echo $userProperties[$i]?>"
 				mapping[hdrNum].headerName=$("#<?php echo $userProperties[$i]?>Header").val()
+				mapping[hdrNum].extendedAttribute=0;
 				hdrNum++
 			}
 		<?php }?>
+		for (i=0;i<serviceHeadersCount;i++){
+			if ($("#propertyName_" + i).val() !== undefined){
+				m=new Object()
+				mapping[hdrNum]=m
+				mapping[hdrNum].userProperty=$("#propertyName_" + i).val()
+				mapping[hdrNum].headerName=$("#propertyHeader_" + i).val()
+				mapping[hdrNum].extendedAttribute=1;
+				hdrNum++
+			}
+		}
 		data={
 			"noApply": document.getElementById("onAllNodes").checked?0:1,
 			"mapping": mapping

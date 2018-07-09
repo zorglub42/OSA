@@ -37,6 +37,63 @@
 require_once '../objects/ApplianceObject.class.php';
 
 /**
+ * UserProperty class
+ * 
+ * PHP Version 7.0
+ * 
+ * @category ReverseProxy
+ * @package  OSA
+ * @author   Benoit HERARD <benoit.herard@orange.com>
+ * @license  http://www.apache.org/licenses/LICENSE-2.0.htm Apache 2 license
+ * @link     https://github.com/zorglub42/OSA/
+*/
+class UserProperty
+{
+    /**
+     * Property name
+     * 
+     * @var string property name
+     *
+     */
+    public $name;
+
+    /**
+     * Property value
+     * 
+     * @var string property value
+     *
+     */
+    public $value;
+
+    /**
+     * Constructor
+     * 
+     * @param object $rqt PDO row
+     */
+    public function __construct($rqt=null)
+    {
+        if ($rqt != null) {
+            $this->name=$rqt["propertyName"];
+            $this->value=$rqt["value"];
+
+        }
+    }
+    /**
+     * Convert object to associative array
+     * 
+     * @return array Object in a array
+     */
+    function toArray()
+    {
+        return Array(
+                "name"  => $this->name,
+                "value"  => $this->value,
+        );
+    }
+}
+
+
+/**
  * User class
  * 
  * PHP Version 7.0
@@ -101,13 +158,6 @@ class User extends ApplianceObject
     public $endDate;
 
     /**
-     * Additional data
-     * 
-     * @var string extra users's extra data in free format
-     */
-    public $extra;
-
-    /**
      * Last login with a token
      * 
      * @var datetime last login with token (cookie) creation
@@ -115,6 +165,14 @@ class User extends ApplianceObject
     public $lastTokenLogin;
 
     
+
+    /**
+     * Additional properties list
+     * 
+     * @var array Array of additionnal properties {@type UserProperty}
+     */
+    public $properties=array();
+
     /**
      * Setter
      * 
@@ -176,28 +234,6 @@ class User extends ApplianceObject
     function getEntity()
     {
         return $this->entity;
-    }
-
-
-    /**
-     * Setter
-     * 
-     * @param string $extra Additional data
-     * 
-     * @return void
-     */
-    function setExtra($extra)
-    {
-        $this->extra=$extra;
-    }
-    /**
-     * Getter
-     * 
-     * @return string Additional data
-     */
-    function getExtra()
-    {
-        return $this->extra;
     }
 
     /**
@@ -284,7 +320,29 @@ class User extends ApplianceObject
     {
         return $this->endDate;
     }
-    
+
+     /**
+     * Setter
+     * 
+     * @param array $properties user's properties {@type UserProperty} 
+     * 
+     * @return void
+     */
+    function setProperties($properties)
+    {
+        $this->properties=$properties;
+    }
+    /**
+     * Getter
+     * 
+     * @return array user 's properties {@type UserProperty} 
+     */
+    function getProperties()
+    {
+        return $this->properties;
+    }
+   
+
     /**
      * Setter
      * 
@@ -321,17 +379,18 @@ class User extends ApplianceObject
             $this->setFirstname($rqt["firstName"]);
             $this->setLastname($rqt["lastName"]);
             $this->setEntity($rqt["entity"]);
-            $this->setExtra($rqt["extra"]);
-            $dt=explode(" ", $rqt["endDate"]);
-            $d=explode("-", $dt[0]);
-            $t=explode(":", $dt[1]);
-            $date = str_replace(" ", "T", $rqt["endDate"]) .
-                    ".0" . 
-                    @date(
-                        'P',
-                        @mktime($t[0], $t[1], $t[2], $d[1], $d[2], $d[0])
-                    );
-            $this->setEndDate($date);
+            if (!empty($rqt["endDate"])) {
+                $dt=explode(" ", $rqt["endDate"]);
+                $d=explode("-", $dt[0]);
+                $t=explode(":", $dt[1]);
+                $date = str_replace(" ", "T", $rqt["endDate"]) .
+                        ".0" . 
+                        @date(
+                            'P',
+                            @mktime($t[0], $t[1], $t[2], $d[1], $d[2], $d[0])
+                        );
+                $this->setEndDate($date);
+            }
             if (!empty($rqt["lastTokenLogin"])) {
                 $dt=explode(" ", $rqt["lastTokenLogin"]);
                 $d=explode("-", $dt[0]);
@@ -355,6 +414,10 @@ class User extends ApplianceObject
      */
     function toArray()
     {
+        $properties=array();
+        foreach ($this->properties as $p){
+            array_push($properties, $p->toArray());
+        }
         return Array(
                 "uri"  => $this->getUri(),
                 "userName"  => $this->getUsername(),
@@ -364,8 +427,8 @@ class User extends ApplianceObject
                 "entity"  => $this->getEntity(),
                 "emailAddress"  => $this->getEmail(),
                 "endDate"  => $this->getEndDate(),
-                "extra"  => $this->getExtra(),
                 "lastTokenLogin"  => $this->getLastTokenLogin(),
+                "properties"  => $properties,
             );
     }
                 

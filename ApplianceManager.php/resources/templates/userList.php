@@ -64,7 +64,7 @@ require_once "../../include/Localization.php";
 				</div>
 				<div class="list-group" id="data" >
 					<div id="rowTpl" style="display:none">
-					<a class="list-group-item row"  ondblclick="startEditUser('{userList[i].uri}')">
+					<a class="list-group-item row" ondblclick="startEditUser('{userList[i].uri}')">
 						<div class="col-xs-3 col-md-3 ellipsis" title="{userList[i].userName}">{userList[i].userName}</div>
 						<div class="col-xs-3 col-md-3 ellipsis" title="{userList[i].emailAddress}">{userList[i].emailAddress}</div>
 						<div class="col-xs-3 col-md-4 ellipsis" title="{userList[i].endDate}">{userList[i].endDate}</div>

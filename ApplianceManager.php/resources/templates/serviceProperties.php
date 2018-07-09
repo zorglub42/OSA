@@ -14,6 +14,7 @@
 */
 require_once "../../include/Constants.php";
 require_once "../../include/Settings.ini.php";
+require_once "../../include/Localization.php";
 ?>
 <div class="row" id="serviceProperties">
 	<div class="col-md-12 col-xs-12">
@@ -105,6 +106,44 @@ require_once "../../include/Settings.ini.php";
 							<input disabled class="form-control" placeholder="<?php echo $defaultHeadersName[$property]?>" type="text" id="<?php echo $property?>Header"  value="<?php echo $defaultHeadersName[$property]?>"  onchange="setServiceModified(true)" onkeypress="setServiceModified(true)">
 						</div>
 					<?php }?>
+					<div class="col-md-12"><hr></div>
+				</div>
+				<div class="row" id="idAttributesMapping">
+				<style>
+					.row {
+						margin-right: 0px;
+						margin-left: 0px;
+					}
+				</style>
+
+					<div class="col-md-12 header"><?php echo Localization::getString("service.label.headers.properties")?></div>
+					<div class="row"><br/></div>
+					<div class="row list-group-item header" >
+						<div class="col-md-5 ellipsis" title="<?php echo Localization::getString("user.property.name")?>"><?php echo Localization::getString("user.property.name")?></div>
+						<div class="col-md-5 ellipsis" title="<?php echo Localization::getString("user.property.header")?>"><?php echo Localization::getString("user.property.header")?></div>
+						<div class="col-md-2 ellipsis" title="<?php echo Localization::getString("list.actions")?>"><?php echo Localization::getString("list.actions")?></div>
+					</div> 
+					<div class="list-group" id="data" >
+						<a class="list-group-item row" id="rowTpl" style="display:none" >
+							<div class="col-md-5 ellipsis" title="{{headers[i].name}">{headers[i].name}<input  id="propertyName_{i}" type="hidden" value="{headers[i].name}"/></div>
+							<div class="col-md-5 ellipsis" title="{headers[i].header}">{headers[i].header}<input id="propertyHeader_{i}" type="hidden" value="{headers[i].header}"/></div>
+							<div class="col-md-2">
+								<button type="button" class="btn btn-default" title="<?php echo Localization::getString("user.property.delete.tooltip")?>" onclick="deleteHeaderMapping('{i}', '{headers[i].name}')">
+									<span class="glyphicon glyphicon glyphicon-trash" aria-hidden="true"></span>
+								</button>
+							</div>
+						</a>
+						<a class="list-group-item row" id="newProp" >
+							<div class="col-md-5 ellipsis"><input  id="propertyName_new" type="text"/></div>
+							<div class="col-md-5 ellipsis" ><input id="propertyHeader_new" value=""/></div>
+							<div class="col-md-2">
+								<button type="button" class="btn btn-default" title="<?php echo Localization::getString("user.property.add.tooltip")?>" onclick="addHeaderMapping()">
+									<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+								</button>
+							</div>
+						</a>
+					</div>
+					
 					<div class="col-md-12"><hr></div>
 				</div>
 				<div class="row">

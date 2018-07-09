@@ -6,8 +6,7 @@
 
 #define DEAD_LOCK_SLEEP_TIME_MICRO_S 10000
 #define DEAD_LOCK_MAX_RETRY 100
-#define MAX_SPLITED_TOKENS 20
-#define MAX_SPLITED_TOKEN_SIZE 500
+#define MAX_SPLITED_TOKENS 100
 
 #define ANONYMOUS_USER_ALLOWED "*** ANONYOUS USER ***"
 
@@ -102,9 +101,7 @@
 #endif
 
 
-
 #define PCALLOC apr_pcalloc
-#define SNPRINTF apr_snprintf
 #define PSTRDUP apr_pstrdup
 #define PSTRNDUP apr_pstrndup
 #define STRCAT apr_pstrcat
@@ -197,8 +194,8 @@ APLOG_USE_MODULE(osa);
 
 
 typedef struct {
-	char key[MAX_SPLITED_TOKEN_SIZE];
-	char val[MAX_SPLITED_TOKEN_SIZE];
+	char *key;
+	char *val;
 }stringKeyVal;
 
 typedef struct{
@@ -207,8 +204,8 @@ typedef struct{
 }stringKeyValList;
 
 typedef struct {
-				char tokens[MAX_SPLITED_TOKENS][MAX_SPLITED_TOKEN_SIZE];
-				int tokensCount;
+	char *tokens[MAX_SPLITED_TOKENS];
+	int tokensCount;
 } spliting ;
 
 
@@ -266,8 +263,13 @@ typedef struct  {
 	
 	
 	/* Identity forwarding */
-	char *indentityHeadersMapping; /* Forward user identity */
-	
+	char *indentityHeadersMapping; /* Forward user identity basic attributes*/
+
+	char *indentityHeadersExtendedMapping; /* Forward user identity extended attributes*/
+	char *userAttributesTable; /* Table for extra user attr*/
+	char *userAttributeNameField; /*Attribute name field name */
+	char *userAttributeValueField; /* attribute value name */
+
 	/* Log HIT in DB flag */
 	int logHit;
 
@@ -296,7 +298,6 @@ typedef struct  {
  } osa_config_rec;
 
 
-stringKeyValList headersMappingList;
 module osa_module;
 
 
@@ -313,7 +314,7 @@ unsigned char *base64_decode(const char *data,
 void url_encoder_rfc_tables_init();
 char *url_encode(unsigned char *s, char *enc);
 
-void split(char *str, char delimiter, spliting *s);
+void split(request_rec *r, char *str, char delimiter, spliting *s);
 char *replace(char *st, char *orig, char *repl);
 int renderErrorBody(request_rec *r, char *errMSG, int status);
 void dumpSOAPFault(request_rec *r, char *errMSG);
@@ -366,6 +367,8 @@ int check_quotas(request_rec *r);
 int check_auth(request_rec *r);
 authz_status check_auth_base(request_rec *r, const char *require_line, const void *parsed_require_line);
 
+int forward_identity(request_rec *r);
+int forward_extended_identity(request_rec *r);
 
 void *create_osa_dir_config (POOL *p, char *d);
 void register_hooks(POOL *p);
@@ -380,7 +383,8 @@ char ** get_groups(request_rec *r, char *user, osa_config_rec *m); //To implemen
 int checkUserQuotas( osa_config_rec *sec, request_rec *r); 		//To implement for specific RDMBS
 int checkGlobalQuotas( osa_config_rec *sec, request_rec *r);	//To implement for specific RDMBS
 int register_hit(request_rec *r); //To implement for specific RDMBS
-int forward_identity(request_rec *r); //To implement for specific RDMBS
+int get_user_basic_attributes(request_rec *r, char *fields, stringKeyValList *headersMappingList); //To implement for specific RDMBS
+int get_user_extended_attributes(request_rec *r, stringKeyValList *props); //To implement for specific RDMBS
 
 static encryption encryptions[] = {{"crypt", SALT_OPTIONAL, pw_crypted},
 						 {"none", NO_SALT, pw_plain},

@@ -35,14 +35,20 @@
  * 1.0.0 - 2012-10-01 : Release of the file
 */
     // Database connection parameter
-	define("RDBMS", "sqlite");
+    define("RDBMS", "mysql");
+    //define("RDBMS", "sqlite");
 
     define("SQLITE_DATABASE_PATH", "/usr/local/OSA/sql/sqlite/osa.db");
 
+    // $BDName="appliance@localhost:3306";
+    // $BDUser="appliance";
+    // $BDPwd="mysql";
+
     $BDName="appliance@localhost:3306";
-    $BDUser="appliance";
+    $BDUser="root";
     $BDPwd="mysql";
     
+
 	define("runtimeApplianceConfigLocation",  "/usr/local/OSA/RunTimeAppliance/apache/conf/vhAppliance");
     
     // Runtime appliance automatic configuration
@@ -84,7 +90,6 @@
                     "lastName" => "X_OSA_LASTNAME",
                     "entity" => "X_OSA_ENTITY",
                     "emailAddress" => "X_OSA_EMAIL",
-                    "extra" => "X_OSA_EXTRA"
     );
     
     
@@ -96,7 +101,7 @@
     
     //validity period (in min)
     define("authTokenTTL", 15);
-    define("authTokenCacheTTL", 2);
+    define("authTokenCacheTTL", 5);
     //cookie name
     define("authTokenCookieName", "OSAAuthToken");
 	define("osaAdminUri", "https://localhost:6443/");

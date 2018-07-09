@@ -192,3 +192,18 @@
 	(void *) APR_OFFSETOF(osa_config_rec, indentityHeadersMapping),
 	OR_AUTHCFG | RSRC_CONF, "forward user identity as HTTP Headers"),
 
+	AP_INIT_TAKE1("OSAIdentityExtendedHeadersMapping", ap_set_string_slot,
+	(void *) APR_OFFSETOF(osa_config_rec, indentityHeadersExtendedMapping),
+	OR_AUTHCFG | RSRC_CONF, "forward user additional identity attributes as HTTP Headers"),
+
+	AP_INIT_TAKE1("OSAUserAttributeTable", ap_set_string_slot,
+	(void *) APR_OFFSETOF(osa_config_rec, userAttributesTable),
+	OR_AUTHCFG | RSRC_CONF, "forward user additional identity attributes as HTTP Headers"),
+
+	AP_INIT_TAKE1("OSAUserAttributeNameField", ap_set_string_slot,
+	(void *) APR_OFFSETOF(osa_config_rec, userAttributeNameField),
+	OR_AUTHCFG | RSRC_CONF, "field in OSAUserAttributeTable for attribute name"),
+
+	AP_INIT_TAKE1("OSAUserAttributeValueField", ap_set_string_slot,
+	(void *) APR_OFFSETOF(osa_config_rec, userAttributeValueField),
+	OR_AUTHCFG | RSRC_CONF, "field in OSAUserAttributeTable for attribute value"),

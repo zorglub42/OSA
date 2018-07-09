@@ -225,7 +225,7 @@ function getGroupMembers($groupName, $request_data = null)
         if (isset($request_data["extraFilter"]) 
             && $request_data["extraFilter"]!==""
         ) {
-            $strSQL = addSQLFilter("u.extra like ?", $strSQL);
+            $strSQL = addSQLFilter("exists (SELECT 'x' FROM additionnaluserproperties up WHERE up.userName = u.userName AND up.value like ?)", $strSQL);
             array_push($bindPrms, "%" . $request_data["extraFilter"] . "%");
         }
         if (isset($request_data["order"]) 
@@ -238,6 +238,7 @@ function getGroupMembers($groupName, $request_data = null)
         $rc=Array();
         while ($row=$stmt->fetch(PDO::FETCH_ASSOC)) {
             $user = new User($row);
+            getUserProperties($db, $user);
             array_push($rc, $user->toArray());
         }
         

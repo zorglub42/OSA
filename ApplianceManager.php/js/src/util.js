@@ -36,6 +36,9 @@ jQuery.browser = {};
    a partern in a sting */
 String.prototype.replaceAll = function (find, replace) {
     var str = this;
+    if (replace == null){
+        replace = "";
+    }
     return str.replace(new RegExp(find.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g'), replace);
 };
 

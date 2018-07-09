@@ -33,7 +33,7 @@
  * History     :
  * 1.0.0 - 2012-10-01 : Release of the file
 */
- 
+
 require_once 'include/Constants.php';
 require_once 'include/Settings.ini.php';
 require_once 'include/Mobile_Detect.php';

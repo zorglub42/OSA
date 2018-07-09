@@ -61,19 +61,21 @@ class Services
      *
      * Create header mapping form a particular service and a particular property
      *
-     * @param string $serviceName  service identifier
-     * @param string $userProperty User property to map
-     * @param string $headerName   HTTP header name
+     * @param string $serviceName       service identifier
+     * @param string $userProperty      User property to map
+     * @param string $headerName        HTTP header name
+     * @param int    $extendedAttribute {@choice 0,1}
      *
      * @url POST :serviceName/headers-mapping/:userProperty
      *
      * @return HeaderMapping Created header
      */
-    function createHeadersMapping($serviceName, $userProperty, $headerName)
-    {
+    function createHeadersMapping(
+        $serviceName, $userProperty, $headerName, $extendedAttribute=0
+    ) {
         try{
             return createServiceHeadersMapping(
-                $serviceName, $userProperty, $headerName
+                $serviceName, $userProperty, $headerName, $extendedAttribute
             );
         }catch (Exception $e) {
             throw new RestException($e->getCode(), $e->getMessage());
@@ -102,7 +104,8 @@ class Services
             foreach ($mapping as $header) {
                 if (!empty($header->userProperty) && !empty($header->headerName)) {
                     $this->createHeadersMapping(
-                        $serviceName, $header->userProperty, $header->headerName
+                        $serviceName, $header->userProperty,
+                        $header->headerName, $header->extendedAttribute
                     );
                 }
             }
