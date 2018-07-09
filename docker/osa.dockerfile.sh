@@ -59,7 +59,7 @@ cat<<EOF | docker build -t osa:$RDBMS-$VERSION  -
 
 	$PROXIES
 
-	RUN apt-get update && echo "mysql-server mysql-server/root_password password $ROOT_MYSQL_PW"| debconf-set-selections  && echo "mysql-server mysql-server/root_password_again password $ROOT_MYSQL_PW"|debconf-set-selections && apt-get install -y apache2 php php-curl libapache2-mod-php openssl curl zip autoconf zlib1g-dev zlib1g apache2-dev git inetutils-ping net-tools cron sudo wget vim $RDBMS_PACKAGE
+	RUN apt-get update && echo "mysql-server mysql-server/root_password password $ROOT_MYSQL_PW"| debconf-set-selections  && echo "mysql-server mysql-server/root_password_again password $ROOT_MYSQL_PW"|debconf-set-selections && apt-get install -y apache2 php php-curl libapache2-mod-php openssl curl zip autoconf zlib1g-dev zlib1g apache2-dev libjson-c-dev libjson-c2 git inetutils-ping net-tools cron sudo wget vim $RDBMS_PACKAGE
 	RUN cd /usr/local/src && git clone https://github.com/zorglub42/OSA
 	RUN cd /usr/local/src/OSA && ./install.sh -m -rdbms $RDBMS /usr/local/OSA
 
