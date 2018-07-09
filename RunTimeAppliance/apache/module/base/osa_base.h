@@ -183,7 +183,7 @@
 
 
 #include <json-c/json.h>
-#include <json/json_tokener.h>
+#include <json-c/json_tokener.h>
 
 
 #ifdef CRYPT
