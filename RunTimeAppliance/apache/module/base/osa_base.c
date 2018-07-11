@@ -1896,7 +1896,7 @@ int forward_extended_identity(request_rec *r){
 	osa_config_rec *sec =
 			(osa_config_rec *)ap_get_module_config (r->per_dir_config,
 								&osa_module);
-	if (sec->indentityHeadersExtendedMapping){
+	if (sec->indentityHeadersExtendedMapping && r->user){
 		stringKeyValList userProps;
 		stringKeyValList extendedMapping;
 		apr_status_t rc=OK;
@@ -1934,7 +1934,7 @@ int forward_extended_identity(request_rec *r){
 		return OK;
 
 	}else{
-		return OK;
+		return DECLINED;
 	}
 }
 
