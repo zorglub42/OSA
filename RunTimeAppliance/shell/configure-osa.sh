@@ -894,6 +894,7 @@ if [ $KEEP_DB -ne 1 ] ; then
 	echo "Creating DB objects"
 	mysql -u root -p"$ROOT_MYSQL_PW"  -h $APPLIANCE_MYSQL_HOST  -P $APPLIANCE_MYSQL_PORT<<EOF
 	create database $APPLIANCE_MYSQL_SCHEMA;
+	ALTER DATABASE $APPLIANCE_MYSQL_SCHEMA CHARACTER SET utf8
 EOF
 	createDBUser
 	echo "DB objects created"

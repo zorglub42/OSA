@@ -16,12 +16,28 @@
 * Authors     : zorglub42 <contact@zorglub42.fr>
 *
 * Description :
-* 	Upgrade database form version 2.7 to version 2.8
+* 	Upgrade database form version 2.8.1 to version 3.0
 *--------------------------------------------------------
 * History     :
 *
 * 1.0.0 - 2018-06-25 : Release of the file
 **/
+SET FOREIGN_KEY_CHECKS=0;
+ALTER TABLE authtoken CONVERT TO CHARACTER SET utf8 ;
+ALTER TABLE counters CONVERT TO CHARACTER SET utf8 ;
+ALTER TABLE excedeedcounters CONVERT TO CHARACTER SET utf8 ;
+ALTER TABLE groups CONVERT TO CHARACTER SET utf8 ;
+ALTER TABLE headersmapping CONVERT TO CHARACTER SET utf8 ;
+ALTER TABLE hits CONVERT TO CHARACTER SET utf8 ;
+ALTER TABLE nodes CONVERT TO CHARACTER SET utf8 ;
+ALTER TABLE services CONVERT TO CHARACTER SET utf8 ;
+ALTER TABLE servicesnodes CONVERT TO CHARACTER SET utf8 ;
+ALTER TABLE users CONVERT TO CHARACTER SET utf8 ;
+ALTER TABLE usersgroups CONVERT TO CHARACTER SET utf8 ;
+ALTER TABLE usersquotas CONVERT TO CHARACTER SET utf8 ;
+SET FOREIGN_KEY_CHECKS=1;
+
+
 DROP TABLE IF EXISTS `additionnaluserproperties`;
 CREATE TABLE `additionnaluserproperties` (
   `userName` VARCHAR(45) NOT NULL,
@@ -32,7 +48,7 @@ CREATE TABLE `additionnaluserproperties` (
     FOREIGN KEY (`userName`)
     REFERENCES `users` (`userName`)
     ON DELETE CASCADE
-    ON UPDATE NO ACTION);
+    ON UPDATE NO ACTION) CHARSET=utf8 Engine=InnoDB;
 
 INSERT INTO additionnaluserproperties(userName, propertyName, value) SELECT userName, "extra", extra FROM users WHERE extra != "";
 
