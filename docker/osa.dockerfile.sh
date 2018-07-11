@@ -8,9 +8,19 @@ function getRootImage(){
 		uname -a | grep " arm">/dev/null
 		if [ $? -ne 0 ] ; then
 			DOCKER_FROM="ubuntu:16.04"
+			JSON_PCKAGE="libjson-c2 libjson-c2-dev"
 		elif [ -f "/etc/os-release" ] ; then
-			DOCKER_FROM="schachr/raspbian-stretch"
-			RDBMS_PACKAGE="mysql-server php-mysql default-libmysqlclient-dev"
+			grep "stretch" "/etc/os-release" >/dev/null
+			if [ $? -eq 0 ] ; then
+				DOCKER_FROM="schachr/raspbian-stretch"
+				RDBMS_PACKAGE="mysql-server php-mysql default-libmysqlclient-dev"
+				JSON_PACKAGE="libjson-c3 libjson-c-dev"
+			# else
+			#	TODO Adapt apt-get install package for jessie
+			# 	DOCKER_FROM="resin/rpi-raspbian"
+			# 	RDBMS_PACKAGE="mysql-server php-mysql default-libmysqlclient-dev"
+			# 	JSON_PCKAGE="libjson-c2 libjson-c-dev"
+			fi
 		else
 			echo "Unable to find a root docker image"
 			exit 1
@@ -59,7 +69,7 @@ cat<<EOF | docker build -t osa:$RDBMS-$VERSION  -
 
 	$PROXIES
 
-	RUN apt-get update && echo "mysql-server mysql-server/root_password password $ROOT_MYSQL_PW"| debconf-set-selections  && echo "mysql-server mysql-server/root_password_again password $ROOT_MYSQL_PW"|debconf-set-selections && apt-get install -y apache2 php php-curl libapache2-mod-php openssl curl zip autoconf zlib1g-dev zlib1g apache2-dev libjson-c-dev libjson-c2 git inetutils-ping net-tools cron sudo wget vim $RDBMS_PACKAGE
+	RUN apt-get update && echo "mysql-server mysql-server/root_password password $ROOT_MYSQL_PW"| debconf-set-selections  && echo "mysql-server mysql-server/root_password_again password $ROOT_MYSQL_PW"|debconf-set-selections && apt-get install -y apache2 php php-curl libapache2-mod-php openssl curl zip autoconf zlib1g-dev zlib1g apache2-dev git inetutils-ping net-tools cron sudo wget vim $JSON_PACKAGE  $RDBMS_PACKAGE
 	RUN cd /usr/local/src && git clone https://github.com/zorglub42/OSA
 	RUN cd /usr/local/src/OSA && ./install.sh -m -rdbms $RDBMS /usr/local/OSA
 
@@ -80,4 +90,3 @@ cat<<EOF | docker build -t osa:$RDBMS-$VERSION  -
 	RUN printf "$START_RDBMS\nservice apache2 restart\nservice cron restart\n/usr/local/bin/configure-osa-container.sh "'\$*'"||exit 1\n\ntail -f /dev/null\n">/usr/local/bin/start-osa-container.sh ;chmod u+x /usr/local/bin/start-osa-container.sh
 	ENTRYPOINT ["/bin/bash", "/usr/local/bin/start-osa-container.sh"]
 EOF
-
