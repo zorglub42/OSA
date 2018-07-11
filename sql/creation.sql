@@ -55,7 +55,7 @@ CREATE TABLE `authtoken` (
 PRIMARY KEY (`token`),
 KEY `fk_authtoken_1` (`userName`),
 KEY `idx_date` (`validUntil`)
-) CHARSET=LATIN1  ENGINE=Memory;
+) CHARSET=utf8  ENGINE=Memory;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
