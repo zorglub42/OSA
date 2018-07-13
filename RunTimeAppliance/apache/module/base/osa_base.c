@@ -1366,18 +1366,24 @@ int authenticate_cookie_user(request_rec *r){
 			if (Rc != OK){
 				return Rc;
 			}
-			int stillValidFor;
-			Rc=validateToken(r, token, &stillValidFor);
+			int alreadyUsed;
+			Rc=validateToken(r, token, &alreadyUsed);
 			if (Rc != OK){
 				deleteAuthCookie(r);
 				return Rc;
 			}
-			if ( ((sec->cookieAuthTTL*60)-stillValidFor) > sec->cookieCacheTime){
-				//We received a request with a token and found it in table, but its cache suvival time is elapsed
-				// will expire within sec->cookieCacheTime sec
-				//i.e original cookie was burn and survival period (COOKIE_BURN_SURVIVAL_TIME) is over
-				//re-generate a new one and burn the received one 
-				Rc=generateToken(r, token);
+			if (sec->cookieAuthBurn){
+				if (!alreadyUsed){
+					//That's the first call with this token.
+					// Regenerate a new one and "burn" the current one
+					Rc=regenerateToken(r, token);
+					if (Rc != OK){
+						deleteAuthCookie(r);
+						return Rc;
+					}
+				}
+			}else{
+				Rc=extendToken(r, token);
 				if (Rc != OK){
 					deleteAuthCookie(r);
 					return Rc;
@@ -1939,7 +1945,21 @@ int forward_extended_identity(request_rec *r){
 }
 
 
+char *getToken(request_rec *r){
+	char *token;
+	struct timeval tv;
+	gettimeofday(&tv,NULL);
+	unsigned long time_in_micros = 1000000 * tv.tv_sec + tv.tv_usec;
 
+	token=ap_md5(r->pool,
+					apr_psprintf(r->pool,
+					"%lu-%010d-%010d-%010d",
+					time_in_micros, getpid(),
+					(rand()%1000000000)+1, (rand()%1000000000)+1
+	));
+
+	return token;
+}
 
 void register_hooks(POOL *p)
 {
@@ -1975,18 +1995,3 @@ void register_hooks(POOL *p)
 
 
 
-char *getToken(request_rec *r){
-	char *token;
-	struct timeval tv;
-	gettimeofday(&tv,NULL);
-	unsigned long time_in_micros = 1000000 * tv.tv_sec + tv.tv_usec;
-
-	token=ap_md5(r->pool,
-					apr_psprintf(r->pool,
-					"%lu-%010d-%010d-%010d",
-					time_in_micros, getpid(),
-					(rand()%1000000000)+1, (rand()%1000000000)+1
-	));
-
-	return token;
-}

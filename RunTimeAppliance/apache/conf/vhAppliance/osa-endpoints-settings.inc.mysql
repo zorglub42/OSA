@@ -21,7 +21,6 @@
 # History     :
 # 1.0.0 - 2012-10-01 : Release of the file
 
-
 	
 	OSAUser appliance
 	OSAPassword mysql
@@ -57,3 +56,4 @@
 	OSAUserAttributeTable additionnaluserproperties
 	OSAUserAttributeNameField propertyName
 	OSAUserAttributeValueField value
+
