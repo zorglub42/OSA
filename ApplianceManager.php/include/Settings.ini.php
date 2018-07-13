@@ -36,17 +36,12 @@
 */
     // Database connection parameter
     define("RDBMS", "mysql");
-    //define("RDBMS", "sqlite");
 
     define("SQLITE_DATABASE_PATH", "/usr/local/OSA/sql/sqlite/osa.db");
 
-    // $BDName="appliance@localhost:3306";
-    // $BDUser="appliance";
-    // $BDPwd="mysql";
-
     $BDName="appliance@localhost:3306";
     $BDUser="root";
-    $BDPwd="mysql";
+    $BDPwd="root-pwd-for-mysql";
     
 
 	define("runtimeApplianceConfigLocation",  "/usr/local/OSA/RunTimeAppliance/apache/conf/vhAppliance");
