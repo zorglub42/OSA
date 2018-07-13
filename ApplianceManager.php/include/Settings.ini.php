@@ -40,8 +40,8 @@
     define("SQLITE_DATABASE_PATH", "/usr/local/OSA/sql/sqlite/osa.db");
 
     $BDName="appliance@localhost:3306";
-    $BDUser="root";
-    $BDPwd="root-pwd-for-mysql";
+    $BDUser="osa-user";
+    $BDPwd="osa-user-pwd-for-mysql";
     
 
 	define("runtimeApplianceConfigLocation",  "/usr/local/OSA/RunTimeAppliance/apache/conf/vhAppliance");
