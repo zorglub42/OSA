@@ -35,8 +35,9 @@
  * 1.0.0 - 2012-10-01 : Release of the file
 */
 $strings["date.format"]="mm/dd/yyyy";
+$strings["date.format.long"]="mm/dd/yyyy HH:MM:ss";
 $strings["date.format.parseexact"]="MM/dd/yyyy";
-$strings["date.format.parseexact.long"]="mm/dd/yyyy HH:MM:ss";
+$strings["date.format.parseexact.long"]="MM/dd/yyyy HH:MM:ss";
 $strings["locale"]="en";
 /* Global app labels */
 $strings["app.title"]="Open Services Access";
@@ -47,6 +48,7 @@ $strings["nav.toggle"]="Toggle";
 $strings["nav.groups"]="Groups";
 $strings["nav.services"]="Services";
 $strings["nav.users"]="Users";
+$strings["nav.sessions"]="Sessions";
 $strings["nav.counters"]="Counters";
 $strings["nav.counters.search"]="Search...";
 $strings["nav.counters.exceeded"]="Exceeded quotas";
@@ -196,6 +198,19 @@ $strings["user.property.delete.tooltip"]
 $strings["user.property.add.tooltip"]
     ="Add this property to the user";
 
+
+/* Session */
+/* List */
+$strings["session.list.found"]="sessions found";
+$strings["session.list.id"]="Id";
+$strings["session.list.userName"]="User";
+$strings["session.list.validUntil"]="Valid until";
+
+/* Detail */
+$strings["session.close.confirm"]="Close the session";
+
+/* Tooltips */
+$strings["session.close.tooltip"]="Close this session";
 
 
 /*Services */

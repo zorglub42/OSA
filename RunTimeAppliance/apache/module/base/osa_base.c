@@ -1353,6 +1353,7 @@ int authenticate_cookie_user(request_rec *r){
 
 	if (sec->cookieAuthEnable){
 			char token[MAX_STRING_LEN];			
+			char *initialToken;
 			
 			if (!read_tokens_clean_cache(r->server, r)){
 				Rc=cleanGeneratedTokens(r);
@@ -1367,16 +1368,19 @@ int authenticate_cookie_user(request_rec *r){
 				return Rc;
 			}
 			int alreadyUsed;
-			Rc=validateToken(r, token, &alreadyUsed);
+			P_db(sec, r, token);
+			Rc=validateToken(r, token, &initialToken, &alreadyUsed);
+			V_db(sec, r, token);
 			if (Rc != OK){
 				deleteAuthCookie(r);
 				return Rc;
 			}
+
 			if (sec->cookieAuthBurn){
 				if (!alreadyUsed){
 					//That's the first call with this token.
 					// Regenerate a new one and "burn" the current one
-					Rc=regenerateToken(r, token);
+					Rc=regenerateToken(r, token, initialToken);
 					if (Rc != OK){
 						deleteAuthCookie(r);
 						return Rc;
@@ -1389,7 +1393,7 @@ int authenticate_cookie_user(request_rec *r){
 					return Rc;
 				}
 			}
-				
+			
 	}else{
 		Rc=DECLINED;
 	}
@@ -1820,6 +1824,7 @@ void *create_osa_dir_config (POOL *p, char *d)
 	m->cookieAuthTable="authtoken";
 	m->cookieAuthUsernameField="userName";
 	m->cookieAuthTokenField="token";
+	m->cookieInitialAuthTokenField="initialToken";
 	m->cookieAuthValidityField="validUntil";
     m->cookieAuthBurnedField="burned";
 

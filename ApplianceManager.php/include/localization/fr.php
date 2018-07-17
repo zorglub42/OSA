@@ -35,6 +35,7 @@
  * 1.0.0 - 2012-10-01 : Release of the file
 */
 $strings["date.format"]="dd/mm/yyyy";
+$strings["date.format.long"]="dd/mm/yyyy HH:MM:ss";
 $strings["date.format.parseexact"]="dd/MM/yyyy";
 $strings["date.format.parseexact.long"]="dd/mm/yyyy HH:MM:ss";
 $strings["locale"]="fr";
@@ -47,6 +48,7 @@ $strings["nav.toggle"]="Basculer";
 $strings["nav.groups"]="Groupes";
 $strings["nav.services"]="Services";
 $strings["nav.users"]="Utilisateurs";
+$strings["nav.sessions"]="Sessions";
 $strings["nav.counters"]="Compteurs";
 $strings["nav.counters.search"]="Rechercher...";
 $strings["nav.counters.exceeded"]="Quotas dépassés";
@@ -210,6 +212,21 @@ $strings["user.property.name"] = "Propriété";
 $strings["user.property.header"] = "Header";
 $strings["user.property.value"] = "Valeur";
 $strings["user.property.delete.confirm"] = "Supprimer la propriété: ";
+
+
+/* Session */
+/* List */
+$strings["session.list.found"]="sessions trouvées";
+$strings["session.list.id"]="Identificateur";
+$strings["session.list.userName"]="Utilisateur";
+$strings["session.list.validUntil"]="Valable jusqu'à";
+
+/* Detail */
+$strings["session.close.confirm"]="Fermer la session";
+
+/* Tooltips */
+$strings["session.close.tooltip"]="Fermer cette session";
+
 
 /*Services */
 /* List */

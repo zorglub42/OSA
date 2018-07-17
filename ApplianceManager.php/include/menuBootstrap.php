@@ -71,6 +71,12 @@
             <?php echo Localization::getString("nav.users")?>
           </a>
         </li>
+        <li>
+          <a href="#" id="listSessions" class="dropdown-toggle" data-toggle="dropdown"
+             role="button" aria-haspopup="true" aria-expanded="false">
+            <?php echo Localization::getString("nav.sessions")?>
+          </a>
+        </li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown"
             role="button" aria-haspopup="true" aria-expanded="false">

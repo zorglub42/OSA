@@ -295,6 +295,7 @@ typedef struct  {
 	char *cookieAuthTable;
 	char *cookieAuthUsernameField;
 	char *cookieAuthTokenField;
+	char *cookieInitialAuthTokenField;
 	char *cookieAuthValidityField;
 	char *cookieAuthBurnedField;
 	
@@ -399,8 +400,8 @@ void P_db(osa_config_rec *sec, request_rec *r, char *sem); //To implement for sp
 void V_db(osa_config_rec *sec, request_rec *r, char *sem); //To implement for specific RDMBS
 void *get_db_server_config (POOL *p, osa_config_rec *m);  //To implement for specific RDMBS
 char * get_db_pw(request_rec *r, char *user, osa_config_rec *m, const char *salt_column, const char ** psalt); //To implement for specific RDMBS
-int validateToken(request_rec *r , char *token, int *burned);//To implement for specific RDMBS
-int regenerateToken(request_rec *r, char *receivedToken);//To implement for specific RDMBS
+int validateToken(request_rec *r , char *token, char **initialToken, int *burned);//To implement for specific RDMBS
+int regenerateToken(request_rec *r, char *receivedToken, char *initialToken);//To implement for specific RDMBS
 int extendToken(request_rec *r, char *receivedToken);//To implement for specific RDMBS
 char ** get_groups(request_rec *r, char *user, osa_config_rec *m); //To implement for specific RDMBS
 int checkUserQuotas( osa_config_rec *sec, request_rec *r); 		//To implement for specific RDMBS

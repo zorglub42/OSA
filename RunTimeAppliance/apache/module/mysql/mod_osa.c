@@ -173,83 +173,6 @@ typedef struct mysql_connection_handle{
 static mysql_connection connection = {NULL, "", "", ""};
 
 
-/*--------------------------------------------------------------------------------------------------*/
-/*                 void P_db(osa_config_rec *sec, request_rec *r, char *sem)                        */
-/*--------------------------------------------------------------------------------------------------*/
-/* Use databse locks to implement semaphore acquire                                                 */
-/*--------------------------------------------------------------------------------------------------*/
-/* IN:                                                                                              */
-/*        osa_config_rec *sec: Module configuration                                                 */
-/*        request_rec *r: apache request                                                            */
-/*        char *sem: semaphore name                                                                 */
-/*--------------------------------------------------------------------------------------------------*/
-/* RETURN: void                                                                                     */
-/*--------------------------------------------------------------------------------------------------*/
-void P_db(osa_config_rec *sec, request_rec *r, char *sem){
-	char *query;
-
-	query=apr_psprintf(r->pool, "SET AUTOCOMMIT=0");
-	if (mysql_query(connection.handle, query) != 0) {
-		LOG_ERROR_2(APLOG_ERR, 0, r, "P_db (%s): %s: ", query, mysql_error(connection.handle));
-	}
-
-	query=apr_psprintf(r->pool, "START TRANSACTION");
-	if (mysql_query(connection.handle, query) != 0) {
-		LOG_ERROR_2(APLOG_ERR, 0, r, "P_db (%s): %s: ", query, mysql_error(connection.handle));
-	}
-
-
-
-	query=apr_psprintf(r->pool, "INSERT INTO %s (counterName,value) VALUES ('SEM_%s__',0)", sec->countersTable, sem);
-	int tryNumber=0;
-	int getLock=0;
-	while (!getLock && tryNumber <DEAD_LOCK_MAX_RETRY){
-		if (mysql_query(connection.handle, query)!=0){
-			char *sqlError;
-			sqlError=apr_psprintf(r->pool, "%s", (char*)mysql_error(connection.handle));
-			if (strstr(sqlError, "Deadlock found when trying to get lock")){
-				tryNumber++;
-				usleep(DEAD_LOCK_SLEEP_TIME_MICRO_S);
-			}else{
-				LOG_ERROR_1(APLOG_ERR, 0, r, "P_db MySQL ERROR: %s: ", mysql_error(connection.handle));
-				query=apr_psprintf(r->pool, "rollback");
-				mysql_query(connection.handle, query) ; 
-						osa_error(r,"DB query error",500);
-			}
-		}else{
-			getLock=1;
-		}
-	}
-	if (tryNumber >=DEAD_LOCK_MAX_RETRY) {
-		LOG_ERROR_1(APLOG_ERR, 0, r, "Max retry of %d on deadlock reached", DEAD_LOCK_MAX_RETRY);
-		query=apr_psprintf(r->pool, "rollback");
-		mysql_query(connection.handle, query) ;
-		osa_error(r,"Can't lock counter.......",500);
-	}
-}
-
-
-
-/*--------------------------------------------------------------------------------------------------*/
-/*                 void V_db(osa_config_rec *sec, request_rec *r, char *sem)                        */
-/*--------------------------------------------------------------------------------------------------*/
-/* Use databse locks to implement semaphore acquire                                                 */
-/*--------------------------------------------------------------------------------------------------*/
-/* IN:                                                                                              */
-/*        osa_config_rec *sec: Module configuration                                                 */
-/*        request_rec *r: apache request                                                            */
-/*        char *sem: semaphore name                                                                 */
-/*--------------------------------------------------------------------------------------------------*/
-/* RETURN: void                                                                                     */
-/*--------------------------------------------------------------------------------------------------*/
-void V_db(osa_config_rec *sec, request_rec *r, char *sem){
-	char *query;
-	query=apr_psprintf(r->pool, "DELETE FROM %s WHERE counterName='SEM_%s__'",sec->countersTable, sem);
-	mysql_query(connection.handle, query) ;
-	query=apr_psprintf(r->pool, "commit");
-	mysql_query(connection.handle, query) ;
-}
-
 
 
 /*
@@ -482,6 +405,93 @@ static command_rec osa_cmds[] = {
 	{ NULL }
 };
 
+
+/*--------------------------------------------------------------------------------------------------*/
+/*                 void P_db(osa_config_rec *sec, request_rec *r, char *sem)                        */
+/*--------------------------------------------------------------------------------------------------*/
+/* Use databse locks to implement semaphore acquire                                                 */
+/*--------------------------------------------------------------------------------------------------*/
+/* IN:                                                                                              */
+/*        osa_config_rec *sec: Module configuration                                                 */
+/*        request_rec *r: apache request                                                            */
+/*        char *sem: semaphore name                                                                 */
+/*--------------------------------------------------------------------------------------------------*/
+/* RETURN: void                                                                                     */
+/*--------------------------------------------------------------------------------------------------*/
+void P_db(osa_config_rec *sec, request_rec *r, char *sem){
+	char *query;
+
+	if (connection.handle==NULL){
+		/* connect database */
+		if(!open_db_handle(r,sec)) {
+			LOG_ERROR_1(APLOG_ERR, 0, r, "%s", "Error while connecting DB");
+
+			osa_error(r,"Unable to connect database", 500);
+		}
+	}
+
+	query=apr_psprintf(r->pool, "SET AUTOCOMMIT=0");
+	if (mysql_query(connection.handle, query) != 0) {
+		LOG_ERROR_2(APLOG_ERR, 0, r, "P_db (%s): %s: ", query, mysql_error(connection.handle));
+	}
+
+	query=apr_psprintf(r->pool, "START TRANSACTION");
+	if (mysql_query(connection.handle, query) != 0) {
+		LOG_ERROR_2(APLOG_ERR, 0, r, "P_db (%s): %s: ", query, mysql_error(connection.handle));
+	}
+
+
+
+	query=apr_psprintf(r->pool, "INSERT INTO %s (counterName,value) VALUES ('SEM_%s__',0)", sec->countersTable, sem);
+	int tryNumber=0;
+	int gotLock=0;
+	while (!gotLock && tryNumber <DEAD_LOCK_MAX_RETRY){
+		if (mysql_query(connection.handle, query)!=0){
+			LOG_ERROR_1(APLOG_DEBUG, 0, r, "%s", "LOCK !!!");
+			char *sqlError;
+			sqlError=apr_psprintf(r->pool, "%s", (char*)mysql_error(connection.handle));
+			if (strstr(sqlError, "Deadlock found when trying to get lock")){
+				tryNumber++;
+				usleep(DEAD_LOCK_SLEEP_TIME_MICRO_S);
+			}else{
+				LOG_ERROR_1(APLOG_ERR, 0, r, "P_db MySQL ERROR: %s: ", mysql_error(connection.handle));
+				query=apr_psprintf(r->pool, "rollback");
+				mysql_query(connection.handle, query) ; 
+						osa_error(r,"DB query error",500);
+			}
+		}else{
+			gotLock=1;
+		}
+	}
+	if (tryNumber >=DEAD_LOCK_MAX_RETRY) {
+		LOG_ERROR_1(APLOG_ERR, 0, r, "Max retry of %d on deadlock reached", DEAD_LOCK_MAX_RETRY);
+		query=apr_psprintf(r->pool, "rollback");
+		mysql_query(connection.handle, query) ;
+		osa_error(r,"Can't lock counter.......",500);
+	}
+}
+
+
+
+/*--------------------------------------------------------------------------------------------------*/
+/*                 void V_db(osa_config_rec *sec, request_rec *r, char *sem)                        */
+/*--------------------------------------------------------------------------------------------------*/
+/* Use databse locks to implement semaphore acquire                                                 */
+/*--------------------------------------------------------------------------------------------------*/
+/* IN:                                                                                              */
+/*        osa_config_rec *sec: Module configuration                                                 */
+/*        request_rec *r: apache request                                                            */
+/*        char *sem: semaphore name                                                                 */
+/*--------------------------------------------------------------------------------------------------*/
+/* RETURN: void                                                                                     */
+/*--------------------------------------------------------------------------------------------------*/
+void V_db(osa_config_rec *sec, request_rec *r, char *sem){
+	char *query;
+	query=apr_psprintf(r->pool, "DELETE FROM %s WHERE counterName='SEM_%s__'",sec->countersTable, sem);
+	mysql_query(connection.handle, query) ;
+	query=apr_psprintf(r->pool, "commit");
+	mysql_query(connection.handle, query) ;
+}
 
 /*
  * Fetch and return password string from database for named user.
@@ -985,18 +995,19 @@ int cleanGeneratedTokens(request_rec *r){
 		query=apr_psprintf(r->pool, "DELETE FROM %s WHERE %s<now()",sec->cookieAuthTable, sec->cookieAuthValidityField);
 
 		if (mysql_query(connection.handle, query) != 0) {
-			LOG_ERROR_1(APLOG_ERR, 0, r, "validateToken: MySQL ERROR: %s: ", mysql_error(connection.handle));
+			LOG_ERROR_1(APLOG_ERR, 0, r, "cleanGeneratedTokens: MySQL ERROR: %s: ", mysql_error(connection.handle));
 			return osa_error(r,"DB query error",500);
 		}
 		return OK;
 }
 
 
-int validateToken(request_rec *r , char *token, int *burned){
+int validateToken(request_rec *r , char *token, char **initialToken, int *burned){
 	 osa_config_rec *sec =(osa_config_rec *)ap_get_module_config (r->per_dir_config, &osa_module);
 		char *query;
 		MYSQL_RES *result;
 		int rc;
+		rc= OK;
 
 		if (connection.handle==NULL){
 			/* connect database */
@@ -1004,11 +1015,11 @@ int validateToken(request_rec *r , char *token, int *burned){
 				return osa_error(r,"Unable to connect database", 500);
 			}
 		}
-
 		//Search if token exists in table ans is still valid
-		query=apr_psprintf(r->pool, "SELECT %s, %s FROM %s WHERE token='%s' AND %s>=now()",
+		query=apr_psprintf(r->pool, "SELECT %s, %s, %s FROM %s WHERE token='%s' AND %s>=now()",
 			sec->cookieAuthUsernameField, 
 			sec->cookieAuthBurnedField,
+			sec->cookieInitialAuthTokenField,
 			sec->cookieAuthTable,
 			token,
 			sec->cookieAuthValidityField);
@@ -1024,7 +1035,25 @@ int validateToken(request_rec *r , char *token, int *burned){
  			//strcpy(r->user, data[0]);
  			r->user=(char *) PSTRDUP(r->pool, data[0]);
 			*burned=atoi(data[1]);
-			rc= OK;
+			(*initialToken)=(char *) PSTRDUP(r->pool, data[2]);
+						LOG_ERROR_1(APLOG_DEBUG, 0, r, "validateToken: initial=%s: ", *initialToken);
+
+			if (sec->cookieAuthBurn){
+				//Burn received token (Mark it as burned and set it outdated to be garbadged after cacheTTL)
+				query=apr_psprintf(r->pool, "UPDATE %s SET %s=date_add(now() ,interval %d second), %s=1 WHERE %s='%s' and %s=0",
+					sec->cookieAuthTable,
+					sec->cookieAuthValidityField,
+					sec->cookieCacheTime, 
+					sec->cookieAuthBurnedField,
+					sec->cookieAuthTokenField,
+					token,
+					sec->cookieAuthBurnedField);
+
+				if (mysql_query(connection.handle, query) != 0) {
+					LOG_ERROR_1(APLOG_ERR, 0, r, "regenerateToken: MySQL ERROR: %s: ", mysql_error(connection.handle));
+					rc= osa_error(r,"DB query error",500);
+				}
+			}
 		}else{
 			//received token was not found in DB
 			if (sec->cookieAuthLoginForm!=NULL){
@@ -1076,7 +1105,7 @@ int extendToken(request_rec *r, char *receivedToken){
 }
 
 
-int regenerateToken(request_rec *r, char *receivedToken){
+int regenerateToken(request_rec *r, char *receivedToken, char *initialToken){
 	osa_config_rec *sec =(osa_config_rec *)ap_get_module_config (r->per_dir_config, &osa_module);
 	char *token;
 	char *query;
@@ -1093,18 +1122,21 @@ int regenerateToken(request_rec *r, char *receivedToken){
 	do{
 		token=getToken(r);
 
-		query=apr_psprintf(r->pool, "INSERT INTO %s (%s, %s, %s, %s) VALUES ('%s', date_add(now() ,interval %d minute), '%s', 0)", 
+
+		query=apr_psprintf(r->pool, "INSERT INTO %s (%s, %s, %s, %s, %s) VALUES ('%s', date_add(now() ,interval %d minute), '%s', 0, '%s')", 
 			sec->cookieAuthTable,
 			sec->cookieAuthTokenField,
 			sec->cookieAuthValidityField,
 			sec->cookieAuthUsernameField,
 			sec->cookieAuthBurnedField,
+			sec->cookieInitialAuthTokenField,
 			token, sec->cookieAuthTTL, 
-			r->user);
+			r->user,
+			initialToken);
 			
 			if (mysql_query(connection.handle, query) != 0) {
 				if (strstr(mysql_error(connection.handle),"Duplicate entry") == NULL){
-					LOG_ERROR_1(APLOG_ERR, 0, r, "generateToken: MySQL ERROR: %s: ", mysql_error(connection.handle));
+					LOG_ERROR_2(APLOG_ERR, 0, r, "regenerateToken: MySQL ERROR: %s (%s): ", mysql_error(connection.handle), query);
 					return osa_error(r,"DB query error",500);
 				}else{
 					LOG_ERROR_1(APLOG_ERR, 0, r, "%s", "Generated token already exists: retry");
@@ -1113,21 +1145,6 @@ int regenerateToken(request_rec *r, char *receivedToken){
 				done=1;
 			}
 	}while (!done);
-
-	//Burn received token (Mark it as burned and set it outdated to be garbadged after cacheTTL)
-	query=apr_psprintf(r->pool, "UPDATE %s SET %s=date_add(now() ,interval %d second), %s=1 WHERE %s='%s' and %s=0",
-		sec->cookieAuthTable,
-		sec->cookieAuthValidityField,
-		sec->cookieCacheTime, 
-		sec->cookieAuthBurnedField,
-		sec->cookieAuthTokenField,
-		receivedToken,
-		sec->cookieAuthBurnedField);
-
-	if (mysql_query(connection.handle, query) != 0) {
-		LOG_ERROR_1(APLOG_ERR, 0, r, "generateToken: MySQL ERROR: %s: ", mysql_error(connection.handle));
-		return osa_error(r,"DB query error",500);
-	}
 
 	query=apr_psprintf(r->pool, "%s=%s; path=/",sec->cookieAuthName,token);
 	if (sec->cookieAuthDomain != NULL){

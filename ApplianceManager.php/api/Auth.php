@@ -39,12 +39,14 @@ require_once '../include/commonHeaders.php';
 
 require_once '../objects/Error.class.php';
 require_once '../objects/AuthToken.class.php';
+require_once '../objects/Session.class.php';
 require_once '../include/Constants.php';
 require_once '../include/Func.inc.php';
 require_once '../include/PDOFunc.php';
 require_once '../include/HTTPClient.php';
 require_once '../include/Settings.ini.php';
 require_once 'Users.php';
+require_once 'sessionDAO.php';
 /**
  * Authentication management
  * 
@@ -145,7 +147,7 @@ class Auth
                     $httpResponse->getStatusCode(),
                     $httpResponse->getStatusLabel() . "(backend=" . 
                                                       osaAdminUri . 
-                                                      "/auth/token" . ")".
+                                                      "/auth/token/me" . ")".
                                                       $httpResponse->getBody()
                 );
             }
@@ -198,7 +200,6 @@ class Auth
      */
     function generate()
     {
-
         $requestor=getRequestor();
         return $this->generateForAny($requestor);
     
@@ -236,8 +237,9 @@ class Auth
             );
 
             $strSQL="";
-            $strSQL=$strSQL . "INSERT INTO authtoken (token, validUntil, userName) ";
+            $strSQL=$strSQL . "INSERT INTO authtoken (token, initialToken, validUntil, userName) ";
             $strSQL=$strSQL . "VALUES (";
+            $strSQL=$strSQL . "        ?,"; 
             $strSQL=$strSQL . "        ?,"; 
             $strSQL=$strSQL . "        " . getSQLKeyword("add_minute") . " , ";
             $strSQL=$strSQL . "        ?";
@@ -262,7 +264,7 @@ class Auth
                     $this->_getAleat()
                 );
                 try{
-                    $stmt->execute(array($token, $timeInterval, $userName));
+                    $stmt->execute(array($token, $token, $timeInterval, $userName));
 
                 }catch (Exception $e){
                     if (strpos($e->getMessage(), "Duplicate entry")>=0 
@@ -280,6 +282,76 @@ class Auth
         }
         return Array("token" => $token);
     
+    }
+
+    /**
+     * List all active session
+     * 
+     * Get a list of all active sessions
+     * 
+     * @param string $userName Retreive only active sessions for this user (optional)
+     * 
+     * @url GET /sessions
+     * 
+     * @return Array {@type Session} Token
+     */
+    function getAllSessions($userName=null) {
+        try{
+            $rc = getActiveSessions($userName);
+        }catch (Exception $e){
+            throw new RestException(500, $e->getMessage());
+        }
+        return $rc;
+    }
+    /**
+     * Close a session
+     * 
+     * Close and existing session on server
+     * 
+     * @param string $id Session identifier to close
+     * 
+     * @url DELETE /sessions/{id}
+     * 
+     * @return Session Closed session
+     */
+    function closeSession($id) {
+        try{
+            $rc = closeSessionById($id);
+        }catch (Exception $e){
+            if (is_numeric($e->getCode())) {
+                throw new RestException($e->getCode(), $e->getMessage());
+            } else {
+                throw new RestException(500, $e->getMessage());
+            }
+
+        }
+        return $rc;
+    }
+
+
+    /**
+     * Get a session
+     * 
+     * Get a session by its ID
+     * 
+     * @param string $id Session identifier
+     * 
+     * @url GET /sessions/{id}
+     * 
+     * @return Session requested session
+     */
+    function getOne($id) {
+        try{
+            return getSessionById($id);
+        }catch (Exception $e){
+            if (is_numeric($e->getCode())) {
+                throw new RestException($e->getCode(), $e->getMessage());
+            } else {
+                throw new RestException(500, $e->getMessage());
+            }
+
+        }
+
     }
 }
 ?>

@@ -88,6 +88,10 @@
 	(void *) APR_OFFSETOF(osa_config_rec, cookieAuthTokenField),
 	OR_AUTHCFG | RSRC_CONF, "field name in OSACookieAuthTable containing generated token default=token"),
 
+	AP_INIT_TAKE1("OSACookieInitialAuthTokenField", ap_set_string_slot,
+	(void *) APR_OFFSETOF(osa_config_rec, cookieInitialAuthTokenField),
+	OR_AUTHCFG | RSRC_CONF, "field name in OSACookieAuthTable containing 1st generated token (sesion) default=intialToken"),
+
 	AP_INIT_TAKE1("OSACookieAuthValidityField", ap_set_string_slot,
 	(void *) APR_OFFSETOF(osa_config_rec, cookieAuthValidityField),
 	OR_AUTHCFG | RSRC_CONF, "field name in OSACookieAuthTable containing validity date for generated token default=validUntil"),

@@ -59,6 +59,7 @@ DROP TABLE users2;
 DROP TABLE IF EXISTS `authtoken`;
 CREATE TABLE `authtoken` (
 `token` varchar(255) NOT NULL,
+`initialToken` varchar(255) NOT NULL,
 `validUntil` datetime DEFAULT NULL,
 `userName` varchar(45) DEFAULT NULL,
 `burned` int(1) default 0,

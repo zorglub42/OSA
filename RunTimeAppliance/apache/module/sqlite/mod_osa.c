@@ -163,74 +163,6 @@ int sqlite3_query_execute(sqlite3 *db, char *query){
 }
 
 
-/*--------------------------------------------------------------------------------------------------*/
-/*                 void P_db(osa_config_rec *sec, request_rec *r, char *sem)                        */
-/*--------------------------------------------------------------------------------------------------*/
-/* Use databse locks to implement semaphore acquire                                                 */
-/*--------------------------------------------------------------------------------------------------*/
-/* IN:                                                                                              */
-/*        osa_config_rec *sec: Module configuration                                                 */
-/*        request_rec *r: apache request                                                            */
-/*        char *sem: semaphore name                                                                 */
-/*--------------------------------------------------------------------------------------------------*/
-/* RETURN: void                                                                                     */
-/*--------------------------------------------------------------------------------------------------*/
-void P_db(osa_config_rec *sec, request_rec *r, char *sem){
-  char *query;
-
-
-  query=apr_psprintf(r->pool, "%s", "BEGIN TRANSACTION");
-  if (sqlite3_query_execute(connection.handle, query) != 0) {
-    LOG_ERROR_2(APLOG_ERR, 0, r, "P_db (%s): %s: ", query, sqlite3_errmsg(connection.handle));
-    osa_error(r,"DB Error", 500);
-  }
-
-
-
-  query=apr_psprintf(r->pool, "INSERT INTO %s (counterName,value) VALUES ('SEM_%s__',0)",sec->countersTable, sem);
-  int tryNumber=0;
-  int getLock=0;
-  while (!getLock && tryNumber <DEAD_LOCK_MAX_RETRY){
-    if (sqlite3_query_execute(connection.handle, query)!=0){
-      char *sqlError;
-      sqlError=apr_psprintf(r->pool,  "%s", (char*)sqlite3_errmsg(connection.handle));
-      if (strstr(sqlError, "database is locked")){
-        tryNumber++;
-        
-        usleep(DEAD_LOCK_SLEEP_TIME_MICRO_S);
-      }else{
-            LOG_ERROR_1(APLOG_ERR, 0, r, "P_db SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
-            query=apr_psprintf(r->pool, "%s", "rollback");
-            sqlite3_query_execute(connection.handle, query) ; 
-            osa_error(r,"DB query error",500);
-      }
-    }else{
-      getLock=1;
-    }
-  }
-  if (tryNumber >=DEAD_LOCK_MAX_RETRY) {
-    LOG_ERROR_1(APLOG_ERR, 0, r, "Max retry of %d on deadlock reached", DEAD_LOCK_MAX_RETRY);
-    query=apr_psprintf(r->pool, "%s", "rollback");
-    sqlite3_query_execute(connection.handle, query) ;
-    osa_error(r,"Can't lock counter.......",500);
-  }
-}
-
-
-
-void V_db(osa_config_rec *sec, request_rec *r, char *sem){
-  char *query;
-  query=apr_psprintf(r->pool, "DELETE FROM %s WHERE counterName='SEM_%s__'",sec->countersTable, sem);
-  if (sqlite3_query_execute(connection.handle, query) != 0) {
-          LOG_ERROR_1(APLOG_ERR, 0, r, "V_db.delete %s: ", sqlite3_errmsg(connection.handle));
-          osa_error(r,"DB Error", 500);
-  }
-  query=apr_psprintf(r->pool, "%s", "commit");
-  if (sqlite3_query_execute(connection.handle, query) != 0) {
-          LOG_ERROR_1(APLOG_ERR, 0, r, "V_db.commit %s: ", sqlite3_errmsg(connection.handle));
-          osa_error(r,"DB Error", 500);
-  }
-}
 
 
 
@@ -331,6 +263,82 @@ static command_rec osa_cmds[] = {
 
 	{ NULL }
 };
+
+
+/*--------------------------------------------------------------------------------------------------*/
+/*                 void P_db(osa_config_rec *sec, request_rec *r, char *sem)                        */
+/*--------------------------------------------------------------------------------------------------*/
+/* Use databse locks to implement semaphore acquire                                                 */
+/*--------------------------------------------------------------------------------------------------*/
+/* IN:                                                                                              */
+/*        osa_config_rec *sec: Module configuration                                                 */
+/*        request_rec *r: apache request                                                            */
+/*        char *sem: semaphore name                                                                 */
+/*--------------------------------------------------------------------------------------------------*/
+/* RETURN: void                                                                                     */
+/*--------------------------------------------------------------------------------------------------*/
+void P_db(osa_config_rec *sec, request_rec *r, char *sem){
+  char *query;
+
+	if (connection.handle==NULL){
+		/* connect database */
+		if(!open_db_handle(r,sec)) {
+			return osa_error(r,"Unable to connect database", 500);
+		}
+	}
+
+  query=apr_psprintf(r->pool, "%s", "BEGIN TRANSACTION");
+  if (sqlite3_query_execute(connection.handle, query) != 0) {
+    LOG_ERROR_2(APLOG_ERR, 0, r, "P_db (%s): %s: ", query, sqlite3_errmsg(connection.handle));
+    osa_error(r,"DB Error", 500);
+  }
+
+
+
+  query=apr_psprintf(r->pool, "INSERT INTO %s (counterName,value) VALUES ('SEM_%s__',0)",sec->countersTable, sem);
+  int tryNumber=0;
+  int getLock=0;
+  while (!getLock && tryNumber <DEAD_LOCK_MAX_RETRY){
+    if (sqlite3_query_execute(connection.handle, query)!=0){
+      char *sqlError;
+      sqlError=apr_psprintf(r->pool,  "%s", (char*)sqlite3_errmsg(connection.handle));
+      if (strstr(sqlError, "database is locked")){
+        tryNumber++;
+        
+        usleep(DEAD_LOCK_SLEEP_TIME_MICRO_S);
+      }else{
+            LOG_ERROR_1(APLOG_ERR, 0, r, "P_db SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
+            query=apr_psprintf(r->pool, "%s", "rollback");
+            sqlite3_query_execute(connection.handle, query) ; 
+            osa_error(r,"DB query error",500);
+      }
+    }else{
+      getLock=1;
+    }
+  }
+  if (tryNumber >=DEAD_LOCK_MAX_RETRY) {
+    LOG_ERROR_1(APLOG_ERR, 0, r, "Max retry of %d on deadlock reached", DEAD_LOCK_MAX_RETRY);
+    query=apr_psprintf(r->pool, "%s", "rollback");
+    sqlite3_query_execute(connection.handle, query) ;
+    osa_error(r,"Can't lock counter.......",500);
+  }
+}
+
+
+
+void V_db(osa_config_rec *sec, request_rec *r, char *sem){
+  char *query;
+  query=apr_psprintf(r->pool, "DELETE FROM %s WHERE counterName='SEM_%s__'",sec->countersTable, sem);
+  if (sqlite3_query_execute(connection.handle, query) != 0) {
+          LOG_ERROR_1(APLOG_ERR, 0, r, "V_db.delete %s: ", sqlite3_errmsg(connection.handle));
+          osa_error(r,"DB Error", 500);
+  }
+  query=apr_psprintf(r->pool, "%s", "commit");
+  if (sqlite3_query_execute(connection.handle, query) != 0) {
+          LOG_ERROR_1(APLOG_ERR, 0, r, "V_db.commit %s: ", sqlite3_errmsg(connection.handle));
+          osa_error(r,"DB Error", 500);
+  }
+}
 
 /*
  * Fetch and return password string from database for named user.
@@ -906,62 +914,73 @@ int extendToken(request_rec *r, char *receivedToken){
 
 }
 
-int validateToken(request_rec *r , char *token, int *burned){
+int validateToken(request_rec *r , char *token, char **initialToken, int *burned){
 	osa_config_rec *sec =(osa_config_rec *)ap_get_module_config (r->per_dir_config, &osa_module);
 	char *query;
-	int rc;
+	int rc=OK;
 
-	if (connection.handle==NULL){
-		/* connect database */
-		if(!open_db_handle(r,sec)) {
-			return osa_error(r,"Unable to connect database", 500);
-		}
-	}
-
-
-	query=apr_psprintf(r->pool, "SELECT %s, %s FROM %s WHERE token='%s' AND %s>=datetime(CURRENT_TIMESTAMP, 'localtime')",
+	query=apr_psprintf(r->pool, "SELECT %s, %s, %s FROM %s WHERE token='%s' AND %s>=datetime(CURRENT_TIMESTAMP, 'localtime')",
 		sec->cookieAuthUsernameField, 
 		sec->cookieAuthBurnedField,
+    sec->cookieInitialAuthTokenField,
     sec->cookieAuthTable,
 		token,
 		sec->cookieAuthValidityField);
-	LOG_ERROR_1(APLOG_DEBUG, 0, r, "validateToke: SQL->%s: ", query);
 
-    sqlite3_stmt *stmt;
-    int sqlite3_rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);    
+  sqlite3_stmt *stmt;
+  int sqlite3_rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);    
 
-    if (sqlite3_rc != SQLITE_OK) {
-      sqlite3_finalize(stmt);
-			LOG_ERROR_1(APLOG_ERR, 0, r, "validateToken: SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
-			return osa_error(r,"DB query error",500);
-		}
-		
-		if (sqlite3_step(stmt) == SQLITE_ROW) {
-			// r->user=(char*)PCALLOC(r->pool, strlen(sqlite3_column_text(stmt, 0)));
-			// strcpy(r->user, sqlite3_column_text(stmt, 0));
- 			r->user=(char *) PSTRDUP(r->pool, sqlite3_column_text(stmt, 0));
-			*burned=sqlite3_column_int(stmt, 1); 
-			rc= OK;
-		}else{
-			//received token was not found in DB
-			if (sec->cookieAuthLoginForm!=NULL){
-				//A login form is set up and we wre in the cookie auth schema,
-				//Assume that this schema is the prefred one and continue with it
-				
-				rc= redirectToLoginForm(r, NULL);
-			}else if (sec->basicAuthEnable){
-				deleteAuthCookie(r);
-				rc = DECLINED;
-			}else{
-				rc= osa_error(r,"Invalid or outdated token", 401);
-			}
-		}
-		sqlite3_finalize(stmt);
-		return rc;
+  if (sqlite3_rc != SQLITE_OK) {
+    sqlite3_finalize(stmt);
+    LOG_ERROR_1(APLOG_ERR, 0, r, "validateToken: SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
+    return osa_error(r,"DB query error",500);
+  }
+  
+  if (sqlite3_step(stmt) == SQLITE_ROW) {
+    // r->user=(char*)PCALLOC(r->pool, strlen(sqlite3_column_text(stmt, 0)));
+    // strcpy(r->user, sqlite3_column_text(stmt, 0));
+    r->user=(char *) PSTRDUP(r->pool, sqlite3_column_text(stmt, 0));
+    *burned=sqlite3_column_int(stmt, 1); 
+    *initialToken =(char *) PSTRDUP(r->pool, sqlite3_column_text(stmt, 2));
+    if (sec->cookieAuthBurn){
+      //Burn received token
+      query=apr_psprintf(r->pool, "UPDATE %s SET %s=DateTime(datetime(CURRENT_TIMESTAMP, 'localtime'), '+%d second'), %s=1 WHERE %s='%s' and %s=0",
+        sec->cookieAuthTable,
+        sec->cookieAuthValidityField,
+        sec->cookieCacheTime, 
+        sec->cookieAuthBurnedField,
+        sec->cookieAuthTokenField,
+        token,
+        sec->cookieAuthBurnedField);
+        
+      if (sqlite3_query_execute(connection.handle, query) != 0) {
+        LOG_ERROR_1(APLOG_ERR, 0, r, "generateToken(update): SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
+        rc = osa_error(r,"DB query error",500);
+      }
+
+    }
+  }else{
+    //received token was not found in DB
+    if (sec->cookieAuthLoginForm!=NULL){
+      //A login form is set up and we wre in the cookie auth schema,
+      //Assume that this schema is the prefred one and continue with it
+      
+      rc = redirectToLoginForm(r, NULL);
+    }else if (sec->basicAuthEnable){
+      deleteAuthCookie(r);
+      rc = DECLINED;
+    }else{
+      rc = osa_error(r,"Invalid or outdated token", 401);
+    }
+  }
+  sqlite3_finalize(stmt);
+  LOG_ERROR_1(APLOG_ERR, 0, r, "exiting validateToken %s", token);
+
+  return rc;
 }
 
 
-int regenerateToken(request_rec *r, char *receivedToken){
+int regenerateToken(request_rec *r, char *receivedToken, char *initialToken){
   osa_config_rec *sec =(osa_config_rec *)ap_get_module_config (r->per_dir_config, &osa_module);
   char *token;
   char *query;
@@ -978,19 +997,21 @@ int regenerateToken(request_rec *r, char *receivedToken){
   do{
 		token=getToken(r);
 
-    query=apr_psprintf(r->pool, "INSERT INTO %s (%s, %s, %s, %s) VALUES ('%s',DateTime(datetime(CURRENT_TIMESTAMP, 'localtime'), '+%d minute'), '%s', 0)", 
+    query=apr_psprintf(r->pool, "INSERT INTO %s (%s, %s, %s, %s, %s) VALUES ('%s',DateTime(datetime(CURRENT_TIMESTAMP, 'localtime'), '+%d minute'), '%s', 0, '%s')", 
       sec->cookieAuthTable,
       sec->cookieAuthTokenField,
       sec->cookieAuthValidityField,
       sec->cookieAuthUsernameField,
 			sec->cookieAuthBurnedField,
+      sec->cookieInitialAuthTokenField,
       token, sec->cookieAuthTTL, 
-      r->user);
+      r->user,
+      initialToken);
 
 
       if (sqlite3_query_execute(connection.handle, query) != 0) {
         if (strstr(sqlite3_errmsg(connection.handle),"Duplicate entry") == NULL){
-          LOG_ERROR_1(APLOG_ERR, 0, r, "generateToken: SQLite ERROR: %s", sqlite3_errmsg(connection.handle));
+          LOG_ERROR_2(APLOG_ERR, 0, r, "generateToken: SQLite ERROR: %s->%s", sqlite3_errmsg(connection.handle), query);
           return osa_error(r,"DB query error",500);
         }else{
           LOG_ERROR_1(APLOG_ERR, 0, r, "%s", "Generated token already exists: retry");
