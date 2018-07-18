@@ -28,8 +28,8 @@ require_once "../../include/Localization.php";
 						<div class="col-xs-2 col-md-2 ellipsis"><?php echo Localization::getString("list.actions")?></div>
 				</div>
 				<div class="list-session" id="data">
-					<a class="list-session-item row" id="rowTpl" style="display:none">
-						<div >
+					<a class="list-session-item row" id="rowTpl" style="display:none" >
+						<div ondblclick="startEditUser('./users/{sessionList[i].userName}')">
 							<div class="col-xs-3 col-md-3 ellipsis" title="{sessionList[i].id}">{sessionList[i].id}</div>
 							<div class="col-xs-3 col-md-3 ellipsis" title="{sessionList[i].userName}">{sessionList[i].userName}</div>
 							<div class="col-xs-4 col-md-4 ellipsis" title="{sessionList[i].validUntil}">{sessionList[i].validUntil}</div>

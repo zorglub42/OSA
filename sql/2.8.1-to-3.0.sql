@@ -62,4 +62,6 @@ ADD COLUMN `extendedAttribute` INT NULL DEFAULT 0 AFTER `headerName`;
 UPDATE headersmapping SET extendedAttribute=1 WHERE columnName='extra';
 
 ALTER TABLE `authtoken`
-ADD COLUMN `burned` INT(0) DEFAULT 0;
+ADD COLUMN `burned` INT(0) DEFAULT 0,
+ADD COLUMN `initialToken` varchar(255) NOT NULL
+;

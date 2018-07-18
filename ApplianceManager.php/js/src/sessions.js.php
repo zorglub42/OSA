@@ -97,6 +97,7 @@ function closeSession(id, uri){
 
 /* Search sessions list and display */
 function showSessions(){
+	backUsers=showSessions
 	$.ajax({
 		url : './auth/sessions/',
 		dataType : 'json',

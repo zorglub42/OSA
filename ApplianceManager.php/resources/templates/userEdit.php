@@ -30,7 +30,7 @@ require_once "../../include/Localization.php";
 							<button type="button" class="btn btn-default" id="saveEdit" onclick="updateUser('{uri}')">
 								<span><?php echo Localization::getString("button.ok")?></span>
 							</button>
-							<button type="button" class="btn btn-info" onclick="showUsers()" >
+							<button type="button" class="btn btn-info" id="back" >
 								<span id="cancel"><?php echo Localization::getString("button.cancel")?></span>
 							</button>
 							<button type="button" class="btn btn-info" id="groupsEdit" onclick="startDisplayUserGroups('{uri}')">
@@ -45,3 +45,6 @@ require_once "../../include/Localization.php";
 		</div>
 	<div>
 </div>
+<script>
+	$("#back").click(backUsers);
+</script>
