@@ -21,14 +21,14 @@ require_once "../../include/Localization.php";
 				<h3 class="panel-title"><b>{sessionList.length} <?php echo Localization::getString("session.list.found")?></b></h3>
 			</div>
 			<div class="panel-body">
-				<div class="row list-session-item header" >
+				<div class="row list-group-item header" >
 						<div class="col-xs-3 col-md-3 ellipsis"><?php echo Localization::getString("session.list.id")?></div>
 						<div class="col-xs-3 col-md-3 ellipsis"><?php echo Localization::getString("session.list.userName")?></div>
 						<div class="col-xs-4 col-md-4 ellipsis"><?php echo Localization::getString("session.list.validUntil")?></div>
 						<div class="col-xs-2 col-md-2 ellipsis"><?php echo Localization::getString("list.actions")?></div>
 				</div>
-				<div class="list-session" id="data">
-					<a class="list-session-item row" id="rowTpl" style="display:none" >
+				<div class="list-group" id="data">
+					<a class="list-group-item row" id="rowTpl" style="display:none" >
 						<div ondblclick="startEditUser('./users/{sessionList[i].userName}')">
 							<div class="col-xs-3 col-md-3 ellipsis" title="{sessionList[i].id}">{sessionList[i].id}</div>
 							<div class="col-xs-3 col-md-3 ellipsis" title="{sessionList[i].userName}">{sessionList[i].userName}</div>

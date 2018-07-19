@@ -578,6 +578,7 @@ function  resetUserFilter(){
 
 /* Load (search) users and display */
 function showUsers() {
+	backUsers=showUsers
 	prms="order=userName";
 
 	prms=prms + "&userNameFilter=" + encodeURIComponent(getFilterValue('userNameFilter'));

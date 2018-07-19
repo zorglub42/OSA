@@ -77,8 +77,8 @@
 			</div>
 		</a>
 		<a class="list-group-item row" id="newProp" >
-			<div class="col-md-2 ellipsis"><input  id="propertyName_new" type="text"  class="form-control"/></div>
-			<div class="col-md-8 ellipsis" ><input id="propertyValue_new" value="" class="form-control"/></div>
+			<div class="col-md-2 ellipsis"><input onchange="setUserModified(true)" id="propertyName_new" type="text"  class="form-control"/></div>
+			<div class="col-md-8 ellipsis" ><input onchange="setUserModified(true)" id="propertyValue_new" value="" class="form-control"/></div>
 			<div class="col-md-2">
 				<button type="button" class="btn btn-default" title="<?php echo Localization::getString("user.property.add.tooltip")?>" onclick="addUserProperty()">
 					<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
