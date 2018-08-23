@@ -269,15 +269,15 @@ ON UPDATE NO ACTION) CHARSET=utf8  ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `additionnaluserproperties`;
 CREATE TABLE `additionnaluserproperties` (
-  `userName` VARCHAR(45) NOT NULL,
-  `propertyName` VARCHAR(45) NOT NULL,
-  `value` TEXT NULL,
-  PRIMARY KEY (`userName`, `propertyName`),
-  CONSTRAINT `fk_additionnaluserproperties_user`
-    FOREIGN KEY (`userName`)
-    REFERENCES `users` (`userName`)
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION) CHARSET=utf8  ENGINE=InnoDB;
+`userName` VARCHAR(45) NOT NULL,
+`propertyName` VARCHAR(45) NOT NULL,
+`value` TEXT NULL,
+PRIMARY KEY (`userName`, `propertyName`),
+CONSTRAINT `fk_additionnaluserproperties_user`
+FOREIGN KEY (`userName`)
+REFERENCES `users` (`userName`)
+ON DELETE CASCADE
+ON UPDATE NO ACTION) CHARSET=utf8  ENGINE=InnoDB;
 
 
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -293,21 +293,21 @@ CREATE TABLE `additionnaluserproperties` (
 
 
 CREATE VIEW  excedeedcounters AS
-	SELECT 	c.* , s.serviceName, NULL userName, s.reqSec, s.reqDay, s.reqMonth	
-	FROM 	counters c,	services s	
-	WHERE 	(counterName like concat('R=',s.serviceName,'$$$S=%') and c.value>=s.reqSec)
-			OR
-			(counterName like concat('R=',s.serviceName,'$$$D=%') and c.value>=s.reqDay)	
-			OR 
-			(counterName like concat('R=',s.serviceName,'$$$M=%') and c.value>=s.reqMonth)	
-	UNION	
-	SELECT	c2.* , uq.serviceName, uq.userName, uq.reqSec, uq.reqDay, uq.reqMonth	
-	FROM 	counters c2,	usersquotas uq	
-	WHERE	(counterName like concat('R=',uq.serviceName,'$$$U=', uq.userName, '$$$S=%') and c2.value>=uq.reqSec) 
-			OR 
-			(counterName like concat('R=',uq.serviceName, '$$$U=', uq.userName, '$$$D=%') and c2.value>=uq.reqDay)	
-			OR 
-			(counterName like concat('R=',uq.serviceName,'$$$U=', uq.userName, '$$$M=%') and c2.value>=uq.reqMonth);
+SELECT 	c.* , s.serviceName, NULL userName, s.reqSec, s.reqDay, s.reqMonth
+FROM 	counters c,	services s
+WHERE 	(counterName like concat('R=',s.serviceName,'$$$S=%') and c.value>=s.reqSec)
+OR
+(counterName like concat('R=',s.serviceName,'$$$D=%') and c.value>=s.reqDay)
+OR
+(counterName like concat('R=',s.serviceName,'$$$M=%') and c.value>=s.reqMonth)
+UNION
+SELECT	c2.* , uq.serviceName, uq.userName, uq.reqSec, uq.reqDay, uq.reqMonth
+FROM 	counters c2,	usersquotas uq
+WHERE	(counterName like concat('R=',uq.serviceName,'$$$U=', uq.userName, '$$$S=%') and c2.value>=uq.reqSec)
+OR
+(counterName like concat('R=',uq.serviceName, '$$$U=', uq.userName, '$$$D=%') and c2.value>=uq.reqDay)
+OR
+(counterName like concat('R=',uq.serviceName,'$$$U=', uq.userName, '$$$M=%') and c2.value>=uq.reqMonth);
 
 
 /*!40000 ALTER TABLE `groups` DISABLE KEYS */;
