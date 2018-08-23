@@ -699,7 +699,7 @@ class Resources implements iUseAuthentication, iProvideMultiVersionApi
         }
         $r->paramType = 'body';
         $r->allowMultiple = false;
-        $r->dataType = 'Object';
+        $r->dataType = 'Obj';
         return $r;
     }
 

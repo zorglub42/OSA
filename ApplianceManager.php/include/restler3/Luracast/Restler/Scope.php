@@ -50,7 +50,7 @@ class Scope
         'ApcCache' => 'Luracast\Restler\ApcCache',
 
         //Utility classes
-        'Object' => 'Luracast\Restler\Data\Object',
+        'Obj' => 'Luracast\Restler\Data\Object',
         'String' => 'Luracast\Restler\Data\String',
         'Arr' => 'Luracast\Restler\Data\Arr',
 
