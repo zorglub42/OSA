@@ -283,7 +283,8 @@ void P_db(osa_config_rec *sec, request_rec *r, char *sem){
 	if (connection.handle==NULL){
 		/* connect database */
 		if(!open_db_handle(r,sec)) {
-			return osa_error(r,"Unable to connect database", 500);
+			osa_error(r,"Unable to connect database", 500);
+      return;
 		}
 	}
 
@@ -1210,10 +1211,10 @@ int get_user_extended_attributes(request_rec *r, stringKeyValList *props){
 module AP_MODULE_DECLARE_DATA osa_module =
 {
 	STANDARD20_MODULE_STUFF,
-	create_osa_dir_config, /* dir config creater */
-	NULL,                  /* dir merger --- default is to override */
-	NULL,                  /* server config */
-	NULL,                  /* merge server config */
-	osa_cmds,              /* command apr_table_t */
-	register_hooks         /* register hooks */
+	create_osa_dir_config,    /* dir config creater */
+	NULL,                     /* dir merger --- default is to override */
+	create_osa_server_config, /* server config */
+	NULL,                     /* merge server config */
+	osa_cmds,                 /* command apr_table_t */
+	register_hooks            /* register hooks */
 };
