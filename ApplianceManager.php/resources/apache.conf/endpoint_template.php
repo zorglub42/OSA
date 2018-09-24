@@ -93,6 +93,7 @@ if ($USER_AUTHENTICATION_ENABLE=="On") {
     
 } else {
     echo "\tOSAEnable Off\n";
+    echo "\tSatisfy Any\n";
 }
     
 ?>
