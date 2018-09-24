@@ -26,7 +26,7 @@
 * 1.0.0 - 2012-10-01 : Release of the file
 **/
 
--- Version: 3.0
+-- Version: 3.0.1
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -96,7 +96,7 @@ DROP TABLE IF EXISTS `hits`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `hits` (
 `id` bigint(20) NOT NULL AUTO_INCREMENT,
-`frontEndEndPoint` varchar(200) NOT NULL,
+`frontEndEndPoint` text NOT NULL,
 `userName` varchar(45) NOT NULL,
 `timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
 `message` varchar(1024) NOT NULL,

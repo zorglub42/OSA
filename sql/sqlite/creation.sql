@@ -26,7 +26,7 @@
 * 1.0.0 - 2012-10-01 : Release of the file
 **/
 
--- Version: 3.0
+-- Version: 3.0.1
 
 
 
@@ -74,7 +74,7 @@ PRIMARY KEY (`groupName`)
 DROP TABLE IF EXISTS `hits`;
 CREATE TABLE `hits` (
 `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-`frontEndEndPoint` varchar(200) NOT NULL,
+`frontEndEndPoint` text NOT NULL,
 `userName` varchar(45) NOT NULL,
 `timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
 `message` varchar(1024) NOT NULL,
