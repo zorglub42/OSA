@@ -163,8 +163,11 @@ static int cache_post_config(apr_pool_t *pconf, apr_pool_t *plog,
 		return HTTP_INTERNAL_SERVER_ERROR;
 		
 	}
+	osa_server_config_rec *conf = ap_get_module_config(base_server->module_config, &osa_module);
+		ap_log_perror(APLOG_MARK, APLOG_ERR, 0, plog,
+			"cache file is: %s", conf->cache_filename);
 
-	const char *errmsg = osa_cache.provider->create(&(osa_cache.socache_instance), "/tmp/osa_cache", ptmp, pconf);
+	const char *errmsg = osa_cache.provider->create(&(osa_cache.socache_instance), conf->cache_filename, ptmp, pconf);
 	//BHE
 	//const char *errmsg = osa_cache.provider->create(&(osa_cache.socache_instance), conf->cache_filename, ptmp, pconf);
 	if (errmsg) {
@@ -234,7 +237,7 @@ static int read_keyval_from_cache(server_rec *server, request_rec *r, char *data
 	if (!release(r)) return FALSE;
 	return rc;
 }
-static void store_keyval_cache(request_rec *r, char *dataType,  char * resource, char *user, stringKeyValList *list){
+static void store_keyval_cache(request_rec *r, char *dataType,  char * resource, char *user, stringKeyValList *list, int ttl){
 
 	if (!acquire(r)) return ;
 
@@ -246,7 +249,7 @@ static void store_keyval_cache(request_rec *r, char *dataType,  char * resource,
 	//ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, "TTL=%lu", conf->cacheTTL);
 
 	sprintf(id, KEYVAL_CACHE_ID_PATTERN, dataType, resource, user); 
-	apr_status_t rv = osa_cache.provider->store(osa_cache.socache_instance, r->server, id,  strlen(id), apr_time_now()+ (30 * 1000000), jsonStr, strlen(jsonStr), r->pool);
+	apr_status_t rv = osa_cache.provider->store(osa_cache.socache_instance, r->server, id,  strlen(id), apr_time_now()+ (ttl * 1000000), jsonStr, strlen(jsonStr), r->pool);
 	//apr_status_t rv = rpdp_cache.provider->store(rpdp_cache.socache_instance, r->server, id,  strlen(id), apr_time_now()+ (conf->cacheTTL * 1000000), grant, strlen(grant), r->pool);
 	if (rv != APR_SUCCESS){
 		ap_log_rerror(APLOG_MARK, APLOG_CRIT, rv, r, "failed to store object err=%d", rv);
@@ -1488,7 +1491,7 @@ int check_auth(request_rec *r)
 						groupList.list[i].val=PSTRDUP(r->pool, groups[i]);
 						groupList.listCount++;
 					}
-					store_keyval_cache(r, "groups", "", r->user, &groupList);
+					store_keyval_cache(r, "groups", "", r->user, &groupList, sec->userGroupsCacheTTL);
 				}
 			}
 
@@ -1837,6 +1840,11 @@ void *create_osa_dir_config (POOL *p, char *d)
 
 	m->indentityHeadersExtendedMapping=NULL;
 
+
+	m->userGroupsCacheTTL=30;
+	m->userAttributesCacheTTL=30;
+
+
 	return (void *)m;
 }
 
@@ -1880,7 +1888,7 @@ int forward_identity(request_rec *r)
 				if ((rc=get_user_basic_attributes(r, fields, &headersMappingList)) != OK){
 					return rc;
 				}else{
-					store_keyval_cache(r, "basic", sec->resourceName, r->user, &headersMappingList);
+					store_keyval_cache(r, "basic", sec->resourceName, r->user, &headersMappingList, sec->userAttributesCacheTTL);
 				}
 
 			}
@@ -1917,7 +1925,7 @@ int forward_extended_identity(request_rec *r){
 			if ((rc=get_user_extended_attributes(r, &userProps)) != OK){
 				return rc;
 			}else{
-				store_keyval_cache(r, "extended", sec->resourceName, r->user, &userProps);
+				store_keyval_cache(r, "extended", sec->resourceName, r->user, &userProps, sec->userAttributesCacheTTL);
 			}
 		}
 
@@ -1965,6 +1973,30 @@ char *getToken(request_rec *r){
 
 	return token;
 }
+
+
+// Set "per module" cache file name config
+const char *set_cache_filename(cmd_parms *cmd, void *in_struct_ptr, const char *arg)
+{
+	osa_server_config_rec *conf = ap_get_module_config(cmd->server->module_config,
+            &osa_module);
+
+	conf->cache_filename=(char*)arg;
+	return NULL;
+
+}
+
+// Create and initialize per module config
+void *create_osa_server_config(apr_pool_t *p, server_rec *s){
+	osa_server_config_rec *m = apr_pcalloc(p, sizeof(osa_server_config_rec));
+	if (!m) return NULL;		/* failure to get memory is a bad thing */
+
+	m->cache_filename = DEFAULT_CACHE_FILENAME;
+	
+	return (void *)m;
+}
+
+
 
 void register_hooks(POOL *p)
 {

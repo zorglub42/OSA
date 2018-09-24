@@ -215,3 +215,15 @@
 	AP_INIT_TAKE1("OSAUserAttributeValueField", ap_set_string_slot,
 	(void *) APR_OFFSETOF(osa_config_rec, userAttributeValueField),
 	OR_AUTHCFG | RSRC_CONF, "field in OSAUserAttributeTable for attribute value"),
+
+	AP_INIT_TAKE1("OSACacheFile", set_cache_filename,
+	NULL,
+	OR_AUTHCFG | RSRC_CONF, "Cache filename"),
+
+	AP_INIT_TAKE1("OSAUserGroupsCacheTTL", ap_set_int_slot,
+	(void *) APR_OFFSETOF(osa_config_rec, userGroupsCacheTTL),
+	OR_AUTHCFG | RSRC_CONF, "Time To Live for user's group list in cache (in sec)"),
+
+	AP_INIT_TAKE1("OSAUserAttributesCacheTTL", ap_set_int_slot,
+	(void *) APR_OFFSETOF(osa_config_rec, userAttributesCacheTTL),
+	OR_AUTHCFG | RSRC_CONF, "Time To Live for user's identity attribute in cache (in sec)"),

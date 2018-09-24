@@ -1304,10 +1304,10 @@ int get_user_basic_attributes(request_rec *r, char *fields, stringKeyValList *he
 module AP_MODULE_DECLARE_DATA osa_module =
 {
 	STANDARD20_MODULE_STUFF,
-	create_osa_dir_config, /* dir config creater */
-	NULL,                  /* dir merger --- default is to override */
-	NULL,                  /* server config */
-	NULL,                  /* merge server config */
-	osa_cmds,              /* command apr_table_t */
-	register_hooks         /* register hooks */
+	create_osa_dir_config, 		/* dir config creater */
+	NULL,                  		/* dir merger --- default is to override */
+	create_osa_server_config,   /* server config */
+	NULL,                  		/* merge server config */
+	osa_cmds,              		/* command apr_table_t */
+	register_hooks         		/* register hooks */
 };

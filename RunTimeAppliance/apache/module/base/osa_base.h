@@ -140,6 +140,8 @@
 #define FALSE 0
 #endif
 
+#define DEFAULT_CACHE_FILENAME "/tmp/mod_osa_cache.db" // Default value for cache data file (see per module conf)
+
 
 #include <time.h>
 #include <stdio.h>
@@ -307,8 +309,20 @@ typedef struct  {
 	/*Allow unauthenticated access even if (Require && (OSABasicAuthEnable||OSACookieAuthEnable)) are set. In such a case, Identity is forwarded*/
 	int allowAnonymous;
 	int cookieCacheTime;
+
+
+	int userGroupsCacheTTL;
+	int userAttributesCacheTTL;
 	
  } osa_config_rec;
+
+
+ // Per module configuration parameter
+typedef struct  {
+	char *cache_filename;	   // cache file
+
+} osa_server_config_rec;
+
 
 typedef struct {
 	ap_socache_instance_t *socache_instance; //Cache instance pointer
@@ -372,6 +386,8 @@ char * format_uri(request_rec * r, char ** parm);
 char * format_percent(request_rec * r, char ** parm);
 char * format_cookie(request_rec * r, char ** parm);
 
+const char *set_cache_filename(cmd_parms *cmd, void *in_struct_ptr, const char *arg);
+
 char * str_format(request_rec * r, char * input);
 char *trim(char *str);
 int get_basic_auth_creds(request_rec *r, char **pwd);
@@ -394,6 +410,7 @@ int forward_identity(request_rec *r);
 int forward_extended_identity(request_rec *r);
 
 void *create_osa_dir_config (POOL *p, char *d);
+void *create_osa_server_config(apr_pool_t *p, server_rec *s);
 void register_hooks(POOL *p);
 
 void P_db(osa_config_rec *sec, request_rec *r, char *sem); //To implement for specific RDMBS
