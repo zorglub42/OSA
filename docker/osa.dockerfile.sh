@@ -13,13 +13,16 @@ function getRootImage(){
 			grep "stretch" "/etc/os-release" >/dev/null
 			if [ $? -eq 0 ] ; then
 				DOCKER_FROM="schachr/raspbian-stretch"
-				RDBMS_PACKAGE="mysql-server php-mysql default-libmysqlclient-dev"
+				RDBMS_PACKAGE="mysql-server $PHP-mysql default-libmysqlclient-dev"
 				JSON_PACKAGE="libjson-c3 libjson-c-dev"
-			# else
-			#	TODO Adapt apt-get install package for jessie
-			# 	DOCKER_FROM="resin/rpi-raspbian"
-			# 	RDBMS_PACKAGE="mysql-server php-mysql default-libmysqlclient-dev"
-			# 	JSON_PCKAGE="libjson-c2 libjson-c-dev"
+			else
+				grep "jessie" "/etc/os-release">/dev/null
+				if [ $? -eq 0 ] ; then
+					DOCKER_FROM="resin/rpi-raspbian"
+					PHP=php5
+					RDBMS_PACKAGE="mysql-server $PHP-mysql libmysqlclient-dev"
+					JSON_PCKAGE="libjson-c2 libjson-c-dev"
+				fi
 			fi
 		else
 			echo "Unable to find a root docker image"
@@ -30,7 +33,8 @@ function getRootImage(){
 
 APPLIANCE_MYSQL_PW=`generatePassword`
 ROOT_MYSQL_PW=`generatePassword`
-RDBMS_PACKAGE="mysql-server php-mysql libmysqlclient-dev"
+PHP=php
+RDBMS_PACKAGE="mysql-server $PHP-mysql libmysqlclient-dev"
 RDBMS=mysql
 START_RDBMS="find /var/lib/mysql -type f -exec touch {} \; && chown -R mysql:mysql /var/lib/mysql && service mysql restart"
 
@@ -43,7 +47,7 @@ while [ "$1" != "" ] ; do
 			echo "Setting mysql as RDBMS"
 		elif [ "$2" == "sqlite" ] ; then
 			echo "Setting sqlite as RDBMS"
-			RDBMS_PACKAGE="sqlite3 php-sqlite3 libsqlite3-dev"
+			RDBMS_PACKAGE="sqlite3 $PHP-sqlite3 libsqlite3-dev"
 			RDBMS=sqlite
 			START_RDBMS="/bin/true"
 		else
@@ -69,7 +73,7 @@ cat<<EOF | docker build -t osa:$RDBMS-$VERSION  -
 
 	$PROXIES
 
-	RUN apt-get update && echo "mysql-server mysql-server/root_password password $ROOT_MYSQL_PW"| debconf-set-selections  && echo "mysql-server mysql-server/root_password_again password $ROOT_MYSQL_PW"|debconf-set-selections && apt-get install -y apache2 php php-curl libapache2-mod-php openssl curl zip autoconf zlib1g-dev zlib1g apache2-dev git inetutils-ping net-tools cron sudo wget vim $JSON_PACKAGE  $RDBMS_PACKAGE
+	RUN apt-get update && echo "mysql-server mysql-server/root_password password $ROOT_MYSQL_PW"| debconf-set-selections  && echo "mysql-server mysql-server/root_password_again password $ROOT_MYSQL_PW"|debconf-set-selections && apt-get install -y apache2 $PHP $PHP-curl libapache2-mod-$PHP openssl curl zip autoconf zlib1g-dev zlib1g apache2-dev git inetutils-ping net-tools cron sudo wget vim $JSON_PACKAGE  $RDBMS_PACKAGE
 	RUN cd /usr/local/src && git clone https://github.com/zorglub42/OSA
 	RUN cd /usr/local/src/OSA && ./install.sh -m -rdbms $RDBMS /usr/local/OSA
 
