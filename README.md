@@ -93,7 +93,7 @@ Note:
 
 		./configure-osa.sh
 
-If, at the end of execution the message "OSA Configuration done, exiting..." appears, OSA is correctly installed!
+If at the end of execution the message "OSA Configuration done, exiting..." appears, OSA is correctly installed!
 
 **IMPORTANT NOTE:**
 If you plan to use standard ports for HTTP and HTTPS nodes (i.e 80 and 443 instead of 81 and 8443), first disable standard apache configuration:
