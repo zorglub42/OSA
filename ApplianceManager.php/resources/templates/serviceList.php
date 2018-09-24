@@ -21,7 +21,7 @@ require_once "../../include/Localization.php";
 				<h3 class="panel-title"><b>{serviceList.length} <?php echo Localization::getString("service.list.found")?></b></h3>
 			</div>
 			<div class="panel-body">
-				<form accept-charset="UTF-8" role="form"  onkeypress="return handelServiceFilterFormKeypress(event)">
+				<form accept-charset="UTF-8" role="form"  onkeypress="return handelServiceFilterFormKeypress(event)" id="servicesSearchForm">
 					<fieldset>
 						<div class="form-group">
 							<div class="row">
@@ -41,8 +41,18 @@ require_once "../../include/Localization.php";
 								</div>
 							</div>
 							<div class="row">
-								<div class="col-md-10 search-control">
+							<div class="col-md-5 col-xs-4 search-control">
 									<select id="nodeNameFilter" class="form-control"></select>
+								</div>
+								<div class="col-md-5 col-xs-4 search-control">
+									<div class="col-md-12">
+										<div class="col-md-4"><label><?php echo Localization::getString("service.label.logHits")?> :</label></div>
+										<div class="col-md-3"><label><input type="radio" name="optIsLogHitsEnabled" {logHitFilterAny} value=""><?php echo Localization::getString("service.label.logHitAny")?></label></div>
+										<div class="col-md-3"><label><input type="radio" name="optIsLogHitsEnabled" {logHitFilterEnabled} value="1"><?php echo Localization::getString("service.label.logHitEnabled")?></label></div>
+										<div class="col-md-2"><label><input type="radio" name="optIsLogHitsEnabled" {logHitFilterDisabled} value="0"><?php echo Localization::getString("service.label.logHitDisabled")?></label></div>
+									</div>
+
+
 								</div>
 								<div col="col-xs-4 col-md-2">
 										<button type="button" class="btn btn-default" title="<?php echo Localization::getString("button.filter.tooltip")?>" onclick=showServices()>

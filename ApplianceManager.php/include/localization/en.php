@@ -370,6 +370,9 @@ $strings["service.label.headers.firstName"]=$strings["user.label.firstName"];
 $strings["service.label.headers.lastName"]=$strings["user.label.lastName"];
 $strings["service.label.headers.entity"]=$strings["user.label.entity"];
 $strings["service.label.headers.emailAddress"]=$strings["user.label.emailAddress"];
+$strings["service.label.logHitAny"]="any";
+$strings["service.label.logHitEnabled"]="enabled";
+$strings["service.label.logHitDisabled"]="disabled";
 
 
 /* Tabs */

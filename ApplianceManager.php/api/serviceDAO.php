@@ -9,7 +9,7 @@
  * @author   Benoit HERARD <benoit.herard@orange.com>
  * @license  http://www.apache.org/licenses/LICENSE-2.0.htm Apache 2 license
  * @link     https://github.com/zorglub42/OSA/
-*/
+ */
 
 /*--------------------------------------------------------
  * Module Name : ApplianceManager
@@ -129,9 +129,10 @@ function getServiceHeadersMapping($serviceName , $userProperty=null)
 /**
  * Insert a header mapping for a service into database
  * 
- * @param string $serviceName  Service identifier
- * @param string $userProperty User property name
- * @param string $headerName   Associated header name
+ * @param string $serviceName       Service identifier
+ * @param string $userProperty      User property name
+ * @param string $headerName        Associated header name
+ * @param string $extendedAttribute Header is an extended user attribute (default 0)
  * 
  * @return array Created mapping
  */
@@ -1681,7 +1682,7 @@ function nodesListForService($serviceName)
  * @param int    $noApply     (0|1) apply apache conf or not
  * 
  * @return array list of nodes
-*/
+ */
 function setNodesListForService($serviceName, $nodesList, $noApply)
 {
     $impactedNodes=array();

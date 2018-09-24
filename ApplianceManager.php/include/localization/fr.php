@@ -228,7 +228,7 @@ $strings["session.close.confirm"]="Fermer la session";
 $strings["session.close.tooltip"]="Fermer cette session";
 
 
-/*Services */
+/* Services */
 /* List */
 $strings["service.list.found"]="services trouvés";
 $strings["service.list.name"]="Nom";
@@ -256,6 +256,7 @@ $strings["service.baPassword.placeholder"]="Mot de passe";
 $strings["service.reqSec.placeholder"]="";
 $strings["service.reqDay.placeholder"]="";
 $strings["service.reqMonth.placeholder"]="";
+
 
 /*Tooltips*/
 $strings["service.clone.tooltip"]="Cloner ce service";
@@ -395,7 +396,10 @@ $strings["service.label.headers.entity"]=$strings["user.label.entity"];
 $strings["service.label.headers.emailAddress"]=$strings["user.label.emailAddress"];
 $strings["service.label.headers.properties"]
     ="Headers HTTP à transmettre (attributs etendus)";
-
+$strings["service.label.logHitAny"]="peu importe";
+$strings["service.label.logHitEnabled"]="activé";
+$strings["service.label.logHitDisabled"]="désactivé";
+    
 
 
 /* Tabs */

@@ -52,6 +52,7 @@ var serviceGroupNameFilterPrevVal="";
 var frontEndEndPointFilterPrevVal="";
 var backEndEndPointFilterPrevVal="";
 var nodeNameFilterPrevVal="";
+var logHitsFilterPrevVal="";
 
 var doServiceClone=false;
 var serviceHeadersCount;
@@ -710,11 +711,26 @@ function displayServiceList(serviceList){
 	hideWait();
 	$.get( "resources/templates/serviceList.php", function( data ) {
 
+			logHitFilterAny="";
+			logHitFilterEnabled="";
+			logHitFilterDisabled="";
+			if (logHitsFilterPrevVal == ""){
+				logHitFilterAny="checked";
+			}else if (logHitsFilterPrevVal == "1"){
+				logHitFilterEnabled="checked";
+			}else{
+				logHitFilterDisabled="checked";
+			}
+
+
 			$( "#content" ).html( data.replaceAll("{serviceList.length}", serviceList.length )
 									  .replaceAll("{serviceNameFilterPrevVal}", serviceNameFilterPrevVal )
 									  .replaceAll("{serviceGroupNameFilterPrevVal}", serviceGroupNameFilterPrevVal )
 									  .replaceAll("{frontEndEndPointFilterPrevVal}", frontEndEndPointFilterPrevVal )
 									  .replaceAll("{backEndEndPointFilterPrevVal}", backEndEndPointFilterPrevVal )
+									  .replaceAll("{logHitFilterAny}", logHitFilterAny )
+									  .replaceAll("{logHitFilterEnabled}", logHitFilterEnabled )
+									  .replaceAll("{logHitFilterDisabled}", logHitFilterDisabled )
 								);
 			table=document.getElementById("data");
 			rowPattern=document.getElementById("rowTpl");
@@ -827,12 +843,21 @@ function  resetServiceFilter(){
 /* Load services (search) and display */
 function showServices(){
 	doServiceClone=false;
+
+	if ($('input[name=optIsLogHitsEnabled]:checked').val() != undefined){
+		logHitsFilterPrevVal=$('input[name=optIsLogHitsEnabled]:checked').val();
+	}
+
+
 	prms="order=serviceName";
 	prms=prms + "&serviceNameFilter=" + encodeURIComponent(getFilterValue('serviceNameFilter'));
 	prms=prms + "&groupNameFilter=" + encodeURIComponent(getFilterValue('serviceGroupNameFilter'));
 	prms=prms + "&frontEndEndPointFilter=" + encodeURIComponent(getFilterValue('frontEndEndPointFilter'));
 	prms=prms + "&backEndEndPointFilter=" + encodeURIComponent(getFilterValue('backEndEndPointFilter'));
 	prms=prms + "&nodeNameFilter=" + encodeURIComponent(getFilterValue('nodeNameFilter'));
+	if (logHitsFilterPrevVal != ""){
+		prms=prms + "&isHitLoggingEnabledFilter=" + logHitsFilterPrevVal;
+	}
 
 
 	$.ajax({
