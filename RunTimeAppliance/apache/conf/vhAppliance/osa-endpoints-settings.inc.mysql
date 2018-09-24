@@ -57,3 +57,5 @@
 	OSAUserAttributeNameField propertyName
 	OSAUserAttributeValueField value
 
+	OSAUserGroupsCacheTTL 30
+	OSAUserAttributesCacheTTL 30
