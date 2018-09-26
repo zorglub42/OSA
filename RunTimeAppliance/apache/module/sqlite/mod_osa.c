@@ -915,15 +915,17 @@ int extendToken(request_rec *r, char *receivedToken){
 
 }
 
-int validateToken(request_rec *r , char *token, char **initialToken, int *burned){
+int validateToken(request_rec *r , char *token, char **initialToken, int *require_new){
 	osa_config_rec *sec =(osa_config_rec *)ap_get_module_config (r->per_dir_config, &osa_module);
 	char *query;
 	int rc=OK;
 
-	query=apr_psprintf(r->pool, "SELECT %s, %s, %s FROM %s WHERE token='%s' AND %s>=datetime(CURRENT_TIMESTAMP, 'localtime')",
+	query=apr_psprintf(r->pool, "SELECT %s, %s, %s, ((julianday(DateTime(datetime(CURRENT_TIMESTAMP, 'localtime'), '+%d minute')) - julianday(%s)) * 86400.0) FROM %s WHERE token='%s' AND %s>=datetime(CURRENT_TIMESTAMP, 'localtime')",
 		sec->cookieAuthUsernameField, 
 		sec->cookieAuthBurnedField,
     sec->cookieInitialAuthTokenField,
+    sec->cookieAuthTTL,
+    sec->cookieAuthValidityField,
     sec->cookieAuthTable,
 		token,
 		sec->cookieAuthValidityField);
@@ -936,14 +938,17 @@ int validateToken(request_rec *r , char *token, char **initialToken, int *burned
     LOG_ERROR_1(APLOG_ERR, 0, r, "validateToken: SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
     return osa_error(r,"DB query error",500);
   }
-  
+
+	int burnable;
   if (sqlite3_step(stmt) == SQLITE_ROW) {
     // r->user=(char*)PCALLOC(r->pool, strlen(sqlite3_column_text(stmt, 0)));
     // strcpy(r->user, sqlite3_column_text(stmt, 0));
     r->user=(char *) PSTRDUP(r->pool, sqlite3_column_text(stmt, 0));
-    *burned=sqlite3_column_int(stmt, 1); 
+    *require_new=!sqlite3_column_int(stmt, 1); 
     *initialToken =(char *) PSTRDUP(r->pool, sqlite3_column_text(stmt, 2));
+    burnable=(sqlite3_column_int(stmt, 3) > sec->cookieCacheTime);
     if (sec->cookieAuthBurn){
+      if (burnable){
       //Burn received token
       query=apr_psprintf(r->pool, "UPDATE %s SET %s=DateTime(datetime(CURRENT_TIMESTAMP, 'localtime'), '+%d second'), %s=1 WHERE %s='%s' and %s=0",
         sec->cookieAuthTable,
@@ -954,9 +959,12 @@ int validateToken(request_rec *r , char *token, char **initialToken, int *burned
         token,
         sec->cookieAuthBurnedField);
         
-      if (sqlite3_query_execute(connection.handle, query) != 0) {
-        LOG_ERROR_1(APLOG_ERR, 0, r, "generateToken(update): SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
-        rc = osa_error(r,"DB query error",500);
+        if (sqlite3_query_execute(connection.handle, query) != 0) {
+          LOG_ERROR_1(APLOG_ERR, 0, r, "generateToken(update): SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
+          rc = osa_error(r,"DB query error",500);
+        }
+      }else{
+        *require_new=0;
       }
 
     }

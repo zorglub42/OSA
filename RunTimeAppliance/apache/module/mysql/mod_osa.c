@@ -1002,7 +1002,7 @@ int cleanGeneratedTokens(request_rec *r){
 }
 
 
-int validateToken(request_rec *r , char *token, char **initialToken, int *burned){
+int validateToken(request_rec *r , char *token, char **initialToken, int *require_new){
 	 osa_config_rec *sec =(osa_config_rec *)ap_get_module_config (r->per_dir_config, &osa_module);
 		char *query;
 		MYSQL_RES *result;
@@ -1016,10 +1016,12 @@ int validateToken(request_rec *r , char *token, char **initialToken, int *burned
 			}
 		}
 		//Search if token exists in table ans is still valid
-		query=apr_psprintf(r->pool, "SELECT %s, %s, %s FROM %s WHERE token='%s' AND %s>=now()",
+		query=apr_psprintf(r->pool, "SELECT %s, %s, %s,  TIME_TO_SEC(TIMEDIFF(date_add(now() ,interval %d minute), %s)) FROM %s WHERE token='%s' AND %s>=now()",
 			sec->cookieAuthUsernameField, 
 			sec->cookieAuthBurnedField,
 			sec->cookieInitialAuthTokenField,
+			sec->cookieAuthTTL,
+			sec->cookieAuthValidityField,
 			sec->cookieAuthTable,
 			token,
 			sec->cookieAuthValidityField);
@@ -1028,30 +1030,37 @@ int validateToken(request_rec *r , char *token, char **initialToken, int *burned
 			LOG_ERROR_1(APLOG_ERR, 0, r, "validateToken: MySQL ERROR: %s: ", mysql_error(connection.handle));
 			return osa_error(r,"DB query error",500);
 		}
+		int burnable;
 		result = mysql_store_result(connection.handle);
 		if (result && (mysql_num_rows(result) >= 1)) {
 					MYSQL_ROW data = mysql_fetch_row(result);
 			//r->user=(char *) PCALLOC(r->pool, strlen(data[0]));
  			//strcpy(r->user, data[0]);
  			r->user=(char *) PSTRDUP(r->pool, data[0]);
-			*burned=atoi(data[1]);
+			*require_new=!atoi(data[1]);
 			(*initialToken)=(char *) PSTRDUP(r->pool, data[2]);
-						LOG_ERROR_1(APLOG_DEBUG, 0, r, "validateToken: initial=%s: ", *initialToken);
+			burnable = (atoi(data[3])> sec->cookieCacheTime);
+			LOG_ERROR_2(APLOG_DEBUG, 0, r, "Burnable=%d cacheTTL=%d: ", burnable, sec->cookieCacheTime);
+			LOG_ERROR_1(APLOG_DEBUG, 0, r, "validateToken: initial=%s: ", *initialToken);
 
 			if (sec->cookieAuthBurn){
+				if (burnable){
 				//Burn received token (Mark it as burned and set it outdated to be garbadged after cacheTTL)
-				query=apr_psprintf(r->pool, "UPDATE %s SET %s=date_add(now() ,interval %d second), %s=1 WHERE %s='%s' and %s=0",
-					sec->cookieAuthTable,
-					sec->cookieAuthValidityField,
-					sec->cookieCacheTime, 
-					sec->cookieAuthBurnedField,
-					sec->cookieAuthTokenField,
-					token,
-					sec->cookieAuthBurnedField);
+					query=apr_psprintf(r->pool, "UPDATE %s SET %s=date_add(now() ,interval %d second), %s=1 WHERE %s='%s' and %s=0",
+						sec->cookieAuthTable,
+						sec->cookieAuthValidityField,
+						sec->cookieCacheTime, 
+						sec->cookieAuthBurnedField,
+						sec->cookieAuthTokenField,
+						token,
+						sec->cookieAuthBurnedField);
 
-				if (mysql_query(connection.handle, query) != 0) {
-					LOG_ERROR_1(APLOG_ERR, 0, r, "regenerateToken: MySQL ERROR: %s: ", mysql_error(connection.handle));
-					rc= osa_error(r,"DB query error",500);
+					if (mysql_query(connection.handle, query) != 0) {
+						LOG_ERROR_1(APLOG_ERR, 0, r, "regenerateToken: MySQL ERROR: %s: ", mysql_error(connection.handle));
+						rc= osa_error(r,"DB query error",500);
+					}
+				}else{
+					*require_new=0; //Act as if token was already consumed (i.e avoid re-generation) because request come with less than cacheTTL since last gen
 				}
 			}
 		}else{

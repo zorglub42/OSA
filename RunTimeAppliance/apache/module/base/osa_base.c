@@ -1370,9 +1370,9 @@ int authenticate_cookie_user(request_rec *r){
 			if (Rc != OK){
 				return Rc;
 			}
-			int alreadyUsed;
+			int require_new_token;
 			P_db(sec, r, token);
-			Rc=validateToken(r, token, &initialToken, &alreadyUsed);
+			Rc=validateToken(r, token, &initialToken, &require_new_token);
 			V_db(sec, r, token);
 			if (Rc != OK){
 				deleteAuthCookie(r);
@@ -1380,7 +1380,7 @@ int authenticate_cookie_user(request_rec *r){
 			}
 
 			if (sec->cookieAuthBurn){
-				if (!alreadyUsed){
+				if (require_new_token){
 					//That's the first call with this token.
 					// Regenerate a new one and "burn" the current one
 					Rc=regenerateToken(r, token, initialToken);
