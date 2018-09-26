@@ -22,15 +22,5 @@
 *
 * 1.0.0 - 2018-06-25 : Release of the file
 **/
-DROP TABLE `hits`;
-CREATE TABLE `hits` (
-`id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-`frontEndEndPoint` text NOT NULL,
-`userName` varchar(45) NOT NULL,
-`timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-`message` varchar(1024) NOT NULL,
-`status` int(11) DEFAULT NULL,
-`serviceName` varchar(45) DEFAULT NULL
-) ;
-CREATE INDEX idx_serviceName on hits(serviceName);
-CREATE INDEX idx_userName on hits(userName);
+
+alter table hits modify frontEndEndPoint text not null;

@@ -96,7 +96,7 @@ DROP TABLE IF EXISTS `hits`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `hits` (
 `id` bigint(20) NOT NULL AUTO_INCREMENT,
-`frontEndEndPoint` text NOT NULL,
+`frontEndEndPoint` text not null,
 `userName` varchar(45) NOT NULL,
 `timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
 `message` varchar(1024) NOT NULL,
