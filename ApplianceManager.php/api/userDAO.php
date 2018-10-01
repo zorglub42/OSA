@@ -383,15 +383,9 @@ function updateUser($userName = NULL, $request_data = NULL){
 		$strUPD=$strUPD . "password=?, md5Password=?, ";
 	}
 	if (isset($request_data["email"])&& !is_null($request_data["email"])) { 
-		if($request_data["email"]=="" ){
-			$error->setHttpStatus(400);
-			$error->setFunctionalCode(1);
-			$error->setFunctionalLabel($error->getFunctionalLabel() . "email address is required\n");
-		}else{
-			$mySQLEmail=cut($request_data["email"], EMAIL_LENGTH) ;
-			array_push($bindPrms, $mySQLEmail);
-			$strUPD = $strUPD . "emailAddress=?, ";
-		}
+		$mySQLEmail=cut($request_data["email"], EMAIL_LENGTH) ;
+		array_push($bindPrms, $mySQLEmail);
+		$strUPD = $strUPD . "emailAddress=?, ";
 	}
 	if (isset($request_data["endDate"])&& !is_null($request_data["endDate"])){
 		if ($request_data["endDate"]=="" ){
