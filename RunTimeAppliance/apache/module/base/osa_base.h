@@ -12,7 +12,8 @@
 
 #define COOKIE_BURN_SURVIVAL_TIME 2 //allowed surviving time is sec before cookie is burned
 
-#define REQUEST_URL_PARAM "%requested_uri%" //Pseudo variable name form loginform url
+#define REQUEST_URL_PARAM "%requested_uri%" 		  //Pseudo variable name for requested url in login form URL
+#define REQUEST_RESOURCE_PARAM "%requested_resource%" //Pseudo variable name for requested resource in login form URL
 
 #define STRING(x) STR(x)		/* Used to build strings from compile options */
 #define STR(x) #x
@@ -429,13 +430,15 @@ int get_user_extended_attributes(request_rec *r, stringKeyValList *props); //To 
 int cleanGeneratedTokens(request_rec *r); //To implement for specific RDMBS
 
 
-static encryption encryptions[] = {{"crypt", SALT_OPTIONAL, pw_crypted},
-						 {"none", NO_SALT, pw_plain},
-						 {"md5", NO_SALT, pw_md5},
+static encryption encryptions[] = {
+						{"crypt", SALT_OPTIONAL, pw_crypted},
+						{"none", NO_SALT, pw_plain},
+						{"md5", NO_SALT, pw_md5},
 #if _AES
-						 {"aes", SALT_REQUIRED, pw_aes},
+						{"aes", SALT_REQUIRED, pw_aes},
 #endif
-						 {"sha1", NO_SALT, pw_sha1}};
+						{"sha1", NO_SALT, pw_sha1}
+};
 
 
 

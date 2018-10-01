@@ -864,6 +864,7 @@ char hex2chr(char * in) {
 
 /* checks md5 hashed passwords */
 short pw_md5(POOL * pool, const char * real_pw, const char * sent_pw, const char * salt) {
+	
 	return strcmp(real_pw,ap_md5(pool, (const unsigned char *) sent_pw)) == 0;
 }
 
@@ -1161,6 +1162,30 @@ char *get_requested_server(request_rec *r, char *ret){
 	return ret;
 }
 
+char *substitueURLParam(request_rec *r, char *str, char *varName, char *value){
+		char *rc;
+		char *var=strstr(str, varName);
+		if (var != NULL){
+			char encoded[strlen(value)*3];
+			url_encode(value, encoded);
+
+			rc=(char *)PCALLOC(r->pool, strlen(str)+strlen(encoded));
+
+			char initial=varName[0];
+			*var=0;
+
+
+			sprintf(rc, "%s%s%s", str, encoded, var+strlen(varName));
+			*var=initial;
+
+
+		}else{
+			rc=str;
+		}
+		return rc;
+}
+
+
 int redirectToLoginForm(request_rec *r, char *cause){
 
 	osa_config_rec *sec =(osa_config_rec*)ap_get_module_config (r->per_dir_config, &osa_module);
@@ -1199,8 +1224,11 @@ int redirectToLoginForm(request_rec *r, char *cause){
 		urlPrm='?';
 	}
 
-	if (strstr(sec->cookieAuthLoginForm, REQUEST_URL_PARAM)){
-		char *var=strstr(sec->cookieAuthLoginForm, REQUEST_URL_PARAM);
+	redirect_uri = sec->cookieAuthLoginForm;
+	redirect_uri = substitueURLParam(r, redirect_uri, REQUEST_URL_PARAM, curUrl);
+	redirect_uri = substitueURLParam(r, redirect_uri, REQUEST_RESOURCE_PARAM, sec->resourceName);
+	/*if (strstr(sec->cookieAuthLoginForm, REQUEST_URL_PARAM)){
+		/*char *var=strstr(sec->cookieAuthLoginForm, REQUEST_URL_PARAM);
 		char encoded[strlen(curUrl)*3];
 		url_encode(curUrl, encoded);
 
@@ -1212,11 +1240,12 @@ int redirectToLoginForm(request_rec *r, char *cause){
 
 		sprintf(redirect_uri, "%s%s%s", sec->cookieAuthLoginForm, encoded, var+strlen(REQUEST_URL_PARAM));
 		*var='%';
+		redirect_uri = substitueURLParam(r, sec->cookieAuthLoginForm, REQUEST_URL_PARAM,curUrl);
 
 
 	}else{
 		redirect_uri = sec->cookieAuthLoginForm;
-	}
+	}*/
 	LOG_ERROR_1(APLOG_DEBUG, 0, r, "redirect_uri=%s", redirect_uri);
 		
 	if (cause==NULL){
@@ -1714,9 +1743,10 @@ int authenticate_basic_user (request_rec *r)
 	user = r->user;
 
 
-	if (enc_data->salt_status == NO_SALT || !sec->osaSaltField)
+	if (enc_data->salt_status == NO_SALT || !sec->osaSaltField){
 		salt = salt_column = 0;
-	else { 			/* Parse the osaSaltField */
+	}else { 			/* Parse the osaSaltField */
+
 		short salt_length = strlen(sec->osaSaltField);
 
 		if (strcasecmp(sec->osaSaltField, "<>") == 0) { /* Salt against self */
