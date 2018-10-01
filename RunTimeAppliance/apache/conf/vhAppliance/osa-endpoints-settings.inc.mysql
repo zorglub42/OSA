@@ -34,7 +34,7 @@
 	OSAPwEncryption md5
 	OSAGroupTable usersgroups
 	OSAGroupField groupName
-	OSAUserCondition "endDate>now() or endDate is null"
+	OSAUserCondition "(endDate>now() or endDate is null)"
 	
 	
 	OSAResourceNameField serviceName
