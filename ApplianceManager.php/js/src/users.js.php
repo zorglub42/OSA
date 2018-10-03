@@ -152,6 +152,7 @@ function addUser() {
 		$('#userEndDate').datepicker();
 		$('#lastTokenLogin').hide();
 		$('#lastTokenLoginLabel').hide();
+		propertiesCount=0;
 		setUserModified(false);
 	});
 }
@@ -168,6 +169,9 @@ function updateUser(userURI) {
 
 /* Save (create) or update a user */
 function saveOrUpdateUser(method) {
+	if (!addUserProperty()){
+		return false;
+	}
 	currentUserUri = "users/"
 			+ encodeURIComponent(document.getElementById("userName").value);
 	password = "password="
@@ -287,7 +291,7 @@ function addUserProperty(){
 	if ($("#propertyName_new").val() != "" && $("#propertyValue_new").val() != ""){
 		for (i=0;i<propertiesCount;i++){
 			if ($("#propertyName_" + i).val() == $("#propertyName_new").val()){
-				alert("<?php echo Localization::getJSString("user.property.exists")?>");
+				alert("<?php echo Localization::getJSString("user.property.exists")?>: " + $("#propertyName_new").val());
 				return false;
 			}
 		}
