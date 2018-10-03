@@ -212,7 +212,7 @@ $strings["user.property.name"] = "Propriété";
 $strings["user.property.header"] = "Header";
 $strings["user.property.value"] = "Valeur";
 $strings["user.property.delete.confirm"] = "Supprimer la propriété: ";
-
+$strings["user.property.exists"] = "Une propriété de ce nom existe déjà";
 
 /* Session */
 /* List */

@@ -197,6 +197,7 @@ $strings["user.property.delete.tooltip"]
     ="Remove this property from the user";
 $strings["user.property.add.tooltip"]
     ="Add this property to the user";
+$strings["user.property.exists"] = "A property with this name already exists";
 
 
 /* Session */
