@@ -11,6 +11,24 @@
  * @link     https://github.com/zorglub42/OSA/
 */
 ?>
+<?php
+$hdrs=getallheaders();
+if (isset($hdrs["X-Forwarded-Host"])) {
+    $host=$hdrs["X-Forwarded-Host"];
+} else {
+    $host=$hdrs["Host"];
+}
+if (isset($_REQUEST["d"])) {
+    //Remove eventual "." char at begin to math access by entire domane name
+    // f.e cookie on .zorglub42.fr and access to https://zorglub42.fr/sub-url
+    $d=preg_replace("/^\./", "", $_REQUEST["d"]); 
+    if (!preg_match("/.*". $d . "/", $host) ) {
+        echo "Domain " . $_REQUEST["d"] . " does not match " . $host;
+        http_response_code(400);
+        die();
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
