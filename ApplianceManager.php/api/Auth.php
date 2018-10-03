@@ -161,19 +161,6 @@ class Auth
                 setcookie(authTokenCookieName, $tokenObj["token"], null, "/");
             }
 
-
-            $db=openDBConnection();
-            
-
-            $strSQL="";
-            $strSQL=$strSQL . "UPDATE users SET lastTokenLogin=" . 
-                              getSQLKeyword("now") . 
-                              " WHERE userName=? ";
-            
-            $stmt=$db->prepare($strSQL);
-            $stmt->execute(array($userName));
-            
-
             return $tokenObj;
     }
 
@@ -277,6 +264,14 @@ class Auth
                 }
                         
             }
+            $strSQL="";
+            $strSQL=$strSQL . "UPDATE users SET lastTokenLogin=" . 
+                              getSQLKeyword("now") . 
+                              " WHERE userName=? ";
+            
+            $stmt=$db->prepare($strSQL);
+            $stmt->execute(array($userName));
+
         }catch (Exception $e){
             throw new RestException(500, $e->getMessage());
         }
