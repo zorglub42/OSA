@@ -992,7 +992,7 @@ int cleanGeneratedTokens(request_rec *r){
 			}
 		}
 
-		query=apr_psprintf(r->pool, "DELETE FROM %s WHERE %s<now()",sec->cookieAuthTable, sec->cookieAuthValidityField);
+		query=apr_psprintf(r->pool, "DELETE FROM %s WHERE %s<now() OR %s=1",sec->cookieAuthTable, sec->cookieAuthValidityField, sec->cookieAuthBurnedField);
 
 		if (mysql_query(connection.handle, query) != 0) {
 			LOG_ERROR_1(APLOG_ERR, 0, r, "cleanGeneratedTokens: MySQL ERROR: %s: ", mysql_error(connection.handle));

@@ -873,7 +873,7 @@ int cleanGeneratedTokens(request_rec *r){
 		}
 	}
 
-	query=apr_psprintf(r->pool, "DELETE FROM %s WHERE %s<datetime(CURRENT_TIMESTAMP, 'localtime')",sec->cookieAuthTable, sec->cookieAuthValidityField);
+	query=apr_psprintf(r->pool, "DELETE FROM %s WHERE %s<datetime(CURRENT_TIMESTAMP, 'localtime') OR %s=1",sec->cookieAuthTable, sec->cookieAuthValidityField, sec->cookieAuthBurnedField);
 	if (sqlite3_query_execute(connection.handle, query) != 0) {
 		LOG_ERROR_1(APLOG_ERR, 0, r, "cleanGeneratedTokens: SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
 		return osa_error(r,"DB query error",500);
