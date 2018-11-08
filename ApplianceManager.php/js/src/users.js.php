@@ -316,6 +316,7 @@ function addUserProperty(){
 		setUserModified(true);
 
 	}
+	return true;
 }
 
 function deleteUserProperty(propNum, propName){
