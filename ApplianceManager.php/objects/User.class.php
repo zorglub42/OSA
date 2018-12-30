@@ -165,13 +165,12 @@ class User extends ApplianceObject
     public $lastTokenLogin;
 
     
-
     /**
      * Additional properties list
      * 
      * @var array Array of additionnal properties {@type UserProperty}
      */
-    public $properties=array();
+    public $properties = array();
 
     /**
      * Setter
