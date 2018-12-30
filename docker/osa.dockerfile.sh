@@ -8,7 +8,7 @@ function getRootImage(){
 		uname -a | grep " arm">/dev/null
 		if [ $? -ne 0 ] ; then
 			DOCKER_FROM="ubuntu:16.04"
-			JSON_PCKAGE="libjson-c2 libjson-c2-dev"
+			JSON_PACKAGE="libjson-c2 libjson-c-dev"
 		elif [ -f "/etc/os-release" ] ; then
 			grep "stretch" "/etc/os-release" >/dev/null
 			if [ $? -eq 0 ] ; then
@@ -21,7 +21,7 @@ function getRootImage(){
 					DOCKER_FROM="resin/rpi-raspbian"
 					PHP=php5
 					RDBMS_PACKAGE="mysql-server $PHP-mysql libmysqlclient-dev"
-					JSON_PCKAGE="libjson-c2 libjson-c-dev"
+					JSON_PACKAGE="libjson-c2 libjson-c-dev"
 				fi
 			fi
 		else
