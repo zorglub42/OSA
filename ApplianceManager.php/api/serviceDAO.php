@@ -508,7 +508,7 @@ function getService($serviceName=null, $request_data=null)
  */
 function createService($serviceName, $request_data=null)
 {
-    $endpointRegEx="}^(http|https|ws|wss)://[\w\d:#@%/;$()~_?\+-=\\\.&]*}";
+    $endpointRegEx="}^(http|https|ws|wss|balancer)://[\w\d:#@%/;$()~_?\+-=\\\.&]*}";
     $fkFail="foreign key constraint fail";
 
     $serviceName=normalizeName($serviceName);
@@ -1091,7 +1091,7 @@ function deleteService($serviceName)
  */
 function updateService($serviceName, $request_data=null)
 {
-    $endpointRegEx="}^(http|https|ws|wss)://[\w\d:#@%/;$()~_?\+-=\\\.&]*}";
+    $endpointRegEx="}^(http|https|ws|wss|balancer)://[\w\d:#@%/;$()~_?\+-=\\\.&]*}";
     $fkFail="foreign key constraint fail";
 
     $serviceName=normalizeName($serviceName);
