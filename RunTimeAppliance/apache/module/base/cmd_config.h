@@ -227,3 +227,7 @@
 	AP_INIT_TAKE1("OSAUserAttributesCacheTTL", ap_set_int_slot,
 	(void *) APR_OFFSETOF(osa_config_rec, userAttributesCacheTTL),
 	OR_AUTHCFG | RSRC_CONF, "Time To Live for user's identity attribute in cache (in sec)"),
+
+	AP_INIT_TAKE1("OSAQuotasDefCacheTTL", ap_set_int_slot,
+	(void *) APR_OFFSETOF(osa_config_rec, quotasDefCacheTTL),
+	OR_AUTHCFG | RSRC_CONF, "Time To Live for quotas definition in cache (in sec)"),

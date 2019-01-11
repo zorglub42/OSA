@@ -23,6 +23,7 @@
 #define KEYVAL_CACHE_ID_PATTERN "D=%s/R=%s/U=%s"	// Cache item identifer pattern
 #define USER_PW_CACHE_ID_PATTERN "U.pwd=%s"	// Cache item identifer pattern
 #define TOKEN_CLEAN_CACHE_ID_PATTERN "tokenClean"	// Cache item identifer pattern
+#define QUOTA_CACHE_ID_PATTERN "QUOTA/R=%s/U=%s"	// Cache item identifer pattern
 
 /* Compile time options for code generation */
 #ifdef AES
@@ -314,6 +315,7 @@ typedef struct  {
 
 	int userGroupsCacheTTL;
 	int userAttributesCacheTTL;
+	int quotasDefCacheTTL;
 	
  } osa_config_rec;
 
@@ -429,6 +431,8 @@ int get_user_basic_attributes(request_rec *r, char *fields, stringKeyValList *he
 int get_user_extended_attributes(request_rec *r, stringKeyValList *props); //To implement for specific RDMBS
 int cleanGeneratedTokens(request_rec *r); //To implement for specific RDMBS
 
+int read_quota_from_cache(server_rec *server, request_rec *r, char * resource, char *user, unsigned long *reqSec, unsigned long *reqDay, unsigned long *reqMonth);
+void store_quota_cache(request_rec *r, char * resource, char *user, unsigned long reqSec, unsigned long reqDay, unsigned long reqMonth, int ttl);
 
 static encryption encryptions[] = {
 						{"crypt", SALT_OPTIONAL, pw_crypted},

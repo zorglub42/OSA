@@ -678,152 +678,159 @@ int checkQuotas( osa_config_rec *sec, request_rec *r,char *counterPrefix, char *
 	time ( &rawtime );
 	timeinfo = localtime ( &rawtime );
 
-	/* 2. Check per second quotas */
-	/*    delete previous counters (outdated counters)*/
-	/*      Create counter name from counterPrefix and current second value */
-	counterSecName=apr_psprintf(r->pool, "%s$$$S=%d-%02d-%02dT%02d:%02d:%02d",counterPrefix,
-								timeinfo->tm_year+1900, 
-								timeinfo->tm_mon+1,
-								timeinfo->tm_mday,
-								timeinfo->tm_hour,
-								timeinfo->tm_min,
-								timeinfo->tm_sec);
+	if (maxReqSec){
+		/* 2. Check per second quotas */
+		/*    delete previous counters (outdated counters)*/
+		/*      Create counter name from counterPrefix and current second value */
+		counterSecName=apr_psprintf(r->pool, "%s$$$S=%d-%02d-%02dT%02d:%02d:%02d",counterPrefix,
+									timeinfo->tm_year+1900, 
+									timeinfo->tm_mon+1,
+									timeinfo->tm_mday,
+									timeinfo->tm_hour,
+									timeinfo->tm_min,
+									timeinfo->tm_sec);
 
-	/*     delete previous counters */
-	query=apr_psprintf(	r->pool, "DELETE FROM %s WHERE  %s!='%s' and %s like '%s$$$S%%'",
-						sec->countersTable, sec->counterNameField, counterSecName, sec->counterNameField, counterPrefix
-	);
-	if (mysql_query(connection.handle, query) != 0) {
-		LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.delete.old.per.second MySQL ERROR: %s: ", mysql_error(connection.handle));
-		return osa_error(r,"DB query error",500);
-	}
-
-	/*    2.1 retreive counter value for current "per second counter" */
-	query=apr_psprintf(r->pool, "SELECT %s FROM %s WHERE %s='%s'", sec->counterValueField, sec->countersTable, sec->counterNameField, counterSecName);
-	if (mysql_query(connection.handle, query) != 0) {
-		LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.select_current.per_second MySQL ERROR: %s: ", mysql_error(connection.handle));
-		return osa_error(r,"DB query error",500);
-	}
-	result = mysql_store_result(connection.handle);
-	if (result && (mysql_num_rows(result) >= 1)) {
-		/*      2.1.1 counter was found, get current counter value */
-		MYSQL_ROW data = mysql_fetch_row(result);
-		reqSec=strtol (data[0],NULL,0);//atoi(data[0]);
-	}else{
-		/*      2.1.2 counter was not found, start from 0 and insert counter into DB */
-		reqSec=0;
-		query=apr_psprintf(r->pool, "INSERT INTO %s (%s,%s) VALUES ('%s',0)", sec->countersTable, sec->counterNameField, sec->counterValueField, counterSecName);
+		/*     delete previous counters */
+		query=apr_psprintf(	r->pool, "DELETE FROM %s WHERE  %s!='%s' and %s like '%s$$$S%%'",
+							sec->countersTable, sec->counterNameField, counterSecName, sec->counterNameField, counterPrefix
+		);
 		if (mysql_query(connection.handle, query) != 0) {
-			LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.insert.per.second MySQL ERROR: %s: ", mysql_error(connection.handle));
-			return osa_error(r,"DB query error", 500);
-		}
-	}
-	if (result) mysql_free_result(result);
-
-	/*    2.2 increment coutner (in DB too)*/
-	query=apr_psprintf(r->pool, "UPDATE %s SET %s=%lu WHERE %s='%s'", sec->countersTable, sec->counterValueField, reqSec+1, sec->counterNameField, counterSecName);
-	if (mysql_query(connection.handle, query) != 0) {
-		LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.update.per.second MySQL ERROR: %s: ", mysql_error(connection.handle));
+			LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.delete.old.per.second MySQL ERROR: %s: ", mysql_error(connection.handle));
 			return osa_error(r,"DB query error",500);
-	}
-	/*    2.3 if new coutner value exceed quota, display error and stop */
-	if (reqSec+1 > maxReqSec){
-		char *err;
-		err=apr_psprintf(r->pool, "Maximum number of request (%s %lu/%lu) per second allowed exedeed", quotaScope, reqSec+1, maxReqSec);
-		
-		return osa_error(r,err,httpStatusOver);
+		}
+
+		/*    2.1 retreive counter value for current "per second counter" */
+		query=apr_psprintf(r->pool, "SELECT %s FROM %s WHERE %s='%s'", sec->counterValueField, sec->countersTable, sec->counterNameField, counterSecName);
+		if (mysql_query(connection.handle, query) != 0) {
+			LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.select_current.per_second MySQL ERROR: %s: ", mysql_error(connection.handle));
+			return osa_error(r,"DB query error",500);
+		}
+		result = mysql_store_result(connection.handle);
+		if (result && (mysql_num_rows(result) >= 1)) {
+			/*      2.1.1 counter was found, get current counter value */
+			MYSQL_ROW data = mysql_fetch_row(result);
+			reqSec=strtol (data[0],NULL,0);//atoi(data[0]);
+		}else{
+			/*      2.1.2 counter was not found, start from 0 and insert counter into DB */
+			reqSec=0;
+			query=apr_psprintf(r->pool, "INSERT INTO %s (%s,%s) VALUES ('%s',0)", sec->countersTable, sec->counterNameField, sec->counterValueField, counterSecName);
+			if (mysql_query(connection.handle, query) != 0) {
+				LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.insert.per.second MySQL ERROR: %s: ", mysql_error(connection.handle));
+				return osa_error(r,"DB query error", 500);
+			}
+		}
+		if (result) mysql_free_result(result);
+
+		/*    2.2 increment coutner (in DB too)*/
+		query=apr_psprintf(r->pool, "UPDATE %s SET %s=%lu WHERE %s='%s'", sec->countersTable, sec->counterValueField, reqSec+1, sec->counterNameField, counterSecName);
+		if (mysql_query(connection.handle, query) != 0) {
+			LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.update.per.second MySQL ERROR: %s: ", mysql_error(connection.handle));
+				return osa_error(r,"DB query error",500);
+		}
+		/*    2.3 if new coutner value exceed quota, display error and stop */
+		if (reqSec+1 > maxReqSec){
+			char *err;
+			err=apr_psprintf(r->pool, "Maximum number of request (%s %lu/%lu) per second allowed exedeed", quotaScope, reqSec+1, maxReqSec);
+			
+			return osa_error(r,err,httpStatusOver);
+		}
 	}
 
-	/* 3. Check per day quotas */
-	/*      Create counter name from counterPrefix and current day value */
-	counterDayName=apr_psprintf(r->pool, "%s$$$D=%d-%02d-%02d",counterPrefix,
-							timeinfo->tm_year+1900, 
-								timeinfo->tm_mon+1,
-								timeinfo->tm_mday);
-	/*      delete previous counters */
-	query=apr_psprintf(r->pool, "DELETE FROM %s WHERE  %s!='%s' and %s like '%s$$$D%%'",sec->countersTable, sec->counterNameField, counterDayName, sec->counterNameField, counterPrefix);
-	if (mysql_query(connection.handle, query) != 0) {
-		LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.delete.old.per.day MySQL ERROR: %s: ", mysql_error(connection.handle));
-		return osa_error(r,"DB query error", 500);
-	}
-	/*    3.1 retreive counter value for current "per day counter" */
-	query=apr_psprintf(r->pool, "SELECT %s FROM %s WHERE %s='%s'", sec->counterValueField, sec->countersTable, sec->counterNameField, counterDayName);
-	if (mysql_query(connection.handle, query) != 0) {
-		LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.select_current.per.day MySQL ERROR: %s: ", mysql_error(connection.handle));
-		return osa_error(r,"DB query error", 500);
-	}
-	result = mysql_store_result(connection.handle);
-	if (result && (mysql_num_rows(result) >= 1)) {
-		/*      3.1.1 counter was found, get current counter value */
-		MYSQL_ROW data = mysql_fetch_row(result);
-		reqDay=strtol (data[0],NULL,0);//atoi(data[0]);
-	}else{
-		/*      3.1.2 counter was not found, start from 0 and insert counter into DB */
-		reqDay=0;
-		query=apr_psprintf(r->pool, "INSERT INTO %s (%s,%s) VALUES ('%s',0)", sec->countersTable, sec->counterNameField, sec->counterValueField, counterDayName);
+	if (maxReqDay){
+		/* 3. Check per day quotas */
+		/*      Create counter name from counterPrefix and current day value */
+		counterDayName=apr_psprintf(r->pool, "%s$$$D=%d-%02d-%02d",counterPrefix,
+								timeinfo->tm_year+1900, 
+									timeinfo->tm_mon+1,
+									timeinfo->tm_mday);
+		/*      delete previous counters */
+		query=apr_psprintf(r->pool, "DELETE FROM %s WHERE  %s!='%s' and %s like '%s$$$D%%'",sec->countersTable, sec->counterNameField, counterDayName, sec->counterNameField, counterPrefix);
 		if (mysql_query(connection.handle, query) != 0) {
-			LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.insert.per.day MySQL ERROR: %s: ", mysql_error(connection.handle));
+			LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.delete.old.per.day MySQL ERROR: %s: ", mysql_error(connection.handle));
 			return osa_error(r,"DB query error", 500);
 		}
-	}
-	if (result) mysql_free_result(result);/*    3.2 increment coutner (in DB too) */
-	query=apr_psprintf(r->pool, "UPDATE %s SET %s=%lu WHERE %s='%s'", sec->countersTable, sec->counterValueField, reqDay+1, sec->counterNameField, counterDayName);
-	if (mysql_query(connection.handle, query) != 0) {
-		LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.update.per.day MySQL ERROR: %s: ", mysql_error(connection.handle));
-		return osa_error(r,"DB query error", 500);
-	}
-	/*    3.3 if new coutner value exceed quota, display error and stop */
-	if (reqDay+1 > maxReqDay){
-		char *err;
-		err=apr_psprintf(r->pool, "Maximum number of request (%s %lu/%lu) per day allowed exedeed", quotaScope, reqDay+1, maxReqDay);
-		
-		return osa_error(r,err, httpStatusOver);
-	}
-
-	/* 4. Check per month quotas */
-	/*      Create counter name from counterPrefix and current month value */
-	counterMonName=apr_psprintf(r->pool, "%s$$$M=%d-%02d",counterPrefix,
-								timeinfo->tm_year+1900, 
-								timeinfo->tm_mon+1);
-	/*      delete previous counters */
-	query=apr_psprintf(r->pool, "DELETE FROM %s WHERE  %s!='%s' and %s like '%s$$$M%%'",sec->countersTable, sec->counterNameField, counterMonName, sec->counterNameField, counterPrefix);
-	if (mysql_query(connection.handle, query) != 0) {
-		LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.delete.old.per.month MySQL ERROR: %s: ", mysql_error(connection.handle));
-		return osa_error(r,"DB query error", 500);
-	}
-	/*    4.1 retreive counter value for current "per month counter" */
-	query=apr_psprintf(r->pool, "SELECT %s FROM %s WHERE %s='%s'", sec->counterValueField, sec->countersTable, sec->counterNameField, counterMonName);
-	if (mysql_query(connection.handle, query) != 0) {
-		LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.select_current.per.month MySQL ERROR: %s: ", mysql_error(connection.handle));
-		return osa_error(r,"DB query error", 500);
-	}
-	result = mysql_store_result(connection.handle);
-	if (result && (mysql_num_rows(result) >= 1)) {
-		/*      4.1.1 counter was found, get current counter value */
-		MYSQL_ROW data = mysql_fetch_row(result);
-		reqMon=strtol (data[0],NULL,0);//atoi(data[0]);
-	}else{
-		/*      4.1.2 counter was not found, start from 0 and insert counter into DB */
-		reqMon=0;
-		query=apr_psprintf(r->pool, "INSERT INTO %s (%s,%s) VALUES ('%s',0)", sec->countersTable, sec->counterNameField, sec->counterValueField, counterMonName);
+		/*    3.1 retreive counter value for current "per day counter" */
+		query=apr_psprintf(r->pool, "SELECT %s FROM %s WHERE %s='%s'", sec->counterValueField, sec->countersTable, sec->counterNameField, counterDayName);
 		if (mysql_query(connection.handle, query) != 0) {
-						LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.insert.per.month MySQL ERROR: %s: ", mysql_error(connection.handle));
-						return osa_error(r,"DB query error", 500);
+			LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.select_current.per.day MySQL ERROR: %s: ", mysql_error(connection.handle));
+			return osa_error(r,"DB query error", 500);
+		}
+		result = mysql_store_result(connection.handle);
+		if (result && (mysql_num_rows(result) >= 1)) {
+			/*      3.1.1 counter was found, get current counter value */
+			MYSQL_ROW data = mysql_fetch_row(result);
+			reqDay=strtol (data[0],NULL,0);//atoi(data[0]);
+		}else{
+			/*      3.1.2 counter was not found, start from 0 and insert counter into DB */
+			reqDay=0;
+			query=apr_psprintf(r->pool, "INSERT INTO %s (%s,%s) VALUES ('%s',0)", sec->countersTable, sec->counterNameField, sec->counterValueField, counterDayName);
+			if (mysql_query(connection.handle, query) != 0) {
+				LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.insert.per.day MySQL ERROR: %s: ", mysql_error(connection.handle));
+				return osa_error(r,"DB query error", 500);
+			}
+		}
+		if (result) mysql_free_result(result);/*    3.2 increment coutner (in DB too) */
+		query=apr_psprintf(r->pool, "UPDATE %s SET %s=%lu WHERE %s='%s'", sec->countersTable, sec->counterValueField, reqDay+1, sec->counterNameField, counterDayName);
+		if (mysql_query(connection.handle, query) != 0) {
+			LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.update.per.day MySQL ERROR: %s: ", mysql_error(connection.handle));
+			return osa_error(r,"DB query error", 500);
+		}
+		/*    3.3 if new coutner value exceed quota, display error and stop */
+		if (reqDay+1 > maxReqDay){
+			char *err;
+			err=apr_psprintf(r->pool, "Maximum number of request (%s %lu/%lu) per day allowed exedeed", quotaScope, reqDay+1, maxReqDay);
+			
+			return osa_error(r,err, httpStatusOver);
 		}
 	}
-	if (result) mysql_free_result(result);
-	/*    4.2 increment coutner (in DB too) */
-	query=apr_psprintf(r->pool, "UPDATE %s SET %s=%lu WHERE %s='%s'", sec->countersTable, sec->counterValueField, reqMon+1, sec->counterNameField, counterMonName);
-	if (mysql_query(connection.handle, query) != 0) {
-		LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.update.per.month MySQL ERROR: %s: ", mysql_error(connection.handle));
-		return osa_error(r,"DB query error", 500);
-	}
-	/*    4.3 if new coutner value exceed quota, display error and stop */
-	if (reqMon+1 > maxReqMon){
-		char *err;
-		err=apr_psprintf(r->pool, "Maximum number of request (%s %lu/%lu) per month allowed exedeed", quotaScope, reqMon+1, maxReqMon);
 
-		return osa_error(r,err, httpStatusOver);
+	if (maxReqMon){
+		/* 4. Check per month quotas */
+		/*      Create counter name from counterPrefix and current month value */
+		counterMonName=apr_psprintf(r->pool, "%s$$$M=%d-%02d",counterPrefix,
+									timeinfo->tm_year+1900, 
+									timeinfo->tm_mon+1);
+		/*      delete previous counters */
+		query=apr_psprintf(r->pool, "DELETE FROM %s WHERE  %s!='%s' and %s like '%s$$$M%%'",sec->countersTable, sec->counterNameField, counterMonName, sec->counterNameField, counterPrefix);
+		if (mysql_query(connection.handle, query) != 0) {
+			LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.delete.old.per.month MySQL ERROR: %s: ", mysql_error(connection.handle));
+			return osa_error(r,"DB query error", 500);
+		}
+		/*    4.1 retreive counter value for current "per month counter" */
+		query=apr_psprintf(r->pool, "SELECT %s FROM %s WHERE %s='%s'", sec->counterValueField, sec->countersTable, sec->counterNameField, counterMonName);
+		if (mysql_query(connection.handle, query) != 0) {
+			LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.select_current.per.month MySQL ERROR: %s: ", mysql_error(connection.handle));
+			return osa_error(r,"DB query error", 500);
+		}
+		result = mysql_store_result(connection.handle);
+		if (result && (mysql_num_rows(result) >= 1)) {
+			/*      4.1.1 counter was found, get current counter value */
+			MYSQL_ROW data = mysql_fetch_row(result);
+			reqMon=strtol (data[0],NULL,0);//atoi(data[0]);
+		}else{
+			/*      4.1.2 counter was not found, start from 0 and insert counter into DB */
+			reqMon=0;
+			query=apr_psprintf(r->pool, "INSERT INTO %s (%s,%s) VALUES ('%s',0)", sec->countersTable, sec->counterNameField, sec->counterValueField, counterMonName);
+			if (mysql_query(connection.handle, query) != 0) {
+							LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.insert.per.month MySQL ERROR: %s: ", mysql_error(connection.handle));
+							return osa_error(r,"DB query error", 500);
+			}
+		}
+		if (result) mysql_free_result(result);
+		/*    4.2 increment coutner (in DB too) */
+		query=apr_psprintf(r->pool, "UPDATE %s SET %s=%lu WHERE %s='%s'", sec->countersTable, sec->counterValueField, reqMon+1, sec->counterNameField, counterMonName);
+		if (mysql_query(connection.handle, query) != 0) {
+			LOG_ERROR_1(APLOG_ERR, 0, r, "checkQuotas.update.per.month MySQL ERROR: %s: ", mysql_error(connection.handle));
+			return osa_error(r,"DB query error", 500);
+		}
+		/*    4.3 if new coutner value exceed quota, display error and stop */
+		if (reqMon+1 > maxReqMon){
+			char *err;
+			err=apr_psprintf(r->pool, "Maximum number of request (%s %lu/%lu) per month allowed exedeed", quotaScope, reqMon+1, maxReqMon);
+
+			return osa_error(r,err, httpStatusOver);
+
+		}
 
 	}
 
@@ -864,28 +871,34 @@ int checkGlobalQuotas( osa_config_rec *sec, request_rec *r){
 	/* 1. create a counter prefix from quotas enabled resource resource name */
 	counterPrefix=apr_psprintf(r->pool, "R=%s",  sec->resourceName);
 
-	/* 2. retreive values form Maximum allowed for resource (sec/day/month) */
-	query=apr_psprintf(r->pool, "SELECT %s, %s, %s FROM %s WHERE %s='%s'", sec->osaPerSecField, sec->osaPerDayField, sec->osaPerMonthField, sec->osaGlobalQuotasTable,  sec->osaResourceNameField, sec->resourceName);
-	if (sec->osaGlobalQuotasCondition){
-		/*    2.1 if configuration set a condition (sql) to retreive quotas, integrate it to request */
-		query=apr_psprintf(r->pool, "%s AND %s", query, sec->osaGlobalQuotasCondition);
+	if (!read_quota_from_cache(r->server, r,  sec->resourceName, "", &reqSec, &reqMonth, &reqDay)){
+		/* 2. retreive values form Maximum allowed for resource (sec/day/month) */
+		query=apr_psprintf(r->pool, "SELECT %s, %s, %s FROM %s WHERE %s='%s'", sec->osaPerSecField, sec->osaPerDayField, sec->osaPerMonthField, sec->osaGlobalQuotasTable,  sec->osaResourceNameField, sec->resourceName);
+		if (sec->osaGlobalQuotasCondition){
+			/*    2.1 if configuration set a condition (sql) to retreive quotas, integrate it to request */
+			query=apr_psprintf(r->pool, "%s AND %s", query, sec->osaGlobalQuotasCondition);
+		}
+
+		if (mysql_query(connection.handle, query) != 0) {
+			/*    2.2 No quota definition was found in DB ==> ERROR */
+			LOG_ERROR_1(APLOG_ERR, 0, r, "checkGlobalQuotas: MySQL ERROR: %s: ", mysql_error(connection.handle));
+			return osa_error(r,"checkGlobalQuotas: DB query error", 500);
+		}
+
+
+
+		result = mysql_store_result(connection.handle);
+		if (result && (mysql_num_rows(result) >= 1)) {
+			/*    2.3 quota definition was found: get values */
+			MYSQL_ROW data = mysql_fetch_row(result);
+			reqSec=strtol (data[0],NULL,0); //atoi(data[0]);
+			reqDay=strtol (data[1],NULL,0); //atoi(data[1]);
+			reqMonth=strtol (data[2],NULL,0); //atoi(data[2]);
+		}
+		if (result) mysql_free_result(result);
+		store_quota_cache(r, sec->resourceName, "", reqSec, reqDay, reqMonth, sec->quotasDefCacheTTL);
 	}
 
-	if (mysql_query(connection.handle, query) != 0) {
-		/*    2.2 No quota definition was found in DB ==> ERROR */
-		LOG_ERROR_1(APLOG_ERR, 0, r, "checkGlobalQuotas: MySQL ERROR: %s: ", mysql_error(connection.handle));
-		return osa_error(r,"checkGlobalQuotas: DB query error", 500);
-	}
-
-	result = mysql_store_result(connection.handle);
-	if (result && (mysql_num_rows(result) >= 1)) {
-		/*    2.3 quota definition was found: get values */
-		MYSQL_ROW data = mysql_fetch_row(result);
-		reqSec=strtol (data[0],NULL,0); //atoi(data[0]);
-		reqDay=strtol (data[1],NULL,0); //atoi(data[1]);
-		reqMonth=strtol (data[2],NULL,0); //atoi(data[2]);
-	}
-	if (result) mysql_free_result(result);
 	char *scope;
 
 	/* 3.  Define "quotaScope" variable for checkQuotas and call it */
@@ -937,34 +950,38 @@ int checkUserQuotas( osa_config_rec *sec, request_rec *r){
 	/* 1. create a counter prefix from quotas enabled resource resource name and username */
 	counterPrefix=apr_psprintf(r->pool, "R=%s$$$U=%s",  sec->resourceName, r->user);
 
-	/* 2. retreive values form Maximum allowed for resource (sec/day/month) */
-	query=apr_psprintf(r->pool, "SELECT %s, %s, %s FROM %s WHERE %s='%s' AND %s='%s'", sec->osaPerSecField, sec->osaPerDayField, sec->osaPerMonthField, sec->osaUserQuotasTable,  sec->osaResourceNameField, sec->resourceName, sec->osaNameField, r->user);
-	if (sec->osaUserQuotasCondition){
-		/*    2.1 if configuration set a condition (sql) to retreive quotas, integrate it to request */
-		query=apr_psprintf(r->pool, "%s AND %s", query, sec->osaUserQuotasCondition);
-	}
 
-	if (mysql_query(connection.handle, query) != 0) {
-		/*    2.2 No quota definition was found in DB ==> ERROR */
-		LOG_ERROR_1(APLOG_ERR, 0, r, "checkUserQuotas: MySQL ERROR: %s: ", mysql_error(connection.handle));
-		return osa_error(r,"checkUserQuotas: DB query error", 500);
-	}
-
-	result = mysql_store_result(connection.handle);
-	if (result && (mysql_num_rows(result) >= 1)) {
-		/*    2.3 quota definition was found: get values */
-		MYSQL_ROW data = mysql_fetch_row(result);
-		reqSec=strtol (data[0],NULL,0); //atol(data[0]);
-		reqDay=strtol (data[1],NULL,0); //atol(data[1]);
-		reqMonth=strtol (data[2],NULL,0); //atoi(data[2]);
-	}else{
-		if (result){
-			char *err;
-			err=apr_psprintf(r->pool, "No quota defined for user %s with user quotas control is activated on resource %s",r->user, sec->resourceName); 
-			return osa_error(r,err, 500);
+	if (!read_quota_from_cache(r->server, r, sec->resourceName, r->user, &reqSec, &reqDay, &reqMonth)){
+		/* 2. retreive values form Maximum allowed for resource (sec/day/month) */
+		query=apr_psprintf(r->pool, "SELECT %s, %s, %s FROM %s WHERE %s='%s' AND %s='%s'", sec->osaPerSecField, sec->osaPerDayField, sec->osaPerMonthField, sec->osaUserQuotasTable,  sec->osaResourceNameField, sec->resourceName, sec->osaNameField, r->user);
+		if (sec->osaUserQuotasCondition){
+			/*    2.1 if configuration set a condition (sql) to retreive quotas, integrate it to request */
+			query=apr_psprintf(r->pool, "%s AND %s", query, sec->osaUserQuotasCondition);
 		}
+
+		if (mysql_query(connection.handle, query) != 0) {
+			/*    2.2 No quota definition was found in DB ==> ERROR */
+			LOG_ERROR_1(APLOG_ERR, 0, r, "checkUserQuotas: MySQL ERROR: %s: ", mysql_error(connection.handle));
+			return osa_error(r,"checkUserQuotas: DB query error", 500);
+		}
+
+		result = mysql_store_result(connection.handle);
+		if (result && (mysql_num_rows(result) >= 1)) {
+			/*    2.3 quota definition was found: get values */
+			MYSQL_ROW data = mysql_fetch_row(result);
+			reqSec=strtol (data[0],NULL,0); //atol(data[0]);
+			reqDay=strtol (data[1],NULL,0); //atol(data[1]);
+			reqMonth=strtol (data[2],NULL,0); //atoi(data[2]);
+		}else{
+			if (result){
+				char *err;
+				err=apr_psprintf(r->pool, "No quota defined for user %s with user quotas control is activated on resource %s",r->user, sec->resourceName); 
+				return osa_error(r,err, 500);
+			}
+		}
+		if (result) mysql_free_result(result);
+		store_quota_cache(r, sec->resourceName, r->user, reqSec, reqDay, reqMonth, sec->quotasDefCacheTTL);
 	}
-	if (result) mysql_free_result(result);
 	/* 3.  Define "quotaScope" variable for checkQuotas and call it */
 	char *scope;
 	scope=apr_psprintf(r->pool, "for user %s and resource %s", r->user, sec->resourceName);

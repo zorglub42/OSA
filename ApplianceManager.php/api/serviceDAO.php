@@ -651,7 +651,7 @@ function createService($serviceName, $request_data=null)
     if (!isset($request_data["isGlobalQuotasEnabled"]) 
         || $request_data["isGlobalQuotasEnabled"]=="1"
     ) {
-        if (!isset($request_data["reqSec"]) || $request_data["reqSec"]=="" ) {
+        if (!isset($request_data["reqSec"]) || $request_data["reqSec"]==="" ) {
             $error->setHttpStatus(400);
             $error->setFunctionalCode(1);
             $error->setFunctionalLabel(
@@ -661,7 +661,7 @@ function createService($serviceName, $request_data=null)
         } else {
             $mySQLReqSec=$request_data["reqSec"];
         }
-        if (!isset($request_data["reqDay"]) || $request_data["reqDay"]=="" ) {
+        if (!isset($request_data["reqDay"]) || $request_data["reqDay"]==="" ) {
             $error->setHttpStatus(400);
             $error->setFunctionalCode(1);
             $error->setFunctionalLabel(
@@ -671,7 +671,7 @@ function createService($serviceName, $request_data=null)
         } else {
             $mySQLReqDay=$request_data["reqDay"];
         }
-        if (!isset($request_data["reqMonth"]) || $request_data["reqMonth"]=="" ) {
+        if (!isset($request_data["reqMonth"]) || $request_data["reqMonth"]==="" ) {
             $error->setHttpStatus(400);
             $error->setFunctionalCode(1);
             $error->setFunctionalLabel(
@@ -1237,7 +1237,7 @@ function updateService($serviceName, $request_data=null)
     if (isset($request_data["isGlobalQuotasEnabled"]) 
         && $request_data["isGlobalQuotasEnabled"]=="1"
     ) {
-        if (!isset($request_data["reqSec"]) || $request_data["reqSec"]=="" ) {
+        if (!isset($request_data["reqSec"]) || $request_data["reqSec"]==="" ) {
             $error->setHttpStatus(400);
             $error->setFunctionalCode(1);
             $error->setFunctionalLabel(
@@ -1245,7 +1245,7 @@ function updateService($serviceName, $request_data=null)
                 "reqSec is required when isGlobalQuotasEnabled=1\n"
             );
         } elseif (is_numeric($request_data["reqSec"]) 
-            && $request_data["reqSec"]>=1
+            && $request_data["reqSec"]>=0
         ) {
             $service["reqSec"]=$request_data["reqSec"];
         } else {
@@ -1253,10 +1253,10 @@ function updateService($serviceName, $request_data=null)
             $error->setFunctionalCode(1);
             $error->setFunctionalLabel(
                 $error->getFunctionalLabel() .
-                "reqSec should be an integer >=1\n"
+                "reqSec should be an integer >=0\n"
             );
         }
-        if (!isset($request_data["reqDay"]) || $request_data["reqDay"]=="" ) {
+        if (!isset($request_data["reqDay"]) || $request_data["reqDay"]==="" ) {
             $error->setHttpStatus(400);
             $error->setFunctionalCode(1);
             $error->setFunctionalLabel(
@@ -1264,7 +1264,7 @@ function updateService($serviceName, $request_data=null)
                 "reqDay is required when isGlobalQuotasEnabled=1\n"
             );
         } elseif (is_numeric($request_data["reqDay"]) 
-            && $request_data["reqDay"]>=1
+            && $request_data["reqDay"]>=0
         ) {
             $service["reqDay"]=$request_data["reqDay"];
         } else {
@@ -1272,11 +1272,11 @@ function updateService($serviceName, $request_data=null)
             $error->setFunctionalCode(1);
             $error->setFunctionalLabel(
                 $error->getFunctionalLabel() . 
-                "reqDay should be an integer >=1\n"
+                "reqDay should be an integer >=0\n"
             );
         }
         if (!isset($request_data["reqMonth"]) 
-            || $request_data["reqMonth"]==""
+            || $request_data["reqMonth"]===""
         ) {
             $error->setHttpStatus(400);
             $error->setFunctionalCode(1);
@@ -1285,7 +1285,7 @@ function updateService($serviceName, $request_data=null)
                 "reqMonth is required when isGlobalQuotasEnabled=1\n"
             );
         } elseif (is_numeric($request_data["reqMonth"]) 
-            && $request_data["reqMonth"]>=1
+            && $request_data["reqMonth"]>=0
         ) {
             $service["reqMonth"]=$request_data["reqMonth"];
         } else {
@@ -1293,7 +1293,7 @@ function updateService($serviceName, $request_data=null)
             $error->setFunctionalCode(1);
             $error->setFunctionalLabel(
                 $error->getFunctionalLabel() .
-                "reqMonth should be an integer >=1\n"
+                "reqMonth should be an integer >=0\n"
             );
         }
 

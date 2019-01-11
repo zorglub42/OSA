@@ -519,193 +519,189 @@ char ** get_groups(request_rec *r, char *user, osa_config_rec *m)
 /*--------------------------------------------------------------------------------------------------*/
 int checkGenericQuotas( osa_config_rec *sec, request_rec *r,char *counterPrefix, char *quotaScope, unsigned long maxReqSec, unsigned long maxReqDay, unsigned long maxReqMon, int httpStatusOver){
 
-  char *query;
-  char *counterSecName;
-  char *counterDayName;
-  char *counterMonName;
-  unsigned long reqSec, reqDay, reqMon;
-  sqlite3_stmt *stmt;
-  int sqlite3_rc;
-
-  
-
-
-
-  /* get current time */
-  time_t rawtime;
-  struct tm * timeinfo;
-
-
-  time ( &rawtime );
-  timeinfo = localtime ( &rawtime );
+    char *query;
+    char *counterSecName;
+    char *counterDayName;
+    char *counterMonName;
+    unsigned long reqSec, reqDay, reqMon;
+    sqlite3_stmt *stmt;
+    int sqlite3_rc;
 
 
 
 
 
+    /* get current time */
+    time_t rawtime;
+    struct tm * timeinfo;
 
 
-
-  /* 2. Check per second quotas */
-  /*    delete previous counters (outdated counters)*/
-  /*      Create counter name from counterPrefix and current second value */
-  counterSecName=apr_psprintf(r->pool, "%s$$$S=%d-%02d-%02dT%02d:%02d:%02d",counterPrefix,
-                timeinfo->tm_year+1900, 
-                timeinfo->tm_mon+1,
-                timeinfo->tm_mday,
-                timeinfo->tm_hour,
-                timeinfo->tm_min,
-                timeinfo->tm_sec);
-
-  /*     delete previous counters */
-  query=apr_psprintf(r->pool, "DELETE FROM %s WHERE  %s!='%s' and %s like '%s$$$S%%'",sec->countersTable, sec->counterNameField, counterSecName, sec->counterNameField, counterPrefix);
-  if (sqlite3_query_execute(connection.handle, query) != 0) {
-    LOG_ERROR_1(APLOG_ERR, 0, r, "checkGenericQuotas.delete.old.per.second SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
-    return osa_error(r,"DB query error",500);
-  }
-
-  /*    2.1 retreive counter value for current "per second counter" */
-  query=apr_psprintf(r->pool, "SELECT %s FROM %s WHERE %s='%s'", sec->counterValueField, sec->countersTable, sec->counterNameField, counterSecName);
-  sqlite3_rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);    
-
-  if (sqlite3_rc != SQLITE_OK) {
-    sqlite3_finalize(stmt);
-    LOG_ERROR_2(APLOG_ERR, 0, r, "get_sqlite3_pw.sqlite3_query SQLite ERROR: %s: %s", sqlite3_errmsg(connection.handle), r->uri);
-    return osa_error(r,"DB query error", 500);;
-  }    
-  if (sqlite3_step(stmt) == SQLITE_ROW) {
-    /*      2.1.1 counter was found, get current counter value */
-    reqSec=strtol (sqlite3_column_text(stmt, 0),NULL,0);//atoi(data[0]);
-  }else{
-    /*      2.1.2 counter was not found, start from 0 and insert counter into DB */
-    reqSec=0;
-    query=apr_psprintf(r->pool, "INSERT INTO %s (%s,%s) VALUES ('%s',0)", sec->countersTable, sec->counterNameField, sec->counterValueField, counterSecName);
-    if (sqlite3_query_execute(connection.handle, query) != 0) {
-      sqlite3_finalize(stmt);
-      LOG_ERROR_1(APLOG_ERR, 0, r, "checkGenericQuotas.insert.per.second SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
-      return osa_error(r,"DB query error", 500);
-    }
-  }
-  sqlite3_finalize(stmt);
-
-  /*    2.2 increment coutner (in DB too)*/
-  query=apr_psprintf(r->pool, "UPDATE %s SET %s=%lu WHERE %s='%s'", sec->countersTable, sec->counterValueField, reqSec+1, sec->counterNameField, counterSecName);
-  if (sqlite3_query_execute(connection.handle, query) != 0) {
-    LOG_ERROR_1(APLOG_ERR, 0, r, "checkGenericQuotas.update.per.second SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
-    return osa_error(r,"DB query error",500);
-  }
-  /*    2.3 if new coutner value exceed quota, display error and stop */
-  if (reqSec+1 > maxReqSec){
-    char *err;
-    err=apr_psprintf(r->pool, "Maximum number of request (%s %lu/%lu) per second allowed exedeed", quotaScope, reqSec+1, maxReqSec);
-    
-    return osa_error(r,err,httpStatusOver);
-  }
+    time ( &rawtime );
+    timeinfo = localtime ( &rawtime );
 
 
+    if (maxReqSec){
+        /* 2. Check per second quotas */
+        /*    delete previous counters (outdated counters)*/
+        /*      Create counter name from counterPrefix and current second value */
+        counterSecName=apr_psprintf(r->pool, "%s$$$S=%d-%02d-%02dT%02d:%02d:%02d",counterPrefix,
+                    timeinfo->tm_year+1900, 
+                    timeinfo->tm_mon+1,
+                    timeinfo->tm_mday,
+                    timeinfo->tm_hour,
+                    timeinfo->tm_min,
+                    timeinfo->tm_sec);
 
+        /*     delete previous counters */
+        query=apr_psprintf(r->pool, "DELETE FROM %s WHERE  %s!='%s' and %s like '%s$$$S%%'",sec->countersTable, sec->counterNameField, counterSecName, sec->counterNameField, counterPrefix);
+        if (sqlite3_query_execute(connection.handle, query) != 0) {
+            LOG_ERROR_1(APLOG_ERR, 0, r, "checkGenericQuotas.delete.old.per.second SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
+            return osa_error(r,"DB query error",500);
+        }
 
+        /*    2.1 retreive counter value for current "per second counter" */
+        query=apr_psprintf(r->pool, "SELECT %s FROM %s WHERE %s='%s'", sec->counterValueField, sec->countersTable, sec->counterNameField, counterSecName);
+        sqlite3_rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);    
 
-  /* 3. Check per day quotas */
-  /*      Create counter name from counterPrefix and current day value */
-  counterDayName=apr_psprintf(r->pool, "%s$$$D=%d-%02d-%02d",counterPrefix,
-              timeinfo->tm_year+1900, 
-                timeinfo->tm_mon+1,
-                timeinfo->tm_mday);
-  /*      delete previous counters */
-  query=apr_psprintf(r->pool, "DELETE FROM %s WHERE  %s!='%s' and %s like '%s$$$D%%'",sec->countersTable, sec->counterNameField, counterDayName, sec->counterNameField, counterPrefix);
-  if (sqlite3_query_execute(connection.handle, query) != 0) {
-    LOG_ERROR_1(APLOG_ERR, 0, r, "checkGenericQuotas.delete.old.per.day SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
-    return osa_error(r,"DB query error", 500);
-  }
-  /*    3.1 retreive counter value for current "per day counter" */
-  query=apr_psprintf(r->pool, "SELECT %s FROM %s WHERE %s='%s'", sec->counterValueField, sec->countersTable, sec->counterNameField, counterDayName);
-  sqlite3_rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);    
-
-  if (sqlite3_rc != SQLITE_OK) {
-    sqlite3_finalize(stmt);
-    LOG_ERROR_2(APLOG_ERR, 0, r, "get_sqlite3_pw.sqlite3_query SQLite ERROR: %s: %s", sqlite3_errmsg(connection.handle), r->uri);
-    return osa_error(r,"DB query error", 500);;
-  }    
-  if (sqlite3_step(stmt) == SQLITE_ROW) {
-    /*      3.1.1 counter was found, get current counter value */
-    reqDay=strtol (sqlite3_column_text(stmt, 0),NULL,0);//atoi(data[0]);
-  }else{
-    /*      3.1.2 counter was not found, start from 0 and insert counter into DB */
-    reqDay=0;
-    query=apr_psprintf(r->pool, "INSERT INTO %s (%s,%s) VALUES ('%s',0)", sec->countersTable, sec->counterNameField, sec->counterValueField, counterDayName);
-    if (sqlite3_query_execute(connection.handle, query) != 0) {
+        if (sqlite3_rc != SQLITE_OK) {
             sqlite3_finalize(stmt);
-            LOG_ERROR_1(APLOG_ERR, 0, r, "checkGenericQuotas.insert.per.day SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
+            LOG_ERROR_2(APLOG_ERR, 0, r, "get_sqlite3_pw.sqlite3_query SQLite ERROR: %s: %s", sqlite3_errmsg(connection.handle), r->uri);
+            return osa_error(r,"DB query error", 500);;
+        }    
+        if (sqlite3_step(stmt) == SQLITE_ROW) {
+            /*      2.1.1 counter was found, get current counter value */
+            reqSec=strtol (sqlite3_column_text(stmt, 0),NULL,0);//atoi(data[0]);
+        }else{
+            /*      2.1.2 counter was not found, start from 0 and insert counter into DB */
+            reqSec=0;
+            query=apr_psprintf(r->pool, "INSERT INTO %s (%s,%s) VALUES ('%s',0)", sec->countersTable, sec->counterNameField, sec->counterValueField, counterSecName);
+            if (sqlite3_query_execute(connection.handle, query) != 0) {
+                sqlite3_finalize(stmt);
+                LOG_ERROR_1(APLOG_ERR, 0, r, "checkGenericQuotas.insert.per.second SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
+                return osa_error(r,"DB query error", 500);
+            }
+        }
+        sqlite3_finalize(stmt);
+
+        /*    2.2 increment coutner (in DB too)*/
+        query=apr_psprintf(r->pool, "UPDATE %s SET %s=%lu WHERE %s='%s'", sec->countersTable, sec->counterValueField, reqSec+1, sec->counterNameField, counterSecName);
+        if (sqlite3_query_execute(connection.handle, query) != 0) {
+            LOG_ERROR_1(APLOG_ERR, 0, r, "checkGenericQuotas.update.per.second SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
+            return osa_error(r,"DB query error",500);
+        }
+        /*    2.3 if new coutner value exceed quota, display error and stop */
+        if (reqSec+1 > maxReqSec){
+            char *err;
+            err=apr_psprintf(r->pool, "Maximum number of request (%s %lu/%lu) per second allowed exedeed", quotaScope, reqSec+1, maxReqSec);
+
+            return osa_error(r,err,httpStatusOver);
+        }
+    }
+
+
+
+    if (maxReqDay){
+        /* 3. Check per day quotas */
+        /*      Create counter name from counterPrefix and current day value */
+        counterDayName=apr_psprintf(r->pool, "%s$$$D=%d-%02d-%02d",counterPrefix,
+                    timeinfo->tm_year+1900, 
+                    timeinfo->tm_mon+1,
+                    timeinfo->tm_mday);
+        /*      delete previous counters */
+        query=apr_psprintf(r->pool, "DELETE FROM %s WHERE  %s!='%s' and %s like '%s$$$D%%'",sec->countersTable, sec->counterNameField, counterDayName, sec->counterNameField, counterPrefix);
+        if (sqlite3_query_execute(connection.handle, query) != 0) {
+            LOG_ERROR_1(APLOG_ERR, 0, r, "checkGenericQuotas.delete.old.per.day SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
             return osa_error(r,"DB query error", 500);
+        }
+        /*    3.1 retreive counter value for current "per day counter" */
+        query=apr_psprintf(r->pool, "SELECT %s FROM %s WHERE %s='%s'", sec->counterValueField, sec->countersTable, sec->counterNameField, counterDayName);
+        sqlite3_rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);    
+
+        if (sqlite3_rc != SQLITE_OK) {
+            sqlite3_finalize(stmt);
+            LOG_ERROR_2(APLOG_ERR, 0, r, "get_sqlite3_pw.sqlite3_query SQLite ERROR: %s: %s", sqlite3_errmsg(connection.handle), r->uri);
+            return osa_error(r,"DB query error", 500);;
+        }    
+        if (sqlite3_step(stmt) == SQLITE_ROW) {
+            /*      3.1.1 counter was found, get current counter value */
+            reqDay=strtol (sqlite3_column_text(stmt, 0),NULL,0);//atoi(data[0]);
+        }else{
+            /*      3.1.2 counter was not found, start from 0 and insert counter into DB */
+            reqDay=0;
+            query=apr_psprintf(r->pool, "INSERT INTO %s (%s,%s) VALUES ('%s',0)", sec->countersTable, sec->counterNameField, sec->counterValueField, counterDayName);
+            if (sqlite3_query_execute(connection.handle, query) != 0) {
+                    sqlite3_finalize(stmt);
+                    LOG_ERROR_1(APLOG_ERR, 0, r, "checkGenericQuotas.insert.per.day SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
+                    return osa_error(r,"DB query error", 500);
+            }
+        }
+        sqlite3_finalize(stmt);
+        query=apr_psprintf(r->pool, "UPDATE %s SET %s=%lu WHERE %s='%s'", sec->countersTable, sec->counterValueField, reqDay+1, sec->counterNameField, counterDayName);
+        if (sqlite3_query_execute(connection.handle, query) != 0) {
+            LOG_ERROR_1(APLOG_ERR, 0, r, "checkGenericQuotas.update.per.day SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
+            return osa_error(r,"DB query error", 500);
+        }
+        /*    3.3 if new coutner value exceed quota, display error and stop */
+        if (reqDay+1 > maxReqDay){
+            char *err;
+            err=apr_psprintf(r->pool, "Maximum number of request (%s %lu/%lu) per day allowed exedeed", quotaScope, reqDay+1, maxReqDay);
+
+            return osa_error(r,err, httpStatusOver);
+        }
     }
-  }
-  sqlite3_finalize(stmt);
-  query=apr_psprintf(r->pool, "UPDATE %s SET %s=%lu WHERE %s='%s'", sec->countersTable, sec->counterValueField, reqDay+1, sec->counterNameField, counterDayName);
-  if (sqlite3_query_execute(connection.handle, query) != 0) {
-    LOG_ERROR_1(APLOG_ERR, 0, r, "checkGenericQuotas.update.per.day SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
-    return osa_error(r,"DB query error", 500);
-  }
-  /*    3.3 if new coutner value exceed quota, display error and stop */
-  if (reqDay+1 > maxReqDay){
-    char *err;
-    err=apr_psprintf(r->pool, "Maximum number of request (%s %lu/%lu) per day allowed exedeed", quotaScope, reqDay+1, maxReqDay);
 
-    return osa_error(r,err, httpStatusOver);
-  }
+    if (maxReqMon){
+        /* 4. Check per month quotas */
+        /*      Create counter name from counterPrefix and current month value */
+        counterMonName=apr_psprintf(r->pool, "%s$$$M=%d-%02d",counterPrefix,
+                    timeinfo->tm_year+1900, 
+                    timeinfo->tm_mon+1);
+        /*      delete previous counters */
+        query=apr_psprintf(r->pool, "DELETE FROM %s WHERE  %s!='%s' and %s like '%s$$$M%%'",sec->countersTable, sec->counterNameField, counterMonName, sec->counterNameField, counterPrefix);
+        if (sqlite3_query_execute(connection.handle, query) != 0) {
+            LOG_ERROR_1(APLOG_ERR, 0, r, "checkGenericQuotas.delete.old.per.month SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
+            return osa_error(r,"DB query error", 500);
+        }
+        /*    4.1 retreive counter value for current "per month counter" */
+        query=apr_psprintf(r->pool, "SELECT %s FROM %s WHERE %s='%s'", sec->counterValueField, sec->countersTable, sec->counterNameField, counterMonName);
+        sqlite3_rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);    
 
+        if (sqlite3_rc != SQLITE_OK) {
+            sqlite3_finalize(stmt);
+            LOG_ERROR_2(APLOG_ERR, 0, r, "get_sqlite3_pw.sqlite3_query SQLite ERROR: %s: %s", sqlite3_errmsg(connection.handle), r->uri);
+            return osa_error(r,"DB query error", 500);;
+        }    
+            if (sqlite3_step(stmt) == SQLITE_ROW) {
+            reqMon=strtol (sqlite3_column_text(stmt, 0),NULL,0);//atoi(data[0]);
+        }else{
+            /*      4.1.2 counter was not found, start from 0 and insert counter into DB */
+            reqMon=0;
+            query=apr_psprintf(r->pool, "INSERT INTO %s (%s,%s) VALUES ('%s',0)", sec->countersTable, sec->counterNameField, sec->counterValueField, counterMonName);
+            if (sqlite3_query_execute(connection.handle, query) != 0) {
+                sqlite3_finalize(stmt);
+                LOG_ERROR_1(APLOG_ERR, 0, r, "checkGenericQuotas.insert.per.month SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
+                return osa_error(r,"DB query error", 500);
+            }
+        }
+        sqlite3_finalize(stmt);
+        /*    4.2 increment coutner (in DB too) */
+        query=apr_psprintf(r->pool, "UPDATE %s SET %s=%lu WHERE %s='%s'", sec->countersTable, sec->counterValueField, reqMon+1, sec->counterNameField, counterMonName);
+        if (sqlite3_query_execute(connection.handle, query) != 0) {
+            LOG_ERROR_1(APLOG_ERR, 0, r, "checkGenericQuotas.update.per.month SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
+            return osa_error(r,"DB query error", 500);
+        }
+        /*    4.3 if new coutner value exceed quota, display error and stop */
+        if (reqMon+1 > maxReqMon){
+            char *err;
+            err=apr_psprintf(r->pool, "Maximum number of request (%s %lu/%lu) per month allowed exedeed", quotaScope, reqMon+1, maxReqMon);
 
+            return osa_error(r,err, httpStatusOver);
 
-  /* 4. Check per month quotas */
-  /*      Create counter name from counterPrefix and current month value */
-  counterMonName=apr_psprintf(r->pool, "%s$$$M=%d-%02d",counterPrefix,
-                timeinfo->tm_year+1900, 
-                timeinfo->tm_mon+1);
-  /*      delete previous counters */
-  query=apr_psprintf(r->pool, "DELETE FROM %s WHERE  %s!='%s' and %s like '%s$$$M%%'",sec->countersTable, sec->counterNameField, counterMonName, sec->counterNameField, counterPrefix);
-  if (sqlite3_query_execute(connection.handle, query) != 0) {
-    LOG_ERROR_1(APLOG_ERR, 0, r, "checkGenericQuotas.delete.old.per.month SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
-    return osa_error(r,"DB query error", 500);
-  }
-  /*    4.1 retreive counter value for current "per month counter" */
-  query=apr_psprintf(r->pool, "SELECT %s FROM %s WHERE %s='%s'", sec->counterValueField, sec->countersTable, sec->counterNameField, counterMonName);
-  sqlite3_rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);    
-
-  if (sqlite3_rc != SQLITE_OK) {
-    sqlite3_finalize(stmt);
-    LOG_ERROR_2(APLOG_ERR, 0, r, "get_sqlite3_pw.sqlite3_query SQLite ERROR: %s: %s", sqlite3_errmsg(connection.handle), r->uri);
-    return osa_error(r,"DB query error", 500);;
-  }    
-  if (sqlite3_step(stmt) == SQLITE_ROW) {
-    reqMon=strtol (sqlite3_column_text(stmt, 0),NULL,0);//atoi(data[0]);
-  }else{
-    /*      4.1.2 counter was not found, start from 0 and insert counter into DB */
-    reqMon=0;
-    query=apr_psprintf(r->pool, "INSERT INTO %s (%s,%s) VALUES ('%s',0)", sec->countersTable, sec->counterNameField, sec->counterValueField, counterMonName);
-    if (sqlite3_query_execute(connection.handle, query) != 0) {
-      sqlite3_finalize(stmt);
-      LOG_ERROR_1(APLOG_ERR, 0, r, "checkGenericQuotas.insert.per.month SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
-      return osa_error(r,"DB query error", 500);
+        }
     }
-  }
-  sqlite3_finalize(stmt);
-  /*    4.2 increment coutner (in DB too) */
-  query=apr_psprintf(r->pool, "UPDATE %s SET %s=%lu WHERE %s='%s'", sec->countersTable, sec->counterValueField, reqMon+1, sec->counterNameField, counterMonName);
-  if (sqlite3_query_execute(connection.handle, query) != 0) {
-    LOG_ERROR_1(APLOG_ERR, 0, r, "checkGenericQuotas.update.per.month SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
-    return osa_error(r,"DB query error", 500);
-  }
-  /*    4.3 if new coutner value exceed quota, display error and stop */
-  if (reqMon+1 > maxReqMon){
-    char *err;
-    err=apr_psprintf(r->pool, "Maximum number of request (%s %lu/%lu) per month allowed exedeed", quotaScope, reqMon+1, maxReqMon);
 
-    return osa_error(r,err, httpStatusOver);
-
-  }
-
-  /* 5. no error occurs in quotas management (under quotas) return OK to continue processing */
-  return OK;
+    /* 5. no error occurs in quotas management (under quotas) return OK to continue processing */
+    return OK;
 
 
 }
@@ -725,60 +721,63 @@ int checkGenericQuotas( osa_config_rec *sec, request_rec *r,char *counterPrefix,
 /*--------------------------------------------------------------------------------------------------*/
 int checkGlobalQuotas( osa_config_rec *sec, request_rec *r){
 
-  char *query;
-  char *counterPrefix;
-  sqlite3_stmt *stmt;
-  int sqlite3_rc;
-  unsigned long reqSec=0;
-  unsigned long reqDay=0;
-  unsigned long reqMonth=0;
+    char *query;
+    char *counterPrefix;
+    sqlite3_stmt *stmt;
+    int sqlite3_rc;
+    unsigned long reqSec=0;
+    unsigned long reqDay=0;
+    unsigned long reqMonth=0;
 
-	if (connection.handle==NULL){
-		/* connect database */
-		if(!open_db_handle(r,sec)) {
-			return osa_error(r,"Unable to connect database", 500);
-		}
-	}
+    if (connection.handle==NULL){
+        /* connect database */
+        if(!open_db_handle(r,sec)) {
+            return osa_error(r,"Unable to connect database", 500);
+        }
+    }
 
-  /* 1. create a counter prefix from quotas enabled resource resource name */
-  counterPrefix=apr_psprintf(r->pool, "R=%s",  sec->resourceName);
+    /* 1. create a counter prefix from quotas enabled resource resource name */
+    counterPrefix=apr_psprintf(r->pool, "R=%s",  sec->resourceName);
 
-  /* 2. retreive values form Maximum allowed for resource (sec/day/month) */
+ 	if (!read_quota_from_cache(r->server, r,  sec->resourceName, "", &reqSec, &reqMonth, &reqDay)){
+    /* 2. retreive values form Maximum allowed for resource (sec/day/month) */
 
-  query=apr_psprintf(r->pool, "SELECT %s, %s, %s FROM %s WHERE %s='%s'", sec->osaPerSecField, sec->osaPerDayField, sec->osaPerMonthField, sec->osaGlobalQuotasTable,  sec->osaResourceNameField, sec->resourceName);
-  if (sec->osaGlobalQuotasCondition){
-    query=apr_psprintf(r->pool, "%s AND %s", query, sec->osaGlobalQuotasCondition);
-  }
+        query=apr_psprintf(r->pool, "SELECT %s, %s, %s FROM %s WHERE %s='%s'", sec->osaPerSecField, sec->osaPerDayField, sec->osaPerMonthField, sec->osaGlobalQuotasTable,  sec->osaResourceNameField, sec->resourceName);
+        if (sec->osaGlobalQuotasCondition){
+            query=apr_psprintf(r->pool, "%s AND %s", query, sec->osaGlobalQuotasCondition);
+        }
 
-  sqlite3_rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);    
+        sqlite3_rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);    
 
-  if (sqlite3_rc != SQLITE_OK) {
-    /*    2.2 No quota definition was found in DB ==> ERROR */
-    sqlite3_finalize(stmt);
-    LOG_ERROR_1(APLOG_ERR, 0, r, "checkGlobalQuotas: SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
-    return osa_error(r,"checkGlobalQuotas: DB query error", 500);
-  }    
-  if (sqlite3_step(stmt) == SQLITE_ROW) {
-    /*    2.3 quota definition was found: get values */
-    reqSec=strtol (sqlite3_column_text(stmt, 0),NULL,0); //atoi(data[0]);
-    reqDay=strtol (sqlite3_column_text(stmt, 1),NULL,0); //atoi(data[1]);
-    reqMonth=strtol (sqlite3_column_text(stmt, 2),NULL,0); //atoi(data[2]);
-  }
-  sqlite3_finalize(stmt);
-  char *scope;
+        if (sqlite3_rc != SQLITE_OK) {
+            /*    2.2 No quota definition was found in DB ==> ERROR */
+            sqlite3_finalize(stmt);
+            LOG_ERROR_1(APLOG_ERR, 0, r, "checkGlobalQuotas: SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
+            return osa_error(r,"checkGlobalQuotas: DB query error", 500);
+        }    
+        if (sqlite3_step(stmt) == SQLITE_ROW) {
+            /*    2.3 quota definition was found: get values */
+            reqSec=strtol (sqlite3_column_text(stmt, 0),NULL,0); //atoi(data[0]);
+            reqDay=strtol (sqlite3_column_text(stmt, 1),NULL,0); //atoi(data[1]);
+            reqMonth=strtol (sqlite3_column_text(stmt, 2),NULL,0); //atoi(data[2]);
+        }
+        sqlite3_finalize(stmt);
+		store_quota_cache(r, sec->resourceName, "", reqSec, reqDay, reqMonth, sec->quotasDefCacheTTL);
+     }
+    char *scope;
 
-  /* 3.  Define "quotaScope" variable for checkGenericQuotas and call it */
-  scope=apr_psprintf(r->pool, "global for resource %s",  sec->resourceName);
+    /* 3.  Define "quotaScope" variable for checkGenericQuotas and call it */
+    scope=apr_psprintf(r->pool, "global for resource %s",  sec->resourceName);
 
 
 
-  int rc;
+    int rc;
 
-  P_db(sec, r, counterPrefix);
-  rc=checkGenericQuotas(sec, r, counterPrefix, scope, reqSec, reqDay, reqMonth, 503);
-  V_db(sec, r, counterPrefix);
+    P_db(sec, r, counterPrefix);
+    rc=checkGenericQuotas(sec, r, counterPrefix, scope, reqSec, reqDay, reqMonth, 503);
+    V_db(sec, r, counterPrefix);
 
-  return rc;
+    return rc;
 
 }
 
@@ -819,35 +818,38 @@ int checkUserQuotas( osa_config_rec *sec, request_rec *r){
   /* 1. create a counter prefix from quotas enabled resource resource name and username */
   counterPrefix=apr_psprintf(r->pool, "R=%s$$$U=%s",  sec->resourceName, r->user);
 
-  /* 2. retreive values form Maximum allowed for resource (sec/day/month) */
-  query=apr_psprintf(r->pool, "SELECT %s, %s, %s FROM %s WHERE %s='%s' AND upper(%s)=upper('%s')", sec->osaPerSecField, sec->osaPerDayField, sec->osaPerMonthField, sec->osaUserQuotasTable,  sec->osaResourceNameField, sec->resourceName, sec->osaNameField, r->user);
-  if (sec->osaUserQuotasCondition){
-    /*    2.1 if configuration set a condition (sql) to retreive quotas, integrate it to request */
-    query=apr_psprintf(r->pool, "%s AND %s", query, sec->osaUserQuotasCondition);
-  }
+	if (!read_quota_from_cache(r->server, r, sec->resourceName, r->user, &reqSec, &reqDay, &reqMonth)){
+    /* 2. retreive values form Maximum allowed for resource (sec/day/month) */
+    query=apr_psprintf(r->pool, "SELECT %s, %s, %s FROM %s WHERE %s='%s' AND upper(%s)=upper('%s')", sec->osaPerSecField, sec->osaPerDayField, sec->osaPerMonthField, sec->osaUserQuotasTable,  sec->osaResourceNameField, sec->resourceName, sec->osaNameField, r->user);
+    if (sec->osaUserQuotasCondition){
+        /*    2.1 if configuration set a condition (sql) to retreive quotas, integrate it to request */
+        query=apr_psprintf(r->pool, "%s AND %s", query, sec->osaUserQuotasCondition);
+    }
 
-  sqlite3_rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);    
+    sqlite3_rc = sqlite3_prepare_v2(connection.handle, query, -1, &stmt, 0);    
 
-  if (sqlite3_rc != SQLITE_OK) {
-    /*    2.2 No quota definition was found in DB ==> ERROR */
+    if (sqlite3_rc != SQLITE_OK) {
+        /*    2.2 No quota definition was found in DB ==> ERROR */
+        sqlite3_finalize(stmt);
+        LOG_ERROR_1(APLOG_ERR, 0, r, "checkUserQuotas: SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
+        return osa_error(r,"checkUserQuotas: DB query error", 500);
+    }
+
+    sqlite3_rc = sqlite3_step(stmt);
+    if (sqlite3_rc == SQLITE_ROW) {
+        /*    2.3 quota definition was found: get values */
+        reqSec=strtol (sqlite3_column_text(stmt, 0),NULL,0); //atol(data[0]);
+        reqDay=strtol (sqlite3_column_text(stmt, 1),NULL,0); //atol(data[1]);
+        reqMonth=strtol (sqlite3_column_text(stmt, 2),NULL,0); //atoi(data[2]);
+    }else{
+        char *err;
+        err=apr_psprintf(r->pool, "No quota defined for user %s with user quotas control is activated on resource %s",r->user, sec->resourceName); 
+        sqlite3_finalize(stmt);
+        return osa_error(r,err, 500);
+    }
     sqlite3_finalize(stmt);
-    LOG_ERROR_1(APLOG_ERR, 0, r, "checkUserQuotas: SQLite ERROR: %s: ", sqlite3_errmsg(connection.handle));
-    return osa_error(r,"checkUserQuotas: DB query error", 500);
+	store_quota_cache(r, sec->resourceName, r->user, reqSec, reqDay, reqMonth, sec->quotasDefCacheTTL);
   }
-
-  sqlite3_rc = sqlite3_step(stmt);
-  if (sqlite3_rc == SQLITE_ROW) {
-    /*    2.3 quota definition was found: get values */
-    reqSec=strtol (sqlite3_column_text(stmt, 0),NULL,0); //atol(data[0]);
-    reqDay=strtol (sqlite3_column_text(stmt, 1),NULL,0); //atol(data[1]);
-    reqMonth=strtol (sqlite3_column_text(stmt, 2),NULL,0); //atoi(data[2]);
-  }else{
-    char *err;
-    err=apr_psprintf(r->pool, "No quota defined for user %s with user quotas control is activated on resource %s",r->user, sec->resourceName); 
-    sqlite3_finalize(stmt);
-    return osa_error(r,err, 500);
-  }
-  sqlite3_finalize(stmt);
   /* 3.  Define "quotaScope" variable for checkGenericQuotas and call it */
   char *scope;
   scope=apr_psprintf(r->pool, "for user %s and resource %s", r->user, sec->resourceName);

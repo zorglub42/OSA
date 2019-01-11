@@ -15,6 +15,34 @@ char rfc3986[256] = {0};
 
 
 //BHE----------
+char *to_json_quota(request_rec *r, unsigned long reqSec, unsigned long reqDay, unsigned long reqMonth){
+	json_object * quota = json_object_new_object();
+
+
+	
+	json_object_object_add(quota, "reqSec", json_object_new_int64(reqSec));
+	json_object_object_add(quota, "reqDay", json_object_new_int64(reqDay));
+	json_object_object_add(quota, "reqMonth", json_object_new_int64(reqMonth));
+	char *rc =PSTRDUP(r->pool, json_object_to_json_string(quota)); 
+	json_object_put(quota);
+
+	return rc;
+}
+void from_json_quota(request_rec *r, char *jsonStr, unsigned long *reqSec, unsigned long *reqDay, unsigned long *reqMonth){
+	json_object *jobj=json_tokener_parse(jsonStr);
+
+	json_object *val;
+	json_object_object_get_ex(jobj, "reqSec", &val);
+	*reqSec = json_object_get_int64(val);
+	json_object_object_get_ex(jobj, "reqDay", &val);
+	*reqDay = json_object_get_int64(val);
+	json_object_object_get_ex(jobj, "reqMonth", &val);
+	*reqMonth = json_object_get_int64(val);
+
+	json_object_put(jobj);
+
+}
+
 char *to_json_string(request_rec *r, stringKeyValList *list){
 	json_object * user = json_object_new_object();
 	json_object *jarray = json_object_new_array();
@@ -152,20 +180,34 @@ static int cache_post_config(apr_pool_t *pconf, apr_pool_t *plog,
 	}
  	apr_pool_cleanup_register(pconf, NULL, remove_lock, apr_pool_cleanup_null);
 
+	osa_server_config_rec *conf = ap_get_module_config(base_server->module_config, &osa_module);
+		ap_log_perror(APLOG_MARK, APLOG_NOTICE, 0, plog,
+			"cache file is: %s", conf->cache_filename);
 	// static struct ap_socache_hints socache_hints =
     // { 64, 2048, 60000000 };
 
+	char cache_prov[20];
+	char *sep = strchr(conf->cache_filename, ':');
+	if (sep == NULL){
+		strcpy(cache_prov, "shmcb");
+		ap_log_perror(APLOG_MARK, APLOG_NOTICE, 0, plog,
+			"cache spec are: %s (default) -> %s", cache_prov, conf->cache_filename);
+	}else{
+		strncpy(cache_prov, conf->cache_filename, sep-conf->cache_filename);
+		cache_prov[sep-conf->cache_filename]=0;
+		conf->cache_filename=sep+1;
+		ap_log_perror(APLOG_MARK, APLOG_NOTICE, 0, plog,
+			"cache spec are: %s -> %s", cache_prov, conf->cache_filename);
+	}	
 	//"shmcb"
-	osa_cache.provider = ap_lookup_provider(AP_SOCACHE_PROVIDER_GROUP, "shmcb", AP_SOCACHE_PROVIDER_VERSION);
+
+	osa_cache.provider = ap_lookup_provider(AP_SOCACHE_PROVIDER_GROUP, cache_prov, AP_SOCACHE_PROVIDER_VERSION);
 	if (!osa_cache.provider){
 		ap_log_perror(APLOG_MARK, APLOG_CRIT, 0, plog,
 			"shmcb/dbm provider not found");
 		return HTTP_INTERNAL_SERVER_ERROR;
 		
 	}
-	osa_server_config_rec *conf = ap_get_module_config(base_server->module_config, &osa_module);
-		ap_log_perror(APLOG_MARK, APLOG_ERR, 0, plog,
-			"cache file is: %s", conf->cache_filename);
 
 	const char *errmsg = osa_cache.provider->create(&(osa_cache.socache_instance), conf->cache_filename, ptmp, pconf);
 	//BHE
@@ -190,6 +232,85 @@ static int cache_post_config(apr_pool_t *pconf, apr_pool_t *plog,
 	return OK;
 
 }
+
+int read_quota_from_cache(server_rec *server, request_rec *r, char * resource, char *user, unsigned long *reqSec, unsigned long *reqDay, unsigned long *reqMonth){
+	int rc;
+
+
+	if (!acquire(r)) return FALSE;
+
+
+
+	unsigned char id[ strlen(resource) + strlen(user) + strlen(QUOTA_CACHE_ID_PATTERN)];
+				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, 
+				"%s", id);
+	//int datalen = sizeof(grant);
+	int datalen = MAX_STRING_LEN;
+	char jsonStr[datalen];
+
+	sprintf(id, QUOTA_CACHE_ID_PATTERN, resource, user); 
+
+	apr_status_t rv = osa_cache.provider->retrieve(osa_cache.socache_instance, server, id,  strlen(id), jsonStr, &datalen, r->pool);
+	if (rv != APR_SUCCESS) {
+		switch (rv){
+			case APR_NOTFOUND:
+				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, 
+				"failed to retreive object err=%s", "APR_NOTFOUND");
+			break;;
+			case APR_EGENERAL:
+				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, 
+				"failed to retreive object err=%s", "APR_EGENERAL");
+			break;;
+			case APR_ENOSPC:
+				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, 
+				"failed to retreive object err=%s", "APR_ENOSPC");
+			break;;
+			default:
+				ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, 
+				"failed to retreive object err=%s", "DEFAULT");
+			break;;
+
+		}
+		ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, 
+		"failed to retreive object from %s %d", osa_cache.cache_socache_id, rv);
+		rc=FALSE;
+	}else{
+		from_json_quota(r, jsonStr, reqSec, reqDay, reqMonth);
+		ap_log_rerror(
+			APLOG_MARK, APLOG_DEBUG, rv, r, "got quota %s for U=%s r=%s from cache %s (%lu,%lu,%lu)",
+			jsonStr, user, resource, osa_cache.cache_socache_id, *reqSec, *reqDay, *reqMonth
+		);
+		rc=TRUE;
+	}
+
+	if (!release(r)) return FALSE;
+	return rc;
+}
+void store_quota_cache(request_rec *r, char * resource, char *user, unsigned long reqSec, unsigned long reqDay, unsigned long reqMonth, int ttl){
+
+	if (!acquire(r)) return ;
+
+
+
+	unsigned char id[strlen(resource) + strlen(user) + strlen(QUOTA_CACHE_ID_PATTERN)];
+	char *jsonStr = to_json_quota(r, reqSec, reqDay, reqMonth);
+	//rpdp_config_rec *conf = ap_get_module_config(r->per_dir_config, &rpdp_module);
+	//ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, "TTL=%lu", conf->cacheTTL);
+
+	sprintf(id, QUOTA_CACHE_ID_PATTERN, resource, user); 
+	apr_status_t rv = osa_cache.provider->store(osa_cache.socache_instance, r->server, id,  strlen(id), apr_time_now()+ (ttl * 1000000), jsonStr, strlen(jsonStr), r->pool);
+	//apr_status_t rv = rpdp_cache.provider->store(rpdp_cache.socache_instance, r->server, id,  strlen(id), apr_time_now()+ (conf->cacheTTL * 1000000), grant, strlen(grant), r->pool);
+	if (rv != APR_SUCCESS){
+		ap_log_rerror(APLOG_MARK, APLOG_CRIT, rv, r, "failed to store object err=%d", rv);
+	}else{
+		ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, "object succesfully stored");
+	}
+	
+
+	release(r);
+	
+}
+
 static int read_keyval_from_cache(server_rec *server, request_rec *r, char *dataType, char * resource, char *user, stringKeyValList *list){
 	int rc;
 
@@ -297,7 +418,8 @@ static int read_pw_from_cache(server_rec *server, request_rec *r, char *user, ch
 
 		}
 		ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, 
-		"failed to retreive object from %s %d", osa_cache.cache_socache_id, rv);
+			"failed to retreive object from %s %d", osa_cache.cache_socache_id, rv
+		);
 		rc=FALSE;
 	}else{
 		data[datalen]=0;
@@ -305,6 +427,7 @@ static int read_pw_from_cache(server_rec *server, request_rec *r, char *user, ch
 		strcpy(pw, data);
 		rc=TRUE;
 	}
+
 
 	if (!release(r)) return FALSE;
 	return rc;
@@ -1873,7 +1996,7 @@ void *create_osa_dir_config (POOL *p, char *d)
 
 	m->userGroupsCacheTTL=30;
 	m->userAttributesCacheTTL=30;
-
+	m->quotasDefCacheTTL=30;
 
 	return (void *)m;
 }
