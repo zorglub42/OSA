@@ -42,10 +42,10 @@ First of all, install required packages and clone OSA repository
 	**Debian/Raspbian Stretch**
 
 		#Choose your database manegement system (uncomment the proper line)
-		#RDBMS=mysql && RDBMS_PACKAGE="php-mysql mysql-server default-libmysqlclient-dev"
-		#RDBMS=sqlite && RDBMS_PACKAGE="sqlite3 php5-sqlite libsqlite3-dev"
+		#RDBMS=mysql && RDBMS_PACKAGE="mysql-server php-mysql default-libmysqlclient-dev"
+		#RDBMS=sqlite && RDBMS_PACKAGE="sqlite3 php-sqlite3 libsqlite3-dev"
 
-		apt-get install apache2 php5 php5-curl  openssl curl zip autoconf apache2-dev git build-essential  zlib1g-dev zlib1g libjson-c-dev libjson-c2 $RDBMS_PACKAGE
+		apt-get install apache2 libapache2-mod-php php php-curl openssl curl zip autoconf apache2-dev git build-essential zlib1g-dev zlib1g libjson-c-dev libjson-c3 $RDBMS_PACKAGE
 
     
 	**Since Ubuntu 16.04 (included)**
@@ -72,7 +72,7 @@ Note:
 			./install.sh -rdbms $RDBMS -m /usr/local/OSA
 			
 		
-- Go to $INSTALL_DIR/RunTimeAppliance/shell
+- Go to $INSTALL_DIR/RunTimeAppliance/shell **NOTE:** At this step, if you're using mysql version, you should have done the mysql root password configuration
 
 		Ex.:
 			cd /usr/local/OSA/RunTimeAppliance/shell
