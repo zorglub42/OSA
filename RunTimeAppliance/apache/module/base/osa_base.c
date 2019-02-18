@@ -80,27 +80,27 @@ void from_json_string(request_rec *r, char *jsonStr, stringKeyValList *list){
 
 }
 int acquire(request_rec *r){
- 	if (socache_mutex) {
-        apr_status_t status = apr_global_mutex_lock(socache_mutex);
-        if (status != APR_SUCCESS) {
-            ap_log_rerror(APLOG_MARK, APLOG_ERR, status, r, APLOGNO(02350)
-                    "could not acquire lock, ignoring cache");
-            return FALSE;
-        }
-    }
+ 	// if (socache_mutex) {
+    //     apr_status_t status = apr_global_mutex_lock(socache_mutex);
+    //     if (status != APR_SUCCESS) {
+    //         ap_log_rerror(APLOG_MARK, APLOG_ERR, status, r, APLOGNO(02350)
+    //                 "could not acquire lock, ignoring cache");
+    //         return FALSE;
+    //     }
+    // }
 	return  TRUE;
 
 }
 
 int release(request_rec *r){
-	if (socache_mutex) {
-		apr_status_t status = apr_global_mutex_unlock(socache_mutex);
-		if (status != APR_SUCCESS) {
-			ap_log_rerror(APLOG_MARK, APLOG_ERR, status, r, APLOGNO(02356)
-					"could not release lock, ignoring cache");
-			return FALSE;
-		}
-    }
+	// if (socache_mutex) {
+	// 	apr_status_t status = apr_global_mutex_unlock(socache_mutex);
+	// 	if (status != APR_SUCCESS) {
+	// 		ap_log_rerror(APLOG_MARK, APLOG_ERR, status, r, APLOGNO(02356)
+	// 				"could not release lock, ignoring cache");
+	// 		return FALSE;
+	// 	}
+    // }
 	return TRUE;
 }
 
@@ -303,7 +303,7 @@ void store_quota_cache(request_rec *r, char * resource, char *user, unsigned lon
 	if (rv != APR_SUCCESS){
 		ap_log_rerror(APLOG_MARK, APLOG_CRIT, rv, r, "failed to store object err=%d", rv);
 	}else{
-		ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, "object succesfully stored");
+		ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, "object succesfully stored quota");
 	}
 	
 
@@ -375,7 +375,7 @@ static void store_keyval_cache(request_rec *r, char *dataType,  char * resource,
 	if (rv != APR_SUCCESS){
 		ap_log_rerror(APLOG_MARK, APLOG_CRIT, rv, r, "failed to store object err=%d", rv);
 	}else{
-		ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, "object succesfully stored");
+		ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, "object succesfully stored %s", dataType);
 	}
 	
 
@@ -448,7 +448,7 @@ static void store_pw_cache(request_rec *r, char *user, char *pw){
 	if (rv != APR_SUCCESS){
 		ap_log_rerror(APLOG_MARK, APLOG_CRIT, rv, r, "failed to store object err=%d", rv);
 	}else{
-		ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, "object succesfully stored: %s", pw);
+		ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, "object succesfully stored: PASSWORD");
 	}
 	
 
@@ -518,7 +518,7 @@ static void store_tokens_clean(request_rec *r){
 	if (rv != APR_SUCCESS){
 		ap_log_rerror(APLOG_MARK, APLOG_CRIT, rv, r, "failed to store object err=%d", rv);
 	}else{
-		ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, "object succesfully stored: (tokens_clean)");
+		//ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, "object succesfully stored: (tokens_cleaner)");
 	}
 	
 
@@ -1796,7 +1796,6 @@ int authenticate_basic_user (request_rec *r)
 	const char *sent_pw, *real_pw, *salt = 0, *salt_column = 0;
 	int res;
 
-
 	if (!sec->osaEnable)	/* no mysql authorization */
 		return DECLINED;	
 
@@ -1892,8 +1891,10 @@ int authenticate_basic_user (request_rec *r)
 	cached_pw[0]=0;
 	if (read_pw_from_cache(r->server, r, user, cached_pw)){
 		real_pw=PSTRDUP(r->pool, cached_pw);
+ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, "PW FROM CACHE");
 	}else{
 		real_pw = get_db_pw(r, user, sec, salt_column, &salt ); /* Get a salt if one was specified */
+ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, "PW FROM DB");
 		if (real_pw){
 			store_pw_cache(r, user, (char *)real_pw);
 		}

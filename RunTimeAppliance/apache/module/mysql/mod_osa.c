@@ -443,6 +443,11 @@ void P_db(osa_config_rec *sec, request_rec *r, char *sem){
 
 
 	query=apr_psprintf(r->pool, "INSERT INTO %s (counterName,value) VALUES ('SEM_%s__',0)", sec->countersTable, sem);
+	// query=apr_psprintf(r->pool, "INSERT INTO %s (%s,%s) VALUES ('SEM_%s__', %s)",
+	// 	sec->cookieAuthTable,
+	// 	sec->cookieAuthTokenField,
+	// 	sec->cookieInitialAuthTokenField, sem, sem
+	// );
 	int tryNumber=0;
 	int gotLock=0;
 	while (!gotLock && tryNumber <DEAD_LOCK_MAX_RETRY){
@@ -988,9 +993,9 @@ int checkUserQuotas( osa_config_rec *sec, request_rec *r){
 
 	int rc;
 
-	P_db(sec, r, "USER_QUOTAS");
+	P_db(sec, r, counterPrefix);
 	rc=checkQuotas(sec, r, counterPrefix, scope, reqSec, reqDay, reqMonth, 429);
-	V_db(sec, r, "USER_QUOTAS");
+	V_db(sec, r, counterPrefix);
 
 	return rc;
 }
@@ -1199,8 +1204,6 @@ int register_hit(request_rec *r)
 				return osa_error(r,"Unable to connect database", 500);
 			}
 		}
-		P_db(sec, r, "hits");
-
 
 		char *usr;
 		if (r->user == NULL){
@@ -1241,7 +1244,6 @@ int register_hit(request_rec *r)
 		if (mysql_query(connection.handle, query) != 0) {
 			LOG_ERROR_1(APLOG_ERR, 0, r, "register_hit: MySQL ERROR: %s: ", mysql_error(connection.handle));
 		}
-		V_db(sec, r, "hits");
 	}
 	return OK;
 }

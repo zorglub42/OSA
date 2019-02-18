@@ -856,9 +856,9 @@ int checkUserQuotas( osa_config_rec *sec, request_rec *r){
 
   int rc;
 
-  P_db(sec, r, "USER_QUOTAS");
+  P_db(sec, r, counterPrefix);
   rc=checkGenericQuotas(sec, r, counterPrefix, scope, reqSec, reqDay, reqMonth, 429);
-  V_db(sec, r, "USER_QUOTAS");
+  V_db(sec, r, counterPrefix);
 
   return rc;
 
