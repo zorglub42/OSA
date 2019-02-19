@@ -25,15 +25,17 @@ var divHooks=[];
 var apiDocsURI=[];
 
 //DOM Mutation Observer
-var osaAddonsObserver = new MutationObserver(function(mutations) {
-												for (var j=0;j<divHooks.length;j++){
-													if ($(divHooks[j].selector).length){
-														//we found at least 1 element satifying provided JQuery selector pattern
-														//Trigger hook callback
-														divHooks[j].callback();
-													}
-												}
-											});
+var osaAddonsObserver = new MutationObserver(
+	function(mutations) {
+		for (var j=0;j<divHooks.length;j++){
+			if ($(divHooks[j].selector).length){
+				//we found at least 1 element satifying provided JQuery selector pattern
+				//Trigger hook callback
+				divHooks[j].callback();
+			}
+		}
+	}
+);
 
 
 /* Folling methods are used by add-ons developpers to intergate addons
