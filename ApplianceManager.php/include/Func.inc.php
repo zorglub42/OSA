@@ -273,15 +273,16 @@ function getUrlParts($url)
 {
     // get host name from URL
     
-    if (!preg_match("/^https:\/\/([^\/]+)(.*)/i", $url, $matches)) {
-        if (!preg_match("/^http:\/\/([^\/]+)(.*)/i", $url, $matches)) {
-            if (!preg_match("/^ws:\/\/([^\/]+)(.*)/i", $url, $matches)) {
-                if (!preg_match("/^wss:\/\/([^\/]+)(.*)/i", $url, $matches)){
-                    preg_match("/^balancer:\/\/([^\/]+)(.*)/i", $url, $matches);
-                }
-            }
-        }
-    }
+    preg_match("/^[0-9|a-z|A-Z]+:\/\/([^\/]+)(.*)/i", $url, $matches);
+    // if (!preg_match("/^https:\/\/([^\/]+)(.*)/i", $url, $matches)) {
+    //     if (!preg_match("/^http:\/\/([^\/]+)(.*)/i", $url, $matches)) {
+    //         if (!preg_match("/^ws:\/\/([^\/]+)(.*)/i", $url, $matches)) {
+    //             if (!preg_match("/^wss:\/\/([^\/]+)(.*)/i", $url, $matches)){
+    //                 preg_match("/^balancer:\/\/([^\/]+)(.*)/i", $url, $matches);
+    //             }
+    //         }
+    //     }
+    // }
     $host = $matches[1];
     $path= $matches[2];
     
