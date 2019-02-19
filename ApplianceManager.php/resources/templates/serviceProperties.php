@@ -159,7 +159,12 @@ require_once "../../include/Localization.php";
 			</div>
 			<div id="tabs-quotas">
 				<div class="row">
-					<div class="cl-md-12" title="<?php echo Localization::getString("service.isGlobalQuotasEnabled.tooltip")?>">
+					<div class="col-md-12">
+						<?php echo Localization::getString("service.label.warning.quotas")?>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12" title="<?php echo Localization::getString("service.isGlobalQuotasEnabled.tooltip")?>">
 						<label for="isGlobalQuotasEnabled"><?php echo Localization::getString("service.label.isGlobalQuotasEnabled")?></label>&nbsp;
 						<input type="checkbox" id="isGlobalQuotasEnabled" onClick="setQuotasVisibility();setServiceModified(true)"  onchange="setServiceModified(true)" onkeypress="setServiceModified(true)">
 					</div>

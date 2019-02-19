@@ -328,6 +328,7 @@ $strings["service.label.forwardIdentity"]="Forward identity";
 $strings["service.label.baUsername"]="User name (basic authentication)";
 $strings["service.label.baPassword"]="Password (basic authentication)";
 $strings["service.label.isGlobalQuotasEnabled"]="Enable global qutas";
+$strings["service.label.warning.quotas"]="ATTENTION: activate quotas checking dramaticaly decrease gateway preformances.";
 $strings["service.label.reqSec"]="Maximum per second";
 $strings["service.label.reqDay"]="Maximum per day";
 $strings["service.label.reqMonth"]="Maximum per month";

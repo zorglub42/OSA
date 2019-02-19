@@ -345,6 +345,7 @@ $strings["service.label.baUsername"]="Nom d'utilisateur (basic authentication)";
 $strings["service.label.baPassword"]="Mot de passe (basic authentication)";
 $strings["service.label.isGlobalQuotasEnabled"]
     ="Activer le contrôle de quotas globaux";
+$strings["service.label.warning.quotas"]="ATTENTION: activer le contrôle de quota réduit les performance de façon très senssible";
 $strings["service.label.reqSec"]="Maximum par seconde";
 $strings["service.label.reqDay"]="Maximum par jour";
 $strings["service.label.reqMonth"]="Maximum par mois";
