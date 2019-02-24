@@ -1665,7 +1665,7 @@ int check_auth(request_rec *r)
 	}
 	if (sec->osaAuthoritative) {
 		char *authorizationError;
-		apr_psprintf(r->pool, "User %s is not allowed for group %s", user, want);
+		authorizationError=apr_psprintf(r->pool, "User %s is not allowed for group %s", user, want);
 		//ap_note_basic_auth_failure(r);
 		if (sec->cookieAuthLoginForm != NULL && TABLE_GET(r->headers_in, "Authorization")==NULL ){
 			//Authorization fail and we didn't came here by basic auth (Authorization is set by BA);
@@ -1674,6 +1674,7 @@ int check_auth(request_rec *r)
 			deleteAuthCookie(r);
 			send_request_basic_auth(r);
 		}
+
 		return osa_error(r,authorizationError,NOT_AUTHORIZED);
 		
 	
@@ -2169,7 +2170,7 @@ void register_hooks(POOL *p)
 	ap_hook_child_init(osa_child_init, NULL, NULL, APR_HOOK_MIDDLE);
 
 
-	ap_hook_fixups(authenticate_cookie_user, NULL, NULL, APR_HOOK_FIRST);
+	//ap_hook_fixups(authenticate_cookie_user, NULL, NULL, APR_HOOK_FIRST);
 	ap_hook_fixups(authenticate_basic_user, NULL, NULL, APR_HOOK_FIRST);
 	ap_hook_fixups(check_auth, NULL, NULL, APR_HOOK_FIRST);
 	ap_hook_fixups(check_quotas, NULL, NULL, APR_HOOK_FIRST);
