@@ -17,4 +17,4 @@
 * 	Upgrade database form version 3.0.1 to version 3.1
 **/
 
-alter table services add (additionalBackendConnectionConfiguration text null);
+alter table services add additionalBackendConnectionConfiguration text null;
