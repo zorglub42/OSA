@@ -2170,7 +2170,7 @@ void register_hooks(POOL *p)
 	ap_hook_child_init(osa_child_init, NULL, NULL, APR_HOOK_MIDDLE);
 
 
-	//ap_hook_fixups(authenticate_cookie_user, NULL, NULL, APR_HOOK_FIRST);
+	ap_hook_fixups(authenticate_cookie_user, NULL, NULL, APR_HOOK_FIRST);
 	ap_hook_fixups(authenticate_basic_user, NULL, NULL, APR_HOOK_FIRST);
 	ap_hook_fixups(check_auth, NULL, NULL, APR_HOOK_FIRST);
 	ap_hook_fixups(check_quotas, NULL, NULL, APR_HOOK_FIRST);
