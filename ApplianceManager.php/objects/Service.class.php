@@ -171,6 +171,14 @@ class Service extends ApplianceObject
     public $additionalConfiguration;
 
     /**
+     * Additional apache config directive for connection to backend (ProxyPass tag)
+     * 
+     * @var string additionalBackendConnectionConfiguration Additionnal Apache configuration 
+     *             directive (for "ProxyPass" tag)
+     */
+    public $additionalBackendConnectionConfiguration;
+
+    /**
      * Is this service available on all publised nodes?
      * 
      * @var int onAllNodes Is this service available for all running nodes?
@@ -572,6 +580,28 @@ class Service extends ApplianceObject
         $this->additionalConfiguration=$additionalConfiguration;
     }
 
+
+    /**
+     * Getter
+     * 
+     * @return string Additionnal apache configuration for backend connection (ProxyPass)
+     */
+    function getAdditionalBackendConnectionConfiguration()
+    {
+        return $this->additionalBackendConnectionConfiguration;
+    }
+    /**
+     * Setter
+     * 
+     * @param string $additionalBackendConnectionConfiguration Additional apache config for backend connection (ProxyPass)
+     * 
+     * @return void
+     */
+    function setAdditionalBackendConnectionConfiguration($additionalBackendConnectionConfiguration)
+    {
+        $this->additionalBackendConnectionConfiguration=$additionalBackendConnectionConfiguration;
+    }
+
     /**
      * Getter
      * 
@@ -655,6 +685,7 @@ class Service extends ApplianceObject
             $this->setLoginFormUri($rqt["loginFormUri"]);
             
             $this->setAdditionalConfiguration($rqt["additionalConfiguration"]);
+            $this->setAdditionalBackendConnectionConfiguration($rqt["additionalBackendConnectionConfiguration"]);
             if ($this->getIsUserAuthenticationEnabled()==0) {
                 $this->setGroupName("");
                 $this->setIsUserQuotasEnabled(0);
@@ -691,6 +722,7 @@ class Service extends ApplianceObject
             "isHitLoggingEnabled" => $this->getIsHitLoggingEnabled() ,
             "isUserAuthenticationEnabled" => $this->getIsUserAuthenticationEnabled(),
             "additionalConfiguration" => $this->getAdditionalConfiguration(),
+            "additionalBackendConnectionConfiguration" => $this->getAdditionalBackendConnectionConfiguration(),
             "onAllNodes" => $this->getOnAllNodes(),
             "loginFormUri" => $this->getLoginFormUri(),
             "isAnonymousAllowed" => $this->getIsAnonymousAllowed()

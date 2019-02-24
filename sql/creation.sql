@@ -1,9 +1,7 @@
 /**--------------------------------------------------------
 * Module Name : RunTimeAppliance
-* Version : 2.0.0
 *
 * Software Name : OpenSourceAppliance
-* Version : 2.3
 *
 * Copyright (c) 2012 – 2013 France Télécom
 * This software is distributed under the Apache 2 license
@@ -16,17 +14,18 @@
 * Authors     : Benoit HERARD <benoit.herard(at)orange.com>
 *
 * Description :
-* 	Create dabase object  and bootstrat it with:
+* 	Create dabase object  and bootstrap it with:
 * 		- admin user (pass=a)
-* 		- ApplianceManager REST servicees granted to admin
+* 		- ApplianceManager REST services granted to admin
 *
 *--------------------------------------------------------
 * History     :
 *
 * 1.0.0 - 2012-10-01 : Release of the file
+* 3.1 - 2019-02-24 : Add additionalBackendConnectionConfiguration on services (ProxyPass flags)
 **/
 
--- Version: 3.0.1
+-- Version: 3.1
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -159,6 +158,7 @@ CREATE TABLE `services` (
 `isUserAuthenticationEnabled` tinyint(1) DEFAULT '1',
 `isHitLoggingEnabled` tinyint(1) DEFAULT '0',
 `additionalConfiguration` text,
+`additionalBackendConnectionConfiguration` text,
 `onAllNodes` tinyint(1) NOT NULL DEFAULT '1',
 `loginFormUri` VARCHAR(255) NULL DEFAULT '',
 `isAnonymousAllowed` TINYINT(1) NULL DEFAULT 0 ,

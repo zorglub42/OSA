@@ -235,6 +235,12 @@ require_once "../../include/Localization.php";
 						<?php echo Localization::getString("service.label.additionalConfiguration.helpText")?>
 					</div>
 				</div>
+				<div class="row">
+					<div class="col-md-12 col-xs-12" title="<?php echo Localization::getString("service.additionalBackendConnectionConfiguration.tooltip")?>">
+						<label><?php echo Localization::getString("service.label.additionalBackendConnectionConfiguration")?></label>
+						<input type="text" class="form-control" id="additionalBackendConnectionConfiguration" onClick="setServiceModified(true)"  onchange="setServiceModified(true)" onkeypress="setServiceModified(true)" value="{additionalBackendConnectionConfiguration}">
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>

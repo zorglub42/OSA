@@ -65,7 +65,7 @@ function setServiceModified(isModified){
 	}else{
 		setActionButtonEnabled('saveService',false);
 	}
-	if ($("#additionalConfiguration").val() != ""){
+	if ($("#additionalConfiguration").val() != "" || $("#additionalBackendConnectionConfiguration").val() != ""){
 		$("#warnAdditionalConfig").show();
 	}else{
 		$("#warnAdditionalConfig").hide();
@@ -291,6 +291,7 @@ function editService(service){
 							   .replaceAll("{cbOnAllNodes}", cbOnAllNodes)
 							   .replaceAll("{cbIsHitLoggingEnabled}", cbIsHitLoggingEnabled)
 							   .replaceAll("{additionalConfiguration}", service.additionalConfiguration==null?"":service.additionalConfiguration)
+							   .replaceAll("{additionalBackendConnectionConfiguration}", service.additionalBackendConnectionConfiguration==null?"":service.additionalBackendConnectionConfiguration)
 		);
 
 
@@ -362,6 +363,7 @@ function saveOrUpdateService(method){
 		backEndPassword="backEndPassword=" + encodeURIComponent(document.getElementById("backEndPassword").value);
 		groupName="groupName=" + encodeURIComponent(document.getElementById("groupName").value);
 		additionalConfiguration="additionalConfiguration=" + encodeURIComponent(document.getElementById("additionalConfiguration").value);
+		additionalBackendConnectionConfiguration="additionalBackendConnectionConfiguration=" + encodeURIComponent(document.getElementById("additionalBackendConnectionConfiguration").value);
 
 		loginFormUri="loginFormUri="+ encodeURIComponent(document.getElementById("loginFormUri").value);
 
@@ -414,6 +416,7 @@ function saveOrUpdateService(method){
 		"&" + isHitLoggingEnabled +
 		"&" + onAllNodes +
 		"&" + additionalConfiguration +
+		"&" + additionalBackendConnectionConfiguration +
 		"&" + isAnonymousAllowed +
 		"&" + loginFormUri;
 		if (document.getElementById("isGlobalQuotasEnabled").checked){
@@ -611,6 +614,7 @@ function addService(){
 							   .replaceAll("{cbOnAllNodes}", "")
 							   .replaceAll("{cbIsHitLoggingEnabled}", "")
 							   .replaceAll("{additionalConfiguration}", "")
+							   .replaceAll("{additionalBackendConnectionConfiguration}", "")
 		);
 
 		$(function() {

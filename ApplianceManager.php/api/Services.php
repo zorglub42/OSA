@@ -290,9 +290,15 @@ class Services
      *                                                  services  with user
      *                                                  authentication disabled
      *                                                  (filter conbination is AND)
-     * @param int    $additionalConfigurationFilter     [optional] Only retreive
+     * @param string $additionalConfigurationFilter     [optional] Only retreive
      *                                                  services with
      *                                                  additionalConfiguration
+     *                                                  containing that
+     *                                                  string
+     *                                                  (filter conbination is AND)
+     * @param string $additionalBackendConnectionConfigurationFilter     [optional] Only retreive
+     *                                                  services with
+     *                                                  additionalBackendConnectionConfiguration
      *                                                  containing that
      *                                                  string
      *                                                  (filter conbination is AND)
@@ -308,7 +314,7 @@ class Services
         $isIdentityForwardingEnabledFilter=null, $isGlobalQuotasEnabledFilter=null,
         $isUserQuotasEnabledFilter=null, $isPublishedFilter=null,
         $isHitLoggingEnabledFilter=null, $isUserAuthenticationEnabledFilter=null,
-        $additionalConfigurationFilter=null
+        $additionalConfigurationFilter=null, $additionalBackendConnectionConfigurationFilter=null
     ) {
         //Array param is legacy from previous (initial) version of Restler
         $params=array(
@@ -328,7 +334,8 @@ class Services
             "isUserAuthenticationEnabledFilter" => 
                 $isUserAuthenticationEnabledFilter,
             "additionalConfigurationFilter" => $additionalConfigurationFilter,
-        );
+            "additionalBackendConnectionConfigurationFilter" => $additionalBackendConnectionConfigurationFilter,
+            );
 
         return $this->_get(null, $params);
     }
@@ -353,70 +360,72 @@ class Services
     /**
      * Create service
      *
-     * Create and deplaoy a new Service
+     * Create and deploy a new Service
      *
-     * @param string $serviceName                 Serice identifier
-     * @param string $frontEndEndPoint            URI on frontend node
-     * @param string $backEndEndPoint             URL to backend server
-     * @param int    $isPublished                 [Optional] Is tis service deployed?
-     *                                            (O: no 1: yes, default 1)
-     *                                            {@choice 0,1}
-     * @param string $additionalConfiguration     [Optional] Additional Apache 
-     *                                            "<Location>" tag directives
-     * @param int    $isHitLoggingEnabled         [Optional] {@choice 0,1} Is log
-     *                                            recording is enabled?
-     *                                            (O: no 1: yes, default 0)
-     * @param int    $onAllNodes                  [Optional] {@choice 0,1} Is this
-     *                                            service alavaliable on all
-     *                                            publshed nodes?
-     *                                            (O: no 1: yes, default 1)
-     * @param int    $isUserAuthenticationEnabled [Optional] {@choice 0,1} Is user
-     *                                            authentication enabled?
-     *                                            (O: no 1: yes, default 0)
-     * @param string $groupName                   [Optional] User must be a member
-     *                                            of this group to use this service
-     *                                            (required if 
-     *                                            isUserAuthenticationEnabled=1)
-     * @param int    $isIdentityForwardingEnabled [Optional] {@choice 0,1}
-     *                                            Is authenticated user's identity
-     *                                            forwarded to backend system?
-     *                                            (O: no 1: yes, default 0)
-     * @param int    $isAnonymousAllowed          [Optional] {@choice 0,1}
-     *                                            Is authentication absolutly 
-     *                                            required to invoke this service 
-     *                                            or anonymous access is also 
-     *                                            possible?
-     *                                            (O: no 1: yes, default 0)
-     * @param string $backEndUsername             [Optional] username to 
-     *                                            authenticate against backend 
-     *                                            system (basic authentication),
-     *                                            use "%auto%" to use credentials
-     *                                            on OSA agains backend
-     * @param string $backEndPassword             [Optional] password to
-     *                                            authenticate against
-     *                                            backend system
-     * @param string $loginFormUri                [Optional] Login from URL to 
-     *                                            redirect to in case of
-     *                                            unauthenticated access on a
-     *                                            compliant node
-     * @param int    $isGlobalQuotasEnabled       [Optional] {@choice 0,1} Is global
-     *                                            quotas enabled?
-     *                                            (O: no 1: yes, default 0)
-     * @param int    $reqSec                      [Optional] Maximun number of 
-     *                                            requests allowed per second
-     *                                            (Required if 
-     *                                            isGlobalQuotasEnabled=1)
-     * @param int    $reqDay                      [Optional] Maximun number of
-     *                                            requests allowed per second
-     *                                            (Required if
-     *                                            isGlobalQuotasEnabled=1)
-     * @param int    $reqMonth                    [Optional] Maximun number of
-     *                                            requests allowed per second
-     *                                            (Required if
-     *                                            isGlobalQuotasEnabled=1)
-     * @param int    $isUserQuotasEnabled         [Optional] {@choice 0,1}
-     *                                            Are quotas enabled at user level?
-     *                                            (O: no 1: yes, default 0)
+     * @param string $serviceName                              Serice identifier
+     * @param string $frontEndEndPoint                         URI on frontend node
+     * @param string $backEndEndPoint                          URL to backend server
+     * @param int    $isPublished                              [Optional] Is tis service deployed?
+     *                                                         (O: no 1: yes, default 1)
+     *                                                         {@choice 0,1}
+     * @param string $additionalConfiguration                  [Optional] Additional Apache 
+     *                                                         "&lt;Location&gt;" tag directives
+     * @param string $additionalBackendConnectionConfiguration [Optional] Additional Apache 
+     *                                                         "ProxyPass" tag directives
+     * @param int    $isHitLoggingEnabled                      [Optional] {@choice 0,1} Is log
+     *                                                         recording is enabled?
+     *                                                         (O: no 1: yes, default 0)
+     * @param int    $onAllNodes                               [Optional] {@choice 0,1} Is this
+     *                                                         service alavaliable on all
+     *                                                         publshed nodes?
+     *                                                         (O: no 1: yes, default 1)
+     * @param int    $isUserAuthenticationEnabled              [Optional] {@choice 0,1} Is user
+     *                                                         authentication enabled?
+     *                                                         (O: no 1: yes, default 0)
+     * @param string $groupName                                [Optional] User must be a member
+     *                                                         of this group to use this service
+     *                                                         (required if 
+     *                                                         isUserAuthenticationEnabled=1)
+     * @param int    $isIdentityForwardingEnabled              [Optional] {@choice 0,1}
+     *                                                         Is authenticated user's identity
+     *                                                         forwarded to backend system?
+     *                                                         (O: no 1: yes, default 0)
+     * @param int    $isAnonymousAllowed                       [Optional] {@choice 0,1}
+     *                                                         Is authentication absolutly 
+     *                                                         required to invoke this service 
+     *                                                         or anonymous access is also 
+     *                                                         possible?
+     *                                                         (O: no 1: yes, default 0)
+     * @param string $backEndUsername                          [Optional] username to 
+     *                                                         authenticate against backend 
+     *                                                         system (basic authentication),
+     *                                                         use "%auto%" to use credentials
+     *                                                         received on OSA against backend
+     * @param string $backEndPassword                          [Optional] password to
+     *                                                         authenticate against
+     *                                                         backend system
+     * @param string $loginFormUri                             [Optional] Login from URL to 
+     *                                                         redirect to in case of
+     *                                                         unauthenticated access on a
+     *                                                         compliant node
+     * @param int    $isGlobalQuotasEnabled                    [Optional] {@choice 0,1} Is global
+     *                                                         quotas enabled?
+     *                                                         (O: no 1: yes, default 0)
+     * @param int    $reqSec                                   [Optional] Maximun number of 
+     *                                                         requests allowed per second
+     *                                                         (Required if 
+     *                                                         isGlobalQuotasEnabled=1)
+     * @param int    $reqDay                                   [Optional] Maximun number of
+     *                                                         requests allowed per second
+     *                                                         (Required if
+     *                                                         isGlobalQuotasEnabled=1)
+     * @param int    $reqMonth                                 [Optional] Maximun number of
+     *                                                         requests allowed per second
+     *                                                         (Required if
+     *                                                         isGlobalQuotasEnabled=1)
+     * @param int    $isUserQuotasEnabled                      [Optional] {@choice 0,1}
+     *                                                         Are quotas enabled at user level?
+     *                                                         (O: no 1: yes, default 0)
      *
      * @url POST :serviceName
      * @url POST
@@ -425,7 +434,7 @@ class Services
      */
     function addService(
         $serviceName, $frontEndEndPoint, $backEndEndPoint,
-        $isPublished=null,  $additionalConfiguration=null,
+        $isPublished=null,  $additionalConfiguration=null, $additionalBackendConnectionConfiguration=null,
         $isHitLoggingEnabled=null, $onAllNodes=null,
         $isUserAuthenticationEnabled=null, $groupName=null, 
         $isIdentityForwardingEnabled=null, $isAnonymousAllowed=null,
@@ -441,6 +450,7 @@ class Services
                 "frontEndEndPoint" => $frontEndEndPoint,
                 "backEndEndPoint" => $backEndEndPoint,
                 "additionalConfiguration" => $additionalConfiguration,
+                "additionalBackendConnectionConfiguration" => $additionalBackendConnectionConfiguration,
                 "isAnonymousAllowed" => $isAnonymousAllowed,
                 "isHitLoggingEnabled" => $isHitLoggingEnabled,
                 "onAllNodes" => $onAllNodes,
@@ -465,75 +475,80 @@ class Services
     /**
      * Update a service
      *
-     * @param string $serviceName                 Service identifier
-     * @param string $frontEndEndPoint            [Optional] URI on frontend node
-     * @param url    $backEndEndPoint             [Optional] URL to backend server
-     * @param int    $isPublished                 [Optional] {@choice 0,1} Is this 
-     *                                            service deployed? 
-     *                                            (O: no 1: yes, default 1)
-     * @param string $additionalConfiguration     [Optional] Additional Apache 
-     *                                            "<Location>" tag directives
-     * @param int    $isHitLoggingEnabled         [Optional] {@choice 0,1} Is log 
-     *                                            recording is enabled? 
-     *                                            (O: no 1: yes, default 0)
-     * @param int    $onAllNodes                  [Optional] {@choice 0,1} Is this 
-     *                                            service available on all publshed 
-     *                                            nodes? (O: no 1: yes, default 1)
-     * @param int    $isUserAuthenticationEnabled [Optional] {@choice 0,1} Is user 
-     *                                            authentication enabled? 
-     *                                            (O: no 1: yes, default 0)
-     * @param string $groupName                   [Optional] User must be a member 
-     *                                            of this group to use this service
-     *                                            (required if 
-     *                                            isUserAuthenticationEnabled=1)
-     * @param int    $isIdentityForwardingEnabled [Optional] {@choice 0,1} Is 
-     *                                            authenticated user's identity
-     *                                            forwarded to backend system?
-     *                                            (O: no 1: yes, default 0)
-     * @param int    $isAnonymousAllowed          [Optional] {@choice 0,1}
-     *                                            Is authentication absolutly 
-     *                                            required to invoke this service or
-     *                                            anonymous access is also possible?
-     *                                            (O: no 1: yes, default 0)
-     * @param string $backEndUsername             [Optional] username to 
-     *                                            authenticate against backend 
-     *                                            system (basic authentication), use
-     *                                            "%auto%" to use credentials on OSA
-     *                                            against backend
-     * @param string $backEndPassword             [Optional] password to 
-     *                                            authenticate agains backend system
-     * @param string $loginFormUri                [Optional] Login from URL to 
-     *                                            redirect to in case of 
-     *                                            unauthenticated access on a 
-     *                                            compliant node
-     * @param int    $isGlobalQuotasEnabled       [Optional] {@choice 0,1} Is global
-     *                                            quotas enabled?
-     *                                            (O: no 1: yes, default 0)
-     * @param int    $reqSec                      [Optional] Maximun number of 
-     *                                            request alloed per second 
-     *                                            (Required if 
-     *                                            isGlobalQuotasEnabled=1)
-     * @param int    $reqDay                      [Optional] Maximun number of 
-     *                                            request alloed per second 
-     *                                            (Required if 
-     *                                            isGlobalQuotasEnabled=1)
-     * @param int    $reqMonth                    [Optional] Maximun number of 
-     *                                            request alloed per second 
-     *                                            (Required if 
-     *                                            isGlobalQuotasEnabled=1)
-     * @param int    $isUserQuotasEnabled         [Optional] {@choice 0,1} Are
-     *                                            quotas enabled at user level?
-     *                                            (O: no 1: yes, default 0)
-     * @param int    $noApply                     [Optional] {@choice 0,1} Don't 
-     *                                            apply apache configuration?
-     *                                            (O: no 1: yes, default 0)
+     * @param string $serviceName                              Serice identifier
+     * @param string $frontEndEndPoint                         URI on frontend node
+     * @param string $backEndEndPoint                          URL to backend server
+     * @param int    $isPublished                              [Optional] Is tis service deployed?
+     *                                                         (O: no 1: yes, default 1)
+     *                                                         {@choice 0,1}
+     * @param string $additionalConfiguration                  [Optional] Additional Apache 
+     *                                                         "&lt;Location&gt;" tag directives
+     * @param string $additionalBackendConnectionConfiguration [Optional] Additional Apache 
+     *                                                         "ProxyPass" tag directives
+     * @param int    $isHitLoggingEnabled                      [Optional] {@choice 0,1} Is log
+     *                                                         recording is enabled?
+     *                                                         (O: no 1: yes, default 0)
+     * @param int    $onAllNodes                               [Optional] {@choice 0,1} Is this
+     *                                                         service alavaliable on all
+     *                                                         publshed nodes?
+     *                                                         (O: no 1: yes, default 1)
+     * @param int    $isUserAuthenticationEnabled              [Optional] {@choice 0,1} Is user
+     *                                                         authentication enabled?
+     *                                                         (O: no 1: yes, default 0)
+     * @param string $groupName                                [Optional] User must be a member
+     *                                                         of this group to use this service
+     *                                                         (required if 
+     *                                                         isUserAuthenticationEnabled=1)
+     * @param int    $isIdentityForwardingEnabled              [Optional] {@choice 0,1}
+     *                                                         Is authenticated user's identity
+     *                                                         forwarded to backend system?
+     *                                                         (O: no 1: yes, default 0)
+     * @param int    $isAnonymousAllowed                       [Optional] {@choice 0,1}
+     *                                                         Is authentication absolutly 
+     *                                                         required to invoke this service 
+     *                                                         or anonymous access is also 
+     *                                                         possible?
+     *                                                         (O: no 1: yes, default 0)
+     * @param string $backEndUsername                          [Optional] username to 
+     *                                                         authenticate against backend 
+     *                                                         system (basic authentication),
+     *                                                         use "%auto%" to use credentials
+     *                                                         received on OSA against backend
+     * @param string $backEndPassword                          [Optional] password to
+     *                                                         authenticate against
+     *                                                         backend system
+     * @param string $loginFormUri                             [Optional] Login from URL to 
+     *                                                         redirect to in case of
+     *                                                         unauthenticated access on a
+     *                                                         compliant node
+     * @param int    $isGlobalQuotasEnabled                    [Optional] {@choice 0,1} Is global
+     *                                                         quotas enabled?
+     *                                                         (O: no 1: yes, default 0)
+     * @param int    $reqSec                                   [Optional] Maximun number of 
+     *                                                         requests allowed per second
+     *                                                         (Required if 
+     *                                                         isGlobalQuotasEnabled=1)
+     * @param int    $reqDay                                   [Optional] Maximun number of
+     *                                                         requests allowed per second
+     *                                                         (Required if
+     *                                                         isGlobalQuotasEnabled=1)
+     * @param int    $reqMonth                                 [Optional] Maximun number of
+     *                                                         requests allowed per second
+     *                                                         (Required if
+     *                                                         isGlobalQuotasEnabled=1)
+     * @param int    $isUserQuotasEnabled                      [Optional] {@choice 0,1}
+     *                                                         Are quotas enabled at user level?
+     *                                                         (O: no 1: yes, default 0)
+     * @param int    $noApply                                  [Optional] {@choice 0,1} Don't 
+     *                                                         apply apache configuration?
+     *                                                         (O: no 1: yes, default 0)
      *
      * @url PUT :serviceName
      *
      * @return Service Updated service
      */
     function update($serviceName, $frontEndEndPoint=null, $backEndEndPoint=null,
-        $isPublished=null,  $additionalConfiguration=null,
+        $isPublished=null,  $additionalConfiguration=null,  $additionalBackendConnectionConfiguration=null,
         $isHitLoggingEnabled=null, $onAllNodes=null,
         $isUserAuthenticationEnabled=null, $groupName=null,
         $isIdentityForwardingEnabled=null, $isAnonymousAllowed=null,
@@ -549,6 +564,7 @@ class Services
                 "frontEndEndPoint" => $frontEndEndPoint,
                 "backEndEndPoint" => $backEndEndPoint,
                 "additionalConfiguration" => $additionalConfiguration,
+                "additionalBackendConnectionConfiguration" => $additionalBackendConnectionConfiguration,
                 "isAnonymousAllowed" => $isAnonymousAllowed,
                 "isHitLoggingEnabled" => $isHitLoggingEnabled,
                 "onAllNodes" => $onAllNodes,

@@ -304,8 +304,11 @@ $strings["service.logHits.tooltip"]="If this box is checked, hits to this ".
                                     "ATTENTION: this can dramatically affect ".
                                     "OSA performances";
 $strings["service.additionalConfiguration.tooltip"]="You can add here additinnal ".
-                                                    "apache directives relative to ".
-                                                    "</Location> tag";
+                                    "apache directives relative to ".
+                                    "&lt;Location&gt; tag";
+$strings["service.additionalBackendConnectionConfiguration.tooltip"]="You can add here additional ".
+                                    "apache directives relative to ".
+                                    "&lt;ProxyPass&gt; tag";
 $strings["service.isUserAuthenticationEnabled.tooltip"]="If this box is checked, ".
                                                         "OSA will check identity ".
                                                         "of authenticated users";
@@ -339,7 +342,7 @@ $strings["service.label.logHits"]="Record hits";
 $strings["service.label.warning.additionalConfiguration"]
     = "ATTENTION: Using apache directives may alter system global configuration. ".
       "Use at your own risks";
-$strings["service.label.additionalConfiguration"]="Additionnal apache directives";
+$strings["service.label.additionalConfiguration"]="Additionnal apache directives (&gt;<Location&lt;)";
 $strings["service.label.additionalConfiguration.helpText"]
     ="In addition to standard apache environnement variable, in link with the way ".
      "used by the node to published this service, you can use here:\n" .
@@ -366,6 +369,7 @@ $strings["service.label.additionalConfiguration.helpText"]
       "%{publicServerProtocol}e%{publicServerName}e:%{publicServerPort}e/%".
       "{frontEndEndPoint}e\"</code>\n" .
                         "</ul>\n";
+$strings["service.label.additionalBackendConnectionConfiguration"]="Additionnal apache directives for bakend connection (ProxyPass)";
 $strings["service.label.headers"]="HTTP Headers to forward";
 $strings["service.label.headers.userName"]=$strings["user.label.userName"];
 $strings["service.label.headers.firstName"]=$strings["user.label.firstName"];

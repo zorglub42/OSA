@@ -187,6 +187,15 @@ while ($row=$stmt->fetch(PDO::FETCH_ASSOC)) {
     } else {
         $ADDITIONAL_CONFIGURATION="";
     }
+    if ($row["additionalBackendConnectionConfiguration"] != "") {
+        $ADDITIONAL_BACKEND_CONNECTION_CONFIGURATION=subsituteVar(
+            $row["additionalBackendConnectionConfiguration"],
+            "frontEndEndPoint",
+            $row["frontEndEndPoint"]
+        );
+    } else {
+        $ADDITIONAL_BACKEND_CONNECTION_CONFIGURATION="";
+    }
     
     $LOGIN_FORM_URI="";
     if ($COOKIE_AUTH_ENABLED) {
@@ -207,8 +216,16 @@ $stmt->execute(array($_REQUEST["node"]));
 while ($row=$stmt->fetch(PDO::FETCH_ASSOC)) {
     $BACK_END     = $row["backEndEndPoint"];
     $FRONT_END    = $row["frontEndEndPoint"];
-
-    echo "ProxyPass $FRONT_END $BACK_END nocanon\n\n";
+    if ($row["additionalBackendConnectionConfiguration"] != "") {
+        $ADDITIONAL_BACKEND_CONNECTION_CONFIGURATION=subsituteVar(
+            $row["additionalBackendConnectionConfiguration"],
+            "frontEndEndPoint",
+            $row["frontEndEndPoint"]
+        );
+    } else {
+        $ADDITIONAL_BACKEND_CONNECTION_CONFIGURATION="";
+    }
+    echo "ProxyPass $FRONT_END $BACK_END $ADDITIONAL_BACKEND_CONNECTION_CONFIGURATION\n\n";
 }
     
     

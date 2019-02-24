@@ -316,10 +316,13 @@ $strings["service.logHits.tooltip"]
     ="Si cette case est cochée, les appels au service seront enregistrés ".
      "dans les logs\n".
      "ATTENTION: Cela peut altérer considérablement les performances";
-$strings["service.additionalConfiguration.tooltip"]
-    ="Vous pouvez ici rajouter des directives apache applicables au tag apache ".
-     "</Location>";
-$strings["service.isUserAuthenticationEnabled.tooltip"]
+     $strings["service.additionalConfiguration.tooltip"]
+     ="Vous pouvez ici rajouter des directives apache applicables au tag apache ".
+      "<Location>";
+$strings["service.additionalBackendConnectionConfiguration.tooltip"]
+      ="Vous pouvez ici rajouter des directives apache applicables au tag apache ".
+       "ProxyPass";
+  $strings["service.isUserAuthenticationEnabled.tooltip"]
     ="Si cette case est cochée OSA vérifiera l'identité des utlisateurs se ".
      "connectant au service";
 $strings["service.publish.tooltip"]="Publier ce service";
@@ -341,7 +344,7 @@ $strings["service.label.group"]="Autoriser les utilisateurs appartenant à";
 $strings["service.label.loginForm"]="URL de la page de login";
 $strings["service.label.isAnonymousAllowed"]="Permettre également l'accès anonyme";
 $strings["service.label.forwardIdentity"]="Transmettre l'identité";
-$strings["service.label.baUsername"]="Nom d'utilisateur (basic authentication)";
+$strings["service.label.baUsername"]="Nom d'utilisateur (basiFOOc authentication)";
 $strings["service.label.baPassword"]="Mot de passe (basic authentication)";
 $strings["service.label.isGlobalQuotasEnabled"]
     ="Activer le contrôle de quotas globaux";
@@ -360,8 +363,10 @@ $strings["service.label.warning.additionalConfiguration"]
      "peut corompre la configuration globale du système. A utiliser à vos risques ".
      "et périls";
 $strings["service.label.additionalConfiguration"]
-    ="Directives de configuration apache aditionnelles";
-$strings["service.label.additionalConfiguration.helpText"]
+     ="Directives de configuration apache aditionnelles (&lt;Location&gt;)";
+$strings["service.label.additionalBackendConnectionConfiguration"]
+     ="Directives de configuration apache aditionnelles pour connexion au backend (ProxyPass)";
+ $strings["service.label.additionalConfiguration.helpText"]
     ="En plus des variables standard d'apache, en rapport avec la façon dont le ".
      "noeud expose le service, vous pouvez utiliser ici:\n" .
         "<ul>\n" .

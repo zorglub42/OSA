@@ -450,6 +450,18 @@ function getService($serviceName=null, $request_data=null)
                     "%" . $request_data["additionalConfigurationFilter"] . "%"
                 );
             }
+            if (isset($request_data["additionalBackendConnectionConfigurationFilter"]) 
+                && $request_data["additionalBackendConnectionConfigurationFilter"]!==""
+            ) {
+                $strSQLComp = addSQLFilter(
+                    "additionalBackendConnectionConfiguration like ?",
+                    $strSQLComp
+                );
+                array_push(
+                    $bindPrms,
+                    "%" . $request_data["additionalBackendConnectionConfigurationFilter"] . "%"
+                );
+            }
 
             $strSQL="SELECT * FROM services s" . $strSQLComp;
             if (isset($request_data["order"]) && $request_data["order"] != "") {
@@ -486,6 +498,7 @@ function getService($serviceName=null, $request_data=null)
  * @param string $serviceName  Service identifier
  * @param string $request_data Service properties
  *                             $request_data["additionalConfiguration"]
+ *                             $request_data["additionalBackendConnectionConfiguration"]
  *                             $request_data["isAnonymousAllowed"]
  *                             $request_data["isHitLoggingEnabled"]
  *                             $request_data["onAllNodes"]
@@ -537,6 +550,11 @@ function createService($serviceName, $request_data=null)
     $mySQLOnAllNodes=1;
     $mySQLLoginFormUri="";
 
+    if (isset($request_data["additionalBackendConnectionConfiguration"])) {
+        $mySQLAdditionalBackendConnectionConfiguration=$request_data["additionalBackendConnectionConfiguration"];
+    } else {
+        $mySQLAdditionalBackendConnectionConfiguration="";
+    }
     if (isset($request_data["additionalConfiguration"])) {
         $mySQLAdditionalConfiguration=$request_data["additionalConfiguration"];
     } else {
@@ -859,6 +877,7 @@ function createService($serviceName, $request_data=null)
             $strSQL = $strSQL . "	 isAnonymousAllowed,";
             $strSQL = $strSQL . "	 isUserAuthenticationEnabled,";
             $strSQL = $strSQL . "	 additionalConfiguration,";
+            $strSQL = $strSQL . "	 additionalBackendConnectionConfiguration,";
             $strSQL = $strSQL . "	 onAllNodes,";
             $strSQL = $strSQL . "	 loginFormUri";
 
@@ -867,6 +886,7 @@ function createService($serviceName, $request_data=null)
             $strSQL = $strSQL . "	? ,";
             $strSQL = $strSQL . "	? ,";
             $strSQL = $strSQL . "	? ,";
+            $strSQL = $strSQL . "	?,";
             $strSQL = $strSQL . "	?,";
             $strSQL = $strSQL . "	?,";
             $strSQL = $strSQL . "	?,";
@@ -901,6 +921,7 @@ function createService($serviceName, $request_data=null)
                     $mySQLIsAnonymousAllowed,
                     $mySQLIsUserAuthenticationEnabled,
                     $mySQLAdditionalConfiguration,
+                    $mySQLAdditionalBackendConnectionConfiguration,
                     $mySQLOnAllNodes,
                     $mySQLLoginFormUri
                 )
@@ -1070,6 +1091,7 @@ function deleteService($serviceName)
  * @param string $serviceName  Service identifier
  * @param string $request_data Service properties
  *                             $request_data["additionalConfiguration"]
+ *                             $request_data["additionalBackendConnectionConfiguration"]
  *                             $request_data["isAnonymousAllowed"]
  *                             $request_data["isHitLoggingEnabled"]
  *                             $request_data["onAllNodes"]
@@ -1130,6 +1152,9 @@ function updateService($serviceName, $request_data=null)
 
     if (isset($request_data["additionalConfiguration"])) {
         $service["additionalConfiguration"]=$request_data["additionalConfiguration"];
+    }
+    if (isset($request_data["additionalBackendConnectionConfiguration"])) {
+        $service["additionalBackendConnectionConfiguration"]=$request_data["additionalBackendConnectionConfiguration"];
     }
 
 
@@ -1425,6 +1450,7 @@ function updateService($serviceName, $request_data=null)
         $strSQL = $strSQL . "	 isUserAuthenticationEnabled=?," ;
         $strSQL = $strSQL . "	 onAllNodes=?," ;
         $strSQL = $strSQL . "	 additionalConfiguration=?," ;
+        $strSQL = $strSQL . "	 additionalBackendConnectionConfiguration=?," ;
         $strSQL = $strSQL . "	 loginFormUri=?" ;
         $strSQL = $strSQL . " WHERE serviceName=?";
 
@@ -1446,6 +1472,7 @@ function updateService($serviceName, $request_data=null)
                         $service["isUserAuthenticationEnabled"],
                         $service["onAllNodes"],
                         $service["additionalConfiguration"],
+                        $service["additionalBackendConnectionConfiguration"],
                         $service["loginFormUri"],
                         $mySQLServiceName);
         try{
