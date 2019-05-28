@@ -9,7 +9,7 @@
  * @author   Benoit HERARD <benoit.herard@orange.com>
  * @license  http://www.apache.org/licenses/LICENSE-2.0.htm Apache 2 license
  * @link     https://github.com/zorglub42/OSA/
-*/
+ */
 
 /*--------------------------------------------------------
  * Module Name : ApplianceManager
@@ -50,7 +50,7 @@ require_once '../api/userDAO.php';
  * @author   Benoit HERARD <benoit.herard@orange.com>
  * @license  http://www.apache.org/licenses/LICENSE-2.0.htm Apache 2 license
  * @link     https://github.com/zorglub42/OSA/
-*/
+ */
 class Services
 {
 
@@ -334,7 +334,8 @@ class Services
             "isUserAuthenticationEnabledFilter" => 
                 $isUserAuthenticationEnabledFilter,
             "additionalConfigurationFilter" => $additionalConfigurationFilter,
-            "additionalBackendConnectionConfigurationFilter" => $additionalBackendConnectionConfigurationFilter,
+            "additionalBackendConnectionConfigurationFilter" => 
+                $additionalBackendConnectionConfigurationFilter,
             );
 
         return $this->_get(null, $params);
@@ -758,6 +759,7 @@ class Services
       * @param string $serviceName Service identifier
       *
       * @url GET :serviceName/nodes
+      * @url GET /nodes
       *
       * @return ServiceNode All Nodes with pulication indicator
       */
