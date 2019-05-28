@@ -344,7 +344,7 @@ $strings["service.label.group"]="Autoriser les utilisateurs appartenant à";
 $strings["service.label.loginForm"]="URL de la page de login";
 $strings["service.label.isAnonymousAllowed"]="Permettre également l'accès anonyme";
 $strings["service.label.forwardIdentity"]="Transmettre l'identité";
-$strings["service.label.baUsername"]="Nom d'utilisateur (basiFOOc authentication)";
+$strings["service.label.baUsername"]="Nom d'utilisateur (basic authentication)";
 $strings["service.label.baPassword"]="Mot de passe (basic authentication)";
 $strings["service.label.isGlobalQuotasEnabled"]
     ="Activer le contrôle de quotas globaux";
