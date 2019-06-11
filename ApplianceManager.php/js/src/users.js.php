@@ -276,6 +276,7 @@ function startDisplayUserQuotasForCurrentUser() {
 /* Poplulate list of available groups (for membership) */
 function displayAvailableGroups(groupList) {
 		if (groupList.length>0){
+			$('#availableGroupsList').empty()
 			$.each(groupList, function (i, item) {
 				$('#availableGroupsList').append($('<option>', {
 					value: "groups/" + item.groupName,
