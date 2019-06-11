@@ -48,7 +48,16 @@ First of all, install required packages and clone OSA repository
 		apt-get install apache2 libapache2-mod-php php php-curl openssl curl zip autoconf apache2-dev git build-essential zlib1g-dev zlib1g libjson-c-dev libjson-c3 $RDBMS_PACKAGE
 
     
-	**Since Ubuntu 16.04 (included)**
+	**Since Ubuntu 16.04**
+	
+		#Choose your database manegement system (uncomment the proper line)
+		#RDBMS=mysql && RDBMS_PACKAGE="mysql-server php-mysql libmysqlclient-dev"
+		#RDBMS=sqlite && RDBMS_PACKAGE="sqlite3 php-sqlite3 libsqlite3-dev"
+		
+		apt-get install apache2 libapache2-mod-php php php-curl openssl curl zip autoconf apache2-dev git build-essential zlib1g-dev zlib1g libjson-c-dev libjson-c2 $RDBMS_PACKAGE
+		
+		
+	**Since Ubuntu 18.04**
 	
 		#Choose your database manegement system (uncomment the proper line)
 		#RDBMS=mysql && RDBMS_PACKAGE="mysql-server php-mysql libmysqlclient-dev"
