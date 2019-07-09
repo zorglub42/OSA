@@ -387,12 +387,11 @@ function updateUser($userName = NULL, $request_data = NULL){
 		array_push($bindPrms, $mySQLEmail);
 		$strUPD = $strUPD . "emailAddress=?, ";
 	}
-	if (isset($request_data["endDate"])&& !is_null($request_data["endDate"])){
+	if (isset($request_data["endDate"])){
 		if ($request_data["endDate"]=="" ){
-			$error->setHttpStatus(400);
-			$error->setFunctionalCode(1);
-			$error->setFunctionalLabel($error->getFunctionalLabel() . "endDate is required\n");
-		}else{
+			array_push($bindPrms, NULL);
+			$strUPD=$strUPD . "endDate=?, ";
+	  }else{
 			if ( preg_match( "/([0-9]{4})-([0-9]{2})-([0-9]{2})/", $request_data["endDate"], $regs ) ) {
 			  $mySQLEndDate = "$regs[1]-$regs[2]-$regs[3] 00:00:00";
 			  array_push($bindPrms, $mySQLEndDate);

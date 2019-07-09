@@ -174,23 +174,12 @@ function saveOrUpdateUser(method) {
 	}
 	currentUserUri = "users/"
 			+ encodeURIComponent(document.getElementById("userName").value);
-	password = "password="
-			+ encodeURIComponent(document.getElementById("userPass").value);
-	userName = "userName="
-			+ encodeURIComponent(document.getElementById("userName").value);
-	email = "email=" + encodeURIComponent(document.getElementById("userMail").value);
-	firstName = "firstName="
-			+ encodeURIComponent(document.getElementById("firstName").value);
-	lastName = "lastName="
-			+ encodeURIComponent(document.getElementById("lastName").value);
-	entity = "entity=" + encodeURIComponent(document.getElementById("entity").value);
 	try{
 		d=Date.parseExact(document.getElementById("userEndDate").value,"<?php echo Localization::getJSString("date.format.parseexact")?>");
 		d.setHours(12);
-		endDate = "endDate="
-				+ encodeURIComponent(d.format("isoUtcDateTime"));
+		endDate = d.format("isoUtcDateTime");
 	}catch (ex){
-		endDate="endDate=";
+		endDate="";
 	}
 	user={
 		"userName": $("#userName").val(),
@@ -199,7 +188,8 @@ function saveOrUpdateUser(method) {
 		"firstName": $("#firstName").val(),
 		"lastName": $("#lastName").val(),
 		"entity": $("#entity").val(),
-		"properties": []
+		"properties": [],
+		"endDate": endDate
 	};
 	for (i=0;i<propertiesCount;i++){
 		if ($("#propertyName_" + i).val() !== undefined && $("#propertyValue_" + i).val() !== undefined){
@@ -210,13 +200,10 @@ function saveOrUpdateUser(method) {
 			user.properties.push(prop);
 		}
 	}
-	postData = password + "&" + email + "&" + endDate + "&" + firstName + "&"
-			+ lastName + "&" + entity;
 	if (method == 'POST') {
 		uri = "users/";
 		postData = "userName="
-				+ encodeURIComponent(document.getElementById("userName").value) + "&"
-				+ postData;
+				+ encodeURIComponent(document.getElementById("userName").value);
 	} else {
 		uri = "users/" + encodeURIComponent(document.getElementById("userName").value);
 	}
