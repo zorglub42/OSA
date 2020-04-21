@@ -7,8 +7,8 @@ function getRootImage(){
 	if [ "$DOCKER_FROM" == "" ] ; then
 		uname -a | grep " arm">/dev/null
 		if [ $? -ne 0 ] ; then
-			DOCKER_FROM="ubuntu:16.04"
-			JSON_PACKAGE="libjson-c2 libjson-c-dev"
+			DOCKER_FROM="ubuntu:18.04"
+			JSON_PACKAGE="libjson-c3 libjson-c-dev"
 		elif [ -f "/etc/os-release" ] ; then
 			grep "stretch" "/etc/os-release" >/dev/null
 			if [ $? -eq 0 ] ; then
@@ -36,6 +36,7 @@ ROOT_MYSQL_PW=`generatePassword`
 PHP=php
 RDBMS_PACKAGE="mysql-server $PHP-mysql libmysqlclient-dev"
 RDBMS=mysql
+SAV_DBMS_INSTALL="tar cvzf /root/mysql.def.tgz /var/lib/mysql "
 START_RDBMS="find /var/lib/mysql -type f -exec touch {} \; && chown -R mysql:mysql /var/lib/mysql && service mysql restart"
 
 getRootImage
@@ -50,6 +51,7 @@ while [ "$1" != "" ] ; do
 			RDBMS_PACKAGE="sqlite3 $PHP-sqlite3 libsqlite3-dev"
 			RDBMS=sqlite
 			START_RDBMS="/bin/true"
+			SAV_DBMS_INSTALL=""
 		else
 			echo "Invalid RDBMS System $2"
 			exit 1
@@ -64,33 +66,59 @@ if [ "$http_proxy" != "" -o "$https_proxy" != "" ]; then
 	PROXIES=`printf "ENV	http_proxy=$http_proxy\n\tENV	https_proxy=$https_proxy"`
 fi
 
+:>start-osa-container.sh
+if [ "$RDBMS" == "mysql" ] ; then
+	cat <<EOF >>start-osa-container.sh
+if [ ! -d /var/lib/mysql/mysql ]; then
+	cd /
+   	tar xvzf /root/mysql.def.tgz
+	cd -
+fi
+EOF
+fi
+cat <<EOF >>start-osa-container.sh
+$START_RDBMS
+service apache2 restart
+service cron restart
+echo "'\$*'"
+/usr/local/bin/configure-osa-container.sh "\$*"||exit 1
+
+tail -f /dev/null
+EOF
+
 VERSION=$(curl -s https://raw.githubusercontent.com/zorglub42/OSA/master/ApplianceManager.php/include/Constants.php| grep version|awk -F '"' '{print $4}')
 [ "$VERSION" == "" ] && echo "Unable to get version" && exit 1
-cat<<EOF | docker build -t osa:$RDBMS-$VERSION  -
+#| docker build -t osa:$RDBMS-$VERSION  -
+cat<<EOF > osa.dockerfile 
 
-	FROM $DOCKER_FROM
-	MAINTAINER benoit.herard@orange.com
+FROM $DOCKER_FROM
+MAINTAINER benoit.herard@orange.com
 
-	$PROXIES
-
-	RUN apt-get update && echo "mysql-server mysql-server/root_password password $ROOT_MYSQL_PW"| debconf-set-selections  && echo "mysql-server mysql-server/root_password_again password $ROOT_MYSQL_PW"|debconf-set-selections && apt-get install -y apache2 $PHP $PHP-curl libapache2-mod-$PHP openssl curl zip autoconf zlib1g-dev zlib1g apache2-dev git inetutils-ping net-tools cron sudo wget vim $JSON_PACKAGE  $RDBMS_PACKAGE
-	RUN cd /usr/local/src && git clone https://github.com/zorglub42/OSA
-	RUN cd /usr/local/src/OSA && ./install.sh -m -rdbms $RDBMS /usr/local/OSA
-
-	RUN cd /usr/local/src && git clone https://github.com/zorglub42/OSA-VirtualBackend 
-	RUN cd /usr/local/src && git clone https://github.com/zorglub42/OSA-Letsencrypt 
-	RUN cd /usr/local/src/OSA-Letsencrypt && curl -s  https://dl.eff.org/certbot-auto -o certbot-auto && chmod u+x certbot-auto && ./certbot-auto -n --os-packages-only && ./certbot-auto certificates
+ARG DEBIAN_FRONTEND=noninteractive
 
 
+$PROXIES
 
-	RUN cat /etc/apache2/ports.conf |sed 's/80/81/'|sed 's/443/8443/'>ports && mv ports /etc/apache2/ports.conf
-	RUN cat /etc/apache2/sites-available/000-default.conf |sed 's/80/81/'>site && mv site /etc/apache2/sites-available/000-default.conf
-	RUN cat /etc/apache2/sites-available/default-ssl.conf |sed 's/443/8443/'>site && mv site /etc/apache2/sites-available/default-ssl.conf
+RUN apt-get update && echo "mysql-server mysql-server/root_password password $ROOT_MYSQL_PW"| debconf-set-selections  && echo "mysql-server mysql-server/root_password_again password $ROOT_MYSQL_PW"|debconf-set-selections && apt-get install -y apache2 $PHP $PHP-curl libapache2-mod-$PHP openssl curl zip autoconf zlib1g-dev zlib1g apache2-dev git inetutils-ping net-tools cron sudo wget vim $JSON_PACKAGE  $RDBMS_PACKAGE; \\
+	cd /usr/local/src && git clone https://github.com/zorglub42/OSA; \\
+	cd /usr/local/src/OSA && ./install.sh -m -rdbms $RDBMS /usr/local/OSA; \\
+	# Pre installing Addons; \\
+	cd /usr/local/src && git clone https://github.com/zorglub42/OSA-VirtualBackend; \\
+	cd /usr/local/src && git clone https://github.com/zorglub42/OSA-Letsencrypt ; \\
+	cd /usr/local/src/OSA-Letsencrypt && curl -s  https://dl.eff.org/certbot-auto -o certbot-auto && chmod u+x certbot-auto && ./certbot-auto -n --os-packages-only && ./certbot-auto certificates; \\
+	# Disabling default apache2 conf;\\
+	cat /etc/apache2/ports.conf |sed 's/80/81/'|sed 's/443/8443/'>ports && mv ports /etc/apache2/ports.conf; \\
+	cat /etc/apache2/sites-available/000-default.conf |sed 's/80/81/'>site && mv site /etc/apache2/sites-available/000-default.conf; \\
+	cat /etc/apache2/sites-available/default-ssl.conf |sed 's/443/8443/'>site && mv site /etc/apache2/sites-available/default-ssl.conf; \\
+	a2enmod cache_socache  socache_shmcb
 
+ADD start-osa-container.sh /usr/local/bin/
+WORKDIR /usr/local/OSA/RunTimeAppliance/shell
+RUN cat envvars.sh| sed "s/ROOT_MYSQL_PW=.*/ROOT_MYSQL_PW=\"$ROOT_MYSQL_PW\"/" | sed "s/APPLIANCE_MYSQL_PW=.*/APPLIANCE_MYSQL_PW=\"$APPLIANCE_MYSQL_PW\"/" | sed "s/HTTP_VHOST_PORT=.*/HTTP_VHOST_PORT=80/" | sed "s/HTTPS_VHOST_PORT=.*/HTTPS_VHOST_PORT=443/"| sed "s/HTTPS_ADMIN_VHOST_NAME=.*/HTTPS_ADMIN_VHOST_NAME=localhost/">vars && mv vars envvars.sh && chmod u+x envvars.sh; \\
+	curl -s https://raw.githubusercontent.com/zorglub42/OSA/master/docker/configure-osa-container.sh >/usr/local/bin/configure-osa-container.sh ; \\
+	chmod u+x /usr/local/bin/configure-osa-container.sh; \\ 
+	chmod u+x /usr/local/bin/start-osa-container.sh; \\
+	$SAV_DBMS_INSTALL;
 
-	WORKDIR /usr/local/OSA/RunTimeAppliance/shell
-	RUN cat envvars.sh| sed "s/ROOT_MYSQL_PW=.*/ROOT_MYSQL_PW=\"$ROOT_MYSQL_PW\"/" | sed "s/APPLIANCE_MYSQL_PW=.*/APPLIANCE_MYSQL_PW=\"$APPLIANCE_MYSQL_PW\"/" | sed "s/HTTP_VHOST_PORT=.*/HTTP_VHOST_PORT=80/" | sed "s/HTTPS_VHOST_PORT=.*/HTTPS_VHOST_PORT=443/"| sed "s/HTTPS_ADMIN_VHOST_NAME=.*/HTTPS_ADMIN_VHOST_NAME=localhost/">vars && mv vars envvars.sh && chmod u+x envvars.sh
-	RUN curl -s https://raw.githubusercontent.com/zorglub42/OSA/master/docker/configure-osa-container.sh >/usr/local/bin/configure-osa-container.sh ;chmod u+x /usr/local/bin/configure-osa-container.sh
-	RUN printf "$START_RDBMS\nservice apache2 restart\nservice cron restart\n/usr/local/bin/configure-osa-container.sh "'\$*'"||exit 1\n\ntail -f /dev/null\n">/usr/local/bin/start-osa-container.sh ;chmod u+x /usr/local/bin/start-osa-container.sh
-	ENTRYPOINT ["/bin/bash", "/usr/local/bin/start-osa-container.sh"]
+ENTRYPOINT ["/bin/bash", "/usr/local/bin/start-osa-container.sh"]
 EOF

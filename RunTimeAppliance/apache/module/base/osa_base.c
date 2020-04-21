@@ -748,7 +748,7 @@ void dumpHTMLError(request_rec *r, char *errMSG){
 void dumpTextError(request_rec *r, char *errMSG){
 	char *strHttpBody;
 
-	strHttpBody=apr_psprintf(r->pool, "%s%s%s",
+	strHttpBody=apr_psprintf(r->pool, "%s%s%s\n",
 		"Error code: -1\n",
 		"Error label: ",
 		errMSG

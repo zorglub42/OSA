@@ -100,6 +100,12 @@
 #include "../base/osa_base.h"
 #include <mysql.h>
 
+#ifndef MYSQL_PORT
+	#define MYSQL_PORT                  3306
+#endif
+#ifndef MYSQL_UNIX_ADDR
+	#define MYSQL_UNIX_ADDR            "/var/run/mysqld/mysqld.sock"
+#endif
 
 #ifndef SCRAMBLED_PASSWORD_CHAR_LENGTH /* Ensure it is defined for older MySQL releases */
 	#define SCRAMBLED_PASSWORD_CHAR_LENGTH 32 /* Big enough for the old method of scrambling */
