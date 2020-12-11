@@ -693,7 +693,7 @@ function createDBUser(){
 	if [  $DB_IS_LOCAL -eq 1 ] ; then 
 		mysql -u root -p"$ROOT_MYSQL_PW"   -h $APPLIANCE_MYSQL_HOST  -P $APPLIANCE_MYSQL_PORT<<EOF
 		create user $APPLIANCE_MYSQL_USER identified by '$APPLIANCE_MYSQL_PW';
-		grant insert, delete , select, update on $APPLIANCE_MYSQL_SCHEMA.* to '$APPLIANCE_MYSQL_USER'@'localhost' identified by  '$APPLIANCE_MYSQL_PW';
+		grant insert, delete , select, update on $APPLIANCE_MYSQL_SCHEMA.* to '$APPLIANCE_MYSQL_USER'@'localhost';
 		flush privileges;
 EOF
 	else
@@ -703,7 +703,7 @@ EOF
 			connectingHost=`cat /tmp/$$.dberr | sed 's/'"'"'//g'|sed 's/.*@\([^ ]*\).*/\1/'`
 			mysql -u root -p"$ROOT_MYSQL_PW"   -h $APPLIANCE_MYSQL_HOST  -P $APPLIANCE_MYSQL_PORT<<EOF
 			create user $APPLIANCE_MYSQL_USER identified by '$APPLIANCE_MYSQL_PW';
-			grant insert, delete , select, update on $APPLIANCE_MYSQL_SCHEMA.* to '$APPLIANCE_MYSQL_USER'@'%' identified by  '$APPLIANCE_MYSQL_PW';
+			grant insert, delete , select, update on $APPLIANCE_MYSQL_SCHEMA.* to '$APPLIANCE_MYSQL_USER'@'%';
 			flush privileges;
 EOF
 			

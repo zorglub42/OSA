@@ -474,7 +474,7 @@ function getDAOUserGroup($userName, $groupName= NULL){
 		$db=openDBConnection();
 		$bindPrms=array();
 
-		$strSQL="SELECT g.* FROM groups g, usersgroups ug where g.groupName = ug.groupName and ug.userName=?";
+		$strSQL="SELECT g.* FROM `groups` g, usersgroups ug where g.groupName = ug.groupName and ug.userName=?";
 		array_push($bindPrms, cut($userName, USERNAME_LENGTH));
 
 		if ($groupName != NULL && $groupName != ""){
@@ -526,7 +526,7 @@ function getAvailableGroup($userName){
 	
 	
 	try {
-		$strSQL="SELECT g.* FROM groups g where g.groupName not in (SELECT ug.groupName FROM  usersgroups ug WHERE  ug.userName=?)";
+		$strSQL="SELECT g.* FROM `groups` g where g.groupName not in (SELECT ug.groupName FROM  usersgroups ug WHERE  ug.userName=?)";
 		
 		$db=openDBConnection();
 		$stmt=$db->prepare($strSQL);
@@ -621,7 +621,7 @@ function removeUserFromGroup($userName, $groupName){
 		try{
 			$db=openDBConnection();
 			
-			$strSQL="SELECT g.* FROM groups g, usersgroups ug WHERE ug.groupName=? AND ug.userName=? AND g.groupName = ug.groupName";
+			$strSQL="SELECT g.* FROM `groups` g, usersgroups ug WHERE ug.groupName=? AND ug.userName=? AND g.groupName = ug.groupName";
 			$stmt=$db->prepare($strSQL);
 			$stmt->execute(array(cut($groupName, GROUPNAME_LENGTH), cut($userName, USERNAME_LENGTH)));
 			$row = $stmt->fetch(PDO::FETCH_ASSOC);

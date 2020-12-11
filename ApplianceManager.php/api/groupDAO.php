@@ -71,7 +71,7 @@ function getGroup($groupName = null, $request_data = null)
         $db=openDBConnection();
 
         if ($groupName != null) {
-            $strSQL = "SELECT * FROM groups WHERE groupName=?";
+            $strSQL = "SELECT * FROM `groups` WHERE groupName=?";
             //'" .  . "'";
             $stmt=$db->prepare($strSQL);
             $stmt->execute(array(cut($groupName, GROUPNAME_LENGTH)));
@@ -114,7 +114,7 @@ function getGroup($groupName = null, $request_data = null)
                     "%" . $request_data["groupNameFilter"] . "%"
                 );
             }
-            $strSQL="SELECT * FROM groups" . $strSQLComp;
+            $strSQL="SELECT * FROM `groups`" . $strSQLComp;
             if (isset($request_data["order"]) && $request_data["order"] != "") {
                 $strSQL=$strSQL . " ORDER BY " . escapeOrder($request_data["order"]);
             }
@@ -305,7 +305,7 @@ function addGroup($groupName, $description = null)
     try {
         $db=openDBConnection();
         
-        $strSQL = "INSERT INTO groups (groupName, description) values (?,?)";
+        $strSQL = "INSERT INTO `groups` (groupName, description) values (?,?)";
         $stmt=$db->prepare($strSQL);
         $stmt->execute(
             array(
@@ -378,7 +378,7 @@ function deleteGroup($groupName)
     try{
         $db=openDBConnection();
 
-        $strSQL="DELETE FROM groups WHERE  groupName=?";
+        $strSQL="DELETE FROM `groups` WHERE  groupName=?";
         $stmt=$db->prepare($strSQL);
         $stmt->execute(array(cut($groupName, GROUPNAME_LENGTH)));
         
@@ -439,7 +439,7 @@ function updateGroup($groupName, $description = null)
             $db=openDBConnection();
 
             $strSQL = "";
-            $strSQL = $strSQL  . "UPDATE groups SET ";
+            $strSQL = $strSQL  . "UPDATE `groups` SET ";
             $strSQL = $strSQL  . "      description=? ";
             $strSQL = $strSQL  . "WHERE groupName=?";
             

@@ -1,0 +1,136 @@
+#!/bin/bash
+##--------------------------------------------------------
+ # Module Name : ApplianceManager
+ # Version : 1.0.0
+ #
+ # Software Name : OpenServicesAccess
+ # Version : 1.0
+ #
+ # Copyright (c) 2011 – 2014 Orange
+ # This software is distributed under the Apache 2 license
+ # <http://www.apache.org/licenses/LICENSE-2.0.html>
+ #
+ #--------------------------------------------------------
+ # File Name   : ApplianceManager/RunTimeAppliance/shell/envvars.sh
+ #
+ # Created     : 2012-02
+ # Authors     : Benoit HERARD <benoit.herard(at)orange.com>
+ #
+ # Description :
+ #      Default values for initialization variables
+ #--------------------------------------------------------
+ # History     :
+ # 1.0.0 - 2012-10-01 : Release of the file
+##
+
+
+####################################################################################################################
+#                                              Basic configuration section
+####################################################################################################################
+#
+# Configure in this section the required parameters.
+# and use parameters pre-configured in Advance section
+#
+# Parameters are:
+#	- BOX_DOMAIN DNS domain of your system in the form .my.domain
+#	- APACHE_ADMIN_MAIL mail to set as admin mail in virtual host and as email for OSA administrator
+#            ***** NOTE regarding pre-configured values.....
+#                If your user bellong to same domain as $BOX_DOMAIN just change the "admin" value in pre-configured string with you user
+#                Else give entire address like  APACHE_ADMIN_MAIL="john.doe@acme.com"
+#   - ROOT_MYSQL_PW MySQL root user password
+#   - APPLIANCE_MYSQL_PW  Password to use for appliance MySQL user to connect DB
+#                         user created by script. See APPLIANCE_MYSQL_USER in advance section)
+#   - APPLIANCE_ADMIN_PW  OSA Admin user passord to set (password initialized by script)
+#   - USE_HTTP if set to 1 API publishing via regular HTTP will be enabled
+#   - USE_HTTPS if set to 1 API publishing via  HTTPS will be enabled
+BOX_DOMAIN="" #This variable is a configuration commodity. It's just used in the folloing config (see APACHE_ADMIN_MAIL, HTTP_VHOST_NAME, HTTPS_VHOST_NAME and HTTPS_ADMIN_VHOST_NAME)
+APACHE_ADMIN_MAIL="webmaster@localhost"
+APPLIANCE_ADMIN_PW="choose-your-admin-password"
+
+#ROOT_MYSQL_PW and APPLIANCE_ADMIN_PW only make sens when MySQL is used a RDBMS
+ROOT_MYSQL_PW="your-root-mysql-password"
+APPLIANCE_MYSQL_PW="choose-a-mysql-password"
+
+#Default nodes creation
+USE_HTTP=1 #Set it to 1 if you want to create a default HTTP node 
+USE_HTTPS=1 #Set it to 1 if you want to create a default HTTPS node 
+
+
+
+
+
+
+####################################################################################################################
+#                                              Advance configuration section
+####################################################################################################################
+#
+# Configure in this section the additional parameters.
+# 
+#
+
+
+
+
+
+######################################################
+# Virtual Host API publishing and Appliance managment
+######################################################
+
+# HTTP API Usage virtualhost configuration (reverse proxy)
+#           HTTP_VHOST_NAME Used as server bname in virtual host
+#           HTTP_VHOST_ADDR Address to bind. If HTTP_VHOST_NAME is not set, HTTP_VHOST_ADDR will be used instead
+#           HTTP_VHOST_PORT Port to bind
+HTTP_VHOST_NAME=`hostname`$BOX_DOMAIN
+HTTP_VHOST_ADDR=*
+HTTP_VHOST_PORT=81
+
+# HTTPS API Usage virtualhost configuration (reverse proxy)
+#           HTTPS_VHOST_NAME Used as server bname in virtual host, used as commonName in self signed generated certificate
+#           HTTPS_VHOST_ADDR Address to bind. If HTTPS_VHOST_NAME is not set, HTTPS_VHOST_ADDR will be used instead
+#           HTTPS_VHOST_PORT Port to bind
+HTTPS_VHOST_NAME=`hostname`$BOX_DOMAIN
+HTTPS_VHOST_ADDR=*
+HTTPS_VHOST_PORT=8443
+
+# HTTPS Appliance management virtualhost configuration (reverse proxy)
+#           HTTPS_ADMIN_VHOST_NAME Used as server bname in virtual host, used as commonName in self signed generated certificate
+#           HTTPS_ADMIN_VHOST_ADDR Address to bind. If HTTPS_ADMIN_VHOST_NAME is not set, HTTPS_ADMIN_VHOST_ADDR will be used instead
+#           HTTPS_ADMIN_VHOST_PORT Port to bind
+# HTTPS admon virtualhost configuration
+# Used as server bname in virtual host and as commonName for certificate
+HTTPS_ADMIN_VHOST_NAME=`hostname`$BOX_DOMAIN
+HTTPS_ADMIN_VHOST_ADDR=*
+HTTPS_ADMIN_VHOST_PORT=6443
+
+# HTTP PHP Application hosting on localhost
+PRIVATE_VHOST_PORT=82
+
+
+######################################################
+# Database section
+######################################################
+# Parameters are
+#           KEEP_DB If set to 1, DB objects (tables) are kept unchanged if schema exists but user is re-created with proper creds
+#                   If set to 0, DB schema (including tables and user) are dropped and re-created 
+#			APPLIANCE_MYSQL_SCHEMA schema name in DB
+#			APPLIANCE_MYSQL_USER user used by application to connect DB
+KEEP_DB=0
+RDBMS=mysql
+APPLIANCE_MYSQL_SCHEMA=appliance
+APPLIANCE_MYSQL_USER=appliance
+MYSQL_BIND_ADDRESS='*'
+APPLIANCE_MYSQL_HOST=localhost
+APPLIANCE_MYSQL_PORT=3306
+APPLIANCE_SQLITE_FILENAME=/var/lib/ApplianceManager/osa.db
+
+
+
+
+
+
+
+######################################################
+# Global configuration section
+######################################################
+INSTALL_DIR=/usr/local/OSA
+LOG_DIR=/var/log/OSA

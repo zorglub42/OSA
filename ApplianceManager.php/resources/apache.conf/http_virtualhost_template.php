@@ -20,6 +20,8 @@ ServerSignature Off
 
 <VirtualHost <?php echo $HTTP_VHOST_ADDR . ":" . $HTTP_VHOST_PORT?>>
        ServerName <?php echo "$HTTP_VHOST_NAME\n"?>
+       RequestHeader setifempty X-Forwarded-Proto "http"
+
 
        <?php
        $publicServerPrefix=constructURL("http", $HTTP_VHOST_NAME, $HTTP_VHOST_PORT, "");
