@@ -24,6 +24,7 @@
 
 <VirtualHost <?php  echo $HTTP_VHOST_ADDR . ":" . "$HTTP_VHOST_PORT"?>>
        ServerName <?php  echo $HTTP_VHOST_NAME?>
+
        RequestHeader setifempty X-Forwarded-Proto "https"
 
 
