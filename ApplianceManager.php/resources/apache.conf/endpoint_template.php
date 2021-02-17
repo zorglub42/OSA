@@ -44,10 +44,11 @@ require_once '../include/Constants.php';
     Include <?php echo runtimeApplianceConfigLocation?>/osa-endpoints-settings.inc	
 <?php
 if (isset($BASIC_AUTH_TOKEN) && $BASIC_AUTH_TOKEN != "" ) {
-        echo "\tRequestHeader add Authorization \"Basic $BASIC_AUTH_TOKEN\"\n";
-}
-if (isset($FORWARD_AUTH_TOKEN) && $FORWARD_AUTH_TOKEN  ) {
-        echo "\tRequestHeader add Authorization %{ORGAUTH}e\n";
+        echo "\tRequestHeader set Authorization \"Basic $BASIC_AUTH_TOKEN\"\n";
+}else if (isset($FORWARD_AUTH_TOKEN) && $FORWARD_AUTH_TOKEN  ) {
+        echo "\tRequestHeader set Authorization %{ORGAUTH}e \"expr=reqenv('ORGAUTH') != ''\"\n";
+}else{
+    echo "\tRequestHeader unset Authorization\n";
 }
 if ($USER_AUTHENTICATION_ENABLE=="On") {
     //echo "\tAuthBasicAuthoritative Off\n";
