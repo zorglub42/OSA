@@ -195,7 +195,7 @@ To update OSA with docker, please referer to the docker section.
 
 To deploy a new version of OSA from github do the following
 1.  **If you whant to keep your DB contents:** ensure that KEEP_DB environnement variable is set to 1 in INSTALL_DIR/RunTimeAppliance/shell. You don't have to check that point on next updates unless you want a factory reset.
-2.  start "update.sh" from the folder where initial checkout was done
+2.  start "update.sh" from the folder where **initial clone** was done
 	
 		Ex:
 			cd OSA
