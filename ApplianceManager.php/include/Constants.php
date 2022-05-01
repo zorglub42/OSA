@@ -69,6 +69,8 @@ define("ADMIN_SERVICE", "ApplianceManagerAdmin");
 
 define("version", "4.2-beta");
 
+define("reversablePasswd", TRUE);
+
 
 $userProperties = array("userName", 
             "firstName", 

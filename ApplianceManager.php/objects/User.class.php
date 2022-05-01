@@ -373,7 +373,11 @@ class User extends ApplianceObject
     {
         if ($rqt != null) {
             $this->setUsername($rqt["userName"]);
-            $this->setPassword(decrypt($rqt["password"]));
+            if (!empty(decrypt($rqt["password"]))){
+                $this->setPassword(decrypt($rqt["password"]));
+            }else{
+                $this->setPassword("");
+            }
             $this->setEmail($rqt["emailAddress"]);
             $this->setFirstname($rqt["firstName"]);
             $this->setLastname($rqt["lastName"]);
@@ -417,18 +421,22 @@ class User extends ApplianceObject
         foreach ($this->properties as $p){
             array_push($properties, $p->toArray());
         }
-        return Array(
-                "uri"  => $this->getUri(),
-                "userName"  => $this->getUsername(),
-                "password"  => $this->getPassword(),
-                "firstName"  => $this->getFirstname(),
-                "lastName"  => $this->getLastname(),
-                "entity"  => $this->getEntity(),
-                "emailAddress"  => $this->getEmail(),
-                "endDate"  => $this->getEndDate(),
-                "lastTokenLogin"  => $this->getLastTokenLogin(),
-                "properties"  => $properties,
-            );
+        $usr = Array(
+            "uri"  => $this->getUri(),
+            "userName"  => $this->getUsername(),
+            "firstName"  => $this->getFirstname(),
+            "lastName"  => $this->getLastname(),
+            "entity"  => $this->getEntity(),
+            "emailAddress"  => $this->getEmail(),
+            "endDate"  => $this->getEndDate(),
+            "lastTokenLogin"  => $this->getLastTokenLogin(),
+            "properties"  => $properties,
+        );
+        if (reversablePasswd){
+            $usr["password"] = $this->getPassword();
+        }
+        return $usr;
+
     }
                 
 }

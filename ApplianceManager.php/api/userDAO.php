@@ -322,7 +322,11 @@ function updateUserPassword($userName, $newPassword){
 
 	$userName=normalizeName($userName, ".");
 	$mySQLuserName=  cut($userName, USERNAME_LENGTH) ;
-	$mySQLPassword= encrypt($newPassword);
+	if (reversablePasswd){
+		$mySQLPassword= encrypt($newPassword);
+	}else{
+		$mySQLPassword="";
+	}
 	$mySQLmd5Password= md5($newPassword) ;
 	$strSQL = "";
 
@@ -368,18 +372,17 @@ function updateUser($userName = NULL, $request_data = NULL){
 	
 	
 	$strUPD="";
-	if (isset($request_data["password"]) && !is_null($request_data["password"]) ){
-		if ($request_data["password"]=="" ){
-			$error->setHttpStatus(400);
-			$error->setFunctionalCode(1);
-			$error->setFunctionalLabel($error->getFunctionalLabel() . "password is required\n");
+	if (isset($request_data["password"]) && !is_null($request_data["password"]) && $request_data["password"] != ""){
+		if (reversablePasswd){
+			$mySQLPassword=encrypt($request_data["password"]);
 		}else{
-			$mySQLPassword= encrypt($request_data["password"]);
-			$mySQLmd5Password=md5($request_data["password"]);
-
-			array_push($bindPrms, $mySQLPassword);
-			array_push($bindPrms, $mySQLmd5Password	);
+			$mySQLPassword="";
 		}
+		$mySQLmd5Password=md5($request_data["password"]);
+
+		array_push($bindPrms, $mySQLPassword);
+		array_push($bindPrms, $mySQLmd5Password	);
+
 		$strUPD=$strUPD . "password=?, md5Password=?, ";
 	}
 	if (isset($request_data["email"])&& !is_null($request_data["email"])) { 

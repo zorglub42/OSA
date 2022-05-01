@@ -47,7 +47,7 @@ require_once 'Counters.php';
 require_once 'Nodes.php';
 require_once 'Services.php';
 require_once 'Auth.php';
-require_once '../include/restler3/restler.php';
+require_once '../include/restler/restler.php';
 use Luracast\Restler\Restler;
 
 
@@ -57,7 +57,7 @@ JsonFormat::$prettyPrint=true;
 $r = new Restler();
 
 if (isset(getallheaders()[uriPrefixHeader])) {
-    $r->setBaseUrl(getallheaders()[uriPrefixHeader]);
+    $r->setBaseUrls(getallheaders()[uriPrefixHeader]);
 }
 $r->setSupportedFormats('JsonFormat', 'UrlEncodedFormat', 'UploadFormat');
 
