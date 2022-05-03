@@ -72,7 +72,7 @@ First of all, install required packages and clone OSA repository
 		#RDBMS=mysql && RDBMS_PACKAGE="mysql-server php-mysql libmysqlclient-dev"
 		#RDBMS=sqlite && RDBMS_PACKAGE="sqlite3 php-sqlite3 libsqlite3-dev"
 		
-		apt-get install apache2 libapache2-mod-php php php-curl openssl curl zip autoconf apache2-dev git build-essential zlib1g-dev zlib1g libjson-c-dev libjson-c4 $RDBMS_PACKAGE
+		apt-get install net-tools apache2 libapache2-mod-php php php-curl openssl curl zip autoconf apache2-dev git build-essential zlib1g-dev zlib1g libjson-c-dev libjson-c4 $RDBMS_PACKAGE
   - if using fresh install of MySQL, do not forget to set a password for "root" user (issue "mysql_secure_installation" command).
   - clone git repo
 
