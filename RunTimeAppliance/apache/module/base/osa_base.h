@@ -337,7 +337,7 @@ typedef struct {
 static osa_cache_provider osa_cache;  //Module cache
 static apr_global_mutex_t *socache_mutex = NULL;
 
-module osa_module;
+//module osa_module;
 
 
 
