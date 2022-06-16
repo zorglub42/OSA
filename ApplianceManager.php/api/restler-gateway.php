@@ -53,6 +53,7 @@ use Luracast\Restler\Restler;
 
 Resources::$useFormatAsExtension = false;
 JsonFormat::$prettyPrint=true;
+UploadFormat::$allowedMimeTypes = [];
 
 $r = new Restler();
 
